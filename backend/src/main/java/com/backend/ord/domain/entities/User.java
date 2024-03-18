@@ -1,24 +1,17 @@
 package com.backend.ord.domain.entities;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.*;
 
-import java.util.UUID;
-
-@Entity
-@Table(name = "users")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
+@EqualsAndHashCode(callSuper = true)
+@Entity
+@Table(name = "users")
+public class User extends EntityBase {
     private String name;
     private String email;
 }

@@ -2,6 +2,7 @@ package com.backend.ord;
 
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.repositories.UserRepository;
+import com.backend.ord.seeders.entitiesSeeders.UserSeeder;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,8 +21,8 @@ public class BackendApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        userRepository.save(User.builder().name("John Doe").email("test@gmail.com").build());
+        User createdUser = userRepository.save(UserSeeder.createUser());
 
-        System.out.println("Hello World!");
+        System.out.println("Created user: " + createdUser.toString());
     }
 }
