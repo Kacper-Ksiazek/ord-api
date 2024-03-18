@@ -126,6 +126,33 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+<!--            <plugin>-->
+<!--                <groupId>org.flywaydb</groupId>-->
+<!--                <artifactId>flyway-maven-plugin</artifactId>-->
+<!--                <version>${flyway.version}</version> &lt;!&ndash; Use the latest version &ndash;&gt;-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash; Load database connection details from application.properties &ndash;&gt;-->
+<!--                    <driver>org.postgresql.Driver</driver>-->
+<!--                    <url>${spring.datasource.url}</url>-->
+<!--                    <user>${spring.datasource.username}</user>-->
+<!--                    <password>${spring.datasource.password}</password>-->
+<!--&lt;!&ndash;                    <url>jdbc:postgresql://localhost:42069/postgres</url>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <user>postgres</user>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <password>zaq1</password>&ndash;&gt;-->
+<!--                    <locations>-->
+<!--                        <location>classpath:db.migration</location>-->
+<!--                    </locations>-->
+<!--                </configuration>-->
+<!--                <dependencies>-->
+<!--                    &lt;!&ndash; Add PostgreSQL JDBC driver dependency &ndash;&gt;-->
+<!--                    <dependency>-->
+<!--                        <groupId>org.postgresql</groupId>-->
+<!--                        <artifactId>postgresql</artifactId>-->
+<!--                        <version>${postgresql.version}</version> &lt;!&ndash; Specify the version &ndash;&gt;-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
