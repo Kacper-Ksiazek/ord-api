@@ -15,7 +15,6 @@ import java.util.UUID;
 public abstract class EntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Setter(lombok.AccessLevel.NONE)
     private UUID id;
 
     @Column(name = "created_at", nullable = false, updatable = false)

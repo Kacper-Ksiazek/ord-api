@@ -18,18 +18,16 @@ import java.util.UUID;
 @Table(name = "language_proficiencies")
 public class LanguageProficiency extends EntityBase {
     @Column(name = "language", nullable = false)
-    @Convert(converter = LanguageNameConverter.class)
+//    @Convert(converter = LanguageNameConverter.class)
+    @Enumerated(EnumType.STRING)
     private LanguageName language;
 
-    @Column(nullable = false)
-    @Convert(converter = LanguageProficiencyLevelConverter.class)
+    @Column(name = "proficiency", nullable = false)
+//    @Convert(converter = LanguageProficiencyLevelConverter.class)
+    @Enumerated(EnumType.STRING)
     private LanguageProficiencyLevel proficiency;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id",
-            referencedColumnName = "id",
-            nullable = false,
-            insertable = false
-    )
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 }
