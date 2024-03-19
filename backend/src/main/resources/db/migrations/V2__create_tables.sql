@@ -17,10 +17,10 @@ CREATE TYPE "language_proficiency" as ENUM (
 
 CREATE TABLE IF NOT EXISTS "users"
 (
-    "id"    UUID PRIMARY KEY,
+    "id"         UUID PRIMARY KEY,
 
-    "name"  TEXT NOT NULL,
-    "email" TEXT NOT NULL,
+    "name"       TEXT NOT NULL,
+    "email"      TEXT NOT NULL,
 
     "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -39,5 +39,6 @@ CREATE TABLE IF NOT EXISTS "language_proficiencies"
     "created_at"  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     "updated_at"  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE
+    FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE,
+    CONSTRAINT "each_user_can_have_only_one_proficiency_per_language" UNIQUE ("user_id", "language")
 );

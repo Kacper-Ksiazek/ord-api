@@ -1,18 +1,23 @@
 package com.backend.ord;
 
+import com.backend.ord.domain.entities.LanguageProficiency;
 import com.backend.ord.domain.entities.User;
+import com.backend.ord.repositories.LanguageProficiencyRepository;
 import com.backend.ord.repositories.UserRepository;
-import com.backend.ord.seeders.entitiesSeeders.UserSeeder;
+import com.backend.ord.seeders.entities.LanguageProficiencySeeder;
+import com.backend.ord.seeders.entities.UserSeeder;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class BackendApplication implements CommandLineRunner {
-    UserRepository userRepository;
+    private final UserSeeder userSeeder;
+    private final LanguageProficiencySeeder languageProficiencySeeder;
 
-    public BackendApplication(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public BackendApplication(UserSeeder userSeeder, LanguageProficiencySeeder languageProficiencySeeder) {
+        this.userSeeder = userSeeder;
+        this.languageProficiencySeeder = languageProficiencySeeder;
     }
 
     public static void main(String[] args) {
@@ -21,8 +26,10 @@ public class BackendApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        User createdUser = userRepository.save(UserSeeder.createUser());
+        User user = userSeeder.populate();
+        LanguageProficiency languageProficiency = languageProficiencySeeder.populate(user);
 
-        System.out.println("Created user: " + createdUser.toString());
+        System.out.println("User: " + user);
+        System.out.println("Language Proficiency: " + languageProficiency);
     }
 }
