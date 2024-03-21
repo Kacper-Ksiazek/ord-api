@@ -4,6 +4,7 @@ public interface SeederInterface <T>{
     /**
      * Insert a singular row into the database
      */
-    T populate();
+    T insertRow();
 
+    void deleteAll();
 }

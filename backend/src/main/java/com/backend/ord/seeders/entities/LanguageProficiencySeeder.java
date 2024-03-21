@@ -3,7 +3,6 @@ package com.backend.ord.seeders.entities;
 import com.backend.ord.domain.entities.LanguageProficiency;
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.enums.LanguageName;
-import com.backend.ord.enums.LanguageProficiencyLevel;
 import com.backend.ord.repositories.LanguageProficiencyRepository;
 import com.backend.ord.seeders.mocks.LanguageProficiencyFactory;
 import org.springframework.stereotype.Component;
@@ -19,14 +18,26 @@ public class LanguageProficiencySeeder implements SeederInterface<LanguageProfic
     }
 
     @Override
-    public LanguageProficiency populate() {
+    public LanguageProficiency insertRow() {
         // Generate user to fill the foreign key constraint
-        User user = userSeeder.populate();
-        return populate(user);
+        User user = userSeeder.insertRow();
+        return insertRow(user);
     }
 
-    public LanguageProficiency populate(User user) {
+    @Override
+    public void deleteAll() {
+        languageProficiencyRepository.deleteAll();
+    }
+
+    public LanguageProficiency insertRow(User user) {
         LanguageProficiency data = LanguageProficiencyFactory.mockEntity(user);
+        return languageProficiencyRepository.save(data);
+    }
+
+    public LanguageProficiency insertRow(User user, LanguageName language) {
+        LanguageProficiency data = LanguageProficiencyFactory.mockEntity(user);
+        data.setLanguage(language);
+
         return languageProficiencyRepository.save(data);
     }
 }
