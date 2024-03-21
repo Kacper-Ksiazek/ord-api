@@ -4,7 +4,7 @@ import com.backend.ord.domain.entities.LanguageProficiency;
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.enums.LanguageName;
 import com.backend.ord.repositories.LanguageProficiencyRepository;
-import com.backend.ord.seeders.mocks.LanguageProficiencyFactory;
+import com.backend.ord.seeders.factories.LanguageProficiencyFactory;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,7 +1,6 @@
-package com.backend.ord.seeders.mocks;
+package com.backend.ord.seeders.factories;
 
 import com.backend.ord.domain.entities.User;
-import org.springframework.stereotype.Component;
 
 public class UserMockFactory extends AbstractFactory {
     public static User mockEntity() {

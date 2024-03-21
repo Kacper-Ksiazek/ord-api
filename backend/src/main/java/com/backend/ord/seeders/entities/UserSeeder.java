@@ -2,7 +2,7 @@ package com.backend.ord.seeders.entities;
 
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.repositories.UserRepository;
-import com.backend.ord.seeders.mocks.UserMockFactory;
+import com.backend.ord.seeders.factories.UserMockFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

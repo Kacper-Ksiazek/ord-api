@@ -1,4 +1,4 @@
-package com.backend.ord.seeders.mocks;
+package com.backend.ord.seeders.factories;
 
 import com.backend.ord.domain.entities.LanguageProficiency;
 import com.backend.ord.domain.entities.User;
@@ -19,21 +19,7 @@ public class LanguageProficiencyFactory extends AbstractFactory {
     }
 
     public static List<LanguageName> mockUniqueLanguages(int N) {
-        int namesInTotal = LanguageName.values().length;
-
-        // Validate N
-        if (N < 1 || N > namesInTotal)
-            throw new IllegalArgumentException("N must be greater than 0");
-
-        // Create a list of all language names
-        List<LanguageName> languageNames = new ArrayList<>();
-        Collections.addAll(languageNames, LanguageName.values());
-
-        // Shuffle the list
-        Collections.shuffle(languageNames);
-
-        // Return a sublist of the first N elements
-        return languageNames.subList(0, N);
+        return FactoryUtils.getNRandomUniqueValuesFromEnum(LanguageName.class, N);
     }
 
     public static LanguageProficiency mockEntity(User user) {

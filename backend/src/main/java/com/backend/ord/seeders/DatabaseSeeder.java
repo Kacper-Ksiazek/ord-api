@@ -4,7 +4,7 @@ import com.backend.ord.domain.entities.User;
 import com.backend.ord.enums.LanguageName;
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder;
 import com.backend.ord.seeders.entities.UserSeeder;
-import com.backend.ord.seeders.mocks.LanguageProficiencyFactory;
+import com.backend.ord.seeders.factories.LanguageProficiencyFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 

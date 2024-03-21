@@ -1,4 +1,4 @@
-package com.backend.ord.seeders.mocks;
+package com.backend.ord.seeders.factories;
 
 import com.github.javafaker.Faker;
 
