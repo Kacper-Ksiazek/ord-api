@@ -1,11 +1,9 @@
 package com.backend.ord;
 
-import com.backend.ord.domain.entities.LanguageProficiency;
-import com.backend.ord.domain.entities.User;
-import com.backend.ord.seeders.DatabaseSeeder;
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder;
 import com.backend.ord.seeders.entities.UserSeeder;
 import com.backend.ord.seeders.factories.LanguageProficiencyFactory;
+import com.backend.ord.utils.Console;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,7 +21,9 @@ public class BackendApplication implements CommandLineRunner{
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("Main method running...");
-        System.out.println(LanguageProficiencyFactory.mockUniqueLanguages(3));
+        Console.printCyan("Main application started");
+        Console.addBreakLine(3);
+        //
+        // TODO: something creeezy 🚀
     }
 }
