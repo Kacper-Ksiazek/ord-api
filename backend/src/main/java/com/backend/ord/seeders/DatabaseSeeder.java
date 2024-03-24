@@ -30,10 +30,10 @@ public class DatabaseSeeder implements ApplicationRunner {
         Console.printCyan("Seeding database:\n");
 
         // Step 1: Remove existing data
-        Console.ensureFunctionSuccess("1. Creating users...", this::removeExistingData);
+        Console.ensureFunctionSuccess("1. Removing an existing data...", this::removeExistingData);
 
         // Step 2: Insert data into the database
-        Console.ensureFunctionSuccess("2. Inserting data into database...", this::populateDatabase);
+        Console.ensureFunctionSuccess("2. Inserting new data into database...", this::populateDatabase);
 
         // Add a break line at the end
         Console.addBreakLine(1);

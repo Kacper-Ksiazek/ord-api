@@ -2,16 +2,22 @@ package com.backend.ord;
 
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder;
 import com.backend.ord.seeders.entities.UserSeeder;
-import com.backend.ord.seeders.factories.LanguageProficiencyFactory;
 import com.backend.ord.utils.Console;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.Environment;
+
+import java.util.Objects;
 
 @SpringBootApplication
 @AllArgsConstructor
-public class BackendApplication implements CommandLineRunner{
+public class BackendApplication implements CommandLineRunner {
+    @Autowired
+    private Environment environment;
+
     private final UserSeeder userSeeder;
     private final LanguageProficiencySeeder languageProficiencySeeder;
 
@@ -21,9 +27,21 @@ public class BackendApplication implements CommandLineRunner{
 
     @Override
     public void run(String... args) throws Exception {
-        Console.printCyan("Main application started");
-        Console.addBreakLine(3);
-        //
-        // TODO: something creeezy 🚀
+        Console.printCyan("The main application has started");
+        Console.addBreakLine(1);
+
+        this.verifyEnvironment();
+    }
+
+    private void verifyEnvironment() {
+        Console.ensureFunctionSuccess(
+                "Verify environment",
+                () -> {
+                    String testingProperty = environment.getProperty("ENV_TEST_PROPERTY");
+                    if (!Objects.equals(testingProperty, "1test1")) {
+                        throw new RuntimeException();
+                    }
+                }
+        );
     }
 }
