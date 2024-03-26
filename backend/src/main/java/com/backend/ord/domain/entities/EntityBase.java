@@ -10,16 +10,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.Instant;
 import java.util.UUID;
 
-@MappedSuperclass
 @Getter
 @Setter
+@MappedSuperclass
+@Access(AccessType.FIELD)
 public abstract class EntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
     private UUID id;
 
     @Column(name = "created_at", nullable = false, updatable = false)
