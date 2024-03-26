@@ -12,6 +12,9 @@ import lombok.*;
 @Entity
 @Table(name = "users")
 public class User extends EntityBase {
+    @EqualsAndHashCode.Exclude
     private String name;
+
+    @EqualsAndHashCode.Exclude
     private String email;
 }

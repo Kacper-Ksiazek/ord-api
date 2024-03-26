@@ -9,11 +9,13 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "language_proficiencies")
 public class LanguageProficiency extends EntityBase {
