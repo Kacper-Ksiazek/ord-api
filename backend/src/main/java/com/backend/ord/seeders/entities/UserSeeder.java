@@ -20,6 +20,4 @@ public class UserSeeder implements SeederInterface<User>{
     public void deleteAll() {
         userRepository.deleteAll();
     }
-
-
 }

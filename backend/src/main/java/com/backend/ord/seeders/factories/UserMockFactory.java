@@ -7,6 +7,7 @@ public class UserMockFactory extends AbstractFactory {
         return User.builder()
                 .name(faker.name().fullName())
                 .email(faker.internet().emailAddress())
+                .password(faker.internet().password())
                 .build();
     }
 }

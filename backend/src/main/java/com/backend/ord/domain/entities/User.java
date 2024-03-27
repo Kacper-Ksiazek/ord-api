@@ -2,6 +2,7 @@ package com.backend.ord.domain.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.*;
 
 @Data
@@ -12,9 +13,9 @@ import lombok.*;
 @Entity
 @Table(name = "users")
 public class User extends EntityBase {
-    @EqualsAndHashCode.Exclude
     private String name;
 
-    @EqualsAndHashCode.Exclude
     private String email;
+
+    private String password;
 }
