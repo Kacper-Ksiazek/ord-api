@@ -55,4 +55,12 @@ public final class Console {
             Console.printRed(" ❌ ERROR\n");
         }
     }
+
+    public static void printWithMargin(String message){
+        addBreakLine(2);
+
+        print(message);
+
+        addBreakLine(2);
+    }
 }
