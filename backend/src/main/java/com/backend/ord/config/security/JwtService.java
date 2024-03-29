@@ -1,5 +1,9 @@
 package com.backend.ord.config.security;
 
+import com.backend.ord.domain.entities.UserSession;
+import com.backend.ord.exceptions.JWTTokenIsExpired;
+import com.backend.ord.exceptions.NoCorrespondingUserSessionException;
+import com.backend.ord.services.UserSessionService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,17 +14,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
 public class JwtService {
     private final JwtProperties jwtProperties;
-
 
     public String extractUsername(String jwtToken) {
         return extractClaim(jwtToken, Claims::getSubject);
@@ -37,6 +37,10 @@ public class JwtService {
     public <T> T extractClaim(String jwtToken, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(jwtToken);
         return claimsResolver.apply(claims);
+    }
+
+    public Date extractExpiration(String jwtToken) {
+        return extractClaim(jwtToken, Claims::getExpiration);
     }
 
     public String generateToken(UserDetails userDetails) {
@@ -61,10 +65,6 @@ public class JwtService {
                 .compact();
     }
 
-    public boolean isTokenValid(String jwtToken, UserDetails userDetails) {
-        final String username = extractUsername(jwtToken);
-        return userDetails.getUsername().equals(username) && !isTokenExpired(jwtToken);
-    }
 
     // ----------------
     // ### Private helper methods
@@ -76,16 +76,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    private boolean isTokenExpired(String jwtToken) {
-        Date extractedDate = extractExpiration(jwtToken);
-        assert extractedDate != null;
 
-        return extractedDate.before(new Date());
-    }
-
-    private Date extractExpiration(String jwtToken) {
-        return extractClaim(jwtToken, Claims::getExpiration);
-    }
 
     private Claims extractAllClaims(String jwtToken) {
         return Jwts.parserBuilder()
