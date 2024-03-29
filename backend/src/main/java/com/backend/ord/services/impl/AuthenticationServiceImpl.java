@@ -3,6 +3,7 @@ package com.backend.ord.services.impl;
 import com.backend.ord.api.requests.AuthenticationRequest;
 import com.backend.ord.api.requests.RegisterRequest;
 import com.backend.ord.api.responses.AuthenticationResponse;
+import com.backend.ord.config.security.JwtProperties;
 import com.backend.ord.config.security.JwtService;
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.enums.UserRole;
@@ -14,10 +15,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
+    private final JwtProperties jwtProperties;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -48,7 +52,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 )
         );
 
-        // TODO: Handle those exceptions
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
 
         return getAuthenticationResponse(user);
@@ -56,8 +59,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     // Helper method to generate token
     private AuthenticationResponse getAuthenticationResponse(User user) {
+        // Add extra claims to the JWT token
+        String claimName = jwtProperties.getUserIdClaimName();
+
+        Map<String, Object> extraClaims = Map.of(
+                claimName, user.getId()
+        );
+
         // Generate token
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateToken(extraClaims, user);
 
         // Convert token to response object
         return AuthenticationResponse.builder()

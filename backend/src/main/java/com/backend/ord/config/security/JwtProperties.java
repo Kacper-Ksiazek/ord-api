@@ -19,4 +19,7 @@ public class JwtProperties {
 
     @Pattern(regexp = "[a-zA-Z]+(_[a-zA-Z]+)?")
     private String authCookieName;
+
+    @Pattern(regexp = "[a-zA-Z]+(_[a-zA-Z]+)?")
+    private String userIdClaimName;
 }

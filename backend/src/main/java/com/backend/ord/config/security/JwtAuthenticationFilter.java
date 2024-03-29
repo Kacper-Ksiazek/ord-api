@@ -1,5 +1,7 @@
 package com.backend.ord.config.security;
 
+import com.backend.ord.domain.entities.UserSession;
+import com.backend.ord.utils.Console;
 import com.backend.ord.utils.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,6 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -54,6 +57,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 // Check if a user exists in the database
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+
+                UUID userId = jwtService.extractUserId(jwtToken);
+                Console.printRed("User ID: " + userId);
 
                 // Check if the JWT token is valid
                 if (jwtService.isTokenValid(jwtToken, userDetails)) {

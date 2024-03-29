@@ -13,6 +13,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -20,15 +21,17 @@ import java.util.function.Function;
 public class JwtService {
     private final JwtProperties jwtProperties;
 
-    private Key getSigningKey() {
-        String JWT_SECRET = jwtProperties.getSecretKey();
-
-        byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
 
     public String extractUsername(String jwtToken) {
         return extractClaim(jwtToken, Claims::getSubject);
+    }
+
+    public UUID extractUserId(String jwtToken) {
+        String claimName = jwtProperties.getUserIdClaimName();
+
+        return UUID.fromString(
+                extractClaim(jwtToken, claims -> claims.get(claimName, String.class))
+        );
     }
 
     public <T> T extractClaim(String jwtToken, Function<Claims, T> claimsResolver) {
@@ -61,6 +64,16 @@ public class JwtService {
     public boolean isTokenValid(String jwtToken, UserDetails userDetails) {
         final String username = extractUsername(jwtToken);
         return userDetails.getUsername().equals(username) && !isTokenExpired(jwtToken);
+    }
+
+    // ----------------
+    // ### Private helper methods
+
+    private Key getSigningKey() {
+        String JWT_SECRET = jwtProperties.getSecretKey();
+
+        byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     private boolean isTokenExpired(String jwtToken) {

@@ -14,5 +14,10 @@
       "name": "jwt.auth_cookie_name",
       "type": "java.lang.String",
       "description": "Description for jwt.auth_cookie_name."
+    },
+    {
+      "name": "jwt.user_id_claim_name",
+      "type": "java.lang.String",
+      "description": "Description for jwt.user_id_claim_name."
     }
   ] }
