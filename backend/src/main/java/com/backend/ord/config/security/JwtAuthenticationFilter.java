@@ -1,72 +1,88 @@
 package com.backend.ord.config.security;
 
+import com.backend.ord.utils.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
+    private final JwtProperties jwtProperties;
     private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authorizationHeader = request.getHeader("Authorization");
-        final String jwtToken;
-        final String userEmail;
+        try {
+            // Extract the Authorization cookie from the request
+            Optional<String> authCookieValue = CookieUtils.getCookieValue(
+                    jwtProperties.getAuthCookieName(),
+                    request
+            );
 
-        // Check if the Authorization header is null or does not start with "Bearer "
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            // Then continue to the next filter
-            filterChain.doFilter(request, response);
-            return;
-        }
+            // Check if the cookie value is present
+            if (authCookieValue.isEmpty()) {
+                // Then continue to the next filter
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-        // Otherwise, extract the JWT token from the Authorization header
-        jwtToken = authorizationHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwtToken);
+            // Otherwise assign the cookie value to a variable and extract the user's email
+            String jwtToken = authCookieValue.get();
+            String userEmail = jwtService.extractUsername(jwtToken);
 
-        // Check if the user is currently authenticated
-        if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Check if a user exists in the database
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+            // Check if the user is currently authenticated
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                // Check if a user exists in the database
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
-            // Check if the JWT token is valid
-            if(jwtService.isTokenValid(jwtToken, userDetails)) {
-                // Create an authentication token
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
+                // Check if the JWT token is valid
+                if (jwtService.isTokenValid(jwtToken, userDetails)) {
+                    // Create an authentication token
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
 
-                // Set the authentication token's details
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
+                    // Set the authentication token's details
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
 
-                // Update the SecurityContext with the user's details
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    // Update the SecurityContext with the user's details
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
         }
+        catch (UsernameNotFoundException e) {
+            // If the user is not found, remove the cookie containing the corrupted JWT token
+            CookieUtils.deleteCookie(jwtProperties.getAuthCookieName(), response);
+        }
+        finally {
+            // Continue to the next filter
+            filterChain.doFilter(request, response);
+        }
 
-        // Continue to the next filter
-        filterChain.doFilter(request, response);
+        // TODO: Catch NoCorrespondingSessionException and remove the cookie containing the corrupted JWT token
     }
 }
