@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +16,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
-
-    @Value("${JWT_SECRET_KEY}")
-    private String JWT_SECRET;
-
-    @Value("${JWT_EXPIRATION_TIME}")
-    private int JWT_EXPIRATION_TIME;
+    private final JwtProperties jwtProperties;
 
     private Key getSigningKey() {
+        String JWT_SECRET = jwtProperties.getSecretKey();
+
         byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
@@ -48,6 +46,8 @@ public class JwtService {
     ) {
         // Current time in milliseconds
         final long currentTime = System.currentTimeMillis();
+
+        long JWT_EXPIRATION_TIME = jwtProperties.getExpirationTime();
 
         return Jwts.builder()
                 .setClaims(extraClaims)
