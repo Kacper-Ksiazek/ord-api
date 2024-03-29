@@ -1,6 +1,8 @@
 package com.backend.ord.config.security;
 
 import com.backend.ord.domain.entities.UserSession;
+import com.backend.ord.exceptions.NoCorrespondingUserSessionException;
+import com.backend.ord.services.UserSessionService;
 import com.backend.ord.utils.Console;
 import com.backend.ord.utils.CookieUtils;
 import jakarta.servlet.FilterChain;
@@ -27,7 +29,9 @@ import java.util.UUID;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
+
     private final UserDetailsService userDetailsService;
+    private final UserSessionService userSessionService;
 
     @Override
     protected void doFilterInternal(
@@ -58,8 +62,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Check if a user exists in the database
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
+                // Check if there is a corresponding session in the database
                 UUID userId = jwtService.extractUserId(jwtToken);
-                Console.printRed("User ID: " + userId);
+                Optional<UserSession> correspondingSession = userSessionService.findByTokenAndUserId(jwtToken, userId);
+
+                if (correspondingSession.isEmpty()) {
+                    throw new NoCorrespondingUserSessionException("No corresponding session found for the user");
+                }
 
                 // Check if the JWT token is valid
                 if (jwtService.isTokenValid(jwtToken, userDetails)) {
@@ -80,15 +89,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
-        catch (UsernameNotFoundException e) {
-            // If the user is not found, remove the cookie containing the corrupted JWT token
+        // If either the user is not found or there is no corresponding session, delete the cookie
+        catch (UsernameNotFoundException | NoCorrespondingUserSessionException e) {
             CookieUtils.deleteCookie(jwtProperties.getAuthCookieName(), response);
-        }
-        finally {
+        } finally {
             // Continue to the next filter
             filterChain.doFilter(request, response);
         }
-
-        // TODO: Catch NoCorrespondingSessionException and remove the cookie containing the corrupted JWT token
     }
 }

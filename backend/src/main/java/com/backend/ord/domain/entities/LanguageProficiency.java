@@ -2,12 +2,8 @@ package com.backend.ord.domain.entities;
 
 import com.backend.ord.enums.LanguageName;
 import com.backend.ord.enums.LanguageProficiencyLevel;
-import com.backend.ord.enums.converters.LanguageNameConverter;
-import com.backend.ord.enums.converters.LanguageProficiencyLevelConverter;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.UUID;
 
 @Getter
 @Setter
