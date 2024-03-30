@@ -1,15 +1,15 @@
 package com.backend.ord.config.security;
 
-import com.backend.ord.domain.entities.UserSession;
-import com.backend.ord.exceptions.JWTTokenIsExpired;
-import com.backend.ord.exceptions.NoCorrespondingUserSessionException;
-import com.backend.ord.services.UserSessionService;
+import com.backend.ord.domain.entities.User;
+import com.backend.ord.services.UserService;
+import com.backend.ord.utils.CookieUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,23 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
+    private final UserService userService;
     private final JwtProperties jwtProperties;
+
+    public Optional<String> getJWTFromRequest(HttpServletRequest request) {
+        return CookieUtils.getCookieValue(
+                jwtProperties.getAuthCookieName(),
+                request
+        );
+    }
+
+    public Optional<User> getAuthenticatedUser(HttpServletRequest request) {
+        Optional<String> jwtToken = getJWTFromRequest(request);
+
+        if (jwtToken.isEmpty()) return Optional.empty();
+
+        return userService.findUserByAuthToken(jwtToken.get());
+    }
 
     public String extractUsername(String jwtToken) throws ExpiredJwtException {
         return extractClaim(jwtToken, Claims::getSubject);
@@ -76,7 +92,6 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
 
 
     private Claims extractAllClaims(String jwtToken) {

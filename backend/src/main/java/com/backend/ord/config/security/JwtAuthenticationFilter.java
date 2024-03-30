@@ -6,7 +6,6 @@ import com.backend.ord.exceptions.NoCorrespondingUserSessionException;
 import com.backend.ord.exceptions.UserNotFoundException;
 import com.backend.ord.services.UserService;
 import com.backend.ord.services.UserSessionService;
-import com.backend.ord.utils.Console;
 import com.backend.ord.utils.CookieUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -45,16 +43,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        RequestWithMutableAuthCookie requestWithMutableAuthCookie = new RequestWithMutableAuthCookie(
+                request,
+                jwtProperties.getAuthCookieName()
+        );
+
         // Check if the authentication cookie has been received
-        CookieUtils.getCookieValue(
-                jwtProperties.getAuthCookieName(),
-                request
-        ).ifPresent(jwtToken -> {
+        jwtService.getJWTFromRequest(request).ifPresent(jwtToken -> {
                     // Authenticate the user using the JWT token
                     handleJwtAuthenticationFilter(
                             jwtToken,
                             request,
-                            response
+                            response,
+                            requestWithMutableAuthCookie
                     );
                 }
         );
@@ -66,7 +67,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void handleJwtAuthenticationFilter(
             String jwtToken,
             HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletResponse response,
+            RequestWithMutableAuthCookie requestWithMutableAuthCookie
     ) {
         try {
             // Validate the JWT token
@@ -94,7 +96,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Get the user associated with the expired JWT token
             userService.findUserByAuthToken(jwtToken).ifPresent(user -> {
                 // Generate a new JWT token for the user
-                renewUserSession(user, request, response);
+                renewUserSession(user, request, response, requestWithMutableAuthCookie);
+
                 // Remove previous session from the database
                 removePreviousSession(jwtToken);
             });
@@ -110,12 +113,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void renewUserSession(
             User user,
             HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletResponse response,
+            RequestWithMutableAuthCookie requestWithMutableAuthCookie
     ) {
         try {
-            jwtFactory.createTokenForUser(user, response);
+            // Generate a new JWT token for the user
+            String newJwtToken = jwtFactory.createTokenForUser(user, response).getToken();
 
+            // Update the SecurityContext with the user's details
             updateSecurityContext(user.getEmail(), request);
+
+            // Update the cookie header in the request in order for subsequent filters and controllers to use the new token
+            requestWithMutableAuthCookie.setAuthCookieValue(newJwtToken);
         } catch (UserNotFoundException e) {
             return;
         }
