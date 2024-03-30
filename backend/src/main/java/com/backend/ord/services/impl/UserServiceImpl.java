@@ -1,8 +1,11 @@
 package com.backend.ord.services.impl;
 
 import com.backend.ord.domain.entities.User;
+import com.backend.ord.domain.entities.UserSession;
 import com.backend.ord.repositories.UserRepository;
+import com.backend.ord.repositories.UserSessionRepository;
 import com.backend.ord.services.UserService;
+import com.backend.ord.services.UserSessionService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import java.util.stream.StreamSupport;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserSessionRepository userSessionRepository;
 
     @Override
     public List<User> getAll() {
@@ -33,5 +37,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> findUserByAuthToken(String authToken) {
+        return userSessionRepository.findByToken(authToken)
+                .map(UserSession::getUser);
     }
 }

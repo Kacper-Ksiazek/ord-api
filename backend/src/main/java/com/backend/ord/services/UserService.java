@@ -11,4 +11,6 @@ public interface UserService {
     Optional<User> findById(UUID id);
 
     User save(User user);
+
+    Optional<User> findUserByAuthToken(String authToken);
 }

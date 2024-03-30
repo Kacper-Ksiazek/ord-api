@@ -21,54 +21,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
     private final AuthenticationService authService;
-    private final UserSessionService userSessionService;
-
-    private final JwtProperties jwtProperties;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request,
             HttpServletResponse response
-    ) throws UserNotFoundException {
-        // Handle registration
-        AuthenticationResponse registerResult = authService.register(request);
-        String token = registerResult.getToken();
+    ) {
+        try {
+            AuthenticationResponse registerResult = authService.register(request, response);
 
-        // Create cookie
-        createCookie(token, response);
-
-        // Create new user session
-        createNewUserSession(token);
-
-        // Return response
-        return ResponseEntity.ok(registerResult);
+            return ResponseEntity.ok(registerResult);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody AuthenticationRequest request,
             HttpServletResponse response
-    ) throws UserNotFoundException {
-        // Handle login
-        AuthenticationResponse loginResult = authService.login(request);
-        String token = loginResult.getToken();
+    ) {
+        try {
+            AuthenticationResponse loginResult = authService.login(request, response);
 
-        // Create cookie
-        createCookie(token, response);
-
-        // Create new user session
-        createNewUserSession(token);
-
-        // Return response
-        return ResponseEntity.ok(loginResult);
+            return ResponseEntity.ok(loginResult);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    private void createCookie(String token, HttpServletResponse response) {
-        String cookieName = jwtProperties.getAuthCookieName();
-        CookieUtils.createCookie(cookieName, token, response);
-    }
-
-    private void createNewUserSession(String token) throws UserNotFoundException {
-        userSessionService.openSessionFromJWT(token);
-    }
 }

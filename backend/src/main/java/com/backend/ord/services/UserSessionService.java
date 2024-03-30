@@ -14,4 +14,6 @@ public interface UserSessionService {
     Optional<UserSession> findByTokenAndUserId(String token, UUID userId);
 
     void openSessionFromJWT(String token) throws UserNotFoundException;
+
+    void deleteSessionByToken(String authToken);
 }

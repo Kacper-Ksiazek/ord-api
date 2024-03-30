@@ -26,18 +26,26 @@ public class JwtTokenValidator {
             NoCorrespondingUserSessionException {
         final String username = jwtService.extractUsername(jwtToken);
 
-        // Check if the token is expired
-        if (isTokenExpired(jwtToken)) {
-            throw new JWTTokenIsExpired("The JWT token has expired");
-        }
-
         // Check if the token has a corresponding session
-        if (isTokenMissingCorrespondingSession(jwtToken)) {
-            throw new NoCorrespondingUserSessionException("No corresponding session found for the user");
-        }
+        validateCorrespondingSession(jwtToken);
+
+        // Check if the token is expired
+        validateTokenExpiration(jwtToken);
 
         // Check if the token's username matches the user's username
         return userDetails.getUsername().equals(username);
+    }
+
+    public void validateCorrespondingSession(String jwtToken) throws NoCorrespondingUserSessionException {
+        if (isTokenMissingCorrespondingSession(jwtToken)) {
+            throw new NoCorrespondingUserSessionException("No corresponding session found for the user");
+        }
+    }
+
+    public void validateTokenExpiration(String jwtToken) throws JWTTokenIsExpired {
+        if (isTokenExpired(jwtToken)) {
+            throw new JWTTokenIsExpired("The JWT token has expired");
+        }
     }
 
     private boolean isTokenMissingCorrespondingSession(String jwtToken) {

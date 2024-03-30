@@ -1,7 +1,11 @@
 package com.backend.ord.config.security;
 
+import com.backend.ord.domain.entities.User;
 import com.backend.ord.exceptions.JWTTokenIsExpired;
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException;
+import com.backend.ord.exceptions.UserNotFoundException;
+import com.backend.ord.services.UserService;
+import com.backend.ord.services.UserSessionService;
 import com.backend.ord.utils.Console;
 import com.backend.ord.utils.CookieUtils;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -26,11 +30,14 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private final JwtFactory jwtFactory;
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
     private final JwtTokenValidator jwtTokenValidator;
 
+    private final UserService userService;
     private final UserDetailsService userDetailsService;
+    private final UserSessionService userSessionService;
 
     @Override
     protected void doFilterInternal(
@@ -38,58 +45,97 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        // Declare the variables to store the JWT token and the user's email
-        String jwtToken;
-        String userEmail;
-        UserDetails userDetails;
+        // Check if the authentication cookie has been received
+        CookieUtils.getCookieValue(
+                jwtProperties.getAuthCookieName(),
+                request
+        ).ifPresent(jwtToken -> {
+                    // Authenticate the user using the JWT token
+                    handleJwtAuthenticationFilter(
+                            jwtToken,
+                            request,
+                            response
+                    );
+                }
+        );
 
+        // Continue to the next filter
+        filterChain.doFilter(request, response);
+    }
+
+    private void handleJwtAuthenticationFilter(
+            String jwtToken,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
         try {
-            // Extract the Authorization cookie from the request
-            Optional<String> authCookieValue = CookieUtils.getCookieValue(
-                    jwtProperties.getAuthCookieName(),
-                    request
-            );
+            // Validate the JWT token
+            jwtTokenValidator.validateCorrespondingSession(jwtToken);
 
-            // Check if the cookie value is present
-            if (authCookieValue.isEmpty()) {
-                // Then continue to the next filter
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            // Otherwise assign the cookie value to a variable and extract the user's email
-            jwtToken = authCookieValue.get();
-            userEmail = jwtService.extractUsername(jwtToken);
+            // Extract the user's email from the JWT token
+            String userEmail = jwtService.extractUsername(jwtToken);
 
             // Check if the user is currently authenticated
-            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                // Check if a user exists in the database
-                userDetails = userDetailsService.loadUserByUsername(userEmail);
+            if (checkIfUserIsNotAuthenticated()) {
+                UserDetails userDetails = getUserDetails(jwtToken);
 
                 // Check if the JWT token is valid
                 if (jwtTokenValidator.validate(jwtToken, userDetails)) {
-                    // Authenticate the user
-                    authenticateUser(userDetails, request);
+                    updateSecurityContext(userDetails, request);
                 }
             }
         }
-
         // If either the user is not found or there is no corresponding session, delete the cookie
-        catch (UsernameNotFoundException | NoCorrespondingUserSessionException e) {
-            CookieUtils.deleteCookie(jwtProperties.getAuthCookieName(), response);
+        catch (NoCorrespondingUserSessionException | UsernameNotFoundException e) {
+            deleteCookieWithToken(response);
         }
-        // If the JWT token has expired, TODO: RENEW the session, update the cookie and authenticate the user again
+        // If the session has expired, renew it
         catch (JWTTokenIsExpired | ExpiredJwtException e) {
-            Console.printRed("The JWT token has expired");
-        }
-        // Eventually, proceed to the next filter
-        finally {
-            // Continue to the next filter
-            filterChain.doFilter(request, response);
+            // Get the user associated with the expired JWT token
+            userService.findUserByAuthToken(jwtToken).ifPresent(user -> {
+                // Generate a new JWT token for the user
+                renewUserSession(user, request, response);
+                // Remove previous session from the database
+                removePreviousSession(jwtToken);
+            });
+
+
         }
     }
 
-    private void authenticateUser(
+    private void removePreviousSession(String jwtToken) {
+        userSessionService.deleteSessionByToken(jwtToken);
+    }
+
+    private void renewUserSession(
+            User user,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        try {
+            jwtFactory.createTokenForUser(user, response);
+
+            updateSecurityContext(user.getEmail(), request);
+        } catch (UserNotFoundException e) {
+            return;
+        }
+    }
+
+    private void deleteCookieWithToken(HttpServletResponse response) {
+        CookieUtils.deleteCookie(jwtProperties.getAuthCookieName(), response);
+    }
+
+    private UserDetails getUserDetails(String jwtToken) {
+        return userDetailsService.loadUserByUsername(
+                jwtService.extractUsername(jwtToken)
+        );
+    }
+
+    private boolean checkIfUserIsNotAuthenticated() {
+        return SecurityContextHolder.getContext().getAuthentication() == null;
+    }
+
+    private void updateSecurityContext(
             String userEmail,
             HttpServletRequest request
     ) {
@@ -97,10 +143,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
         // Authenticate the user
-        authenticateUser(userDetails, request);
+        updateSecurityContext(userDetails, request);
     }
 
-    private void authenticateUser(
+    private void updateSecurityContext(
             UserDetails userDetails,
             HttpServletRequest request
     ) {

@@ -5,6 +5,7 @@ import com.backend.ord.exceptions.JWTTokenIsExpired;
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException;
 import com.backend.ord.services.UserSessionService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -22,7 +23,7 @@ import java.util.function.Function;
 public class JwtService {
     private final JwtProperties jwtProperties;
 
-    public String extractUsername(String jwtToken) {
+    public String extractUsername(String jwtToken) throws ExpiredJwtException {
         return extractClaim(jwtToken, Claims::getSubject);
     }
 

@@ -47,4 +47,9 @@ public class UserSessionServiceImpl implements UserSessionService {
                 .build()
         );
     }
+
+    @Override
+    public void deleteSessionByToken(String authToken) {
+        userSessionRepository.deleteById(authToken);
+    }
 }
