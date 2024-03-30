@@ -18,15 +18,26 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
+    private static final String[] ANONYMOUS_PATHS = {
+            "/api/v1/auth/login",
+            "/api/v1/auth/register"
+    };
+
+    private static final String[] AUTHORIZED_PATHS = {
+            "/api/v1/auth/logout",
+            "/api/v1/auth/current-user-info",
+            "/api/v1/users/"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers("/api/v1/auth/**")
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated()
+                        req -> req
+                                .requestMatchers(ANONYMOUS_PATHS).anonymous()
+                                .requestMatchers(AUTHORIZED_PATHS).authenticated()
+                                .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
