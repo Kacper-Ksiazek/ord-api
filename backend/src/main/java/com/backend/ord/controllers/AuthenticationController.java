@@ -27,28 +27,30 @@ public class AuthenticationController {
     private final AuthenticationService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(
+    public ResponseEntity<UserDTO> register(
             @RequestBody RegisterRequest request,
             HttpServletResponse response
     ) {
         try {
-            authService.register(request, response);
+            User user = authService.register(request, response);
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            // Return HTTP 201 Created with user data
+            return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDTO(user));
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(
+    public ResponseEntity<UserDTO> login(
             @RequestBody AuthenticationRequest request,
             HttpServletResponse response
     ) {
         try {
-            authService.login(request, response);
+            User user = authService.login(request, response);
 
-            return ResponseEntity.ok().build();
+            // Return HTTP 200 OK with user data
+            return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().build();
         }

@@ -2,7 +2,6 @@ package com.backend.ord.services.impl;
 
 import com.backend.ord.api.requests.AuthenticationRequest;
 import com.backend.ord.api.requests.RegisterRequest;
-import com.backend.ord.api.responses.AuthenticationResponse;
 import com.backend.ord.config.security.JwtFactory;
 import com.backend.ord.config.security.JwtProperties;
 import com.backend.ord.config.security.JwtService;
@@ -35,27 +34,31 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserSessionService userSessionService;
 
     @Override
-    public AuthenticationResponse register(
+    public User register(
             RegisterRequest request,
             HttpServletResponse response
     ) throws UserNotFoundException {
-        // Create user object
-        User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(UserRole.USER)
-                .build();
-
         // Save user to database
-        userRepository.save(user);
+        User user = userRepository.save(
+                // Create user object
+                User.builder()
+                        .name(request.getName())
+                        .email(request.getEmail())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .role(UserRole.USER)
+                        .build()
 
-        return jwtFactory.createTokenForUser(user, response);
+        );
+
+        // Generate and assign a JWT token
+        jwtFactory.createTokenForUser(user, response);
+
+        return user;
     }
 
 
     @Override
-    public AuthenticationResponse login(
+    public User login(
             AuthenticationRequest request,
             HttpServletResponse response
     ) throws UserNotFoundException {
@@ -68,7 +71,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
 
-        return jwtFactory.createTokenForUser(user, response);
+        jwtFactory.createTokenForUser(user, response);
+
+        return user;
     }
 
     @Override
