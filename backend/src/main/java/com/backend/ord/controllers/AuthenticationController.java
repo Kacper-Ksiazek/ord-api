@@ -6,6 +6,7 @@ import com.backend.ord.config.security.JwtService;
 import com.backend.ord.domain.dto.UserDTO;
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.domain.mappers.UserMapper;
+import com.backend.ord.exceptions.ForbiddenException;
 import com.backend.ord.exceptions.UserNotFoundException;
 import com.backend.ord.services.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,6 +52,22 @@ public class AuthenticationController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @DeleteMapping("/logout")
+    public ResponseEntity<Void> logout(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        try {
+            authService.logout(request, response);
+            return ResponseEntity.ok().build();
+        }
+        //
+        catch (ForbiddenException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
     }
 
     @GetMapping("/current-user-info")
