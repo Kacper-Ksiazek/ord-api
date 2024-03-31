@@ -1,7 +1,6 @@
 package com.backend.ord.config.security;
 
 import com.backend.ord.domain.entities.User;
-import com.backend.ord.exceptions.JWTTokenIsExpired;
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException;
 import com.backend.ord.exceptions.UserNotFoundException;
 import com.backend.ord.services.UserService;
@@ -92,7 +91,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             deleteCookieWithToken(response);
         }
         // If the session has expired, renew it
-        catch (JWTTokenIsExpired | ExpiredJwtException e) {
+        catch (ExpiredJwtException e) {
             // Get the user associated with the expired JWT token
             userService.findUserByAuthToken(jwtToken).ifPresent(user -> {
                 // Generate a new JWT token for the user

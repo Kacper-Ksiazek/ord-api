@@ -1,9 +1,9 @@
 package com.backend.ord.config.security;
 
 import com.backend.ord.domain.entities.UserSession;
-import com.backend.ord.exceptions.JWTTokenIsExpired;
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException;
 import com.backend.ord.services.UserSessionService;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -21,9 +21,7 @@ public class JwtTokenValidator {
     public boolean validate(
             String jwtToken,
             UserDetails userDetails
-    ) throws
-            JWTTokenIsExpired,
-            NoCorrespondingUserSessionException {
+    ) throws NoCorrespondingUserSessionException {
         final String username = jwtService.extractUsername(jwtToken);
 
         // Check if the token has a corresponding session
@@ -42,9 +40,9 @@ public class JwtTokenValidator {
         }
     }
 
-    public void validateTokenExpiration(String jwtToken) throws JWTTokenIsExpired {
+    public void validateTokenExpiration(String jwtToken) throws ExpiredJwtException {
         if (isTokenExpired(jwtToken)) {
-            throw new JWTTokenIsExpired("The JWT token has expired");
+            throw new ExpiredJwtException(null, null, "Token has expired");
         }
     }
 
