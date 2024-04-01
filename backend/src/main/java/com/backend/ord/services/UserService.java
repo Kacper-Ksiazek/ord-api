@@ -13,4 +13,6 @@ public interface UserService {
     User save(User user);
 
     Optional<User> findUserByAuthToken(String authToken);
+
+    Optional<User> findUserByEmail(String email);
 }

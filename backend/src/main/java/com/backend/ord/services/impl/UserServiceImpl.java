@@ -44,4 +44,9 @@ public class UserServiceImpl implements UserService {
         return userSessionRepository.findByToken(authToken)
                 .map(UserSession::getUser);
     }
+
+    @Override
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }

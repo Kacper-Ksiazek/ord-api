@@ -22,4 +22,13 @@ public class UserMockFactory extends AbstractFactory {
                 .role(UserRole.USER)
                 .build();
     }
+
+    public User mockEntityWithCredentials(String email, String password) {
+        return User.builder()
+                .name(faker.name().fullName())
+                .email(email)
+                .password(passwordEncoder.encode(password))
+                .role(UserRole.USER)
+                .build();
+    }
 }

@@ -17,6 +17,10 @@ public class UserSeeder implements SeederInterface<User>{
         return userRepository.save(userMockFactory.mockEntity());
     }
 
+    public User insertRowWithCredentials(String email, String password) {
+        return userRepository.save(userMockFactory.mockEntityWithCredentials(email, password));
+    }
+
     @Override
     public void deleteAll() {
         userRepository.deleteAll();
