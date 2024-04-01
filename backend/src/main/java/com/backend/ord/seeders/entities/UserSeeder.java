@@ -10,10 +10,11 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class UserSeeder implements SeederInterface<User>{
     private final UserRepository userRepository;
+    private final UserMockFactory userMockFactory;
 
     @Override
     public User insertRow() {
-        return userRepository.save(UserMockFactory.mockEntity());
+        return userRepository.save(userMockFactory.mockEntity());
     }
 
     @Override
