@@ -1,6 +1,6 @@
 package com.backend.ord.controllers;
 
-import com.backend.ord.api.requests.AuthenticationRequest;
+import com.backend.ord.api.requests.LoginRequest;
 import com.backend.ord.api.requests.RegisterRequest;
 import com.backend.ord.config.security.JwtService;
 import com.backend.ord.domain.dto.UserDTO;
@@ -43,7 +43,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<UserDTO> login(
-            @RequestBody AuthenticationRequest request,
+            @RequestBody LoginRequest request,
             HttpServletResponse response
     ) {
         try {

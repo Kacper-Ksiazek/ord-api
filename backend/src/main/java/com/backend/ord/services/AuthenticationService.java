@@ -1,6 +1,6 @@
 package com.backend.ord.services;
 
-import com.backend.ord.api.requests.AuthenticationRequest;
+import com.backend.ord.api.requests.LoginRequest;
 import com.backend.ord.api.requests.RegisterRequest;
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.exceptions.ForbiddenException;
@@ -15,7 +15,7 @@ public interface AuthenticationService {
     ) throws UserNotFoundException;
 
     User login(
-            AuthenticationRequest request,
+            LoginRequest request,
             HttpServletResponse response
     ) throws UserNotFoundException;
 

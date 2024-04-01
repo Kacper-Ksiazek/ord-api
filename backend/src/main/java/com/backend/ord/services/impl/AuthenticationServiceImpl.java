@@ -1,6 +1,6 @@
 package com.backend.ord.services.impl;
 
-import com.backend.ord.api.requests.AuthenticationRequest;
+import com.backend.ord.api.requests.LoginRequest;
 import com.backend.ord.api.requests.RegisterRequest;
 import com.backend.ord.config.security.JwtFactory;
 import com.backend.ord.config.security.JwtProperties;
@@ -59,7 +59,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public User login(
-            AuthenticationRequest request,
+            LoginRequest request,
             HttpServletResponse response
     ) throws UserNotFoundException {
         authenticationManager.authenticate(
