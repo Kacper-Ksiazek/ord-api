@@ -117,7 +117,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) {
         try {
             // Generate a new JWT token for the user
-            String newJwtToken = jwtFactory.createTokenForUser(user, response).getToken();
+            String newJwtToken = jwtFactory.createTokenForUser(user, response);
 
             // Update the SecurityContext with the user's details
             updateSecurityContext(user.getEmail(), request);

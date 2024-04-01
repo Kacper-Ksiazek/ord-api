@@ -1,6 +1,5 @@
 package com.backend.ord.config.security;
 
-import com.backend.ord.api.responses.AuthenticationResponse;
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.exceptions.UserNotFoundException;
 import com.backend.ord.services.UserSessionService;
@@ -20,7 +19,7 @@ public class JwtFactory {
     private final UserSessionService userSessionService;
 
 
-    public AuthenticationResponse createTokenForUser(
+    public String createTokenForUser(
             User user,
             HttpServletResponse response
     ) throws UserNotFoundException {
@@ -36,10 +35,8 @@ public class JwtFactory {
         // Create new user session
         createNewUserSession(token);
 
-        // Convert token to response object
-        return AuthenticationResponse.builder()
-                .token(token)
-                .build();
+        // Return generated JWT token
+        return token;
     }
 
     // ### Helpers
