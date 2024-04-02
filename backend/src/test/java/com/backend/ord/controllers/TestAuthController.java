@@ -3,10 +3,11 @@ package com.backend.ord.controllers;
 import com.backend.ord.api.requests.LoginRequest;
 import com.backend.ord.api.requests.RegisterRequest;
 import com.backend.ord.config.security.JwtProperties;
+import com.backend.ord.controllers.utils.ControllerTestBase;
+import com.backend.ord.controllers.utils.MockedAuthenticatedUser;
 import com.backend.ord.domain.dto.UserDTO;
 import com.backend.ord.domain.entities.UserSession;
 import com.backend.ord.seeders.entities.UserSeeder;
-import com.backend.ord.seeders.factories.UserMockFactory;
 import com.backend.ord.services.UserService;
 import com.backend.ord.services.UserSessionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,13 +36,10 @@ import java.util.Optional;
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class TestAuthController {
-    private final MockMvc mockMvc;
-    private final ObjectMapper objectMapper;
+public class TestAuthController extends ControllerTestBase {
     private final JwtProperties jwtProperties;
     private final UserSessionService userSessionService;
     private final UserService userService;
-
     private final UserSeeder userSeeder;
 
 
@@ -50,13 +48,45 @@ public class TestAuthController {
     private final String BASE_URL = "/api/v1/auth";
 
     @Autowired
-    public TestAuthController(MockMvc mockMvc, ObjectMapper objectMapper, JwtProperties jwtProperties, UserMockFactory userMockFactory, UserSessionService userSessionService, UserService userService, UserSeeder userSeeder) {
-        this.mockMvc = mockMvc;
-        this.objectMapper = objectMapper;
+    public TestAuthController(MockMvc mockMvc,
+                              ObjectMapper objectMapper,
+                              JwtProperties jwtProperties,
+                              UserSessionService userSessionService,
+                              UserService userService,
+                              UserSeeder userSeeder
+    ) {
+        super(mockMvc, objectMapper, jwtProperties);
+
+        this.userSeeder = userSeeder;
+        this.userService = userService;
         this.jwtProperties = jwtProperties;
         this.userSessionService = userSessionService;
-        this.userService = userService;
-        this.userSeeder = userSeeder;
+    }
+
+    @Test
+    public void testControllerTestBaseAuthentication() throws Exception {
+        // This method already ensures that cookie is not null
+        MockedAuthenticatedUser authenticatedUser = this.mockedAuthenticatedUser();
+        assert authenticatedUser != null;
+
+        // Assert a session is created
+        assertUserSessionHasBeenCreated(authenticatedUser.getToken(), authenticatedUser.getEmail());
+
+        // Prepare a request to /current-user-info
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(BASE_URL + "/current-user-info")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
+
+        // Without providing the cookie token, /current-user-info should return 403
+        mockMvc.perform(request).andExpect(
+                MockMvcResultMatchers.status().isForbidden()
+        );
+
+        // But with the cookie token, it should return 200
+        MockHttpServletRequestBuilder requestWithCookie = request.cookie(authenticatedUser.getAuthCookie());
+        mockMvc.perform(requestWithCookie).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
     }
 
     @Test
@@ -123,13 +153,17 @@ public class TestAuthController {
     }
 
     private void assertResponseContainsProperInformationAboutTheUser(MockHttpServletResponse response) throws UnsupportedEncodingException, JsonProcessingException {
-        val data = ControllersTestingUtils.getResponseBody(response, new TypeReference<UserDTO>() {
+        val data = getResponseBody(response, new TypeReference<UserDTO>() {
         });
         assert data.getClass().equals(UserDTO.class);
         assert data.getEmail().equals(EMAIL);
     }
 
     private void assertUserSessionHasBeenCreated(String token) {
+        this.assertUserSessionHasBeenCreated(token, EMAIL);
+    }
+
+    private void assertUserSessionHasBeenCreated(String token, String email) {
         Optional<UserSession> correspondingSession = userSessionService.findByToken(token);
         assert correspondingSession.isPresent();
 
@@ -137,7 +171,7 @@ public class TestAuthController {
         assert correspondingSession.get().getToken().equals(token);
 
         // Assert the correct user id is associated with the session
-        assert correspondingSession.get().getUser().getEmail().equals(EMAIL);
+        assert correspondingSession.get().getUser().getEmail().equals(email);
     }
 
     private String assertAuthCookieIsSet(MockHttpServletResponse response) {
