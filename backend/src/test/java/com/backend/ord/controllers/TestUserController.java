@@ -1,5 +1,7 @@
 package com.backend.ord.controllers;
 
+import com.backend.ord.config.security.JwtProperties;
+import com.backend.ord.controllers.utils.ControllerTestBase;
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.utils.Console;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -27,14 +29,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class TestUserController {
-    private final MockMvc mockMvc;
-
+public class TestUserController extends ControllerTestBase {
     private static final String BASE_URL = "/users";
 
     @Autowired
-    public TestUserController(MockMvc mockMvc) {
-        this.mockMvc = mockMvc;
+    protected TestUserController(MockMvc mockMvc, ObjectMapper objectMapper, JwtProperties jwtProperties) {
+        super(mockMvc, objectMapper, jwtProperties);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class TestUserController {
                 MockMvcResultMatchers.status().isOk()
         ).andReturn();
 
-        List<User> parsed = ControllersTestingUtils.getResponseBody(response, new TypeReference<List<User>>() {});
+        List<User> parsed = getResponseBody(response, new TypeReference<List<User>>() {});
 
         for (User user : parsed) {
             assertThat(user.getId()).isNotNull();

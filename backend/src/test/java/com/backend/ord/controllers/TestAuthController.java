@@ -73,7 +73,7 @@ public class TestAuthController extends ControllerTestBase {
         assertUserSessionHasBeenCreated(authenticatedUser.getToken(), authenticatedUser.getEmail());
 
         // Prepare a request to /current-user-info
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(BASE_URL + "/current-user-info")
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(BASE_URL + "/me")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
 
@@ -140,6 +140,7 @@ public class TestAuthController extends ControllerTestBase {
         // Perform all kinds of needed assertions
         validateLoginOrRegisterResponse(response);
     }
+
 
     private void validateLoginOrRegisterResponse(MockHttpServletResponse response) throws UnsupportedEncodingException, JsonProcessingException {
         // Assert a cookie is set

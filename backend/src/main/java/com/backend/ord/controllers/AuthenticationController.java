@@ -72,7 +72,7 @@ public class AuthenticationController {
 
     }
 
-    @GetMapping("/current-user-info")
+    @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentlyLoggedInUser(
             HttpServletRequest request
     ) {
