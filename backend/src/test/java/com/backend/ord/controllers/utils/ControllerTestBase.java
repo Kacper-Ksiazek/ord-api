@@ -33,7 +33,10 @@ public abstract class ControllerTestBase {
 
     public MockedAuthenticatedUser mockedAuthenticatedUser() throws Exception {
         final String AUTH_USER_EMAIL_ADDRESS = "random.authenticated.email@gmail.com";
+        return mockedAuthenticatedUser(AUTH_USER_EMAIL_ADDRESS);
+    }
 
+    public MockedAuthenticatedUser mockedAuthenticatedUser(String email) throws Exception {
         // Create a request
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -42,7 +45,7 @@ public abstract class ControllerTestBase {
                         objectMapper.writeValueAsString(
                                 RegisterRequest.builder()
                                         .name("Test User")
-                                        .email(AUTH_USER_EMAIL_ADDRESS)
+                                        .email(email)
                                         .password("qwerty123")
                                         .build()
                         )
@@ -63,8 +66,9 @@ public abstract class ControllerTestBase {
                 .token(authCookie.getValue())
                 .userInfo(userInfo)
                 .authCookie(authCookie)
-                .email(AUTH_USER_EMAIL_ADDRESS)
+                .email(email)
                 .build();
+
     }
 
     public <T> T getResponseBody(MvcResult result, TypeReference<T> responseType) throws UnsupportedEncodingException, JsonProcessingException {

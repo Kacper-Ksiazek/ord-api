@@ -12,10 +12,12 @@ import com.backend.ord.services.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.crypto.Data;
 import java.util.Optional;
 
 @RestController
@@ -36,7 +38,7 @@ public class AuthenticationController {
 
             // Return HTTP 201 Created with user data
             return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDTO(user));
-        } catch (UserNotFoundException e) {
+        } catch (UserNotFoundException | DataIntegrityViolationException e) {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -48,7 +50,6 @@ public class AuthenticationController {
     ) {
         try {
             User user = authService.login(request, response);
-
             // Return HTTP 200 OK with user data
             return ResponseEntity.status(HttpStatus.OK).body(userMapper.toDTO(user));
         } catch (UserNotFoundException e) {

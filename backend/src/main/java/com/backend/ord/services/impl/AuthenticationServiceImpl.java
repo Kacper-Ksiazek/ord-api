@@ -62,14 +62,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             LoginRequest request,
             HttpServletResponse response
     ) throws UserNotFoundException {
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(UserNotFoundException::new);
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
-
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
 
         jwtFactory.createTokenForUser(user, response);
 
