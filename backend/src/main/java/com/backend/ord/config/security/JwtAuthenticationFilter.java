@@ -1,5 +1,6 @@
 package com.backend.ord.config.security;
 
+import com.backend.ord.config.properties.JwtProperties;
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException;
 import com.backend.ord.exceptions.UserNotFoundException;

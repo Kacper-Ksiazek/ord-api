@@ -1,9 +1,8 @@
 package com.backend.ord.controllers;
 
-import com.backend.ord.config.security.JwtProperties;
+import com.backend.ord.config.properties.JwtProperties;
 import com.backend.ord.controllers.utils.ControllerTestBase;
 import com.backend.ord.domain.entities.User;
-import com.backend.ord.utils.Console;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
