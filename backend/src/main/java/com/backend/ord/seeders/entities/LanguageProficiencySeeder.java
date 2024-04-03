@@ -5,17 +5,15 @@ import com.backend.ord.domain.entities.User;
 import com.backend.ord.enums.LanguageName;
 import com.backend.ord.repositories.LanguageProficiencyRepository;
 import com.backend.ord.seeders.factories.LanguageProficiencyFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class LanguageProficiencySeeder implements SeederInterface<LanguageProficiency> {
-    private final LanguageProficiencyRepository languageProficiencyRepository;
     private final UserSeeder userSeeder;
-
-    public LanguageProficiencySeeder(LanguageProficiencyRepository languageProficiencyRepository, UserSeeder userSeeder) {
-        this.languageProficiencyRepository = languageProficiencyRepository;
-        this.userSeeder = userSeeder;
-    }
+    private final LanguageProficiencyRepository languageProficiencyRepository;
+    private final LanguageProficiencyFactory languageProficiencyFactory;
 
     @Override
     public LanguageProficiency insertRow() {
@@ -30,12 +28,12 @@ public class LanguageProficiencySeeder implements SeederInterface<LanguageProfic
     }
 
     public LanguageProficiency insertRow(User user) {
-        LanguageProficiency data = LanguageProficiencyFactory.mockEntity(user);
+        LanguageProficiency data = languageProficiencyFactory.mockEntity(user);
         return languageProficiencyRepository.save(data);
     }
 
     public LanguageProficiency insertRow(User user, LanguageName language) {
-        LanguageProficiency data = LanguageProficiencyFactory.mockEntity(user);
+        LanguageProficiency data = languageProficiencyFactory.mockEntity(user);
         data.setLanguage(language);
 
         return languageProficiencyRepository.save(data);

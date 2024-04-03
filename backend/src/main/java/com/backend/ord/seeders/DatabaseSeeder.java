@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 public class DatabaseSeeder implements ApplicationRunner {
     private final UserSeeder userSeeder;
     private final LanguageProficiencySeeder languageProficiencySeeder;
+    private final LanguageProficiencyFactory languageProficiencyFactory;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -42,7 +43,7 @@ public class DatabaseSeeder implements ApplicationRunner {
     private void populateDatabase() {
         IntStream.range(0, 10).forEach(i -> {
             User createdUser = userSeeder.insertRow();
-            List<LanguageName> languages = LanguageProficiencyFactory.mockUniqueLanguages(3);
+            List<LanguageName> languages = languageProficiencyFactory.mockUniqueLanguages(3);
 
             languages.forEach(language -> {
                 languageProficiencySeeder.insertRow(createdUser, language);

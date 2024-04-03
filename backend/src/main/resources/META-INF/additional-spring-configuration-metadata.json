@@ -1,0 +1,23 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret_key",
+      "type": "java.lang.String",
+      "description": "Description for jwt.secret_key."
+    },
+    {
+      "name": "jwt.expiration_time",
+      "type": "java.lang.String",
+      "description": "Description for jwt.expiration_time."
+    },
+    {
+      "name": "jwt.auth_cookie_name",
+      "type": "java.lang.String",
+      "description": "Description for jwt.auth_cookie_name."
+    },
+    {
+      "name": "jwt.user_id_claim_name",
+      "type": "java.lang.String",
+      "description": "Description for jwt.user_id_claim_name."
+    }
+  ] }

@@ -8,7 +8,11 @@ import java.util.Optional;
 public interface UserService {
     List<User> getAll();
 
-    Optional<User> getById(UUID id);
+    Optional<User> findById(UUID id);
 
     User save(User user);
+
+    Optional<User> findUserByAuthToken(String authToken);
+
+    Optional<User> findUserByEmail(String email);
 }
