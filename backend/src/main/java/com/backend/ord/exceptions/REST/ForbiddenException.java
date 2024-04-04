@@ -1,0 +1,7 @@
+package com.backend.ord.exceptions.REST;
+
+public class ForbiddenException extends RuntimeException{
+    public ForbiddenException(String message) {
+        super(message);
+    }
+}
