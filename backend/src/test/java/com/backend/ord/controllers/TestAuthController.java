@@ -2,7 +2,7 @@ package com.backend.ord.controllers;
 
 import com.backend.ord.api.requests.LoginRequest;
 import com.backend.ord.api.requests.RegisterRequest;
-import com.backend.ord.config.security.JwtProperties;
+import com.backend.ord.config.properties.JwtProperties;
 import com.backend.ord.controllers.utils.ControllerTestBase;
 import com.backend.ord.controllers.utils.MockedAuthenticatedUser;
 import com.backend.ord.domain.dto.UserDTO;

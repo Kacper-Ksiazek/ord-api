@@ -1,4 +1,4 @@
-package com.backend.ord.config.security;
+package com.backend.ord.config.properties;
 
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;

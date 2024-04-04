@@ -26,6 +26,7 @@ public class SecurityConfiguration {
     private static final String[] AUTHORIZED_PATHS = {
             "/api/v1/auth/logout",
             "/api/v1/auth/current-user-info",
+            "/api/v1/openai/**",
             "/users/"
     };
 

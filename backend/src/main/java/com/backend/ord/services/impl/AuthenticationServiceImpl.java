@@ -3,7 +3,7 @@ package com.backend.ord.services.impl;
 import com.backend.ord.api.requests.LoginRequest;
 import com.backend.ord.api.requests.RegisterRequest;
 import com.backend.ord.config.security.JwtFactory;
-import com.backend.ord.config.security.JwtProperties;
+import com.backend.ord.config.properties.JwtProperties;
 import com.backend.ord.config.security.JwtService;
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.enums.UserRole;
