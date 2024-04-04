@@ -26,4 +26,8 @@ public class OpenAIResponse {
     private Usage usage;
 
     private String system_fingerprint;
+
+    public String getActualResponse() {
+        return choices.getFirst().getMessage().getContent();
+    }
 }
