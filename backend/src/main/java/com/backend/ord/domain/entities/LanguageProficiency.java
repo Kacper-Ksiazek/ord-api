@@ -14,12 +14,10 @@ import lombok.*;
 @Table(name = "language_proficiencies")
 public class LanguageProficiency extends EntityBase {
     @Column(name = "language", nullable = false)
-//    @Convert(converter = LanguageNameConverter.class)
     @Enumerated(EnumType.STRING)
     private LanguageName language;
 
     @Column(name = "proficiency", nullable = false)
-//    @Convert(converter = LanguageProficiencyLevelConverter.class)
     @Enumerated(EnumType.STRING)
     private LanguageProficiencyLevel proficiency;
 
