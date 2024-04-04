@@ -14,5 +14,4 @@ public class OpenAIRequest {
     private final int top_p = 1;
     private final int frequency_penalty = 0;
     private final int presence_penalty = 0;
-
 }

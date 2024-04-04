@@ -42,7 +42,7 @@ public class OpenAIAccessController {
                         level.name(),
                         word
                 ),
-                "Give response in JSON.stringify(string[]) format"
+                "Generate response in JSON array format: [\"example1\", \"example2\", ...]"
         );
 
         // Send the request to OpenAI
