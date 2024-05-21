@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS word_points
     "points"  INTEGER NOT NULL CHECK ( points >= - 1 AND points <= 2)
 );
 
-CREATE TABLE IF NOT EXISTS practices
+CREATE TABLE IF NOT EXISTS practice_results
 (
     "id"             UUID PRIMARY KEY,
 
