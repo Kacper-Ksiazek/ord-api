@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS practices
     "type"           practice_type NOT NULL,
     "score"          INTEGER       NOT NULL CHECK ( score >= 0 AND score <= 100 ),
     "involved_words" JSONB         NOT NULL,
+    "involved_banks" JSONB         NOT NULL,
 
     "created_at"     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     "updated_at"     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
