@@ -2,12 +2,10 @@ package com.backend.ord.seeders.factories;
 
 import com.backend.ord.domain.entities.LanguageProficiency;
 import com.backend.ord.domain.entities.User;
-import com.backend.ord.enums.LanguageName;
-import com.backend.ord.enums.LanguageProficiencyLevel;
+import com.backend.ord.enums.Language.LanguageName;
+import com.backend.ord.enums.Language.LanguageProficiencyLevel;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Component
