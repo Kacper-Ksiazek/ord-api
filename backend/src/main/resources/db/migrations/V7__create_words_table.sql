@@ -5,19 +5,29 @@ CALL create_enum_type(
 
 CREATE TABLE IF NOT EXISTS "words"
 (
-    "id"         UUID PRIMARY KEY,
+    "id"              UUID PRIMARY KEY,
 
-    "type"       word_type     NOT NULL,
-    "original"   language_name NOT NULL,
-    "translated" VARCHAR(255)  NOT NULL,
+    "type"            word_type     NOT NULL,
 
-    "bank_id"    UUID                     DEFAULT NULL,
-    "user_id"    UUID          NOT NULL,
+    -- This is the word which is being translated | example: `book`
+    "origin"          varchar(255)  NOT NULL,
 
-    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    -- This is the word translated into desired language | example: `książka`
+    "translation"     VARCHAR(255)  NOT NULL,
 
-    CONSTRAINT "each_user_can_have_only_one_word_with_same_original" UNIQUE ("user_id", "original"),
+    -- Describes the original language of the word | example: `ENGLISH`
+    "translated_from" language_name NOT NULL,
+
+    -- Describes the language to which the word has been translated to | `example: POLISH`
+    "translated_to"   language_name NOT NULL,
+
+    "bank_id"         UUID                     DEFAULT NULL,
+    "user_id"         UUID          NOT NULL,
+
+    "created_at"      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    "updated_at"      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "each_user_can_have_only_one_word_with_same_word" UNIQUE ("user_id", "origin"),
     FOREIGN KEY ("bank_id") REFERENCES "banks" ("id") ON DELETE CASCADE,
     FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE
 )
