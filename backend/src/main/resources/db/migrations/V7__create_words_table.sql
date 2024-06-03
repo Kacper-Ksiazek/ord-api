@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS "words"
 (
     "id"              UUID PRIMARY KEY,
 
+    -- Describes word's kind, such as `noun` or `verb`
     "type"            word_type     NOT NULL,
 
     -- This is the word which is being translated | example: `book`
@@ -21,11 +22,17 @@ CREATE TABLE IF NOT EXISTS "words"
     -- Describes the language to which the word has been translated to | `example: POLISH`
     "translated_to"   language_name NOT NULL,
 
-    "bank_id"         UUID                     DEFAULT NULL,
+    -- If set to true, the word is marked as bookmarked and therefore can be access more easily
+    "is_bookmarked"   BOOLEAN       NOT NULL                                        DEFAULT FALSE,
+
+    -- The number of points gathered by the user during participating in different exercises
+    "points"          INTEGER       NOT NULL CHECK ( points >= - 1 AND points <= 2) DEFAULT 0,
+
+    "bank_id"         UUID                                                          DEFAULT NULL,
     "user_id"         UUID          NOT NULL,
 
-    "created_at"      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    "updated_at"      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    "created_at"      TIMESTAMP WITH TIME ZONE                                      DEFAULT CURRENT_TIMESTAMP,
+    "updated_at"      TIMESTAMP WITH TIME ZONE                                      DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "each_user_can_have_only_one_word_with_same_word" UNIQUE ("user_id", "origin"),
     FOREIGN KEY ("bank_id") REFERENCES "banks" ("id") ON DELETE CASCADE,
