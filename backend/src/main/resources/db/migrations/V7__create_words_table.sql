@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS "words"
     "is_bookmarked"   BOOLEAN       NOT NULL                                        DEFAULT FALSE,
 
     -- The number of points gathered by the user during participating in different exercises
-    "points"          INTEGER       NOT NULL CHECK ( points >= - 1 AND points <= 2) DEFAULT 0,
+    "points"          INTEGER       NOT NULL DEFAULT 0,
 
     "bank_id"         UUID                                                          DEFAULT NULL,
     "user_id"         UUID          NOT NULL,
