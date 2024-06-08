@@ -1,9 +1,8 @@
 package com.backend.ord.domain.entities;
 
 import com.backend.ord.enums.Language.LanguageName;
-import com.backend.ord.enums.WordType;
+import com.backend.ord.enums.Word.WordType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
