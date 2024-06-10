@@ -1,4 +1,4 @@
-package com.backend.ord.domain.entities;
+package com.backend.ord.domain.entities.abstracts;
 
 import jakarta.persistence.*;
 import lombok.Getter;

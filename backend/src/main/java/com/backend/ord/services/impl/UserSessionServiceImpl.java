@@ -36,15 +36,15 @@ public class UserSessionServiceImpl implements UserSessionService {
     }
 
     @Override
-    public void openSessionFromJWT(String token) throws UserNotFoundException{
+    public void openSessionFromJWT(String token) throws UserNotFoundException {
         UUID userId = jwtService.extractUserId(token);
         User user = userService.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
         userSessionRepository.save(
-            UserSession.builder()
-                .token(token)
-                .user(user)
-                .build()
+                UserSession.builder()
+                        .token(token)
+                        .user(user)
+                        .build()
         );
     }
 

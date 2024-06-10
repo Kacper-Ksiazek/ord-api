@@ -1,5 +1,6 @@
 package com.backend.ord.domain.entities;
 
+import com.backend.ord.domain.entities.abstracts.EntityBase;
 import com.backend.ord.enums.Language.LanguageName;
 import com.backend.ord.enums.Word.WordType;
 import jakarta.persistence.*;

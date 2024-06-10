@@ -1,15 +1,10 @@
 package com.backend.ord.domain.entities;
 
+import com.backend.ord.domain.entities.abstracts.EntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter

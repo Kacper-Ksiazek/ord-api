@@ -36,13 +36,14 @@ CREATE TABLE IF NOT EXISTS "words"
     -- The number of points gathered by the user during participating in different exercises
     "points"          INTEGER       NOT NULL   DEFAULT 0,
 
-    "bank_id"         UUID                     DEFAULT NULL,
-    "user_id"         UUID          NOT NULL,
+    -- The total number of tokens used to generate examples, manuals, explanations, etc.
+    "used_gpt_tokens" INTEGER       NOT NULL   DEFAULT 0 CHECK ( "used_gpt_tokens" >= 0 ),
+
+    "bank_id"         UUID                     DEFAULT NULL REFERENCES "banks" ("id") ON DELETE SET NULL,
+    "user_id"         UUID          NOT NULL REFERENCES "users" ("id") ON DELETE CASCADE,
 
     "created_at"      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     "updated_at"      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "each_user_can_have_only_one_word_with_same_word" UNIQUE ("user_id", "origin"),
-    FOREIGN KEY ("bank_id") REFERENCES "banks" ("id") ON DELETE CASCADE,
-    FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE
+    CONSTRAINT "each_user_can_have_only_one_word_with_same_word" UNIQUE ("user_id", "origin")
 )

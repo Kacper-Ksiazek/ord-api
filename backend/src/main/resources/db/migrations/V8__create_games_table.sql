@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS "games"
     -- List of foreign keys to the banks table
     "involved_banks"  JSONB       NOT NULL,
 
+    "used_gpt_tokens" INTEGER     NOT NULL                                                           DEFAULT 0 CHECK ( "used_gpt_tokens" >= 0 ),
+
     "created_at"      TIMESTAMP WITH TIME ZONE                                                       DEFAULT CURRENT_TIMESTAMP,
     "updated_at"      TIMESTAMP WITH TIME ZONE                                                       DEFAULT CURRENT_TIMESTAMP
 );
