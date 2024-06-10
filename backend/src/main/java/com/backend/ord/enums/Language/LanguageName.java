@@ -1,9 +1,12 @@
 package com.backend.ord.enums.Language;
 
 public enum LanguageName {
-    Polish,
-    English,
-    German,
-    French,
-    Spanish,
+    POLISH,
+    ENGLISH,
+    GERMAN,
+    FRENCH,
+    SPANISH,
+    ITALIAN,
+    NORWEGIAN,
+    RUSSIAN
 }

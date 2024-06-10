@@ -1,6 +1,15 @@
 CALL create_enum_type(
         'language_name',
-        ARRAY ['Polish', 'English', 'German', 'French', 'Spanish']
+        ARRAY [
+            'POLISH',
+            'ENGLISH',
+            'GERMAN',
+            'FRENCH',
+            'SPANISH',
+            'ITALIAN',
+            'NORWEGIAN',
+            'RUSSIAN'
+            ]
      );
 CALL create_enum_type(
         'language_proficiency',
