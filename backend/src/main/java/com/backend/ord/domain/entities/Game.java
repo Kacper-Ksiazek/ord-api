@@ -1,7 +1,7 @@
 package com.backend.ord.domain.entities;
 
-import com.backend.ord.enums.WordsExercise.WordsExerciseStatus;
-import com.backend.ord.enums.WordsExercise.WordsExerciseType;
+import com.backend.ord.enums.Game.GameStatus;
+import com.backend.ord.enums.Game.GameType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -12,14 +12,13 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.type.SqlTypes;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "words_exercises")
-public class WordsExercise extends EntityBase {
+@Table(name = "games")
+public class Game extends EntityBase {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -45,10 +44,10 @@ public class WordsExercise extends EntityBase {
     private List<UUID> involvedBanks;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", columnDefinition = "words_exercises_type(0, 0) not null", nullable = false)
-    private WordsExerciseType type;
+    @Column(name = "type", columnDefinition = "game_type(0, 0) not null", nullable = false)
+    private GameType type;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "words_exercises_status(0, 0) not null", nullable = false)
-    private WordsExerciseStatus status;
+    @Column(name = "status", columnDefinition = "game_status(0, 0) not null", nullable = false)
+    private GameStatus status;
 }

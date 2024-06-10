@@ -1,6 +1,6 @@
-package com.backend.ord.enums.WordsExercise;
+package com.backend.ord.enums.Game;
 
-public enum WordsExerciseType {
+public enum GameType {
     WORDS_TYPING,
     CROSSWORD,
     GAPS_FILLING,
