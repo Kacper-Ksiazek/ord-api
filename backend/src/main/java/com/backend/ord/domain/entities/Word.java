@@ -1,13 +1,21 @@
 package com.backend.ord.domain.entities;
 
 import com.backend.ord.domain.entities.abstracts.EntityBase;
+import com.backend.ord.domain.entities.embedded.ExampleSentence;
 import com.backend.ord.enums.Language.LanguageName;
 import com.backend.ord.enums.Word.WordType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.type.SqlTypes;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -47,4 +55,8 @@ public class Word extends EntityBase {
     @Column(name = "translated_to", columnDefinition = "language_name(0, 0) not null")
     @Enumerated(EnumType.STRING)
     private LanguageName translatedTo;
+
+    @Column(name = "example_sentences", nullable = false)
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Set<ExampleSentence> exampleSentences = new HashSet<ExampleSentence>();
 }
