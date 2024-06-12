@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "words_used_in_game"
+CREATE TABLE IF NOT EXISTS "words_used_in_games"
 (
     id      UUID PRIMARY KEY,
 
@@ -12,4 +12,12 @@ CREATE TABLE IF NOT EXISTS "words_used_in_stories"
 
     story_id UUID REFERENCES stories (id) ON DELETE CASCADE,
     word_id  UUID REFERENCES words (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "banks_used_in_games"
+(
+    id      UUID PRIMARY KEY,
+
+    game_id UUID REFERENCES games (id) ON DELETE CASCADE,
+    bank_id UUID REFERENCES banks (id) ON DELETE CASCADE
 );
