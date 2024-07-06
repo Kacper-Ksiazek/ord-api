@@ -1,4 +1,4 @@
-package com.backend.ord.domain.dto;
+package com.backend.ord.domain.dto.abstracts;
 
 import lombok.Getter;
 import lombok.Setter;

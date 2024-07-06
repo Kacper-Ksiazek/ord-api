@@ -1,7 +1,7 @@
 package com.backend.ord.seeders;
 
 import com.backend.ord.domain.entities.User;
-import com.backend.ord.enums.LanguageName;
+import com.backend.ord.enums.Language.LanguageName;
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder;
 import com.backend.ord.seeders.entities.UserSeeder;
 import com.backend.ord.seeders.factories.LanguageProficiencyFactory;

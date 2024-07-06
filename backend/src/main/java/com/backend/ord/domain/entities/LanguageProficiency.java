@@ -1,7 +1,8 @@
 package com.backend.ord.domain.entities;
 
-import com.backend.ord.enums.LanguageName;
-import com.backend.ord.enums.LanguageProficiencyLevel;
+import com.backend.ord.domain.entities.abstracts.EntityBase;
+import com.backend.ord.enums.Language.LanguageName;
+import com.backend.ord.enums.Language.LanguageProficiencyLevel;
 import jakarta.persistence.*;
 import lombok.*;
 

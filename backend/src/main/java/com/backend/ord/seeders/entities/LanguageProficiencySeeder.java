@@ -2,7 +2,7 @@ package com.backend.ord.seeders.entities;
 
 import com.backend.ord.domain.entities.LanguageProficiency;
 import com.backend.ord.domain.entities.User;
-import com.backend.ord.enums.LanguageName;
+import com.backend.ord.enums.Language.LanguageName;
 import com.backend.ord.repositories.LanguageProficiencyRepository;
 import com.backend.ord.seeders.factories.LanguageProficiencyFactory;
 import lombok.RequiredArgsConstructor;

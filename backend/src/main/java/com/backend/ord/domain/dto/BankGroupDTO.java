@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class UserDTO extends DTOBase {
+public class BankGroupDTO extends DTOBase {
     private String name;
-    private String email;
+    private String color;
 }

@@ -1,4 +1,4 @@
-package com.backend.ord.enums;
+package com.backend.ord.enums.Language;
 
 public enum LanguageProficiencyLevel {
     A1,

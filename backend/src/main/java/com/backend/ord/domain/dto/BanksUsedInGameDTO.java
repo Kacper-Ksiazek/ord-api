@@ -3,12 +3,15 @@ package com.backend.ord.domain.dto;
 import com.backend.ord.domain.dto.abstracts.DTOBase;
 import lombok.*;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class UserDTO extends DTOBase {
-    private String name;
-    private String email;
+public class BanksUsedInGameDTO {
+    private UUID id;
+
+    private GameDTO game;
+    private BankDTO bank;
 }
