@@ -32,6 +32,7 @@ public class Story extends EntityBase {
     @Column(name = "content", nullable = false, length = Integer.MAX_VALUE)
     private String content;
 
+    // In the following `Map` structure keys are the words and values are the explanations of their meanings, followed by a brief explaining how they contribute to the story.
     @NotNull
     @Column(name = "explanations", nullable = false)
     @JdbcTypeCode(SqlTypes.JSON)

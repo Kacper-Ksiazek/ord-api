@@ -1,4 +1,4 @@
-package com.backend.ord.domain.entities.embedded;
+package com.backend.ord.domain.embedded;
 
 import lombok.Builder;
 import lombok.Data;

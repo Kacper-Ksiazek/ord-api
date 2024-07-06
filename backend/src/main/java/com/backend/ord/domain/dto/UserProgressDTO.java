@@ -8,7 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class UserDTO extends DTOBase {
-    private String name;
-    private String email;
+public class UserProgressDTO extends DTOBase {
+    private Integer pointsObtained;
+
+    private UserDTO user;
+    private GameDTO game;
 }

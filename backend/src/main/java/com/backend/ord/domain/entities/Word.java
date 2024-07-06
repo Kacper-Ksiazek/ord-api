@@ -1,7 +1,7 @@
 package com.backend.ord.domain.entities;
 
 import com.backend.ord.domain.entities.abstracts.EntityBase;
-import com.backend.ord.domain.entities.embedded.ExampleSentence;
+import com.backend.ord.domain.embedded.ExampleSentence;
 import com.backend.ord.enums.Language.LanguageName;
 import com.backend.ord.enums.Word.WordType;
 import jakarta.persistence.*;
@@ -12,9 +12,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.type.SqlTypes;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
