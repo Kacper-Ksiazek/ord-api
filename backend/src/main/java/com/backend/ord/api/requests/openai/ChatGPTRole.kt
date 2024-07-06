@@ -1,6 +1,6 @@
-package com.backend.ord.api.requests.openai;
+package com.backend.ord.api.requests.openai
 
-public enum ChatGPTRole {
+enum class ChatGPTRole {
     user,
     assistant
 }
