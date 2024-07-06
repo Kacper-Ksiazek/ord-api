@@ -31,18 +31,8 @@ public class Game extends EntityBase {
     private Integer finalScore;
 
     @NotNull
-    @Column(name = "involved_words", nullable = false)
-    @JdbcTypeCode(SqlTypes.JSON)
-    private List<UUID> involvedWords;
-
-    @NotNull
     @Column(name = "acquired_points", nullable = false)
     private Integer acquiredPoints;
-
-    @NotNull
-    @Column(name = "involved_banks", nullable = false)
-    @JdbcTypeCode(SqlTypes.JSON)
-    private List<UUID> involvedBanks;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", columnDefinition = "game_type(0, 0) not null", nullable = false)

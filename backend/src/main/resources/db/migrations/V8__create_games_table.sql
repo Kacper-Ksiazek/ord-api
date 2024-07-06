@@ -31,11 +31,6 @@ CREATE TABLE IF NOT EXISTS "games"
     "final_score"     INTEGER     NOT NULL CHECK ( final_score >= 0 AND final_score <= 1000)         DEFAULT 0,
     "acquired_points" INTEGER     NOT NULL CHECK ( acquired_points >= 0 AND acquired_points <= 1000) DEFAULT 0,
 
-    -- List of foreign keys to the words table
-    "involved_words"  JSONB       NOT NULL,
-    -- List of foreign keys to the banks table
-    "involved_banks"  JSONB       NOT NULL,
-
     "used_gpt_tokens" INTEGER     NOT NULL                                                           DEFAULT 0 CHECK ( "used_gpt_tokens" >= 0 ),
 
     "created_at"      TIMESTAMP WITH TIME ZONE                                                       DEFAULT CURRENT_TIMESTAMP,
