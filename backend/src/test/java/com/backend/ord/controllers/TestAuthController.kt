@@ -1,387 +1,358 @@
-package com.backend.ord.controllers;
+package com.backend.ord.controllers
 
-import com.backend.ord.api.requests.LoginRequest;
-import com.backend.ord.api.requests.RegisterRequest;
-import com.backend.ord.config.properties.JwtProperties;
-import com.backend.ord.controllers.utils.ControllerTestBase;
-import com.backend.ord.controllers.utils.MockedAuthenticatedUser;
-import com.backend.ord.domain.dto.UserDTO;
-import com.backend.ord.domain.entities.UserSession;
-import com.backend.ord.seeders.entities.UserSeeder;
-import com.backend.ord.services.UserService;
-import com.backend.ord.services.UserSessionService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.Cookie;
-import lombok.val;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import com.backend.ord.api.requests.LoginRequest
+import com.backend.ord.api.requests.RegisterRequest
+import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.controllers.utils.ControllerTestBase
+import com.backend.ord.controllers.utils.MockedAuthenticatedUser
+import com.backend.ord.domain.dto.UserDTO
+import com.backend.ord.seeders.entities.UserSeeder
+import com.backend.ord.services.UserService
+import com.backend.ord.services.UserSessionService
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
+import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import java.io.UnsupportedEncodingException
 
-import java.io.UnsupportedEncodingException;
-import java.util.Optional;
-
-class AuthRequestFactory {
-    private final String PASSWORD;
-    private final String EMAIL;
-    private final String BASE_URL;
-    private final ObjectMapper objectMapper;
-
-    public AuthRequestFactory(String PASSWORD, String EMAIL, String BASE_URL, ObjectMapper objectMapper) {
-        this.PASSWORD = PASSWORD;
-        this.EMAIL = EMAIL;
-        this.BASE_URL = BASE_URL;
-        this.objectMapper = objectMapper;
-    }
-
+internal class AuthRequestFactory(
+    private val PASSWORD: String,
+    private val EMAIL: String,
+    private val BASE_URL: String,
+    private val objectMapper: ObjectMapper
+) {
     /**
      * Create a request to /register
      */
-    public MockHttpServletRequestBuilder registerRequest() throws JsonProcessingException {
-        return MockMvcRequestBuilders.post(BASE_URL + "/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(
-                        objectMapper.writeValueAsString(
-                                RegisterRequest.builder()
-                                        .name("Test User")
-                                        .email(EMAIL)
-                                        .password(PASSWORD)
-                                        .build()
-                        )
-                );
+    @Throws(JsonProcessingException::class)
+    fun registerRequest(): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders.post("$BASE_URL/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    RegisterRequest(
+                        name = "Test User",
+                        email = EMAIL,
+                        password = PASSWORD
+                    )
+                )
+            )
     }
 
     /**
      * Create an authenticated request to /register
      */
-    public MockHttpServletRequestBuilder registerRequest(MockedAuthenticatedUser authenticatedUser) throws JsonProcessingException {
-        return this.registerRequest().cookie(authenticatedUser.getAuthCookie());
+    @Throws(JsonProcessingException::class)
+    fun registerRequest(authenticatedUser: MockedAuthenticatedUser): MockHttpServletRequestBuilder {
+        return this.registerRequest().cookie(authenticatedUser.authCookie)
     }
 
     /**
      * Create a request to /login
      */
-    public MockHttpServletRequestBuilder loginRequest() throws JsonProcessingException {
-        return MockMvcRequestBuilders.post(BASE_URL + "/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(
-                        objectMapper.writeValueAsString(
-                                new LoginRequest(EMAIL, PASSWORD)
-                        )
-                );
+    @Throws(JsonProcessingException::class)
+    fun loginRequest(): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders.post("$BASE_URL/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    LoginRequest(EMAIL, PASSWORD)
+                )
+            )
     }
 
     /**
      * Create an authenticated request to /login
      */
-    public MockHttpServletRequestBuilder loginRequest(MockedAuthenticatedUser authenticatedUser) throws JsonProcessingException {
-        return this.loginRequest().cookie(authenticatedUser.getAuthCookie());
+    @Throws(JsonProcessingException::class)
+    fun loginRequest(authenticatedUser: MockedAuthenticatedUser): MockHttpServletRequestBuilder {
+        return this.loginRequest().cookie(authenticatedUser.authCookie)
     }
 
     /**
      * Create a request to /logout
      */
-    public MockHttpServletRequestBuilder logoutRequest() {
-        return MockMvcRequestBuilders.delete(BASE_URL + "/logout")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON);
+    fun logoutRequest(): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders.delete("$BASE_URL/logout")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
     }
 
     /**
      * Create an authenticated request to /logout
      */
-    public MockHttpServletRequestBuilder logoutRequest(MockedAuthenticatedUser authenticatedUser) {
-        return this.logoutRequest().cookie(authenticatedUser.getAuthCookie());
+    fun logoutRequest(authenticatedUser: MockedAuthenticatedUser?): MockHttpServletRequestBuilder {
+        return this.logoutRequest().cookie(authenticatedUser!!.authCookie)
     }
 
     /**
      * Create a request to /me
      */
-    public MockHttpServletRequestBuilder meRequest() {
-        return MockMvcRequestBuilders.get(BASE_URL + "/me")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON);
+    fun meRequest(): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders.get("$BASE_URL/me")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
     }
 
     /**
      * Create an authenticated request to /me
      */
-    public MockHttpServletRequestBuilder meRequest(MockedAuthenticatedUser authenticatedUser) {
-        return this.meRequest().cookie(authenticatedUser.getAuthCookie());
+    fun meRequest(authenticatedUser: MockedAuthenticatedUser): MockHttpServletRequestBuilder {
+        return this.meRequest().cookie(authenticatedUser.authCookie)
     }
 }
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
+@ExtendWith(SpringExtension::class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class TestAuthController extends ControllerTestBase {
-    private final JwtProperties jwtProperties;
-    private final UserSessionService userSessionService;
-    private final UserService userService;
-    private final UserSeeder userSeeder;
+class TestAuthController @Autowired constructor(
+    mockMvc: MockMvc?,
+    objectMapper: ObjectMapper,
+    private val jwtProperties: JwtProperties,
+    private val userSessionService: UserSessionService,
+    private val userService: UserService,
+    private val userSeeder: UserSeeder
+) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
+    private val PASSWORD = "123456"
+    private val EMAIL = "test@test.com"
+    private val BASE_URL = "/api/v1/auth"
 
-    private final String PASSWORD = "123456";
-    private final String EMAIL = "test@test.com";
-    private final String BASE_URL = "/api/v1/auth";
-
-    private final AuthRequestFactory authRequestFactory = new AuthRequestFactory(PASSWORD, EMAIL, BASE_URL, objectMapper);
-
-    @Autowired
-    public TestAuthController(MockMvc mockMvc,
-                              ObjectMapper objectMapper,
-                              JwtProperties jwtProperties,
-                              UserSessionService userSessionService,
-                              UserService userService,
-                              UserSeeder userSeeder
-    ) {
-        super(mockMvc, objectMapper, jwtProperties);
-
-        this.userSeeder = userSeeder;
-        this.userService = userService;
-        this.jwtProperties = jwtProperties;
-        this.userSessionService = userSessionService;
-    }
+    private val authRequestFactory = AuthRequestFactory(PASSWORD, EMAIL, BASE_URL, objectMapper)
 
     @Test
-    public void testControllerTestBaseAuthentication() throws Exception {
+    @Throws(Exception::class)
+    fun testControllerTestBaseAuthentication() {
         // This method already ensures that cookie is not null
-        MockedAuthenticatedUser authenticatedUser = this.mockedAuthenticatedUser();
-        assert authenticatedUser != null;
-
+        val authenticatedUser = this.mockedAuthenticatedUser()
         // Assert a session is created
-        assertUserSessionHasBeenCreated(authenticatedUser.getToken(), authenticatedUser.getEmail());
+        assertUserSessionHasBeenCreated(authenticatedUser.token, authenticatedUser.email)
 
         // Create a request to /me
-        MockHttpServletRequestBuilder request = authRequestFactory.meRequest();
+        val request = authRequestFactory.meRequest()
 
         // Without providing the cookie token, /current-user-info should return 403
         mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isForbidden()
-        );
+            MockMvcResultMatchers.status().isForbidden()
+        )
 
         // But with the cookie token, it should return 200
-        MockHttpServletRequestBuilder requestWithCookie = request.cookie(authenticatedUser.getAuthCookie());
+        val requestWithCookie = request.cookie(authenticatedUser.authCookie)
         mockMvc.perform(requestWithCookie).andExpect(
-                MockMvcResultMatchers.status().isOk()
-        );
+            MockMvcResultMatchers.status().isOk()
+        )
     }
 
     @Test
-    public void testRegister() throws Exception {
+    @Throws(Exception::class)
+    fun testRegister() {
         // Initially, there should be no user with the email in the database
-        assert userService.findUserByEmail(EMAIL).isEmpty();
-
+        assert(userService.findUserByEmail(EMAIL).isEmpty)
         // Create a request
-        MockHttpServletRequestBuilder request = authRequestFactory.registerRequest();
+        val request = authRequestFactory.registerRequest()
 
         // Perform the request
-        MockHttpServletResponse response = mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isCreated()
-        ).andReturn().getResponse();
+        val response = mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isCreated()
+        ).andReturn().response
 
         // Perform all kinds of needed assertions
-        validateLoginOrRegisterResponse(response);
+        validateLoginOrRegisterResponse(response)
     }
 
     @Test
-    public void testLogin() throws Exception {
+    @Throws(Exception::class)
+    fun testLogin() {
         // First, create a user
-        userSeeder.insertRowWithCredentials(EMAIL, PASSWORD);
+        userSeeder.insertRowWithCredentials(EMAIL, PASSWORD)
 
         // Create a request
-        MockHttpServletRequestBuilder request = authRequestFactory.loginRequest();
+        val request = authRequestFactory.loginRequest()
 
         // Perform the request
-        MockHttpServletResponse response = mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isOk()
-        ).andReturn().getResponse();
+        val response = mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isOk()
+        ).andReturn().response
 
         // Perform all kinds of needed assertions
-        validateLoginOrRegisterResponse(response);
+        validateLoginOrRegisterResponse(response)
     }
 
     @Test
-    public void testLogout() throws Exception {
+    @Throws(Exception::class)
+    fun testLogout() {
         // First, generate an authenticated user
-        MockedAuthenticatedUser authenticatedUser = this.mockedAuthenticatedUser();
-
-        // This ensures also that a cookie is set
-        assert authenticatedUser != null;
+        val authenticatedUser = this.mockedAuthenticatedUser()
 
         // Assert a session is created
-        assertUserSessionHasBeenCreated(authenticatedUser.getToken(), authenticatedUser.getEmail());
+        assertUserSessionHasBeenCreated(authenticatedUser.token, authenticatedUser.email)
 
         // Prepare a request to /logout
-        MockHttpServletRequestBuilder request = authRequestFactory.logoutRequest(authenticatedUser);
+        val request = authRequestFactory.logoutRequest(authenticatedUser)
 
         // Perform the request
-        MockHttpServletResponse response = mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isOk()
-        ).andReturn().getResponse();
+        val response = mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isOk()
+        ).andReturn().response
 
-        // There should be no session with the token
-        assert userSessionService.findByToken(authenticatedUser.getToken()).isEmpty();
-
+        assert(userSessionService.findByToken(authenticatedUser.token).isEmpty)
         // Auth cookie should have no value
-        Cookie authCookie = response.getCookie(jwtProperties.getAuthCookieName());
-        assert authCookie != null;
-        assert authCookie.getValue().isEmpty();
+        val authCookie = response.getCookie(jwtProperties.authCookieName)!!
+        assert(authCookie.value.isEmpty())
     }
 
     @Test
-    public void testMe() throws Exception {
+    @Throws(Exception::class)
+    fun testMe() {
         // First, create a user
-        MockedAuthenticatedUser authenticatedUser = this.mockedAuthenticatedUser(EMAIL);
+        val authenticatedUser = this.mockedAuthenticatedUser(EMAIL)
 
         // Create a request
-        MockHttpServletRequestBuilder request = authRequestFactory.meRequest(authenticatedUser);
+        val request = authRequestFactory.meRequest(authenticatedUser)
 
         // Perform the request
-        MockHttpServletResponse response = mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isOk()
-        ).andReturn().getResponse();
+        val response = mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isOk()
+        ).andReturn().response
 
         // Assert the response data contains information about the user
-        assertResponseContainsProperInformationAboutTheUser(response);
+        assertResponseContainsProperInformationAboutTheUser(response)
     }
 
     @Test
-    public void testRegisterWithExistingEmailShouldReturn400() throws Exception {
+    @Throws(Exception::class)
+    fun testRegisterWithExistingEmailShouldReturn400() {
         // First, create a user
-        userSeeder.insertRowWithCredentials(EMAIL, PASSWORD);
+        userSeeder.insertRowWithCredentials(EMAIL, PASSWORD)
 
         // Create a request
-        MockHttpServletRequestBuilder request = authRequestFactory.registerRequest();
+        val request = authRequestFactory.registerRequest()
 
         // Perform the request
-        MockHttpServletResponse response = mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isBadRequest()
-        ).andReturn().getResponse();
+        val response = mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isBadRequest()
+        ).andReturn().response
 
         // Assert the response body is empty
-        validateResponseBodyIsEmpty(response);
+        validateResponseBodyIsEmpty(response)
     }
 
     @Test
-    public void testRegisterRouteShouldBeAvailableOnlyForAnonymousUsers() throws Exception {
-        MockedAuthenticatedUser authenticatedUser = this.mockedAuthenticatedUser();
+    @Throws(Exception::class)
+    fun testRegisterRouteShouldBeAvailableOnlyForAnonymousUsers() {
+        val authenticatedUser = this.mockedAuthenticatedUser()
 
         // Create a request
-        MockHttpServletRequestBuilder request = authRequestFactory.registerRequest(authenticatedUser);
+        val request = authRequestFactory.registerRequest(authenticatedUser)
 
         // Perform the request
         mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isForbidden()
-        ).andReturn();
-
+            MockMvcResultMatchers.status().isForbidden()
+        ).andReturn()
     }
 
     @Test
-    public void testLoginRouteShouldBeAvailableOnlyForAnonymousUsers() throws Exception {
-        MockedAuthenticatedUser authenticatedUser = this.mockedAuthenticatedUser();
+    @Throws(Exception::class)
+    fun testLoginRouteShouldBeAvailableOnlyForAnonymousUsers() {
+        val authenticatedUser = this.mockedAuthenticatedUser()
 
         // Create a request
-        MockHttpServletRequestBuilder request = authRequestFactory.loginRequest(authenticatedUser);
+        val request = authRequestFactory.loginRequest(authenticatedUser)
 
         // Perform the request
         mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isForbidden()
-        ).andReturn();
+            MockMvcResultMatchers.status().isForbidden()
+        ).andReturn()
     }
 
     @Test
-    public void testLoginWithNonExistingEmailShouldReturn400() throws Exception {
+    @Throws(Exception::class)
+    fun testLoginWithNonExistingEmailShouldReturn400() {
         // Create a request
-        MockHttpServletRequestBuilder request = authRequestFactory.loginRequest();
+        val request = authRequestFactory.loginRequest()
 
         // Perform the request
-        MockHttpServletResponse response = mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isBadRequest()
-        ).andReturn().getResponse();
+        val response = mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isBadRequest()
+        ).andReturn().response
 
         // Assert the response body is empty
-        validateResponseBodyIsEmpty(response);
+        validateResponseBodyIsEmpty(response)
     }
 
     @Test
-    public void testLogoutRouteShouldBeAvailableOnlyForAuthenticatedUsers() throws Exception {
+    @Throws(Exception::class)
+    fun testLogoutRouteShouldBeAvailableOnlyForAuthenticatedUsers() {
         // Create a request
-        MockHttpServletRequestBuilder request = authRequestFactory.logoutRequest();
+        val request = authRequestFactory.logoutRequest()
 
         // Perform the request
         mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isForbidden()
-        ).andReturn();
+            MockMvcResultMatchers.status().isForbidden()
+        ).andReturn()
     }
 
     @Test
-    public void testMeRouteShouldBeAvailableOnlyForAuthenticatedUsers() throws Exception {
+    @Throws(Exception::class)
+    fun testMeRouteShouldBeAvailableOnlyForAuthenticatedUsers() {
         // Create a request
-        MockHttpServletRequestBuilder request = authRequestFactory.meRequest();
+        val request = authRequestFactory.meRequest()
 
         // Perform the request
         mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isForbidden()
-        ).andReturn();
+            MockMvcResultMatchers.status().isForbidden()
+        ).andReturn()
     }
 
-    private void validateResponseBodyIsEmpty(MockHttpServletResponse response) throws UnsupportedEncodingException {
+    @Throws(UnsupportedEncodingException::class)
+    private fun validateResponseBodyIsEmpty(response: MockHttpServletResponse) {
         // Assert the response body is empty
-        assert response.getContentAsString().isEmpty();
+        assert(response.contentAsString.isEmpty())
     }
 
-    private void validateLoginOrRegisterResponse(MockHttpServletResponse response) throws UnsupportedEncodingException, JsonProcessingException {
+    @Throws(UnsupportedEncodingException::class, JsonProcessingException::class)
+    private fun validateLoginOrRegisterResponse(response: MockHttpServletResponse) {
         // Assert a cookie is set
-        String token = assertAuthCookieIsSet(response);
+        val token = assertAuthCookieIsSet(response)
 
         // Assert a session is created
-        assertUserSessionHasBeenCreated(token);
+        assertUserSessionHasBeenCreated(token)
 
         // Assert the response data contains information about the user
-        assertResponseContainsProperInformationAboutTheUser(response);
+        assertResponseContainsProperInformationAboutTheUser(response)
     }
 
-    private void assertResponseContainsProperInformationAboutTheUser(MockHttpServletResponse response) throws UnsupportedEncodingException, JsonProcessingException {
-        val data = getResponseBody(response, new TypeReference<UserDTO>() {
-        });
-        assert data.getClass().equals(UserDTO.class);
-        assert data.getEmail().equals(EMAIL);
+    @Throws(UnsupportedEncodingException::class, JsonProcessingException::class)
+    private fun assertResponseContainsProperInformationAboutTheUser(response: MockHttpServletResponse) {
+
+        val data: UserDTO = getResponseBody<UserDTO>(response)
+        assert(data.javaClass == UserDTO::class.java)
+        assert(data.email == EMAIL)
     }
 
-    private void assertUserSessionHasBeenCreated(String token) {
-        this.assertUserSessionHasBeenCreated(token, EMAIL);
+    private fun assertUserSessionHasBeenCreated(token: String?, email: String? = EMAIL) {
+        val correspondingSession = userSessionService.findByToken(token)
+        assert(correspondingSession.isPresent)
+        assert(correspondingSession.get().token == token)
+        assert(correspondingSession.get().user.email == email)
     }
 
-    private void assertUserSessionHasBeenCreated(String token, String email) {
-        Optional<UserSession> correspondingSession = userSessionService.findByToken(token);
-        assert correspondingSession.isPresent();
-
-        // Assert the user session is valid
-        assert correspondingSession.get().getToken().equals(token);
-
-        // Assert the correct user id is associated with the session
-        assert correspondingSession.get().getUser().getEmail().equals(email);
+    private fun assertAuthCookieIsSet(response: MockHttpServletResponse): String {
+        val cookie = response.getCookie(jwtProperties.authCookieName)!!
+        return cookie.value
     }
-
-    private String assertAuthCookieIsSet(MockHttpServletResponse response) {
-        Cookie cookie = response.getCookie(jwtProperties.getAuthCookieName());
-        assert cookie != null;
-
-        return cookie.getValue();
-    }
-
 }

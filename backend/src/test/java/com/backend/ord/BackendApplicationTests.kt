@@ -1,13 +1,11 @@
-package com.backend.ord;
+package com.backend.ord
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class BackendApplicationTests {
-
+internal class BackendApplicationTests {
     @Test
-    void contextLoads() {
+    fun contextLoads() {
     }
-
 }

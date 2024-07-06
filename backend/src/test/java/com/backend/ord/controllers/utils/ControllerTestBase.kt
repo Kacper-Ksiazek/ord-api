@@ -1,86 +1,72 @@
-package com.backend.ord.controllers.utils;
+package com.backend.ord.controllers.utils
 
-import com.backend.ord.api.requests.RegisterRequest;
-import com.backend.ord.config.properties.JwtProperties;
-import com.backend.ord.domain.dto.UserDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.Cookie;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import java.io.UnsupportedEncodingException;
+import com.backend.ord.api.requests.RegisterRequest
+import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.domain.dto.UserDTO
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.http.MediaType
+import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.MvcResult
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import java.io.UnsupportedEncodingException
 
 @AutoConfigureMockMvc
-public abstract class ControllerTestBase {
-    protected final MockMvc mockMvc;
-    protected final ObjectMapper objectMapper;
-    private final JwtProperties jwtProperties;
-
-    protected ControllerTestBase(MockMvc mockMvc, ObjectMapper objectMapper, JwtProperties jwtProperties) {
-        this.mockMvc = mockMvc;
-        this.objectMapper = objectMapper;
-        this.jwtProperties = jwtProperties;
+abstract class ControllerTestBase(
+    protected val mockMvc: MockMvc,
+    private val objectMapper: ObjectMapper,
+    private val jwtProperties: JwtProperties
+) {
+    @Throws(Exception::class)
+    fun mockedAuthenticatedUser(): MockedAuthenticatedUser {
+        val authUserEmailAddress = "random.authenticated.email@gmail.com"
+        return mockedAuthenticatedUser(authUserEmailAddress)
     }
 
-    public MockedAuthenticatedUser mockedAuthenticatedUser() throws Exception {
-        final String AUTH_USER_EMAIL_ADDRESS = "random.authenticated.email@gmail.com";
-        return mockedAuthenticatedUser(AUTH_USER_EMAIL_ADDRESS);
-    }
-
-    public MockedAuthenticatedUser mockedAuthenticatedUser(String email) throws Exception {
+    @Throws(Exception::class)
+    fun mockedAuthenticatedUser(email: String?): MockedAuthenticatedUser {
         // Create a request
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(
-                        objectMapper.writeValueAsString(
-                                RegisterRequest.builder()
-                                        .name("Test User")
-                                        .email(email)
-                                        .password("qwerty123")
-                                        .build()
-                        )
-                );
+        val request = MockMvcRequestBuilders.post("/api/v1/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    RegisterRequest(
+                        name = "Test User",
+                        email = email,
+                        password = "qwerty123"
+                    )
+                )
+            )
 
         // Perform the request
-        MockHttpServletResponse response = mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isCreated()
-        ).andReturn().getResponse();
+        val response = mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isCreated
+        ).andReturn().response
 
         // Parse the response
-        Cookie authCookie = response.getCookie(jwtProperties.getAuthCookieName());
-        assert authCookie != null;
+        val authCookie = response.getCookie(jwtProperties.authCookieName)!!
+        val userInfo: UserDTO = objectMapper.readValue(response.contentAsString, UserDTO::class.java)
 
-        UserDTO userInfo = objectMapper.readValue(response.getContentAsString(), UserDTO.class);
-
-        return MockedAuthenticatedUser.builder()
-                .token(authCookie.getValue())
-                .userInfo(userInfo)
-                .authCookie(authCookie)
-                .email(email)
-                .build();
-
+        return MockedAuthenticatedUser(
+            token = authCookie.value,
+            userInfo = userInfo,
+            authCookie = authCookie,
+            email = email
+        )
     }
 
-    public <T> T getResponseBody(MvcResult result, TypeReference<T> responseType) throws UnsupportedEncodingException, JsonProcessingException {
-        return objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                responseType
-        );
+    @Throws(UnsupportedEncodingException::class, JsonProcessingException::class)
+    fun <T> getResponseBody(result: MvcResult): T {
+        return objectMapper.readValue(result.response.contentAsString, object : TypeReference<T>() {})
     }
 
-    public <T> T getResponseBody(MockHttpServletResponse response, TypeReference<T> responseType) throws UnsupportedEncodingException, JsonProcessingException {
-        return objectMapper.readValue(
-                response.getContentAsString(),
-                responseType
-        );
+    @Throws(UnsupportedEncodingException::class, JsonProcessingException::class)
+    fun <T> getResponseBody(response: MockHttpServletResponse): T {
+        return objectMapper.readValue(response.contentAsString, object : TypeReference<T>() {})
     }
 }
