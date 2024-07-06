@@ -14,7 +14,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,12 +32,18 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 class AuthRequestFactory {
     private final String PASSWORD;
     private final String EMAIL;
     private final String BASE_URL;
     private final ObjectMapper objectMapper;
+
+    public AuthRequestFactory(String PASSWORD, String EMAIL, String BASE_URL, ObjectMapper objectMapper) {
+        this.PASSWORD = PASSWORD;
+        this.EMAIL = EMAIL;
+        this.BASE_URL = BASE_URL;
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * Create a request to /register

@@ -5,15 +5,19 @@ import com.backend.ord.domain.entities.User;
 import com.backend.ord.enums.Language.LanguageName;
 import com.backend.ord.repositories.LanguageProficiencyRepository;
 import com.backend.ord.seeders.factories.LanguageProficiencyFactory;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class LanguageProficiencySeeder implements SeederInterface<LanguageProficiency> {
     private final UserSeeder userSeeder;
     private final LanguageProficiencyRepository languageProficiencyRepository;
     private final LanguageProficiencyFactory languageProficiencyFactory;
+
+    public LanguageProficiencySeeder(UserSeeder userSeeder, LanguageProficiencyRepository languageProficiencyRepository, LanguageProficiencyFactory languageProficiencyFactory) {
+        this.userSeeder = userSeeder;
+        this.languageProficiencyRepository = languageProficiencyRepository;
+        this.languageProficiencyFactory = languageProficiencyFactory;
+    }
 
     @Override
     public LanguageProficiency insertRow() {

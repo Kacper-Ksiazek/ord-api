@@ -11,7 +11,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +19,14 @@ import java.util.*;
 import java.util.function.Function;
 
 @Service
-@RequiredArgsConstructor
 public class JwtService {
     private final UserService userService;
     private final JwtProperties jwtProperties;
+
+    public JwtService(UserService userService, JwtProperties jwtProperties) {
+        this.userService = userService;
+        this.jwtProperties = jwtProperties;
+    }
 
     public Optional<String> getJWTFromRequest(HttpServletRequest request) {
         return CookieUtils.getCookieValue(

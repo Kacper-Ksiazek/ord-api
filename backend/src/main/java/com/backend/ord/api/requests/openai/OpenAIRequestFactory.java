@@ -1,15 +1,19 @@
 package com.backend.ord.api.requests.openai;
 
 import com.backend.ord.config.properties.OpenAIProperties;
-import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-@Builder
 @Component
-@RequiredArgsConstructor
 public class OpenAIRequestFactory {
     private final OpenAIProperties openAIProperties;
+
+    public OpenAIRequestFactory(OpenAIProperties openAIProperties) {
+        this.openAIProperties = openAIProperties;
+    }
+
+    public static OpenAIRequestFactoryBuilder builder() {
+        return new OpenAIRequestFactoryBuilder();
+    }
 
     public OpenAIRequest createRequest(final String prompt, final String context) {
         return OpenAIRequest.builder()
@@ -44,6 +48,26 @@ public class OpenAIRequestFactory {
                                 .build(),
                 })
                 .build();
+    }
+
+    public static class OpenAIRequestFactoryBuilder {
+        private OpenAIProperties openAIProperties;
+
+        OpenAIRequestFactoryBuilder() {
+        }
+
+        public OpenAIRequestFactoryBuilder openAIProperties(OpenAIProperties openAIProperties) {
+            this.openAIProperties = openAIProperties;
+            return this;
+        }
+
+        public OpenAIRequestFactory build() {
+            return new OpenAIRequestFactory(this.openAIProperties);
+        }
+
+        public String toString() {
+            return "OpenAIRequestFactory.OpenAIRequestFactoryBuilder(openAIProperties=" + this.openAIProperties + ")";
+        }
     }
 }
 

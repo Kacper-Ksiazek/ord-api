@@ -1,17 +1,12 @@
 package com.backend.ord.domain.entities.abstracts;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Getter
-@Setter
 @MappedSuperclass
 @Access(AccessType.FIELD)
 public abstract class EntityBase {
@@ -26,4 +21,28 @@ public abstract class EntityBase {
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     private Instant updatedAt;
+
+    public UUID getId() {
+        return this.id;
+    }
+
+    public Instant getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

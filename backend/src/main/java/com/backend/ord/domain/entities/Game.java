@@ -5,18 +5,9 @@ import com.backend.ord.enums.Game.GameStatus;
 import com.backend.ord.enums.Game.GameType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.type.SqlTypes;
 
-import java.util.List;
-import java.util.UUID;
-
-@Getter
-@Setter
 @Entity
 @Table(name = "games")
 public class Game extends EntityBase {
@@ -41,4 +32,44 @@ public class Game extends EntityBase {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", columnDefinition = "game_status(0, 0) not null", nullable = false)
     private GameStatus status;
+
+    public @NotNull User getUser() {
+        return this.user;
+    }
+
+    public @NotNull Integer getFinalScore() {
+        return this.finalScore;
+    }
+
+    public @NotNull Integer getAcquiredPoints() {
+        return this.acquiredPoints;
+    }
+
+    public GameType getType() {
+        return this.type;
+    }
+
+    public GameStatus getStatus() {
+        return this.status;
+    }
+
+    public void setUser(@NotNull User user) {
+        this.user = user;
+    }
+
+    public void setFinalScore(@NotNull Integer finalScore) {
+        this.finalScore = finalScore;
+    }
+
+    public void setAcquiredPoints(@NotNull Integer acquiredPoints) {
+        this.acquiredPoints = acquiredPoints;
+    }
+
+    public void setType(GameType type) {
+        this.type = type;
+    }
+
+    public void setStatus(GameStatus status) {
+        this.status = status;
+    }
 }

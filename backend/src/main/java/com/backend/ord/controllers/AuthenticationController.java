@@ -11,22 +11,25 @@ import com.backend.ord.exceptions.UserNotFoundException;
 import com.backend.ord.services.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.crypto.Data;
 import java.util.Optional;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
     private final UserMapper userMapper;
     private final JwtService jwtService;
     private final AuthenticationService authService;
+
+    public AuthenticationController(UserMapper userMapper, JwtService jwtService, AuthenticationService authService) {
+        this.userMapper = userMapper;
+        this.jwtService = jwtService;
+        this.authService = authService;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(

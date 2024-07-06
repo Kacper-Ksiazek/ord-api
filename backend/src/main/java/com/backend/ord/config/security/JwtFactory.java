@@ -6,18 +6,22 @@ import com.backend.ord.exceptions.UserNotFoundException;
 import com.backend.ord.services.UserSessionService;
 import com.backend.ord.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
 public class JwtFactory {
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
 
     private final UserSessionService userSessionService;
+
+    public JwtFactory(JwtService jwtService, JwtProperties jwtProperties, UserSessionService userSessionService) {
+        this.jwtService = jwtService;
+        this.jwtProperties = jwtProperties;
+        this.userSessionService = userSessionService;
+    }
 
 
     public String createTokenForUser(

@@ -3,13 +3,9 @@ package com.backend.ord.domain.entities;
 import com.backend.ord.domain.entities.abstracts.EntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "user_progress")
 public class UserProgress extends EntityBase {
@@ -28,4 +24,28 @@ public class UserProgress extends EntityBase {
     @NotNull
     @Column(name = "points_obtained", nullable = false)
     private Integer pointsObtained;
+
+    public @NotNull User getUser() {
+        return this.user;
+    }
+
+    public @NotNull Game getGame() {
+        return this.game;
+    }
+
+    public @NotNull Integer getPointsObtained() {
+        return this.pointsObtained;
+    }
+
+    public void setUser(@NotNull User user) {
+        this.user = user;
+    }
+
+    public void setGame(@NotNull Game game) {
+        this.game = game;
+    }
+
+    public void setPointsObtained(@NotNull Integer pointsObtained) {
+        this.pointsObtained = pointsObtained;
+    }
 }

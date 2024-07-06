@@ -26,7 +26,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtFactory jwtFactory;
     private final JwtService jwtService;
@@ -36,6 +35,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserService userService;
     private final UserDetailsService userDetailsService;
     private final UserSessionService userSessionService;
+
+    public JwtAuthenticationFilter(JwtFactory jwtFactory, JwtService jwtService, JwtProperties jwtProperties, JwtTokenValidator jwtTokenValidator, UserService userService, UserDetailsService userDetailsService, UserSessionService userSessionService) {
+        this.jwtFactory = jwtFactory;
+        this.jwtService = jwtService;
+        this.jwtProperties = jwtProperties;
+        this.jwtTokenValidator = jwtTokenValidator;
+        this.userService = userService;
+        this.userDetailsService = userDetailsService;
+        this.userSessionService = userSessionService;
+    }
 
     @Override
     protected void doFilterInternal(

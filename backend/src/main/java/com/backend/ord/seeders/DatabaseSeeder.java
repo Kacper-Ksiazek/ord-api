@@ -6,7 +6,6 @@ import com.backend.ord.seeders.entities.LanguageProficiencySeeder;
 import com.backend.ord.seeders.entities.UserSeeder;
 import com.backend.ord.seeders.factories.LanguageProficiencyFactory;
 import com.backend.ord.utils.Console;
-import lombok.AllArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
@@ -18,12 +17,17 @@ import java.util.stream.IntStream;
 
 @Component
 @Profile("local")
-@AllArgsConstructor
 @Order(Integer.MIN_VALUE)
 public class DatabaseSeeder implements ApplicationRunner {
     private final UserSeeder userSeeder;
     private final LanguageProficiencySeeder languageProficiencySeeder;
     private final LanguageProficiencyFactory languageProficiencyFactory;
+
+    public DatabaseSeeder(UserSeeder userSeeder, LanguageProficiencySeeder languageProficiencySeeder, LanguageProficiencyFactory languageProficiencyFactory) {
+        this.userSeeder = userSeeder;
+        this.languageProficiencySeeder = languageProficiencySeeder;
+        this.languageProficiencyFactory = languageProficiencyFactory;
+    }
 
     @Override
     public void run(ApplicationArguments args) {

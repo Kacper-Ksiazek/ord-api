@@ -1,15 +1,11 @@
 package com.backend.ord.domain.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.UUID;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "words_used_in_games")
 public class WordsUsedInGame {
@@ -28,4 +24,27 @@ public class WordsUsedInGame {
     @JoinColumn(name = "word_id")
     private Word word;
 
+    public UUID getId() {
+        return this.id;
+    }
+
+    public Game getGame() {
+        return this.game;
+    }
+
+    public Word getWord() {
+        return this.word;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public void setWord(Word word) {
+        this.word = word;
+    }
 }

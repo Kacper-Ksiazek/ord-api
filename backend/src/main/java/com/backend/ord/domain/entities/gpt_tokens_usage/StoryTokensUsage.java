@@ -5,13 +5,9 @@ import com.backend.ord.domain.entities.User;
 import com.backend.ord.domain.entities.abstracts.EntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "story_tokens_usages")
 public class StoryTokensUsage extends EntityBase {
@@ -33,4 +29,35 @@ public class StoryTokensUsage extends EntityBase {
     @Column(name = "number_of_tokens", nullable = false)
     private Integer numberOfTokens;
 
+    public User getUser() {
+        return this.user;
+    }
+
+    public Story getStories() {
+        return this.stories;
+    }
+
+    public @NotNull Integer getNumberOfGenerations() {
+        return this.numberOfGenerations;
+    }
+
+    public @NotNull Integer getNumberOfTokens() {
+        return this.numberOfTokens;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setStories(Story stories) {
+        this.stories = stories;
+    }
+
+    public void setNumberOfGenerations(@NotNull Integer numberOfGenerations) {
+        this.numberOfGenerations = numberOfGenerations;
+    }
+
+    public void setNumberOfTokens(@NotNull Integer numberOfTokens) {
+        this.numberOfTokens = numberOfTokens;
+    }
 }

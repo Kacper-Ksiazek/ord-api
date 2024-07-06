@@ -1,15 +1,11 @@
 package com.backend.ord.domain.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.UUID;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "banks_used_in_games")
 public class BanksUsedInGame {
@@ -28,4 +24,27 @@ public class BanksUsedInGame {
     @JoinColumn(name = "bank_id")
     private Bank bank;
 
+    public UUID getId() {
+        return this.id;
+    }
+
+    public Game getGame() {
+        return this.game;
+    }
+
+    public Bank getBank() {
+        return this.bank;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
 }

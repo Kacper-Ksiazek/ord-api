@@ -4,7 +4,6 @@ import com.backend.ord.domain.entities.UserSession;
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException;
 import com.backend.ord.services.UserSessionService;
 import io.jsonwebtoken.ExpiredJwtException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +11,15 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 @Component
 public class JwtTokenValidator {
     private final JwtService jwtService;
     private final UserSessionService userSessionService;
+
+    public JwtTokenValidator(JwtService jwtService, UserSessionService userSessionService) {
+        this.jwtService = jwtService;
+        this.userSessionService = userSessionService;
+    }
 
     public boolean validate(
             String jwtToken,

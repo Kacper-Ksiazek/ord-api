@@ -3,14 +3,16 @@ package com.backend.ord.config;
 import com.backend.ord.api.requests.openai.OpenAIRequest;
 import com.backend.ord.api.responses.openai.OpenAIResponse;
 import com.backend.ord.config.properties.OpenAIProperties;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@RequiredArgsConstructor
 public class RestClientConfig {
     private final OpenAIProperties openAIProperties;
+
+    public RestClientConfig(OpenAIProperties openAIProperties) {
+        this.openAIProperties = openAIProperties;
+    }
 
     public RestTemplate openAITemplate() {
         RestTemplate restTemplate = new RestTemplate();
@@ -23,7 +25,7 @@ public class RestClientConfig {
         return restTemplate;
     }
 
-    public OpenAIResponse makeOpenAIPostRequest(OpenAIRequest request){
+    public OpenAIResponse makeOpenAIPostRequest(OpenAIRequest request) {
         return openAITemplate().postForObject(
                 openAIProperties.getApiUrl(),
                 request,

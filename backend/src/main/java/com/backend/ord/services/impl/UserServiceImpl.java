@@ -5,10 +5,6 @@ import com.backend.ord.domain.entities.UserSession;
 import com.backend.ord.repositories.UserRepository;
 import com.backend.ord.repositories.UserSessionRepository;
 import com.backend.ord.services.UserService;
-import com.backend.ord.services.UserSessionService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,10 +14,14 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserSessionRepository userSessionRepository;
+
+    public UserServiceImpl(UserRepository userRepository, UserSessionRepository userSessionRepository) {
+        this.userRepository = userRepository;
+        this.userSessionRepository = userSessionRepository;
+    }
 
     @Override
     public List<User> getAll() {

@@ -2,8 +2,8 @@ package com.backend.ord.services.impl;
 
 import com.backend.ord.api.requests.LoginRequest;
 import com.backend.ord.api.requests.RegisterRequest;
-import com.backend.ord.config.security.JwtFactory;
 import com.backend.ord.config.properties.JwtProperties;
+import com.backend.ord.config.security.JwtFactory;
 import com.backend.ord.config.security.JwtService;
 import com.backend.ord.domain.entities.User;
 import com.backend.ord.enums.UserRole;
@@ -15,14 +15,12 @@ import com.backend.ord.services.UserSessionService;
 import com.backend.ord.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
@@ -32,6 +30,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtFactory jwtFactory;
     private final UserRepository userRepository;
     private final UserSessionService userSessionService;
+
+    public AuthenticationServiceImpl(JwtService jwtService, JwtProperties jwtProperties, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtFactory jwtFactory, UserRepository userRepository, UserSessionService userSessionService) {
+        this.jwtService = jwtService;
+        this.jwtProperties = jwtProperties;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtFactory = jwtFactory;
+        this.userRepository = userRepository;
+        this.userSessionService = userSessionService;
+    }
 
     @Override
     public User register(

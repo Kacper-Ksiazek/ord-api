@@ -1,12 +1,10 @@
 package com.backend.ord.domain.entities;
 
-import com.backend.ord.domain.entities.abstracts.EntityBase;
 import com.backend.ord.domain.embedded.ExampleSentence;
+import com.backend.ord.domain.entities.abstracts.EntityBase;
 import com.backend.ord.enums.Language.LanguageName;
 import com.backend.ord.enums.Word.WordType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -15,8 +13,6 @@ import org.hibernate.type.SqlTypes;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "words")
 public class Word extends EntityBase {
@@ -57,4 +53,84 @@ public class Word extends EntityBase {
     @Column(name = "example_sentences", nullable = false)
     @JdbcTypeCode(SqlTypes.JSON)
     private Set<ExampleSentence> exampleSentences = new HashSet<ExampleSentence>();
+
+    public String getOrigin() {
+        return this.origin;
+    }
+
+    public String getTranslation() {
+        return this.translation;
+    }
+
+    public Boolean getIsBookmarked() {
+        return this.isBookmarked;
+    }
+
+    public Integer getPoints() {
+        return this.points;
+    }
+
+    public Bank getBank() {
+        return this.bank;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public WordType getType() {
+        return this.type;
+    }
+
+    public LanguageName getTranslatedFrom() {
+        return this.translatedFrom;
+    }
+
+    public LanguageName getTranslatedTo() {
+        return this.translatedTo;
+    }
+
+    public Set<ExampleSentence> getExampleSentences() {
+        return this.exampleSentences;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public void setTranslation(String translation) {
+        this.translation = translation;
+    }
+
+    public void setIsBookmarked(Boolean isBookmarked) {
+        this.isBookmarked = isBookmarked;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
+    }
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setType(WordType type) {
+        this.type = type;
+    }
+
+    public void setTranslatedFrom(LanguageName translatedFrom) {
+        this.translatedFrom = translatedFrom;
+    }
+
+    public void setTranslatedTo(LanguageName translatedTo) {
+        this.translatedTo = translatedTo;
+    }
+
+    public void setExampleSentences(Set<ExampleSentence> exampleSentences) {
+        this.exampleSentences = exampleSentences;
+    }
 }

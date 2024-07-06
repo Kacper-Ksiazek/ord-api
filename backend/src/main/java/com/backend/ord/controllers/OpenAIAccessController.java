@@ -7,7 +7,6 @@ import com.backend.ord.config.RestClientConfig;
 import com.backend.ord.enums.Language.LanguageName;
 import com.backend.ord.enums.Language.LanguageProficiencyLevel;
 import com.backend.ord.exceptions.REST.BadRequestException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +14,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/openai")
 public class OpenAIAccessController {
     private final RestClientConfig restClientConfig;
     private final OpenAIRequestFactory OpenAIRequestFactory;
+
+    public OpenAIAccessController(RestClientConfig restClientConfig, OpenAIRequestFactory OpenAIRequestFactory) {
+        this.restClientConfig = restClientConfig;
+        this.OpenAIRequestFactory = OpenAIRequestFactory;
+    }
 
     @GetMapping("/examples-of-usage")
     public ResponseEntity<?> index(

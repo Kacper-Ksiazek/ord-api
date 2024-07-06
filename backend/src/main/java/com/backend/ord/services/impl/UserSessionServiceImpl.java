@@ -7,18 +7,22 @@ import com.backend.ord.exceptions.UserNotFoundException;
 import com.backend.ord.repositories.UserSessionRepository;
 import com.backend.ord.services.UserService;
 import com.backend.ord.services.UserSessionService;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class UserSessionServiceImpl implements UserSessionService {
     private final UserSessionRepository userSessionRepository;
     private final JwtService jwtService;
     private final UserService userService;
+
+    public UserSessionServiceImpl(UserSessionRepository userSessionRepository, JwtService jwtService, UserService userService) {
+        this.userSessionRepository = userSessionRepository;
+        this.jwtService = jwtService;
+        this.userService = userService;
+    }
 
     @Override
     public UserSession save(UserSession userSession) {

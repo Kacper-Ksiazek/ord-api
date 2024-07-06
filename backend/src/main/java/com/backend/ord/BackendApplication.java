@@ -1,7 +1,6 @@
 package com.backend.ord;
 
 import com.backend.ord.utils.Console;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,10 +10,13 @@ import org.springframework.core.env.Environment;
 import java.util.Objects;
 
 @SpringBootApplication
-@AllArgsConstructor
 public class BackendApplication implements CommandLineRunner {
     @Autowired
     private Environment environment;
+
+    public BackendApplication(Environment environment) {
+        this.environment = environment;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);

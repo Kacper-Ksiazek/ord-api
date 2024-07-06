@@ -5,13 +5,9 @@ import com.backend.ord.enums.Language.LanguageName;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "quickly_added_words")
 public class QuicklyAddedWord extends EntityBase {
@@ -29,4 +25,28 @@ public class QuicklyAddedWord extends EntityBase {
     @Column(name = "typed_in_language", columnDefinition = "language_name(0, 0) not null")
     @Enumerated(EnumType.STRING)
     private LanguageName typedInLanguage;
+
+    public @NotNull User getUser() {
+        return this.user;
+    }
+
+    public @Size(max = 255) @NotNull String getTypedWord() {
+        return this.typedWord;
+    }
+
+    public LanguageName getTypedInLanguage() {
+        return this.typedInLanguage;
+    }
+
+    public void setUser(@NotNull User user) {
+        this.user = user;
+    }
+
+    public void setTypedWord(@Size(max = 255) @NotNull String typedWord) {
+        this.typedWord = typedWord;
+    }
+
+    public void setTypedInLanguage(LanguageName typedInLanguage) {
+        this.typedInLanguage = typedInLanguage;
+    }
 }

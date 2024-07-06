@@ -7,13 +7,9 @@ import com.backend.ord.enums.TokensUsage.GamesGPTTokensConsumptionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "game_tokens_usages")
 public class GameTokensUsage extends EntityBase {
@@ -40,4 +36,44 @@ public class GameTokensUsage extends EntityBase {
     @Column(name = "consumption_type", columnDefinition = "games_gpt_tokens_consumption_type(0, 0) not null")
     @Enumerated(EnumType.STRING)
     private GamesGPTTokensConsumptionType consumptionType;
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public Game getGames() {
+        return this.games;
+    }
+
+    public @NotNull @Min(1) Integer getNumberOfGenerations() {
+        return this.numberOfGenerations;
+    }
+
+    public @NotNull @Min(0) Integer getNumberOfTokens() {
+        return this.numberOfTokens;
+    }
+
+    public GamesGPTTokensConsumptionType getConsumptionType() {
+        return this.consumptionType;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setGames(Game games) {
+        this.games = games;
+    }
+
+    public void setNumberOfGenerations(@NotNull @Min(1) Integer numberOfGenerations) {
+        this.numberOfGenerations = numberOfGenerations;
+    }
+
+    public void setNumberOfTokens(@NotNull @Min(0) Integer numberOfTokens) {
+        this.numberOfTokens = numberOfTokens;
+    }
+
+    public void setConsumptionType(GamesGPTTokensConsumptionType consumptionType) {
+        this.consumptionType = consumptionType;
+    }
 }
