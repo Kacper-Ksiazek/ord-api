@@ -14,6 +14,14 @@ CALL create_enum_type(
             ]
      );
 
+CALL create_enum_type(
+        'stories_gpt_tokens_consumption_type',
+        ARRAY [
+            'GENERATE_STORY_WITH_WORD_EXPLANATIONS',
+            'REGENERATE_EXPLANATION_FOR_SINGLE_WORD'
+            ]
+     );
+
 CREATE TABLE IF NOT EXISTS "word_tokens_usages"
 (
     id                    UUID PRIMARY KEY,
@@ -58,6 +66,8 @@ CREATE TABLE IF NOT EXISTS "story_tokens_usages"
 
     user_id               UUID    REFERENCES users (id) ON DELETE SET NULL,
     story_id              UUID    REFERENCES stories (id) ON DELETE SET NULL,
+
+    consumption_type      stories_gpt_tokens_consumption_type NOT NULL,
 
     -- Indicates how many times "regenerate" option was used
     number_of_generations INTEGER NOT NULL CHECK (number_of_generations >= 1) DEFAULT 1,
