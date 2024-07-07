@@ -1,6 +1,6 @@
-package com.backend.ord.enums;
+package com.backend.ord.enums
 
-public enum UserRole {
+enum class UserRole {
     ADMIN,
     USER
 }

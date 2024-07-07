@@ -1,6 +1,6 @@
-package com.backend.ord.enums.Word;
+package com.backend.ord.enums.Word
 
-public enum WordType {
+enum class WordType {
     NOUN,
     VERB,
     ADJECTIVE,

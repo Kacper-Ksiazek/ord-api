@@ -1,6 +1,6 @@
-package com.backend.ord.enums.Game;
+package com.backend.ord.enums.Game
 
-public enum GameType {
+enum class GameType {
     WORDS_TYPING,
     CROSSWORD,
     GAPS_FILLING,

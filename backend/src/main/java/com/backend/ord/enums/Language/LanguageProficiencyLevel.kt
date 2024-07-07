@@ -1,6 +1,6 @@
-package com.backend.ord.enums.Language;
+package com.backend.ord.enums.Language
 
-public enum LanguageProficiencyLevel {
+enum class LanguageProficiencyLevel {
     A1,
     A2,
     B1,

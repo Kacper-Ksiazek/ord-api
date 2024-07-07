@@ -1,6 +1,6 @@
-package com.backend.ord.enums;
+package com.backend.ord.enums
 
-public enum BookmarkType {
+enum class BookmarkType {
     WORD,
     SENTENCE,
     BANK

@@ -1,6 +1,6 @@
-package com.backend.ord.enums.Language;
+package com.backend.ord.enums.Language
 
-public enum LanguageName {
+enum class LanguageName {
     POLISH,
     ENGLISH,
     GERMAN,

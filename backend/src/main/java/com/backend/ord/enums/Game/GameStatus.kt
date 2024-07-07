@@ -1,6 +1,6 @@
-package com.backend.ord.enums.Game;
+package com.backend.ord.enums.Game
 
-public enum GameStatus {
+enum class GameStatus {
     IN_PROGRESS,
     COMPLETED,
     FAILED

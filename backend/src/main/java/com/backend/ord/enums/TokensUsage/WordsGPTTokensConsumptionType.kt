@@ -1,6 +1,6 @@
-package com.backend.ord.enums.TokensUsage;
+package com.backend.ord.enums.TokensUsage
 
-public enum WordsGPTTokensConsumptionType {
+enum class WordsGPTTokensConsumptionType {
     GENERATE_SENTENCE,
     GENERATE_ENTIRE_MANUAL
 }
