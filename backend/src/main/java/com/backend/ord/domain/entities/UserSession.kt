@@ -1,69 +1,18 @@
-package com.backend.ord.domain.entities;
+package com.backend.ord.domain.entities
 
-import com.backend.ord.domain.entities.abstracts.EntityBase;
-import jakarta.persistence.*;
+import com.backend.ord.domain.entities.abstracts.EntityBase
+import jakarta.persistence.*
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 
 @Entity
 @Table(name = "user_sessions")
-public class UserSession extends EntityBase {
+class UserSession(
     @Column(name = "token", nullable = false, updatable = false, unique = true)
-    private String token;
+    var token: String,
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.DETACH)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
-
-    public UserSession(String token, User user) {
-        this.token = token;
-        this.user = user;
-    }
-
-    public UserSession() {
-    }
-
-    public static UserSessionBuilder builder() {
-        return new UserSessionBuilder();
-    }
-
-    public String getToken() {
-        return this.token;
-    }
-
-    public User getUser() {
-        return this.user;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public static class UserSessionBuilder {
-        private String token;
-        private User user;
-
-        UserSessionBuilder() {
-        }
-
-        public UserSessionBuilder token(String token) {
-            this.token = token;
-            return this;
-        }
-
-        public UserSessionBuilder user(User user) {
-            this.user = user;
-            return this;
-        }
-
-        public UserSession build() {
-            return new UserSession(this.token, this.user);
-        }
-
-        public String toString() {
-            return "UserSession.UserSessionBuilder(token=" + this.token + ", user=" + this.user + ")";
-        }
-    }
-}
+    var user: User
+) : EntityBase()

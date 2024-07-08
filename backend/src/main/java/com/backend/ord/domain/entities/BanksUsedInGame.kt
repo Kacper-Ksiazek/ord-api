@@ -1,50 +1,25 @@
-package com.backend.ord.domain.entities;
+package com.backend.ord.domain.entities
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import java.util.UUID;
+import jakarta.persistence.*
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
+import java.util.*
 
 @Entity
 @Table(name = "banks_used_in_games")
-public class BanksUsedInGame {
+class BanksUsedInGame(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
-    private UUID id;
+    var id: UUID,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "game_id")
-    private Game game;
+    var game: Game,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "bank_id")
-    private Bank bank;
-
-    public UUID getId() {
-        return this.id;
-    }
-
-    public Game getGame() {
-        return this.game;
-    }
-
-    public Bank getBank() {
-        return this.bank;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
-    public void setBank(Bank bank) {
-        this.bank = bank;
-    }
-}
+    var bank: Bank,
+)

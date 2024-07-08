@@ -1,48 +1,23 @@
-package com.backend.ord.domain.entities.abstracts;
+package com.backend.ord.domain.entities.abstracts
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.Instant;
-import java.util.UUID;
+import jakarta.persistence.*
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
+import java.time.Instant
+import java.util.*
 
 @MappedSuperclass
 @Access(AccessType.FIELD)
-public abstract class EntityBase {
+abstract class EntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    var id: UUID? = null
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
-    private Instant createdAt;
+    var createdAt: Instant? = null
 
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
-    private Instant updatedAt;
-
-    public UUID getId() {
-        return this.id;
-    }
-
-    public Instant getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    var updatedAt: Instant? = null
 }

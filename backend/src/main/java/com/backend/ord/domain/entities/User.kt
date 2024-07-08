@@ -1,143 +1,46 @@
-package com.backend.ord.domain.entities;
+package com.backend.ord.domain.entities
 
-import com.backend.ord.domain.entities.abstracts.EntityBase;
-import com.backend.ord.enums.UserRole;
-import jakarta.persistence.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
+import com.backend.ord.domain.entities.abstracts.EntityBase
+import com.backend.ord.enums.UserRole
+import jakarta.persistence.*
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+import java.util.List
 
 @Entity
 @Table(name = "users")
-public class User extends EntityBase implements UserDetails {
-    private String name;
+class User(
+    var name: String,
 
     @Column(nullable = false, unique = true)
-    private String email;
+    var email: String,
 
     @Column(nullable = false, unique = true)
-    private String password;
+    private var password: String,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private UserRole role = UserRole.USER;
-
-    public User(String name, String email, String password, UserRole role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    public User() {
-    }
-
-    public static UserBuilder builder() {
-        return new UserBuilder();
-    }
+    var role: UserRole = UserRole.USER,
+) : EntityBase(), UserDetails {
 
     // Java Security methods:
+    override fun getAuthorities(): Collection<GrantedAuthority> =
+        listOf(SimpleGrantedAuthority(role.name))
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
+    override fun getUsername(): String = email
 
-    @Override
-    public String getUsername() {
-        return email;
-    }
+    override fun isAccountNonExpired(): Boolean = true
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    override fun isAccountNonLocked(): Boolean = true
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    override fun isCredentialsNonExpired(): Boolean = true
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    override fun isEnabled(): Boolean = true
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    override fun getPassword(): String = password
 
-    public String getName() {
-        return this.name;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
-
-    public UserRole getRole() {
-        return this.role;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
-
-    public static class UserBuilder {
-        private String name;
-        private String email;
-        private String password;
-        private UserRole role;
-
-        UserBuilder() {
-        }
-
-        public UserBuilder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public UserBuilder email(String email) {
-            this.email = email;
-            return this;
-        }
-
-        public UserBuilder password(String password) {
-            this.password = password;
-            return this;
-        }
-
-        public UserBuilder role(UserRole role) {
-            this.role = role;
-            return this;
-        }
-
-        public User build() {
-            return new User(this.name, this.email, this.password, this.role);
-        }
-
-        public String toString() {
-            return "User.UserBuilder(name=" + this.name + ", email=" + this.email + ", password=" + this.password + ", role=" + this.role + ")";
-        }
+    fun setPassword(password: String) {
+        this.password = password
     }
 }

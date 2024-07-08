@@ -1,51 +1,26 @@
-package com.backend.ord.domain.entities;
+package com.backend.ord.domain.entities
 
-import com.backend.ord.domain.entities.abstracts.EntityBase;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import com.backend.ord.domain.entities.abstracts.EntityBase
+import jakarta.persistence.*
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 
 @Entity
 @Table(name = "user_progress")
-public class UserProgress extends EntityBase {
-    @NotNull
+class UserProgress(
+    @Column(name = "points_obtained", nullable = false)
+    @field:Size(min = 0)
+    var pointsObtained: Int = 0,
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    var user: User,
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "game_id", nullable = false)
-    private Game game;
-
-    @NotNull
-    @Column(name = "points_obtained", nullable = false)
-    private Integer pointsObtained;
-
-    public @NotNull User getUser() {
-        return this.user;
-    }
-
-    public @NotNull Game getGame() {
-        return this.game;
-    }
-
-    public @NotNull Integer getPointsObtained() {
-        return this.pointsObtained;
-    }
-
-    public void setUser(@NotNull User user) {
-        this.user = user;
-    }
-
-    public void setGame(@NotNull Game game) {
-        this.game = game;
-    }
-
-    public void setPointsObtained(@NotNull Integer pointsObtained) {
-        this.pointsObtained = pointsObtained;
-    }
-}
+    var game: Game
+) : EntityBase()
