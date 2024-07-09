@@ -1,0 +1,37 @@
+package com.backend.ord.services.impl
+
+import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.entities.UserSession
+import com.backend.ord.repositories.UserRepository
+import com.backend.ord.repositories.UserSessionRepository
+import com.backend.ord.services.UserService
+import org.springframework.stereotype.Service
+import java.util.*
+import java.util.stream.Collectors
+import java.util.stream.StreamSupport
+
+@Service
+class UserServiceImpl(
+    private val userRepository: UserRepository,
+    private val userSessionRepository: UserSessionRepository
+) : UserService {
+    override fun findAll(): List<User> {
+        return userRepository.findAll().toList().filterNotNull();
+    }
+
+    override fun findById(id: UUID): User? {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    override fun save(user: User): User? {
+        return userRepository.save(user)
+    }
+
+    override fun findUserByAuthToken(authToken: String): User? {
+        return userSessionRepository.findByToken(authToken)?.user
+    }
+
+    override fun findUserByEmail(email: String): User? {
+        return userRepository.findByEmail(email)
+    }
+}
