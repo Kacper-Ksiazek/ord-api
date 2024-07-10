@@ -1,18 +1,22 @@
 package com.backend.ord.domain.entities
 
 import com.backend.ord.domain.embedded.ExampleSentence
-import com.backend.ord.domain.entities.abstracts.EntityBase
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordType
 import jakarta.persistence.*
-import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
+import jakarta.persistence.Table
+import org.hibernate.annotations.*
 import org.hibernate.type.SqlTypes
+import java.time.Instant
+import java.util.*
 
 @Entity
 @Table(name = "words")
 class Word(
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID = UUID.randomUUID(),
+
     @Column(name = "origin", nullable = false)
     var origin: String,
 
@@ -49,5 +53,13 @@ class Word(
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "bank_id", nullable = true)
-    var bank: Bank? = null
-) : EntityBase()
+    var bank: Bank? = null,
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    var createdAt: Instant = Instant.now(),
+
+    @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
+    var updatedAt: Instant = Instant.now()
+)

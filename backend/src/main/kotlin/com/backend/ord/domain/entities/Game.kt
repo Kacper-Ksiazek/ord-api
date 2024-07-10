@@ -1,16 +1,22 @@
 package com.backend.ord.domain.entities
 
-import com.backend.ord.domain.entities.abstracts.EntityBase
 import com.backend.ord.enums.Game.GameStatus
 import com.backend.ord.enums.Game.GameType
 import jakarta.persistence.*
-import jakarta.validation.constraints.NotNull
+import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
+import org.hibernate.annotations.UpdateTimestamp
+import java.time.Instant
+import java.util.*
 
 @Entity
 @Table(name = "games")
 class Game(
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    var id: UUID = UUID.randomUUID(),
+
     @Column(name = "final_score", nullable = false)
     var finalScore: Int = 0,
 
@@ -28,5 +34,13 @@ class Game(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
-    var user: User
-) : EntityBase()
+    var user: User,
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    var createdAt: Instant = Instant.now(),
+
+    @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
+    var updatedAt: Instant = Instant.now()
+)
