@@ -1,6 +1,5 @@
 package com.backend.ord.domain.dto
 
-import com.backend.ord.domain.dto.abstracts.DTOBase
 import com.backend.ord.enums.UserRole
 import java.time.Instant
 import java.util.*

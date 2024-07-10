@@ -1,14 +1,20 @@
 package com.backend.ord.domain.dto
 
-import com.backend.ord.domain.dto.abstracts.DTOBase
 import com.backend.ord.enums.Game.GameStatus
 import com.backend.ord.enums.Game.GameType
+import java.time.Instant
+import java.util.*
 
 data class GameDTO(
+    val id: UUID = UUID.randomUUID(),
+
     var finalScore: Int = 0,
     var acquiredPoints: Int = 0,
     var type: GameType,
     var status: GameStatus = GameStatus.IN_PROGRESS,
 
-    val user: UserDTO
-) : DTOBase()
+    val user: UserDTO,
+
+    val createdAt: Instant = Instant.now(),
+    var updatedAt: Instant = Instant.now()
+)

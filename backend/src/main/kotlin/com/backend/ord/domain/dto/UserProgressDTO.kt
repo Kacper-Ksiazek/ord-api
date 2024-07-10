@@ -1,10 +1,16 @@
 package com.backend.ord.domain.dto
 
-import com.backend.ord.domain.dto.abstracts.DTOBase
+import java.time.Instant
+import java.util.*
 
 class UserProgressDTO(
+    val id: UUID = UUID.randomUUID(),
+
     var pointsObtained: Int = 0,
 
     var user: UserDTO,
-    var game: GameDTO
-) : DTOBase()
+    var game: GameDTO,
+
+    val createdAt: Instant = Instant.now(),
+    var updatedAt: Instant = Instant.now(),
+)

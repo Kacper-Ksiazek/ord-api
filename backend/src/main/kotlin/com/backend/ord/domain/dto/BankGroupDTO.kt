@@ -1,8 +1,14 @@
 package com.backend.ord.domain.dto
 
-import com.backend.ord.domain.dto.abstracts.DTOBase
+import java.time.Instant
+import java.util.*
 
 data class BankGroupDTO(
+    val id: UUID = UUID.randomUUID(),
+
     var name: String,
-    var color: String
-) : DTOBase()
+    var color: String,
+
+    val createdAt: Instant = Instant.now(),
+    var updatedAt: Instant = Instant.now(),
+)
