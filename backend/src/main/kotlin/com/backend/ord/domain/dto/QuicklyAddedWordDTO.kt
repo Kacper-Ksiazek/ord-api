@@ -7,8 +7,8 @@ import java.util.*
 data class QuicklyAddedWordDTO(
     val id: UUID = UUID.randomUUID(),
 
-    var typedWord: String,
-    var typedInLanguage: LanguageName,
+    var word: String,
+    var language: LanguageName,
 
     var user: UserDTO,
 

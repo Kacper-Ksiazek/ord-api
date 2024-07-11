@@ -13,7 +13,7 @@ data class GameTokensUsageDTO(
     var consumptionType: GamesGPTTokensConsumptionType,
 
     val user: UserDTO,
-    val games: GameDTO,
+    val game: GameDTO,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),

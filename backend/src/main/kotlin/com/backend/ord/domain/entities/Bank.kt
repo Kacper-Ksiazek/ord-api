@@ -32,7 +32,7 @@ class Bank(
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "group_id")
-    var group: BankGroup? = null,
+    var bankGroup: BankGroup? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

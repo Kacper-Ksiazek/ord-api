@@ -15,7 +15,6 @@ class LanguageProficiency(
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID = UUID.randomUUID(),
 
-
     @Column(name = "language", nullable = false)
     @Enumerated(EnumType.STRING)
     var language: LanguageName,

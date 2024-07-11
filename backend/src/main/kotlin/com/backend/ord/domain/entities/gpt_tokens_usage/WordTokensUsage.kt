@@ -20,10 +20,6 @@ class WordTokensUsage(
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID = UUID.randomUUID(),
 
-    @field:Size(min = 1)
-    @Column(name = "number_of_generations", nullable = false)
-    var numberOfGenerations: Int = 1,
-
     @field:Min(0)
     @Column(name = "number_of_tokens", nullable = false)
     var numberOfTokens: Int,
@@ -40,7 +36,7 @@ class WordTokensUsage(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "word_id")
-    var words: Word,
+    var word: Word,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

@@ -10,7 +10,7 @@ data class BankDTO(
     var description: String,
 
     val user: UserDTO,
-    var group: BankGroupDTO,
+    var bankGroup: BankGroupDTO? = null,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),

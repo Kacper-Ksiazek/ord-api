@@ -19,10 +19,6 @@ class GameTokensUsage(
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID = UUID.randomUUID(),
 
-    @field:Min(1)
-    @Column(name = "number_of_generations", nullable = false)
-    var numberOfGenerations: Int = 1,
-
     @field:Min(0)
     @Column(name = "number_of_tokens", nullable = false)
     var numberOfTokens: Int,
@@ -39,7 +35,7 @@ class GameTokensUsage(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "game_id")
-    var games: Game,
+    var game: Game,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

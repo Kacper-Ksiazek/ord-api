@@ -16,12 +16,11 @@ class QuicklyAddedWord(
     var id: UUID = UUID.randomUUID(),
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "language", nullable = false)
+    @Column(name = "typed_in_language", nullable = false)
     var language: LanguageName,
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "proficiency", nullable = false)
-    var proficiency: LanguageProficiencyLevel,
+    @Column(name = "typed_word", nullable = false)
+    var word: String,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
