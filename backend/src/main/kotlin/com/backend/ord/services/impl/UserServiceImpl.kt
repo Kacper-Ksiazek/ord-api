@@ -5,6 +5,7 @@ import com.backend.ord.domain.entities.UserSession
 import com.backend.ord.repositories.UserRepository
 import com.backend.ord.repositories.UserSessionRepository
 import com.backend.ord.services.UserService
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
 import java.util.stream.Collectors
@@ -20,7 +21,7 @@ class UserServiceImpl(
     }
 
     override fun findById(id: UUID): User? {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findByIdOrNull(id);
     }
 
     override fun save(user: User): User? {

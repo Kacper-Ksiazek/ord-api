@@ -15,32 +15,32 @@ class UserSessionServiceImpl(
     private val jwtService: JwtService,
     private val userService: UserService
 ) : UserSessionService {
-    override fun save(userSession: UserSession?): UserSession? {
+    override fun save(userSession: UserSession): UserSession {
         return userSessionRepository.save(userSession)
     }
 
-    override fun findByToken(token: String?): Optional<UserSession?>? {
+    override fun findByToken(token: String): UserSession? {
         return userSessionRepository.findByToken(token)
     }
 
-    override fun findByTokenAndUserId(token: String?, userId: UUID?): Optional<UserSession?>? {
+    override fun findByTokenAndUserId(token: String, userId: UUID): UserSession? {
         return userSessionRepository.findByTokenAndUserId(token, userId)
     }
 
     @Throws(UserNotFoundException::class)
-    override fun openSessionFromJWT(token: String?) {
+    override fun openSessionFromJWT(token: String) {
         val userId = jwtService.extractUserId(token)
-        val user = userService.findById(userId)!!.orElseThrow { UserNotFoundException(userId) }!!
+        val user = userService.findById(userId) ?: throw UserNotFoundException(userId = userId)
 
         userSessionRepository.save<UserSession>(
-            UserSession.Companion.builder()
-                .token(token)
-                .user(user)
-                .build()
+            UserSession(
+                token = token,
+                user = user
+            )
         )
     }
 
-    override fun deleteSessionByToken(authToken: String?) {
+    override fun deleteSessionByToken(authToken: String) {
         userSessionRepository.deleteById(authToken)
     }
 }

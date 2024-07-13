@@ -8,7 +8,7 @@ interface UserService {
 
     fun findById(id: UUID): User?
 
-    fun save(user: User): User?
+    fun save(user: User): User
 
     fun findUserByAuthToken(authToken: String): User?
 

@@ -30,6 +30,7 @@ class AuthenticationServiceImpl(
     private val userRepository: UserRepository,
     private val userSessionService: UserSessionService
 ) : AuthenticationService {
+
     @Throws(UserNotFoundException::class)
     override fun register(
         request: RegisterRequest,
@@ -37,13 +38,12 @@ class AuthenticationServiceImpl(
     ): User? {
         // Save user to database
         val user = userRepository.save( // Create user object
-            User.Companion.builder()
-                .name(request.name)
-                .email(request.email)
-                .password(passwordEncoder.encode(request.password))
-                .role(UserRole.USER)
-                .build()
-
+            User(
+                name = request.name,
+                email = request.email,
+                password = passwordEncoder.encode(request.password),
+                role = UserRole.USER
+            )
         )
 
         // Generate and assign a JWT token
@@ -58,7 +58,8 @@ class AuthenticationServiceImpl(
         request: LoginRequest,
         response: HttpServletResponse
     ): User? {
-        val user = userRepository.findByEmail(request.email).orElseThrow { UserNotFoundException() }
+        val user = userRepository.findByEmail(request.email)
+            ?: throw UserNotFoundException(email = request.email)
 
         authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(
@@ -76,7 +77,7 @@ class AuthenticationServiceImpl(
     override fun logout(request: HttpServletRequest, response: HttpServletResponse) {
         val token = jwtService
             .getJWTFromRequest(request)
-            .orElseThrow { ForbiddenException("No token found in request") }
+            ?: throw ForbiddenException("No JWT token found in request")
 
         // Delete session from database
         userSessionService.deleteSessionByToken(token)
