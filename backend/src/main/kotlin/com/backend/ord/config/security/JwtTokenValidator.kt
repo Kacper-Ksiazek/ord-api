@@ -8,10 +8,13 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class JwtTokenValidator(private val jwtService: JwtService, private val userSessionService: UserSessionService) {
+class JwtTokenValidator(
+    private val jwtService: JwtService,
+    private val userSessionService: UserSessionService
+) {
     @Throws(NoCorrespondingUserSessionException::class)
     fun validate(
-        jwtToken: String?,
+        jwtToken: String,
         userDetails: UserDetails
     ): Boolean {
         val username = jwtService.extractUsername(jwtToken)
@@ -23,32 +26,33 @@ class JwtTokenValidator(private val jwtService: JwtService, private val userSess
         validateTokenExpiration(jwtToken)
 
         // Check if the token's username matches the user's username
-        return userDetails.username == username
+        return userDetails.username.equals(username, ignoreCase = true)
     }
 
     @Throws(NoCorrespondingUserSessionException::class)
-    fun validateCorrespondingSession(jwtToken: String?) {
+    fun validateCorrespondingSession(jwtToken: String) {
         if (isTokenMissingCorrespondingSession(jwtToken)) {
             throw NoCorrespondingUserSessionException("No corresponding session found for the user")
         }
     }
 
     @Throws(ExpiredJwtException::class)
-    fun validateTokenExpiration(jwtToken: String?) {
+    fun validateTokenExpiration(jwtToken: String) {
         if (isTokenExpired(jwtToken)) {
             throw ExpiredJwtException(null, null, "Token has expired")
         }
     }
 
-    private fun isTokenMissingCorrespondingSession(jwtToken: String?): Boolean {
+    private fun isTokenMissingCorrespondingSession(jwtToken: String): Boolean {
         val userId = jwtService.extractUserId(jwtToken)
         val correspondingSession = userSessionService.findByTokenAndUserId(jwtToken, userId)
 
-        return correspondingSession!!.isEmpty
+        return correspondingSession == null
     }
 
-    private fun isTokenExpired(jwtToken: String?): Boolean {
-        val expirationDate = jwtService.extractExpiration(jwtToken)!!
+    private fun isTokenExpired(jwtToken: String): Boolean {
+        val expirationDate = jwtService.extractExpiration(jwtToken)
+
         return expirationDate.before(Date())
     }
 }

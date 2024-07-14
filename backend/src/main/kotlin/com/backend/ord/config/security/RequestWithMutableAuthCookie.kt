@@ -13,15 +13,12 @@ class RequestWithMutableAuthCookie(
     var authCookieValue: String? = null
 
     override fun getCookies(): Array<Cookie> {
-        val cookies = originalRequest.cookies
-
-        if (authCookieValue != null) {
-            for (cookie in cookies) {
-                if (cookie.name == authCookieName) {
-                    cookie.value = authCookieValue
-                }
+        return originalRequest.cookies.map {
+            if (it.name == authCookieName) {
+                Cookie(it.name, authCookieValue)
+            } else {
+                it
             }
-        }
-        return cookies
+        }.toTypedArray()
     }
 }

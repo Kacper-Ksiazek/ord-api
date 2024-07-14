@@ -16,41 +16,43 @@ class JwtFactory(
 ) {
     @Throws(UserNotFoundException::class)
     fun createTokenForUser(
-        user: User?,
+        user: User,
         response: HttpServletResponse
     ): String? {
         // Generate token
         val token = jwtService.generateToken(
-            getExtraClaims(user),
-            user
-        )
+            extraClaims = getExtraClaims(user),
+            userDetails = user
+        ).apply {
+            createCookie(
+                token = this,
+                response = response
+            )
 
-        // Create cookie
-        createCookie(token, response)
+            createNewUserSession(token = this)
+        }
 
-        // Create new user session
-        createNewUserSession(token)
-
-        // Return generated JWT token
         return token
     }
 
     // ### Helpers
-    private fun getExtraClaims(user: User?): Map<String?, Any?> {
+    private fun getExtraClaims(user: User): Map<String, Any> {
         val claimName = jwtProperties.userIdClaimName
+        val claimValue = user.id.toString()
 
-        return java.util.Map.of<String?, Any?>(
-            claimName, user.getId()
+        return mapOf(claimName to claimValue)
+    }
+
+    private fun createCookie(token: String, response: HttpServletResponse) {
+        createCookie(
+            name = jwtProperties.authCookieName,
+            value = token,
+            response = response
         )
     }
 
-    private fun createCookie(token: String?, response: HttpServletResponse) {
-        val cookieName = jwtProperties.authCookieName
-        createCookie(cookieName, token, response)
-    }
-
     @Throws(UserNotFoundException::class)
-    private fun createNewUserSession(token: String?) {
+    private fun createNewUserSession(token: String) {
         userSessionService.openSessionFromJWT(token)
     }
 }

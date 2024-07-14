@@ -44,13 +44,13 @@ class JwtAuthenticationFilter(
         )
 
         // Check if the authentication cookie has been received
-        jwtService.getJWTFromRequest(request).ifPresent { jwtToken: String? ->
+        jwtService.getJWTFromRequest(request)?.let { jwtToken: String ->
             // Authenticate the user using the JWT token
             handleJwtAuthenticationFilter(
-                jwtToken,
-                request,
-                response,
-                requestWithMutableAuthCookie
+                jwtToken = jwtToken,
+                request = request,
+                response = response,
+                requestWithMutableAuthCookie = requestWithMutableAuthCookie
             )
         }
 
@@ -59,7 +59,7 @@ class JwtAuthenticationFilter(
     }
 
     private fun handleJwtAuthenticationFilter(
-        jwtToken: String?,
+        jwtToken: String,
         request: HttpServletRequest,
         response: HttpServletResponse,
         requestWithMutableAuthCookie: RequestWithMutableAuthCookie
@@ -88,17 +88,22 @@ class JwtAuthenticationFilter(
             deleteCookieWithToken(response)
         } catch (e: ExpiredJwtException) {
             // Get the user associated with the expired JWT token
-            userService.findUserByAuthToken(jwtToken)!!.ifPresent { user: User ->
+            userService.findUserByAuthToken(jwtToken)!!.let { user: User ->
                 // Generate a new JWT token for the user
-                renewUserSession(user, request, response, requestWithMutableAuthCookie)
+                renewUserSession(
+                    user = user,
+                    request = request,
+                    response = response,
+                    requestWithMutableAuthCookie = requestWithMutableAuthCookie
+                )
 
                 // Remove previous session from the database
-                removePreviousSession(jwtToken)
+                removePreviousSession(jwtToken = jwtToken)
             }
         }
     }
 
-    private fun removePreviousSession(jwtToken: String?) {
+    private fun removePreviousSession(jwtToken: String) {
         userSessionService.deleteSessionByToken(jwtToken)
     }
 
@@ -126,7 +131,7 @@ class JwtAuthenticationFilter(
         deleteCookie(jwtProperties.authCookieName, response)
     }
 
-    private fun getUserDetails(jwtToken: String?): UserDetails {
+    private fun getUserDetails(jwtToken: String): UserDetails {
         return userDetailsService.loadUserByUsername(
             jwtService.extractUsername(jwtToken)
         )
@@ -137,7 +142,7 @@ class JwtAuthenticationFilter(
     }
 
     private fun updateSecurityContext(
-        userEmail: String?,
+        userEmail: String,
         request: HttpServletRequest
     ) {
         // Get the user's details

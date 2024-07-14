@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @ConfigurationProperties(prefix = "jwt")
-open class JwtProperties(
+class JwtProperties(
     var authCookieName: String = "",
     var userIdClaimName: String = "",
     var secretKey: String = "",

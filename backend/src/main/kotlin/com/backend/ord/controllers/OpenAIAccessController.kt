@@ -32,14 +32,14 @@ class OpenAIAccessController(
 
         // Create the request
         val request = OpenAIRequestFactory.createRequest(
-            String.format(
+            prompt = String.format(
                 "Generate %d example sentences in %s language with %s level of proficiency for the word \"%s\".",
                 examplesCount,
                 language.name,
                 level.name,
                 word
             ),
-            "Generate response in JSON array format: [\"example1\", \"example2\", ...]"
+            context = "Generate response in JSON array format: [\"example1\", \"example2\", ...]"
         )
 
         // Send the request to OpenAI
