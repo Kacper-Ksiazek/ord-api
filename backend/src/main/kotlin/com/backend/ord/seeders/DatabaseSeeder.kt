@@ -38,12 +38,16 @@ class DatabaseSeeder(
     }
 
     private fun populateDatabase() {
-        IntStream.range(0, 10).forEach { i: Int ->
+        IntStream.range(0, 10).forEach { _: Int ->
             val createdUser = userSeeder.insertRow()
             val languages = languageProficiencyFactory.mockUniqueLanguages(3)
-            languages!!.forEach(Consumer { language: LanguageName? ->
-                languageProficiencySeeder.insertRow(createdUser, language)
-            })
+
+            languages.forEach {
+                languageProficiencySeeder.insertRow(
+                    user = createdUser,
+                    languageName = it
+                )
+            }
         }
     }
 

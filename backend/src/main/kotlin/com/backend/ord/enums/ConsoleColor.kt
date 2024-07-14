@@ -1,6 +1,6 @@
 package com.backend.ord.enums
 
-enum class ConsoleColor(val aNSICode: String) {
+enum class ConsoleColor(val ansiCode: String) {
     Blue("\u001B[34m"),
     Red("\u001B[31m"),
     Green("\u001B[32m"),

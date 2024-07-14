@@ -6,14 +6,22 @@ import com.backend.ord.seeders.factories.UserMockFactory
 import org.springframework.stereotype.Component
 
 @Component
-class UserSeeder(private val userRepository: UserRepository, private val userMockFactory: UserMockFactory) :
+class UserSeeder(
+    private val userRepository: UserRepository,
+    private val userMockFactory: UserMockFactory
+) :
     SeederInterface<User> {
     override fun insertRow(): User {
         return userRepository.save(userMockFactory.mockEntity())
     }
 
-    fun insertRowWithCredentials(email: String?, password: String?): User {
-        return userRepository.save(userMockFactory.mockEntityWithCredentials(email, password))
+    fun insertRowWithCredentials(email: String, password: String): User {
+        return userRepository.save(
+            userMockFactory.mockEntity(
+                email = email,
+                password = password
+            )
+        )
     }
 
     override fun deleteAll() {

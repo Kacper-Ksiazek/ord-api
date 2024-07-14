@@ -24,7 +24,7 @@ class UserServiceImpl(
         return userRepository.findByIdOrNull(id);
     }
 
-    override fun save(user: User): User? {
+    override fun save(user: User): User {
         return userRepository.save(user)
     }
 

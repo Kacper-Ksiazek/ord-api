@@ -23,14 +23,12 @@ class LanguageProficiencySeeder(
         languageProficiencyRepository.deleteAll()
     }
 
-    fun insertRow(user: User?): LanguageProficiency {
+    fun insertRow(
+        user: User,
+        languageName: LanguageName? = null
+    ): LanguageProficiency {
         val data = languageProficiencyFactory.mockEntity(user)
-        return languageProficiencyRepository.save(data)
-    }
-
-    fun insertRow(user: User?, language: LanguageName?): LanguageProficiency {
-        val data = languageProficiencyFactory.mockEntity(user)
-        data.language = language
+        languageName?.also { data.language = it }
 
         return languageProficiencyRepository.save(data)
     }

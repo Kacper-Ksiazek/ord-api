@@ -32,7 +32,7 @@ class UserSessionServiceImpl(
         val userId = jwtService.extractUserId(token)
         val user = userService.findById(userId) ?: throw UserNotFoundException(userId = userId)
 
-        userSessionRepository.save<UserSession>(
+        userSessionRepository.save(
             UserSession(
                 token = token,
                 user = user

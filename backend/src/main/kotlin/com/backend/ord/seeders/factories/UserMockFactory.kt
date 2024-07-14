@@ -6,22 +6,20 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 
 @Component
-class UserMockFactory(private val passwordEncoder: PasswordEncoder) : AbstractFactory() {
-    fun mockEntity(): User {
-        return User.Companion.builder()
-            .name(AbstractFactory.Companion.faker.name().fullName())
-            .email(AbstractFactory.Companion.faker.internet().emailAddress())
-            .password(passwordEncoder.encode(AbstractFactory.Companion.faker.internet().password()))
-            .role(UserRole.USER)
-            .build()
-    }
-
-    fun mockEntityWithCredentials(email: String?, password: String?): User {
-        return User.Companion.builder()
-            .name(AbstractFactory.Companion.faker.name().fullName())
-            .email(email)
-            .password(passwordEncoder.encode(password))
-            .role(UserRole.USER)
-            .build()
+class UserMockFactory(
+    private val passwordEncoder: PasswordEncoder
+) : AbstractFactory() {
+    fun mockEntity(
+        name: String = faker.name().fullName(),
+        email: String = faker.internet().emailAddress(),
+        password: String = faker.internet().password(),
+        role: UserRole = UserRole.USER
+    ): User {
+        return User(
+            name = name,
+            email = email,
+            password = passwordEncoder.encode(password),
+            role = role
+        )
     }
 }
