@@ -1,15 +1,12 @@
 package com.backend.ord.services.impl
 
 import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.UserSession
 import com.backend.ord.repositories.UserRepository
 import com.backend.ord.repositories.UserSessionRepository
 import com.backend.ord.services.UserService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
-import java.util.stream.Collectors
-import java.util.stream.StreamSupport
 
 @Service
 class UserServiceImpl(
@@ -17,11 +14,11 @@ class UserServiceImpl(
     private val userSessionRepository: UserSessionRepository
 ) : UserService {
     override fun findAll(): List<User> {
-        return userRepository.findAll().toList().filterNotNull();
+        return userRepository.findAll().toList().filterNotNull()
     }
 
     override fun findById(id: UUID): User? {
-        return userRepository.findByIdOrNull(id);
+        return userRepository.findByIdOrNull(id)
     }
 
     override fun save(user: User): User {

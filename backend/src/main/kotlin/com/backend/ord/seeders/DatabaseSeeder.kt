@@ -1,6 +1,5 @@
 package com.backend.ord.seeders
 
-import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.LanguageProficiencyFactory
@@ -12,7 +11,6 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Profile
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import java.util.function.Consumer
 import java.util.stream.IntStream
 
 @Component
