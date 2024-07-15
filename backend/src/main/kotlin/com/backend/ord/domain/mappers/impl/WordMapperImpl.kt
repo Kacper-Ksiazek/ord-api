@@ -26,7 +26,7 @@ class WordMapperImpl(
             exampleSentences = dto.exampleSentences,
 
             user = userMapper.toEntity(dto.user),
-            bank = bankMapper.toEntity(dto.bank),
+            bank = bankMapper.toEntityOrNull(dto.bank),
 
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt
@@ -47,7 +47,7 @@ class WordMapperImpl(
             exampleSentences = entity.exampleSentences,
 
             user = userMapper.toDTO(entity.user),
-            bank = bankMapper.toDTO(entity.bank),
+            bank = bankMapper.toDTOOrNull(entity.bank),
 
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt

@@ -5,11 +5,11 @@ interface MapperBase<Entity, DTO> {
 
     fun toEntity(dto: DTO): Entity
 
-    fun toDTO(entity: Entity?): DTO? {
+    fun toDTOOrNull(entity: Entity?): DTO? {
         return entity?.let { toDTO(it) }
     }
 
-    fun toEntity(dto: DTO?): Entity? {
+    fun toEntityOrNull(dto: DTO?): Entity? {
         return dto?.let { toEntity(it) }
     }
 }

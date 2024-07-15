@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.core.env.Environment
 
 @SpringBootApplication
-open class BackendApplication(private val environment: Environment) : CommandLineRunner {
+class BackendApplication(private val environment: Environment) : CommandLineRunner {
 
     override fun run(vararg args: String) {
         Console.printCyan("The main application has started")
