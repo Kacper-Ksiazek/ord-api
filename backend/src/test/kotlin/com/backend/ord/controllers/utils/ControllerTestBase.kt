@@ -14,21 +14,20 @@ import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import java.io.UnsupportedEncodingException
+import kotlin.test.assertNotNull
 
 @AutoConfigureMockMvc
 abstract class ControllerTestBase(
     protected val mockMvc: MockMvc,
-    private val objectMapper: ObjectMapper,
+    val objectMapper: ObjectMapper,
     private val jwtProperties: JwtProperties
 ) {
-    @Throws(Exception::class)
     fun mockedAuthenticatedUser(): MockedAuthenticatedUser {
         val authUserEmailAddress = "random.authenticated.email@gmail.com"
         return mockedAuthenticatedUser(authUserEmailAddress)
     }
 
-    @Throws(Exception::class)
-    fun mockedAuthenticatedUser(email: String?): MockedAuthenticatedUser {
+    fun mockedAuthenticatedUser(email: String): MockedAuthenticatedUser {
         // Create a request
         val request = MockMvcRequestBuilders.post("/api/v1/auth/register")
             .contentType(MediaType.APPLICATION_JSON)
@@ -49,8 +48,11 @@ abstract class ControllerTestBase(
         ).andReturn().response
 
         // Parse the response
-        val authCookie = response.getCookie(jwtProperties.authCookieName)!!
-        val userInfo: UserDTO = objectMapper.readValue(response.contentAsString, UserDTO::class.java)
+        val authCookie = response.getCookie(jwtProperties.authCookieName).also {
+            assertNotNull(it) { "Failed to get the auth cookie from the response" }
+        }!!
+
+        val userInfo: UserDTO = getResponseBody(response)
 
         return MockedAuthenticatedUser(
             token = authCookie.value,
@@ -60,13 +62,18 @@ abstract class ControllerTestBase(
         )
     }
 
-    @Throws(UnsupportedEncodingException::class, JsonProcessingException::class)
-    fun <T> getResponseBody(result: MvcResult): T {
-        return objectMapper.readValue(result.response.contentAsString, object : TypeReference<T>() {})
-    }
+    inline fun <reified T> getResponseBody(source: Any): T {
+        val content = when (source) {
+            is MvcResult -> source.response.contentAsString
+            is MockHttpServletResponse -> source.contentAsString
+            else -> throw IllegalArgumentException("Unsupported source type")
+        }
 
-    @Throws(UnsupportedEncodingException::class, JsonProcessingException::class)
-    fun <T> getResponseBody(response: MockHttpServletResponse): T {
-        return objectMapper.readValue(response.contentAsString, object : TypeReference<T>() {})
+        val result = objectMapper.readValue(content, object : TypeReference<T>() {});
+
+        assert(result != null) { "Failed to parse response body! The response body is empty" }
+        assert(result is T) { "Failed to parse response body! The response body is not of the expected type" }
+
+        return result;
     }
 }
