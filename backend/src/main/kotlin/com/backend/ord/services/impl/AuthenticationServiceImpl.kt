@@ -35,7 +35,7 @@ class AuthenticationServiceImpl(
     override fun register(
         request: RegisterRequest,
         response: HttpServletResponse
-    ): User? {
+    ): User {
         // Save user to database
         val user = userRepository.save( // Create user object
             User(
@@ -57,7 +57,7 @@ class AuthenticationServiceImpl(
     override fun login(
         request: LoginRequest,
         response: HttpServletResponse
-    ): User? {
+    ): User {
         val user = userRepository.findByEmail(request.email)
             ?: throw UserNotFoundException(email = request.email)
 
@@ -74,7 +74,10 @@ class AuthenticationServiceImpl(
     }
 
     @Throws(ForbiddenException::class)
-    override fun logout(request: HttpServletRequest, response: HttpServletResponse) {
+    override fun logout(
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ) {
         val token = jwtService
             .getJWTFromRequest(request)
             ?: throw ForbiddenException("No JWT token found in request")

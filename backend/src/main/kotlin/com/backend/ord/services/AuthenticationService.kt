@@ -13,13 +13,13 @@ interface AuthenticationService {
     fun register(
         request: RegisterRequest,
         response: HttpServletResponse
-    ): User?
+    ): User
 
     @Throws(UserNotFoundException::class)
     fun login(
         request: LoginRequest,
         response: HttpServletResponse
-    ): User?
+    ): User
 
     @Throws(ForbiddenException::class)
     fun logout(request: HttpServletRequest, response: HttpServletResponse)
