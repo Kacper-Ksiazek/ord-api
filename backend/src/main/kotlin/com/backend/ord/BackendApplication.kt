@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.core.env.Environment
 
 @SpringBootApplication
-class BackendApplication(private val environment: Environment) : CommandLineRunner {
+class BackendApplication(
+    private val environment: Environment
+) : CommandLineRunner {
 
     override fun run(vararg args: String) {
         Console.printCyan("The main application has started")
@@ -24,11 +26,9 @@ class BackendApplication(private val environment: Environment) : CommandLineRunn
             }
         }
     }
-
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            SpringApplication.run(BackendApplication::class.java, *args)
-        }
-    }
 }
+
+fun main(args: Array<String>) {
+    SpringApplication.run(BackendApplication::class.java, *args)
+}
+
