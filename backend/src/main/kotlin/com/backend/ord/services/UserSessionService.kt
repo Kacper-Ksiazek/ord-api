@@ -14,5 +14,5 @@ interface UserSessionService {
     @Throws(UserNotFoundException::class)
     fun openSessionFromJWT(token: String)
 
-    fun deleteSessionByToken(authToken: String)
+    fun deleteSessionByToken(authToken: String): Unit
 }

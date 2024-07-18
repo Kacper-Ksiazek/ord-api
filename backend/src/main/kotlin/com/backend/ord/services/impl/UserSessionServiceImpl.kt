@@ -6,6 +6,7 @@ import com.backend.ord.exceptions.UserNotFoundException
 import com.backend.ord.repositories.UserSessionRepository
 import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -40,7 +41,8 @@ class UserSessionServiceImpl(
         )
     }
 
-    override fun deleteSessionByToken(authToken: String) {
-        userSessionRepository.deleteById(authToken)
+    @Transactional
+    override fun deleteSessionByToken(authToken: String): Unit {
+        userSessionRepository.deleteByToken(authToken);
     }
 }

@@ -12,6 +12,7 @@ import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.Cookie
+import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
@@ -244,6 +245,7 @@ class TestAuthController @Autowired constructor(
     // ------------------------------
 
     @Test
+    @Transactional
     fun `Logout - endpoint should return 200 and delete the session`() {
         // First, generate an authenticated user
         val authenticatedUser = this.mockedAuthenticatedUser()
