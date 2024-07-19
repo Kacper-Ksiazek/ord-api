@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS "bank_groups"
     "id"         UUID PRIMARY KEY,
 
     "name"       VARCHAR(64) NOT NULL,
-    "color"      VARCHAR(6)  NOT NULL,
+    -- Color in hex format, e.g. #FF0000 ( 7 characters  long )
+    "color"      VARCHAR(7)  NOT NULL,
 
     "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
