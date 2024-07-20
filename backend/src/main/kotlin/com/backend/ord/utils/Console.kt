@@ -1,6 +1,7 @@
 package com.backend.ord.utils
 
 import com.backend.ord.enums.ConsoleColor
+import kotlin.reflect.KFunction
 
 object Console {
     fun print(message: String?) {
@@ -23,13 +24,19 @@ object Console {
         repeat(lines) { println() }
     }
 
-    fun ensureFunctionSuccess(introMsg: String?, function: () -> Unit) {
+    fun ensureFunctionSuccess(introMsg: String?, function: () -> Any) {
         print(introMsg)
         try {
-            function()
+            val outroMsg = function();
             printGreen(" ✅ DONE\n")
+
+            if (outroMsg is String) {
+                print(outroMsg)
+            }
         } catch (e: Exception) {
             printRed(" ❌ ERROR\n")
+
+            throw e
         }
     }
 

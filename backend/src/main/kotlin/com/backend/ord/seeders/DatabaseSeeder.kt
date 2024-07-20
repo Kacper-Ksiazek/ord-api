@@ -35,10 +35,13 @@ class DatabaseSeeder(
         addBreakLine(1)
     }
 
-    private fun populateDatabase() {
-        IntStream.range(0, 10).forEach { _: Int ->
+    private fun populateDatabase(): String {
+        val numberOfUsers = 10;
+        val numberOfLanguagesPerUser = 3;
+
+        IntStream.range(0, numberOfUsers).forEach { _: Int ->
             val createdUser = userSeeder.insertRow()
-            val languages = languageProficiencyFactory.mockUniqueLanguages(3)
+            val languages = languageProficiencyFactory.mockUniqueLanguages(numberOfLanguagesPerUser)
 
             languages.forEach {
                 languageProficiencySeeder.insertRow(
@@ -47,6 +50,14 @@ class DatabaseSeeder(
                 )
             }
         }
+
+        return listOf(
+            "$numberOfUsers users mocked",
+            "${numberOfUsers * numberOfLanguagesPerUser} language mocked"
+        ).joinToString(separator = "\n") {
+            "   - $it"
+        }
+
     }
 
     private fun removeExistingData() {

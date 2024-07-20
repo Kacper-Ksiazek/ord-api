@@ -9,7 +9,11 @@ data class GameDTO(
     val id: UUID = UUID.randomUUID(),
 
     var finalScore: Int = 0,
+    var accuracyRate: Int = 0,
     var acquiredPoints: Int = 0,
+
+    var duration: String = "00:00:00",
+
     var type: GameType,
     var status: GameStatus = GameStatus.IN_PROGRESS,
 
