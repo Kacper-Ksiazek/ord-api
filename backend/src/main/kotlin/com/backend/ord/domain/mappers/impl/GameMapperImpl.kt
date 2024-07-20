@@ -14,10 +14,12 @@ class GameMapperImpl(
         return Game(
             id = dto.id,
 
-            finalScore = dto.finalScore,
-            acquiredPoints = dto.acquiredPoints,
             type = dto.type,
             status = dto.status,
+            duration = dto.duration,
+            acquiredPoints = dto.acquiredPoints,
+            accuracyRate = dto.accuracyRate,
+
             user = userMapper.toEntity(dto.user),
 
             createdAt = dto.createdAt,
@@ -29,10 +31,12 @@ class GameMapperImpl(
         return GameDTO(
             id = entity.id,
 
-            finalScore = entity.finalScore,
-            acquiredPoints = entity.acquiredPoints,
             type = entity.type,
             status = entity.status,
+            duration = entity.duration,
+            accuracyRate = entity.accuracyRate,
+            acquiredPoints = entity.acquiredPoints,
+
             user = userMapper.toDTO(entity.user),
 
             createdAt = entity.createdAt,

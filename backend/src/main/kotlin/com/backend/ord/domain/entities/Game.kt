@@ -17,11 +17,14 @@ class Game(
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID = UUID.randomUUID(),
 
-    @Column(name = "final_score", nullable = false)
-    var finalScore: Int = 0,
+    @Column(name = "accuracy_rate", nullable = false)
+    var accuracyRate: Int = 0,
 
     @Column(name = "acquired_points", nullable = false)
     var acquiredPoints: Int = 0,
+
+    @Column(name = "duration", nullable = false)
+    var duration: String = "00:00:00",
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", columnDefinition = "game_type(0, 0) not null", nullable = false)
