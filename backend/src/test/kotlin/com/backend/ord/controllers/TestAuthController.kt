@@ -7,6 +7,7 @@ import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.dto.UserDTO
 import com.backend.ord.domain.entities.UserSession
+import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
@@ -46,7 +47,8 @@ internal class AuthRequestFactory(
                 RegisterRequest(
                     name = "Test User",
                     email = EMAIL,
-                    password = PASSWORD
+                    password = PASSWORD,
+                    nativeLanguage = LanguageName.POLISH
                 )
             )
         )

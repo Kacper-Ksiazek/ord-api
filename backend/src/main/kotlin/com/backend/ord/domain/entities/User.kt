@@ -1,5 +1,6 @@
 package com.backend.ord.domain.entities
 
+import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.UserRole
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -29,6 +30,10 @@ class User(
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     var role: UserRole = UserRole.USER,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "native_language", nullable = false)
+    var nativeLanguage: LanguageName,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

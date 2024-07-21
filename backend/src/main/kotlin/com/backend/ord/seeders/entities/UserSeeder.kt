@@ -15,6 +15,10 @@ class UserSeeder(
         return userRepository.save(userMockFactory.mockEntity())
     }
 
+    fun insertRow(user: User): User {
+        return userRepository.save(user)
+    }
+
     fun insertRowWithCredentials(email: String, password: String): User {
         return userRepository.save(
             userMockFactory.mockEntity(
