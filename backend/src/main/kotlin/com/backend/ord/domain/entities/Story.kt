@@ -28,9 +28,14 @@ class Story(
     var explanations: MutableMap<String, String> = mutableMapOf(),
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id")
     var user: User,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "story_context_id")
+    var storyContext: StoryContext,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

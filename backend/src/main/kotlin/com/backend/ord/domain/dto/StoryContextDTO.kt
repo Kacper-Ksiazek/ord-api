@@ -1,18 +1,18 @@
 package com.backend.ord.domain.dto
 
+import com.backend.ord.enums.StoryContextType
 import java.time.Instant
 import java.util.*
 
-data class StoryDTO(
+data class StoryContextDTO(
     val id: UUID = UUID.randomUUID(),
 
     var title: String,
-    var content: String,
-    var explanations: MutableMap<String, String> = mutableMapOf(),
+    var type: StoryContextType,
+    var prompt: String,
 
     val user: UserDTO,
-    val storyContext: StoryContextDTO,
 
     val createdAt: Instant = Instant.now(),
-    var updatedAt: Instant = Instant.now(),
+    var updatedAt: Instant = Instant.now()
 )
