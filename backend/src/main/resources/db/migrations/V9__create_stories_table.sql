@@ -1,15 +1,17 @@
 CREATE TABLE IF NOT EXISTS "stories"
 (
-    id           UUID PRIMARY KEY,
+    id               UUID PRIMARY KEY,
 
-    user_id      UUID        REFERENCES users (id) ON DELETE SET NULL,
-
-    title        VARCHAR(64) NOT NULL,
-    content      TEXT        NOT NULL,
+    title            VARCHAR(64) NOT NULL,
+    content          TEXT        NOT NULL,
 
     -- Map<String, String> of explanations
-    explanations JSONB       NOT NULL,
+    explanations     JSONB       NOT NULL,
 
-    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    user_id          UUID        NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    -- This relation is added later on via altering the table
+    -- story_context_id UUID        NOT NULL REFERENCES story_contexts (id) ON DELETE CASCADE,
+
+    "created_at"     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    "updated_at"     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
