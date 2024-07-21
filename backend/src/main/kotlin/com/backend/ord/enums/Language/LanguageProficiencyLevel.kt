@@ -1,5 +1,7 @@
 package com.backend.ord.enums.Language
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 enum class LanguageProficiencyLevel {
     A1,
     A2,
