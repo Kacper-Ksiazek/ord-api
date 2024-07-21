@@ -1,9 +1,8 @@
-package com.backend.ord.controllers.utils
+package com.backend.ord.controllers.utils_for_testing
 
 import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.domain.dto.UserDTO
-import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -13,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import java.io.UnsupportedEncodingException
 import kotlin.test.assertNotNull
 
 @AutoConfigureMockMvc
