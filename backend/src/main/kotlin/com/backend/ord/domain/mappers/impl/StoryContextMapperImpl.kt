@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class StoryContextMapperImpl(
-    private val userMapper: UserMapper,
-    private val storyMapper: StoryMapper
+    private val userMapper: UserMapper
 ) : StoryContextMapper {
     override fun toDTO(entity: StoryContext): StoryContextDTO {
         return StoryContextDTO(
@@ -21,7 +20,6 @@ class StoryContextMapperImpl(
             prompt = entity.prompt,
 
             user = userMapper.toDTO(entity.user),
-            story = storyMapper.toDTO(entity.story),
 
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
@@ -37,7 +35,6 @@ class StoryContextMapperImpl(
             prompt = dto.prompt,
 
             user = userMapper.toEntity(dto.user),
-            story = storyMapper.toEntity(dto.story),
 
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt

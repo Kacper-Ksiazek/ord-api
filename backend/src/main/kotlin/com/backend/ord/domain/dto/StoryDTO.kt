@@ -11,6 +11,7 @@ data class StoryDTO(
     var explanations: MutableMap<String, String> = mutableMapOf(),
 
     val user: UserDTO,
+    val storyContext: StoryContextDTO,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),

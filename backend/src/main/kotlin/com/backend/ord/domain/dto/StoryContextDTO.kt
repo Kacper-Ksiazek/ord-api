@@ -12,7 +12,6 @@ data class StoryContextDTO(
     var prompt: String,
 
     val user: UserDTO,
-    val story: StoryDTO,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now()

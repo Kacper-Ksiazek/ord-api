@@ -31,11 +31,6 @@ class StoryContext(
     @JoinColumn(name = "user_id")
     var user: User,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "story_id")
-    var story: Story,
-
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     val createdAt: Instant = Instant.now(),
