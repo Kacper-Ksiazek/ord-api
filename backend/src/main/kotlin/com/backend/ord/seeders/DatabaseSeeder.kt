@@ -1,8 +1,13 @@
 package com.backend.ord.seeders
 
+import com.backend.ord.domain.entities.User
+import com.backend.ord.enums.Language.LanguageName
+import com.backend.ord.enums.Language.LanguageProficiencyLevel
+import com.backend.ord.enums.UserRole
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.LanguageProficiencyFactory
+import com.backend.ord.utils.Console
 import com.backend.ord.utils.Console.addBreakLine
 import com.backend.ord.utils.Console.ensureFunctionSuccess
 import com.backend.ord.utils.Console.printCyan
@@ -10,6 +15,7 @@ import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Profile
 import org.springframework.core.annotation.Order
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.util.stream.IntStream
 
@@ -18,6 +24,7 @@ import java.util.stream.IntStream
 @Order(Int.MIN_VALUE)
 class DatabaseSeeder(
     private val userSeeder: UserSeeder,
+    private val passwordEncoder: PasswordEncoder,
     private val languageProficiencySeeder: LanguageProficiencySeeder,
     private val languageProficiencyFactory: LanguageProficiencyFactory
 ) : ApplicationRunner {
@@ -31,8 +38,14 @@ class DatabaseSeeder(
         // Step 2: Insert data into the database
         ensureFunctionSuccess("2. Inserting new data into database...") { this.populateDatabase() }
 
+        // Step 3: Create my user
+        ensureFunctionSuccess("3. Creating Kacper Książek user...") { this.createMyUser() }
+
         // Add a break line at the end
         addBreakLine(1)
+
+        // Print a message to the console
+        Console.printGreen("Database seeded successfully!\n")
     }
 
     private fun populateDatabase(): String {
@@ -57,7 +70,32 @@ class DatabaseSeeder(
         ).joinToString(separator = "\n") {
             "   - $it"
         }
+    }
 
+    private fun createMyUser() {
+        // 1. Create a user
+        val user = userSeeder.insertRow(
+            User(
+                name = "Kacper Książek",
+                email = "kacper.b.ksiazek@gmail.com",
+                password = passwordEncoder.encode("zaq1"),
+                nativeLanguage = LanguageName.POLISH,
+                role = UserRole.ADMIN
+            )
+        )
+
+        // 2. Create a language proficiency
+        languageProficiencySeeder.insertRow(
+            user = user,
+            languageName = LanguageName.ENGLISH,
+            languageProficiency = LanguageProficiencyLevel.C1
+        )
+
+        languageProficiencySeeder.insertRow(
+            user = user,
+            languageName = LanguageName.GERMAN,
+            languageProficiency = LanguageProficiencyLevel.A2
+        )
     }
 
     private fun removeExistingData() {
