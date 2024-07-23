@@ -43,7 +43,7 @@ class Word(
 
     @Column(name = "example_sentences", nullable = false)
     @JdbcTypeCode(SqlTypes.JSON)
-    var exampleSentences: MutableSet<ExampleSentence> = mutableSetOf(),
+    var exampleSentences: Set<ExampleSentence> = emptySet(),
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

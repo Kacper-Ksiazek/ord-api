@@ -17,7 +17,7 @@ class WordDTO(
     var translatedTo: LanguageName,
 
     var points: Int = 0,
-    var exampleSentences: MutableSet<ExampleSentence> = mutableSetOf(),
+    var exampleSentences: Set<ExampleSentence> = emptySet(),
 
     val user: UserDTO,
     var bank: BankDTO? = null,

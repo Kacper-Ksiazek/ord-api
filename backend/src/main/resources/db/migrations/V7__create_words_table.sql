@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS "words"
     -- The total number of tokens used to generate examples, manuals, explanations, etc.
     "used_gpt_tokens"   INTEGER       NOT NULL   DEFAULT 0 CHECK ( "used_gpt_tokens" >= 0 ),
 
-    -- List<ExampleSentence> of example sentences which are used to explain the word in context
+    -- Set<ExampleSentence> of example sentences which are used to explain the word in context
     "example_sentences" JSONB         NOT NULL,
 
     "bank_id"           UUID                     DEFAULT NULL REFERENCES "banks" ("id") ON DELETE SET NULL,
