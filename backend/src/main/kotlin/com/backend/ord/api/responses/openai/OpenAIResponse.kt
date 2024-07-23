@@ -10,7 +10,7 @@ class OpenAIResponse(
     val usage: Usage,
     val system_fingerprint: String?
 ) {
-    val actualResponse: String
+    val data: String
         get() = choices[0].message.content;
 
     class Usage(
