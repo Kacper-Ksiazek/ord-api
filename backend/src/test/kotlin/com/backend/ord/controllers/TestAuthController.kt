@@ -1,13 +1,10 @@
 package com.backend.ord.controllers
 
-import com.backend.ord.api.requests.LoginRequest
-import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.controllers.request_factories.AuthRequestFactory
 import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
-import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.dto.UserDTO
 import com.backend.ord.domain.entities.UserSession
-import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
@@ -21,88 +18,11 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-
-internal class AuthRequestFactory(
-    private val PASSWORD: String,
-    private val EMAIL: String,
-    private val BASE_URL: String,
-    private val objectMapper: ObjectMapper
-) {
-    /**
-     * Create a request to /register
-     */
-    fun registerRequest(): MockHttpServletRequestBuilder = MockMvcRequestBuilders.post("$BASE_URL/register")
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
-        .content(
-            objectMapper.writeValueAsString(
-                RegisterRequest(
-                    name = "Test User",
-                    email = EMAIL,
-                    password = PASSWORD,
-                    nativeLanguage = LanguageName.POLISH
-                )
-            )
-        )
-
-    /**
-     * Create an authenticated request to /register
-     */
-    fun registerRequest(authenticatedUser: MockedAuthenticatedUser): MockHttpServletRequestBuilder =
-        this.registerRequest().cookie(authenticatedUser.authCookie)
-
-    /**
-     * Create a request to /login
-     */
-    fun loginRequest(): MockHttpServletRequestBuilder = MockMvcRequestBuilders.post("$BASE_URL/login")
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
-        .content(
-            objectMapper.writeValueAsString(
-                LoginRequest(EMAIL, PASSWORD)
-            )
-        )
-
-    /**
-     * Create an authenticated request to /login
-     */
-    fun loginRequest(authenticatedUser: MockedAuthenticatedUser): MockHttpServletRequestBuilder =
-        this.loginRequest().cookie(authenticatedUser.authCookie)
-
-    /**
-     * Create a request to /logout
-     */
-    fun logoutRequest(): MockHttpServletRequestBuilder = MockMvcRequestBuilders.delete("$BASE_URL/logout")
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
-
-    /**
-     * Create an authenticated request to /logout
-     */
-    fun logoutRequest(authenticatedUser: MockedAuthenticatedUser): MockHttpServletRequestBuilder =
-        this.logoutRequest().cookie(authenticatedUser.authCookie)
-
-    /**
-     * Create a request to /me
-     */
-    fun meRequest(): MockHttpServletRequestBuilder = MockMvcRequestBuilders.get("$BASE_URL/me")
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
-
-    /**
-     * Create an authenticated request to /me
-     */
-    fun meRequest(authenticatedUser: MockedAuthenticatedUser): MockHttpServletRequestBuilder =
-        this.meRequest().cookie(authenticatedUser.authCookie)
-}
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
