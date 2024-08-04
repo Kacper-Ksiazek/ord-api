@@ -2,6 +2,7 @@ package com.backend.ord.domain.entities
 
 import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.enums.Language.LanguageName
+import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
 import jakarta.persistence.*
 import jakarta.persistence.Table
@@ -32,6 +33,10 @@ class Word(
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     var type: WordType,
+
+    @Column(name = "word_extra_mark", nullable = false)
+    @Enumerated(EnumType.STRING)
+    var extraMark: WordExtraMark? = null,
 
     @Column(name = "translated_from", nullable = false)
     @Enumerated(EnumType.STRING)
