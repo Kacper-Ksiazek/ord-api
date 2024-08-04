@@ -3,6 +3,8 @@ package com.backend.ord.domain.entities
 import jakarta.persistence.*
 import jakarta.validation.constraints.Size
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import java.util.*
@@ -21,6 +23,11 @@ class BankGroup(
     @field:Size(max = 7)
     @Column(name = "color", nullable = false)
     var color: String,
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    var user: User,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
