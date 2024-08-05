@@ -1,10 +1,6 @@
 package com.backend.ord.services
 
 import com.backend.ord.domain.entities.Word
-import java.util.*
+import com.backend.ord.services.bases.UserResourceService
 
-interface WordService {
-    fun save(word: Word): Word;
-
-    fun findAllForUser(userId: UUID): List<Word>;
-}
+interface WordService : UserResourceService<Word>
