@@ -1,0 +1,14 @@
+package com.backend.ord.repositories
+
+import com.backend.ord.domain.entities.BankGroup
+import com.backend.ord.repositories.bases.UserResourceRepository
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.stereotype.Repository
+import java.util.UUID
+
+@Repository
+interface BankGroupRepository : UserResourceRepository<BankGroup> {
+    @Query("SELECT bg FROM BankGroup bg WHERE bg.user.id = :userId AND lower(bg.name) LIKE lower(concat('%', :phrase, '%'))")
+    override fun findAllForUserBySearchingPhrase(userId: UUID, phrase: String): List<BankGroup>
+}
