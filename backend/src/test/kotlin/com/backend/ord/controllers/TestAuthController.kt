@@ -45,7 +45,7 @@ class TestAuthController @Autowired constructor(
     @Test
     fun `HTTP 401 when trying to access restricted resource without providing the cookie token`() {
         // This method already ensures that cookie is not null
-        val authenticatedUser = this.mockedAuthenticatedUser()
+        val authenticatedUser = this.mockAuthenticatedUser()
         // Assert a session is created
         assertUserSessionHasBeenCreated(authenticatedUser.token, authenticatedUser.email)
 
@@ -103,7 +103,7 @@ class TestAuthController @Autowired constructor(
 
     @Test
     fun `Register - route should be available only for anonymous users`() {
-        val authenticatedUser = this.mockedAuthenticatedUser()
+        val authenticatedUser = this.mockAuthenticatedUser()
 
         // Create a request
         val request = authRequestFactory.registerRequest(authenticatedUser)
@@ -137,7 +137,7 @@ class TestAuthController @Autowired constructor(
 
     @Test
     fun `Login - route should be available only for anonymous users`() {
-        val authenticatedUser = this.mockedAuthenticatedUser()
+        val authenticatedUser = this.mockAuthenticatedUser()
 
         // Create a request
         val request = authRequestFactory.loginRequest(authenticatedUser)
@@ -170,7 +170,7 @@ class TestAuthController @Autowired constructor(
     @Transactional
     fun `Logout - endpoint should return 200 and delete the session`() {
         // First, generate an authenticated user
-        val authenticatedUser = this.mockedAuthenticatedUser()
+        val authenticatedUser = this.mockAuthenticatedUser()
 
         // Assert a session is created
         assertUserSessionHasBeenCreated(authenticatedUser.token, authenticatedUser.email)
@@ -208,7 +208,7 @@ class TestAuthController @Autowired constructor(
     @Test
     fun `Me - endpoint should return 200 and provide information about the user`() {
         // First, create a user
-        val authenticatedUser = this.mockedAuthenticatedUser(EMAIL)
+        val authenticatedUser = this.mockAuthenticatedUser(EMAIL)
 
         // Create a request
         val request = authRequestFactory.meRequest(authenticatedUser)

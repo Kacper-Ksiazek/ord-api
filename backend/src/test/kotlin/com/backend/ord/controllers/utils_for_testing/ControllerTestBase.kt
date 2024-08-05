@@ -21,12 +21,12 @@ abstract class ControllerTestBase(
     val objectMapper: ObjectMapper,
     private val jwtProperties: JwtProperties
 ) {
-    fun mockedAuthenticatedUser(): MockedAuthenticatedUser {
+    fun mockAuthenticatedUser(): MockedAuthenticatedUser {
         val authUserEmailAddress = "random.authenticated.email@gmail.com"
-        return mockedAuthenticatedUser(authUserEmailAddress)
+        return mockAuthenticatedUser(authUserEmailAddress)
     }
 
-    fun mockedAuthenticatedUser(email: String): MockedAuthenticatedUser {
+    fun mockAuthenticatedUser(email: String): MockedAuthenticatedUser {
         // Create a request
         val request = MockMvcRequestBuilders.post("/api/v1/auth/register")
             .contentType(MediaType.APPLICATION_JSON)
