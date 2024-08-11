@@ -34,7 +34,7 @@ class Word(
     @Enumerated(EnumType.STRING)
     var type: WordType,
 
-    @Column(name = "word_extra_mark", nullable = false)
+    @Column(name = "extra_mark", nullable = false)
     @Enumerated(EnumType.STRING)
     var extraMark: WordExtraMark? = null,
 
