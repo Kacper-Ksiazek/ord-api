@@ -1,13 +1,13 @@
 package com.backend.ord.seeders.factories
 
-import com.backend.ord.domain.entities.*
+import com.backend.ord.domain.entities.LanguageProficiency
+import com.backend.ord.domain.entities.User
 import com.backend.ord.enums.Language.LanguageName
-import com.backend.ord.enums.Language.LanguageProficiencyLevel
 import com.backend.ord.seeders.EnumValuesGenerator
 import org.springframework.stereotype.Component
 
 @Component
-class LanguageProficiencyFactory(
+class LanguageProficiencyMockFactory(
     val userMockFactory: UserMockFactory
 ) : AbstractFactory() {
     fun mockUniqueLanguages(N: Int): List<LanguageName> {

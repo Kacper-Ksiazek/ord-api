@@ -6,7 +6,7 @@ import com.backend.ord.enums.Language.LanguageProficiencyLevel
 import com.backend.ord.enums.UserRole
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
 import com.backend.ord.seeders.entities.UserSeeder
-import com.backend.ord.seeders.factories.LanguageProficiencyFactory
+import com.backend.ord.seeders.factories.LanguageProficiencyMockFactory
 import com.backend.ord.utils.Console
 import com.backend.ord.utils.Console.addBreakLine
 import com.backend.ord.utils.Console.ensureFunctionSuccess
@@ -26,7 +26,7 @@ class DatabaseSeeder(
     private val userSeeder: UserSeeder,
     private val passwordEncoder: PasswordEncoder,
     private val languageProficiencySeeder: LanguageProficiencySeeder,
-    private val languageProficiencyFactory: LanguageProficiencyFactory
+    private val languageProficiencyFactory: LanguageProficiencyMockFactory
 ) : ApplicationRunner {
     override fun run(args: ApplicationArguments) {
         // Print a message to the console

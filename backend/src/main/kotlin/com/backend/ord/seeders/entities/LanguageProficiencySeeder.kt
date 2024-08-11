@@ -5,14 +5,14 @@ import com.backend.ord.domain.entities.User
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Language.LanguageProficiencyLevel
 import com.backend.ord.repositories.LanguageProficiencyRepository
-import com.backend.ord.seeders.factories.LanguageProficiencyFactory
+import com.backend.ord.seeders.factories.LanguageProficiencyMockFactory
 import org.springframework.stereotype.Component
 
 @Component
 class LanguageProficiencySeeder(
     private val userSeeder: UserSeeder,
     private val languageProficiencyRepository: LanguageProficiencyRepository,
-    private val languageProficiencyFactory: LanguageProficiencyFactory
+    private val languageProficiencyFactory: LanguageProficiencyMockFactory
 ) : SeederInterface<LanguageProficiency> {
     override fun seedOneEntity(data: LanguageProficiency?): LanguageProficiency {
         return languageProficiencyRepository.save(
