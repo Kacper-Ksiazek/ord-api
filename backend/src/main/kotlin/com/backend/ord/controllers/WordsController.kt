@@ -1,10 +1,13 @@
 package com.backend.ord.controllers
 
-import com.backend.ord.api.requests.words.CreateWordRequest
+import com.backend.ord.api.requests.word.CreateWordRequest
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.dto.WordDTO
+import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.mappers.BankMapper
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.domain.mappers.WordMapper
+import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
@@ -15,11 +18,11 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/words")
 class WordController(
     private val jwtService: JwtService,
-//    // TODO: Implement bank service
-//    private val bankService: BankService,
+    private val bankService: BankService,
     private val wordMapper: WordMapper,
     private val userMapper: UserMapper,
-    private val wordService: WordService
+    private val wordService: WordService,
+    private val bankMapper: BankMapper
 ) {
     @GetMapping("/")
     fun getAllWords(
@@ -28,7 +31,7 @@ class WordController(
         val user = jwtService.getAuthenticatedUser(request)!!
 
         val words: List<WordDTO> = wordMapper.toDTOList(
-            wordService.findAllForUser(user.id)
+            wordService.findAll(userId = user.id)
         )
 
         return ResponseEntity.ok(words)
@@ -46,22 +49,29 @@ class WordController(
         request: HttpServletRequest,
         @RequestBody body: CreateWordRequest
     ): ResponseEntity<WordDTO> {
-        val user = jwtService.getAuthenticatedUser(request)!!
+        val user: User = jwtService.getAuthenticatedUser(request)!!
 
-        // TODO: Implement bank service
-        // val bank =
+        // Handle bank service
+
+        val bank = bankService.findByIdOrCreate(
+            bankId = body.bankId,
+            bankToCreate = body.bankToCreate,
+            user = user
+        )
 
         val wordToSave = WordDTO(
             origin = body.origin,
-            user = userMapper.toDTO(user),
             translatedTo = body.translatedTo ?: user.nativeLanguage,
             translatedFrom = body.translatedFrom,
             type = body.type,
             exampleSentences = body.exampleSentences,
             translation = body.translation,
+            extraMark = body.extraMark,
+
+            user = userMapper.toDTO(user),
+            bank = bankMapper.toDTOOrNull(bank)
         )
 
-        // TODO: Use bank repository to save the word
         val result = wordService.save(wordMapper.toEntity(wordToSave))
 
         return ResponseEntity.status(HttpStatus.CREATED).body(wordMapper.toDTO(result));
