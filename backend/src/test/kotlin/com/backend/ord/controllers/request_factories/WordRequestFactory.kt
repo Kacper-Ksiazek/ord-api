@@ -11,11 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import java.util.UUID
+import java.util.*
 
 class WordRequestFactory(
     private val BASE_URL: String,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
 ) {
     fun getSingleWordRequest() {
         // TODO
