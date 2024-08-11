@@ -4,7 +4,7 @@ interface SeederInterface<T> {
     /**
      * Insert a singular row into the database
      */
-    fun insertRow(): T
+    fun seedOneEntity(data: T? = null): T
 
     fun deleteAll()
 }

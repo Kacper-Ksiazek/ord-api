@@ -53,11 +53,11 @@ class DatabaseSeeder(
         val numberOfLanguagesPerUser = 3;
 
         IntStream.range(0, numberOfUsers).forEach { _: Int ->
-            val createdUser = userSeeder.insertRow()
+            val createdUser = userSeeder.seedOneEntity()
             val languages = languageProficiencyFactory.mockUniqueLanguages(numberOfLanguagesPerUser)
 
             languages.forEach {
-                languageProficiencySeeder.insertRow(
+                languageProficiencySeeder.seedOneEntity(
                     user = createdUser,
                     languageName = it
                 )
@@ -74,7 +74,7 @@ class DatabaseSeeder(
 
     private fun createMyUser() {
         // 1. Create a user
-        val user = userSeeder.insertRow(
+        val user = userSeeder.seedOneEntity(
             User(
                 name = "Kacper Książek",
                 email = "kacper.b.ksiazek@gmail.com",
@@ -85,13 +85,13 @@ class DatabaseSeeder(
         )
 
         // 2. Create a language proficiency
-        languageProficiencySeeder.insertRow(
+        languageProficiencySeeder.seedOneEntity(
             user = user,
             languageName = LanguageName.ENGLISH,
             languageProficiency = LanguageProficiencyLevel.C1
         )
 
-        languageProficiencySeeder.insertRow(
+        languageProficiencySeeder.seedOneEntity(
             user = user,
             languageName = LanguageName.GERMAN,
             languageProficiency = LanguageProficiencyLevel.A2

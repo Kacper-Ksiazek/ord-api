@@ -14,17 +14,17 @@ class LanguageProficiencySeeder(
     private val languageProficiencyRepository: LanguageProficiencyRepository,
     private val languageProficiencyFactory: LanguageProficiencyFactory
 ) : SeederInterface<LanguageProficiency> {
-    override fun insertRow(): LanguageProficiency {
-        // Generate user to fill the foreign key constraint
-        val user = userSeeder.insertRow()
-        return insertRow(user)
+    override fun seedOneEntity(data: LanguageProficiency?): LanguageProficiency {
+        return languageProficiencyRepository.save(
+            data ?: languageProficiencyFactory.mockEntity()
+        )
     }
 
     override fun deleteAll() {
         languageProficiencyRepository.deleteAll()
     }
 
-    fun insertRow(
+    fun seedOneEntity(
         user: User,
         languageName: LanguageName? = null,
         languageProficiency: LanguageProficiencyLevel? = null
