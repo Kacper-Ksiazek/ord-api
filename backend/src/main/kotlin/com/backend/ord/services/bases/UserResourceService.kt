@@ -11,7 +11,10 @@ interface UserResourceService<T> {
         return repository.save(t!!)
     }
 
-    fun findById(id: UUID, userId: UUID?): T? {
+    fun findById(
+        id: UUID,
+        userId: UUID? = null
+    ): T? {
         if (userId == null) {
             return repository.findByIdOrNull(id)
         }
@@ -19,7 +22,7 @@ interface UserResourceService<T> {
         return repository.findOneForUser(userId, id)
     }
 
-    fun findAll(userId: UUID?): List<T> {
+    fun findAll(userId: UUID? = null): List<T> {
         if (userId == null) {
             return repository.findAll()
         }
