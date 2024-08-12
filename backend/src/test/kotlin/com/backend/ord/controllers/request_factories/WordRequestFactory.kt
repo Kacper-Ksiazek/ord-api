@@ -32,7 +32,7 @@ class WordRequestFactory(
         origin: String = "word in english",
         translation: String = "slowo po polsku",
         translatedFrom: LanguageName = LanguageName.ENGLISH,
-        translatedTo: LanguageName = LanguageName.POLISH,
+        translatedTo: LanguageName? = LanguageName.POLISH,
         type: WordType = WordType.NOUN,
         exampleSentences: Set<ExampleSentence> = setOf(
             ExampleSentence(
