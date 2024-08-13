@@ -167,10 +167,10 @@ class TestWordsController @Autowired constructor(
         val request = wordRequestFactory.createWordRequest(
             authenticatedUser = authenticatedUser,
             exampleSentences = mutableSetOf<ExampleSentence>().apply {
-                repeat(6) {
+                repeat(6) { index ->
                     add(
                         ExampleSentence(
-                            sentence = "example sentence",
+                            sentence = "example sentence - $index",
                             translation = "przykladowe zdanie"
                         )
                     )
@@ -178,7 +178,7 @@ class TestWordsController @Autowired constructor(
             }
         )
 
-        mockMvc.perform(request).andExpect(
+        mockMvc.perform(request).andDo { it -> println(it) }.andExpect(
             MockMvcResultMatchers.status().isBadRequest()
         )
     }
