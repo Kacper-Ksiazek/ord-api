@@ -5,7 +5,9 @@ import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
+import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.util.*
 
@@ -18,10 +20,10 @@ data class CreateWordRequest(
     @field:Size(min = 1, max = 255, message = "Translation word must be between 1 and 255 characters")
     var translation: String,
 
-    @field:NotBlank(message = "Type cannot be blank")
+    @field:NotNull(message = "Type cannot be blank")
     var type: WordType,
 
-    @field:NotBlank(message = "Translated from cannot be blank")
+    @field:NotNull(message = "Translated from cannot be blank")
     var translatedFrom: LanguageName,
 
     var extraMark: WordExtraMark? = null,
@@ -29,6 +31,8 @@ data class CreateWordRequest(
     // By default, it will be translated to the native language of the user
     var translatedTo: LanguageName? = null,
 
+    @field:Size(min = 1, max = 5, message = "Example sentences must be between 1 and 5")
+    @field:Valid
     var exampleSentences: Set<ExampleSentence>,
 
     var bankId: UUID? = null,

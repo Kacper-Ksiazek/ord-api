@@ -10,8 +10,10 @@ import com.backend.ord.domain.mappers.WordMapper
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -47,7 +49,7 @@ class WordController(
     @PostMapping("/")
     fun createWord(
         request: HttpServletRequest,
-        @RequestBody body: CreateWordRequest
+        @Valid @RequestBody body: CreateWordRequest
     ): ResponseEntity<WordDTO> {
         val user: User = jwtService.getAuthenticatedUser(request)!!
 
