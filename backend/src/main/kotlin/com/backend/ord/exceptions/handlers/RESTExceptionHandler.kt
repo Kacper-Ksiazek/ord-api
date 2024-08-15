@@ -4,6 +4,7 @@ import com.backend.ord.api.responses.HTTPErrorResponse
 import com.backend.ord.exceptions.REST.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 
@@ -45,6 +46,17 @@ class RESTExceptionHandler {
         )
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<HTTPErrorResponse> {
+        val status = HttpStatus.BAD_REQUEST.value()
+        val errorResponse = HTTPErrorResponse(
+            message = e.bindingResult.allErrors.joinToString { it.defaultMessage ?: "" },
+            status = status
+        )
+
+        return ResponseEntity.status(status).body(errorResponse)
     }
 
     private fun getStatusForException(e: Exception): Int = when (e) {
