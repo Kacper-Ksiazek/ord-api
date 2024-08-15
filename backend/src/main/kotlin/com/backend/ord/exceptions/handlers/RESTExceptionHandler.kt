@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 @ControllerAdvice
 class RESTExceptionHandler {
 
-    // Handling multiple exceptions with a single method
     @ExceptionHandler(
         BadRequestException::class,
         UnauthorizedException::class,
@@ -19,15 +18,12 @@ class RESTExceptionHandler {
         PayloadTooLargeException::class,
         InternalServerError::class
     )
-    fun handleException(
-        e: Exception,
-        status: Int = getStatusForException(e)
-    ): ResponseEntity<HTTPErrorResponse> {
+    fun handleException(e: Exception): ResponseEntity<HTTPErrorResponse> {
+        val status = getStatusForException(e)
         val errorResponse = HTTPErrorResponse(message = e.message, status = status)
         return ResponseEntity.status(status).body(errorResponse)
     }
 
-    // Mapping exceptions to their respective HTTP status codes
     private fun getStatusForException(e: Exception): Int = when (e) {
         is BadRequestException -> 400
         is UnauthorizedException -> 401
@@ -35,7 +31,6 @@ class RESTExceptionHandler {
         is NotFoundException -> 404
         is PayloadTooLargeException -> 413
         is InternalServerError -> 500
-        else -> 500 // Fallback to Internal Server Error for any unknown exceptions
+        else -> 500
     }
 }
-
