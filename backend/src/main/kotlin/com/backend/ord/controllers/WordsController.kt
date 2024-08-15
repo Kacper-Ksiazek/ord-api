@@ -7,13 +7,14 @@ import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.mappers.BankMapper
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.domain.mappers.WordMapper
+import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -53,13 +54,19 @@ class WordController(
     ): ResponseEntity<WordDTO> {
         val user: User = jwtService.getAuthenticatedUser(request)!!
 
-        // Handle bank service
+        if (body.bankToCreate != null && body.bankId != null) {
+            throw BadRequestException("You cannot create a new bank and use an existing bank at the same time")
+        }
 
-        val bank = bankService.findByIdOrCreate(
-            bankId = body.bankId,
-            bankToCreate = body.bankToCreate,
-            user = user
-        )
+        val bank = try {
+            bankService.findByIdOrCreate(
+                bankId = body.bankId,
+                bankToCreate = body.bankToCreate,
+                user = user
+            )
+        } catch (e: DataIntegrityViolationException) {
+            throw BadRequestException("The bank with name ${body.bankToCreate!!.name} already exists for this user")
+        }
 
         val wordToSave = WordDTO(
             origin = body.origin,
