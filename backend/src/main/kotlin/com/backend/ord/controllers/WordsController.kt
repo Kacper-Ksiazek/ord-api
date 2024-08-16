@@ -1,9 +1,13 @@
 package com.backend.ord.controllers
 
+import com.backend.ord.api.requests.word.ChangeBankForMultipleWordsRequest
+import com.backend.ord.api.requests.word.ChangeBankForSingleWordRequest
 import com.backend.ord.api.requests.word.CreateWordRequest
+import com.backend.ord.api.requests.word.UpdateWordRequest
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.dto.WordDTO
 import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.entities.Word
 import com.backend.ord.domain.mappers.BankMapper
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.domain.mappers.WordMapper
@@ -16,6 +20,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/words")
@@ -29,7 +34,15 @@ class WordController(
 ) {
     @GetMapping("/")
     fun getAllWords(
-        request: HttpServletRequest
+        request: HttpServletRequest,
+
+        // TODO: Implement missing parameters
+        @RequestParam(required = false) bankId: UUID?,
+        @RequestParam(required = false) wordId: UUID?,
+        @RequestParam(required = false) amount: Int?,
+
+        // TODO: FInd better name for this parameter
+        // @RequestParam(required = false) wordsRandomizationMethod: ENUM { FULL_RANDOM ( DEFAULT ), PROBLEMATIC_FIRST, LEAST_RECENTLY_USED, RECENTLY_ADDED )
     ): ResponseEntity<List<WordDTO>> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
@@ -38,13 +51,6 @@ class WordController(
         )
 
         return ResponseEntity.ok(words)
-    }
-
-    @GetMapping("/{id}")
-    fun getWordById(
-        @PathVariable id: String
-    ) {
-        // Get a word by its ID
     }
 
     @PostMapping("/")
@@ -84,5 +90,79 @@ class WordController(
         val result = wordService.save(wordMapper.toEntity(wordToSave))
 
         return ResponseEntity.status(HttpStatus.CREATED).body(wordMapper.toDTO(result));
+    }
+
+    @PatchMapping("/{id}")
+    fun updateWord(
+        request: HttpServletRequest,
+        @PathVariable id: UUID,
+        @Valid @RequestBody body: UpdateWordRequest
+    ): ResponseEntity<WordDTO> {
+        val user = jwtService.getAuthenticatedUser(request)!!
+
+        val result: Word = wordService.save(
+            wordMapper.toEntity(
+                WordDTO(
+                    id = id,
+                    origin = body.origin,
+                    translatedTo = body.translatedTo,
+                    translatedFrom = body.translatedFrom,
+                    type = body.type,
+                    exampleSentences = body.exampleSentences,
+                    translation = body.translation,
+                    extraMark = body.extraMark,
+
+                    user = userMapper.toDTO(user),
+                    bank = body.bankId?.let { bankMapper.toDTOOrNull(bankService.findById(id = it)) }
+                )
+            )
+        )
+
+        return ResponseEntity.status(HttpStatus.OK).body(wordMapper.toDTO(result))
+    }
+
+    @PostMapping("/{id}/change-bank")
+    fun changeWordBank(
+        request: HttpServletRequest,
+        @PathVariable id: UUID,
+        @RequestBody body: ChangeBankForSingleWordRequest
+    ): ResponseEntity<WordDTO> {
+        val user = jwtService.getAuthenticatedUser(request)!!
+
+        val result: Word = wordService.changeBankForSingleWord(
+            wordId = id,
+            bankId = body.bankId,
+            userId = user.id
+        )
+
+        return ResponseEntity.status(HttpStatus.OK).body(wordMapper.toDTO(result))
+    }
+
+    @PostMapping("/change-bank-for-multiple-words")
+    fun changeBankForMultipleWords(
+        request: HttpServletRequest,
+        @RequestBody body: ChangeBankForMultipleWordsRequest
+    ): ResponseEntity<List<WordDTO>> {
+        val user = jwtService.getAuthenticatedUser(request)!!
+
+        val result: List<Word> = wordService.changeBankForMultipleWords(
+            wordIds = body.wordIds,
+            bankId = body.bankId,
+            userId = user.id
+        )
+
+        return ResponseEntity.status(HttpStatus.OK).body(wordMapper.toDTOList(result))
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteWord(
+        request: HttpServletRequest,
+        @PathVariable id: UUID
+    ): ResponseEntity<Unit> {
+        val user = jwtService.getAuthenticatedUser(request)!!
+
+        // wordService.delete(id, user.id)
+
+        return ResponseEntity.status(HttpStatus.OK).build()
     }
 }
