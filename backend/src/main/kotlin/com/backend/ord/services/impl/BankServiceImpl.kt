@@ -19,9 +19,10 @@ class BankServiceImpl(
         user: User
     ): Bank? {
         if (bankId != null) {
-            return repository.findById(bankId).orElseThrow {
-                NotFoundException("Bank with ID $bankId not found")
-            }
+            return repository.findOneForUser(
+                id = bankId,
+                userId = user.id
+            ) ?: throw NotFoundException("Bank with ID $bankId not found")
         } else if (bankToCreate != null) {
             return repository.save(
                 Bank(

@@ -10,6 +10,7 @@ import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankSeeder
+import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
@@ -40,7 +41,8 @@ class TestWordsController @Autowired constructor(
     private val wordRepository: WordRepository,
     private val bankSeeder: BankSeeder,
     private val bankMockFactory: BankMockFactory,
-    private val bankService: BankService
+    private val bankService: BankService,
+    private val userSeeder: UserSeeder
 ) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
     private val BASE_URL = "/api/v1/words/"
 
@@ -237,6 +239,45 @@ class TestWordsController @Autowired constructor(
         )
     }
 
+    @Test
+    fun `A word cannot be created with bankId referring to a bank of another user`() {
+        val authenticatedUser = mockAuthenticatedUser()
+        val anotherUser = userSeeder.seedOneEntity()
+
+        val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
+
+        val request = wordRequestFactory.createWordRequest(
+            authenticatedUser = authenticatedUser,
+            bankId = bankOfAnotherUser.id
+        )
+
+        mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isNotFound()
+       )
+    }
+
+    @Test
+    fun `A word can be created even with bank name identical to another bank name but for different user`() {
+        val authenticatedUser = mockAuthenticatedUser()
+        val anotherUser = userSeeder.seedOneEntity()
+
+        val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
+
+        val request = wordRequestFactory.createWordRequest(
+            authenticatedUser = authenticatedUser,
+            bankToCreate = bankMockFactory.mockCreateRequest(
+                name = bankOfAnotherUser.name
+            )
+        )
+
+        val response = mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isCreated()
+        ).andReturn().response
+
+        val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
+
+        val bank: Bank = assertThatBankActuallyExists(word.bank)
+    }
 
     private fun assertThatWordActuallyExists(
         response: MockHttpServletResponse,
