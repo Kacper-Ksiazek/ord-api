@@ -24,6 +24,12 @@ CREATE TABLE IF NOT EXISTS "words"
     -- This is the word translated into desired language | example: `książka`
     "translation"       VARCHAR(255)  NOT NULL,
 
+    -- Short and concise one or two sentences long definition of the word
+    definition          VARCHAR(255)  NOT NULL,
+
+    -- Set<String> of use cases of the word such as for word "dystopia" it could be "Used to describe a society characterized by human misery"
+    use_cases           JSONB         NOT NULL,
+
     -- Describes the original language of the word | example: `ENGLISH`
     "translated_from"   language_name NOT NULL,
 

@@ -12,3 +12,6 @@ enum class WordExtraMark {
     COLLOQUIAL,
     POETIC
 }
+
+// For prompts
+// extraMark: null "OFFENSIVE"| "SLANG"| "FORMAL" | "INFORMAL" | "SCIENTIFIC" | "TECHNICAL" | "LEGAL" | "MEDICAL" | "COLLOQUIAL" | "POETIC

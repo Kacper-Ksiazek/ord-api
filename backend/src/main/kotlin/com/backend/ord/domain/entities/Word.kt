@@ -24,6 +24,13 @@ class Word(
     @Column(name = "translation", nullable = false)
     var translation: String,
 
+    @Column(name = "definition", nullable = false)
+    var definition: String,
+
+    @Column(name = "use_cases", nullable = false)
+    @JdbcTypeCode(SqlTypes.JSON)
+    var useCases: Set<String> = emptySet(),
+
     @Column(name = "is_bookmarked", nullable = false)
     var isBookmarked: Boolean = false,
 
