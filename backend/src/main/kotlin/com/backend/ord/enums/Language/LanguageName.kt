@@ -8,5 +8,6 @@ enum class LanguageName {
     SPANISH,
     ITALIAN,
     NORWEGIAN,
-    RUSSIAN
+    RUSSIAN,
+    SLOVENIAN
 }
