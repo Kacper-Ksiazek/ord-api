@@ -82,6 +82,8 @@ class WordController(
             exampleSentences = body.exampleSentences,
             translation = body.translation,
             extraMark = body.extraMark,
+            definition = body.definition,
+            useCases = body.useCases,
 
             user = userMapper.toDTO(user),
             bank = bankMapper.toDTOOrNull(bank)
@@ -111,6 +113,8 @@ class WordController(
                     exampleSentences = body.exampleSentences,
                     translation = body.translation,
                     extraMark = body.extraMark,
+                    definition = body.definition,
+                    useCases = body.useCases,
 
                     user = userMapper.toDTO(user),
                     bank = body.bankId?.let { bankMapper.toDTOOrNull(bankService.findById(id = it)) }

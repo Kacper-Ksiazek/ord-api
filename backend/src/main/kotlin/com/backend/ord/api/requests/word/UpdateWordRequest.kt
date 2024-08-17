@@ -20,6 +20,18 @@ data class UpdateWordRequest(
     @field:Size(min = 1, max = 255, message = "Translation word must be between 1 and 255 characters")
     var translation: String,
 
+    @field:NotBlank(message = "Definition cannot be blank")
+    @field:Size(min = 1, max = 255, message = "Definition must be between 1 and 255 characters")
+    var definition: String,
+
+    @field:Size(min = 1, max = 5, message = "Use cases must be at least 1")
+    @field:Valid
+    var useCases: Set<@Size(
+        min = 1,
+        max = 255,
+        message = "Use case must be between 1 and 255 characters"
+    ) String> = emptySet(),
+
     @field:NotNull(message = "Type cannot be blank")
     var type: WordType,
 

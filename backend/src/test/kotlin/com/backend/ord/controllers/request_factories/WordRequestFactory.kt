@@ -34,6 +34,8 @@ class WordRequestFactory(
         translatedFrom: LanguageName = LanguageName.ENGLISH,
         translatedTo: LanguageName? = LanguageName.POLISH,
         type: WordType = WordType.NOUN,
+        definition: String = "definition",
+        useCases: Set<String> = setOf("use case 1", "use case 2"),
         exampleSentences: Set<ExampleSentence> = setOf(
             ExampleSentence(
                 sentence = "example sentence",
@@ -64,7 +66,9 @@ class WordRequestFactory(
                         exampleSentences = exampleSentences,
                         extraMark = extraMark,
                         bankId = bankId,
-                        bankToCreate = bankToCreate
+                        bankToCreate = bankToCreate,
+                        definition = definition,
+                        useCases = useCases
                     )
                 )
             ).apply {

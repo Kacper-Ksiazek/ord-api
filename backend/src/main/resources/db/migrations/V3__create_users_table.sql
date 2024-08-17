@@ -13,7 +13,8 @@ CALL create_enum_type(
             'SPANISH',
             'ITALIAN',
             'NORWEGIAN',
-            'RUSSIAN'
+            'RUSSIAN',
+            'SLOVENIAN'
             ]
      );
 
