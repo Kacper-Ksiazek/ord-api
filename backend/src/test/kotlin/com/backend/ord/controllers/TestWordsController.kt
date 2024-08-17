@@ -253,7 +253,74 @@ class TestWordsController @Autowired constructor(
 
         mockMvc.perform(request).andExpect(
             MockMvcResultMatchers.status().isNotFound()
-       )
+        )
+    }
+
+    @Test
+    fun `A word cannot be created with no use cases`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val request = wordRequestFactory.createWordRequest(
+            authenticatedUser = authenticatedUser,
+            useCases = emptySet()
+        )
+
+        mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be created with an example sentence that has empty translation`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val request = wordRequestFactory.createWordRequest(
+            authenticatedUser = authenticatedUser,
+            exampleSentences = mutableSetOf(
+                ExampleSentence(
+                    sentence = "example sentence",
+                    translation = ""
+                )
+            )
+        )
+
+        mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be created with use case of length greater than 255 characters`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val request = wordRequestFactory.createWordRequest(
+            authenticatedUser = authenticatedUser,
+            useCases = mutableSetOf(
+                "a".repeat(256)
+            )
+        )
+
+        mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be created with more than 5 use cases`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val request = wordRequestFactory.createWordRequest(
+            authenticatedUser = authenticatedUser,
+            useCases = mutableSetOf<String>().apply {
+                repeat(6) { index ->
+                    add("use case - $index")
+                }
+            }
+        )
+
+        mockMvc.perform(request).andExpect(
+            MockMvcResultMatchers.status().isBadRequest()
+        )
     }
 
     @Test

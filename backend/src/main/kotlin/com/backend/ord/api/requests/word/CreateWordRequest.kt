@@ -5,6 +5,7 @@ import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
+import com.backend.ord.validators.annotations.ValidStringSet
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -24,13 +25,14 @@ data class CreateWordRequest(
     @field:Size(min = 1, max = 255, message = "Definition must be between 1 and 255 characters")
     var definition: String,
 
-    @field:Size(min = 1, max = 5, message = "Use cases must be at least 1")
-    @field:Valid
-    var useCases: Set<@Size(
-        min = 1,
-        max = 255,
-        message = "Use case must be between 1 and 255 characters"
-    ) String> = emptySet(),
+    @field:ValidStringSet(
+        message = "Use cases are invalid",
+        minSetSize = 1,
+        maxSetSize = 5,
+        minElementSize = 5,
+        maxElementSize = 96
+    )
+    var useCases: Set<String> = emptySet(),
 
     @field:NotNull(message = "Type cannot be blank")
     var type: WordType,
