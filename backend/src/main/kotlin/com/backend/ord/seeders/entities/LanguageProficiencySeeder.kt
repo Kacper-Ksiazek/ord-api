@@ -27,12 +27,14 @@ class LanguageProficiencySeeder(
     fun seedOneEntity(
         user: User,
         languageName: LanguageName? = null,
+        generativeContentLanguage: LanguageName? = null,
         languageProficiency: LanguageProficiencyLevel? = null
     ): LanguageProficiency {
         val data = languageProficiencyFactory.mockEntity(user)
 
         languageName?.also { data.language = it }
         languageProficiency?.also { data.proficiency = it }
+        generativeContentLanguage?.also { data.generativeContentLanguage = it }
 
         return languageProficiencyRepository.save(data)
     }

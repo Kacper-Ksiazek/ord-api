@@ -10,6 +10,7 @@ data class LanguageProficiencyDTO(
 
     var language: LanguageName,
     var proficiency: LanguageProficiencyLevel,
+    var generativeContentLanguage: LanguageName,
 
     var user: UserDTO,
 

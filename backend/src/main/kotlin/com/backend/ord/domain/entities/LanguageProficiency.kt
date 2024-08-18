@@ -23,6 +23,10 @@ class LanguageProficiency(
     @Enumerated(EnumType.STRING)
     var proficiency: LanguageProficiencyLevel,
 
+    @Column(name = "generative_content_language", nullable = false)
+    @Enumerated(EnumType.STRING)
+    var generativeContentLanguage: LanguageName,
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     var user: User,

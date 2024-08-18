@@ -15,6 +15,8 @@ class LanguageProficiencyMapperImpl(
 
             language = dto.language,
             proficiency = dto.proficiency,
+            generativeContentLanguage = dto.generativeContentLanguage,
+
             user = userMapper.toEntity(dto.user),
 
             createdAt = dto.createdAt,
@@ -28,11 +30,12 @@ class LanguageProficiencyMapperImpl(
 
             language = entity.language,
             proficiency = entity.proficiency,
+            generativeContentLanguage = entity.generativeContentLanguage,
+
             user = userMapper.toDTO(entity.user),
 
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
         )
     }
-
 }
