@@ -74,7 +74,7 @@ class DatabaseSeeder(
 
     private fun createMyUser() {
         // 1. Create a user
-        val user = userSeeder.seedOneEntity(
+        val kacper = userSeeder.seedOneEntity(
             User(
                 name = "Kacper Książek",
                 email = "kacper.b.ksiazek@gmail.com",
@@ -86,15 +86,24 @@ class DatabaseSeeder(
 
         // 2. Create a language proficiency
         languageProficiencySeeder.seedOneEntity(
-            user = user,
+            user = kacper,
             languageName = LanguageName.ENGLISH,
-            languageProficiency = LanguageProficiencyLevel.C1
+            languageProficiency = LanguageProficiencyLevel.C1,
+            generativeContentLanguage = LanguageName.ENGLISH
         )
 
         languageProficiencySeeder.seedOneEntity(
-            user = user,
+            user = kacper,
             languageName = LanguageName.GERMAN,
-            languageProficiency = LanguageProficiencyLevel.A2
+            languageProficiency = LanguageProficiencyLevel.A2,
+            generativeContentLanguage = LanguageName.ENGLISH
+        )
+
+        languageProficiencySeeder.seedOneEntity(
+            user = kacper,
+            languageName = LanguageName.SLOVENIAN,
+            languageProficiency = LanguageProficiencyLevel.A1,
+            generativeContentLanguage = LanguageName.ENGLISH
         )
     }
 
