@@ -10,5 +10,5 @@ import java.util.UUID
 @Repository
 interface BankGroupRepository : UserResourceRepository<BankGroup> {
     @Query("SELECT bg FROM BankGroup bg WHERE bg.user.id = :userId AND lower(bg.name) LIKE lower(concat('%', :phrase, '%'))")
-    override fun findAllForUserBySearchingPhrase(userId: UUID, phrase: String): List<BankGroup>
+    fun findAllForUserBySearchingPhrase(userId: UUID, phrase: String): List<BankGroup>
 }

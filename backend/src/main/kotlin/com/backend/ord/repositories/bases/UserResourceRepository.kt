@@ -12,8 +12,4 @@ interface UserResourceRepository<T> : JpaRepository<T, UUID> {
 
     @Query("SELECT r FROM #{#entityName} r WHERE r.user.id = :userId AND r.id = :id")
     fun findOneForUser(userId: UUID, id: UUID): T?
-
-    fun findAllForUserBySearchingPhrase(userId: UUID, phrase: String): List<T> {
-        throw NotImplementedError("This method should be implemented in the repository")
-    }
 }
