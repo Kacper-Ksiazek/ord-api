@@ -3,11 +3,10 @@ package com.backend.ord.repositories
 import com.backend.ord.domain.entities.LanguageProficiency
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.repositories.bases.UserResourceRepository
-import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
-import java.util.UUID
+import java.util.*
 
 @Repository
 interface LanguageProficiencyRepository : UserResourceRepository<LanguageProficiency> {
@@ -18,7 +17,7 @@ interface LanguageProficiencyRepository : UserResourceRepository<LanguageProfici
             user_id = :userId 
             AND 
             CAST(language as text) = CAST(:languageName AS text)
-    """,
+        """,
         nativeQuery = true
     )
     fun findUserProficiencyInLanguage(
@@ -28,11 +27,12 @@ interface LanguageProficiencyRepository : UserResourceRepository<LanguageProfici
 
     @Query(
         """
-    SELECT
-        *
-    FROM language_proficiencies lp
-    WHERE lp.user_id = :userId AND CAST(lp.language as text) = CAST(:languageName AS text)
-    """,
+        SELECT * FROM language_proficiencies lp
+        WHERE 
+            lp.user_id = :userId 
+            AND 
+            lp.language =@= :languageName
+        """,
         nativeQuery = true
     )
     fun testQuery(

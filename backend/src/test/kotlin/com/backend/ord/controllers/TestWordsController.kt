@@ -346,6 +346,30 @@ class TestWordsController @Autowired constructor(
         val bank: Bank = assertThatBankActuallyExists(word.bank)
     }
 
+    // -------
+    // Update
+    // -------
+
+//    @Test
+//    fun `A word can be updated`() {
+//        val authenticatedUser = mockAuthenticatedUser()
+//
+//        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+//
+//        val request = wordRequestFactory.updateWordRequest(
+//            authenticatedUser = authenticatedUser,
+//            wordId = word.id
+//        )
+//
+//        val response = mockMvc.perform(request).andExpect(
+//            MockMvcResultMatchers.status().isOk()
+//        ).andReturn().response
+//
+//        val wordUpdated: Word = assertThatWordActuallyExists(response, authenticatedUser)
+//
+//        assertEquals(word.id, wordUpdated.id)
+//    }
+
     private fun assertThatWordActuallyExists(
         response: MockHttpServletResponse,
         authenticatedUser: MockedAuthenticatedUser

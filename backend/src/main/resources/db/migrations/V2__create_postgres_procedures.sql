@@ -6,6 +6,7 @@ CREATE OR REPLACE PROCEDURE create_enum_type(
 AS
 $$
 BEGIN
+    -- Step 1: Create the enum type if it doesn't exist
     BEGIN
         EXECUTE format(
                 'CREATE TYPE %I AS ENUM (%s)',
@@ -24,9 +25,22 @@ BEGIN
             NULL;
     END;
 
+    -- Step 2: Create a cast from VARCHAR to the enum type
     BEGIN
         EXECUTE format(
                 'CREATE CAST (VARCHAR AS %I) WITH INOUT AS IMPLICIT',
+                type_name
+                );
+    EXCEPTION
+        WHEN duplicate_object THEN
+            -- Ignore the exception if the cast already exists
+            NULL;
+    END;
+
+    -- Step 3: Create a cast from TEXT to the enum type
+    BEGIN
+        EXECUTE format(
+                'CREATE CAST (TEXT AS %I) WITH INOUT AS IMPLICIT',
                 type_name
                 );
     EXCEPTION

@@ -18,6 +18,23 @@ CALL create_enum_type(
             ]
      );
 
+CREATE OR REPLACE FUNCTION language_equals_text(enum_value language_name, text_value TEXT)
+    RETURNS BOOLEAN AS
+$$
+BEGIN
+    RETURN enum_value::TEXT = text_value;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OPERATOR =@= (
+    LEFTARG = language_name,
+    RIGHTARG = TEXT,
+    PROCEDURE = language_equals_text,
+    COMMUTATOR = =@=,
+    RESTRICT = eqsel,
+    JOIN = eqjoinsel
+    );
+
 CREATE TABLE IF NOT EXISTS "users"
 (
     "id"              UUID PRIMARY KEY,
