@@ -16,13 +16,13 @@ interface LanguageProficiencyRepository : UserResourceRepository<LanguageProfici
         WHERE 
             user_id = :userId 
             AND 
-            CAST(language as text) = CAST(:languageName AS text)
+            language = :languageName 
         """,
         nativeQuery = true
     )
     fun findUserProficiencyInLanguage(
         userId: UUID,
-        languageName: LanguageName
+        languageName: String
     ): LanguageProficiency?
 
     @Query(
@@ -31,7 +31,7 @@ interface LanguageProficiencyRepository : UserResourceRepository<LanguageProfici
         WHERE 
             lp.user_id = :userId 
             AND 
-            lp.language =@= :languageName
+            :languageName = lp.language
         """,
         nativeQuery = true
     )
