@@ -27,7 +27,10 @@ CREATE TABLE IF NOT EXISTS "word_tokens_usages"
     id               UUID PRIMARY KEY,
 
     user_id          UUID                              REFERENCES users (id) ON DELETE SET NULL,
-    word_id          UUID                              REFERENCES words (id) ON DELETE SET NULL,
+
+    word             VARCHAR(255)                      NOT NULL,
+    translated_from  language_name                     NOT NULL,
+    translated_to    language_name                     NOT NULL,
 
     consumption_type words_gpt_tokens_consumption_type NOT NULL,
 
