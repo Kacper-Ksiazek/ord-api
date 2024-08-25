@@ -13,6 +13,9 @@ class LanguageProficiencyServiceImpl(
     override val repository: LanguageProficiencyRepository
 ) : LanguageProficiencyService {
     override fun findUserProficiencyInLanguage(userId: UUID, languageName: LanguageName): LanguageProficiency? {
-        return repository.findUserProficiencyInLanguage(userId, languageName.name)
+        return repository.findUserProficiencyInLanguage(
+            userId = userId,
+            languageName = languageName.name
+        )
     }
 }
