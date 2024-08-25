@@ -15,11 +15,14 @@ class WordTokensUsageMapper(
     override fun toEntity(dto: WordTokensUsageDTO): WordTokensUsage {
         return WordTokensUsage(
             id = dto.id,
+
+            word = dto.word,
+            translatedTo = dto.translatedTo,
+            translatedFrom = dto.translatedFrom,
             numberOfTokens = dto.numberOfTokens,
             consumptionType = dto.consumptionType,
 
             user = userMapper.toEntity(dto.user),
-            word = wordMapper.toEntity(dto.word),
 
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt
@@ -30,11 +33,12 @@ class WordTokensUsageMapper(
         return WordTokensUsageDTO(
             id = entity.id,
 
+            user = userMapper.toDTO(entity.user),
+            word = entity.word,
+            translatedTo = entity.translatedTo,
+            translatedFrom = entity.translatedFrom,
             numberOfTokens = entity.numberOfTokens,
             consumptionType = entity.consumptionType,
-
-            user = userMapper.toDTO(entity.user),
-            word = wordMapper.toDTO(entity.word),
 
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
