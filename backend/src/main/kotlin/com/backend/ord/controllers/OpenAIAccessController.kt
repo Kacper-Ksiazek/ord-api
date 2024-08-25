@@ -4,12 +4,17 @@ import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.embedded.ExampleSentence
+import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.entities.gpt_tokens_usage.WordTokensUsage
+import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Language.LanguageProficiencyLevel
+import com.backend.ord.enums.TokensUsage.WordsGPTTokensConsumptionType
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.LanguageProficiencyService
+import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
 import com.backend.ord.utils.Console
 import com.backend.ord.utils.EnumUtils.joinEnumValues
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -28,7 +33,8 @@ class OpenAIAccessController(
     private val jwtService: JwtService,
     private val restClientConfig: RestClientConfig,
     private val openAIRequestFactory: OpenAIRequestFactory,
-    private val languageProficiencyService: LanguageProficiencyService
+    private val languageProficiencyService: LanguageProficiencyService,
+    private val wordTokensUsageService: WordTokensUsageService,
 ) {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
@@ -79,7 +85,7 @@ class OpenAIAccessController(
         @RequestParam originalLanguage: LanguageName,
         @RequestParam(name = "translateTo") receivedTranslateToLanguage: LanguageName?
     ): ResponseEntity<*> {
-        val user = jwtService.getAuthenticatedUser(request)!!
+        val user: User = jwtService.getAuthenticatedUser(request)!!
 
         val translateTo: LanguageName = receivedTranslateToLanguage ?: user.nativeLanguage
 
@@ -125,6 +131,18 @@ class OpenAIAccessController(
             println("- Prompt: ${it.usage.prompt_tokens}")
             println("- Completion: ${it.usage.completion_tokens}")
             println("- Total: ${it.usage.total_tokens}")
+
+            // Save the usage tokens consumption
+            wordTokensUsageService.save(
+                WordTokensUsage(
+                    user = user,
+                    word = word,
+                    numberOfTokens = it.usage.total_tokens,
+                    translatedTo = translateTo,
+                    translatedFrom = originalLanguage,
+                    consumptionType = WordsGPTTokensConsumptionType.GENERATE_ENTIRE_MANUAL
+                )
+            )
         }
 
         // Parse request into List<String>
