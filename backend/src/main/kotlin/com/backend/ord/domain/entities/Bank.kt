@@ -1,5 +1,6 @@
 package com.backend.ord.domain.entities
 
+import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.validation.constraints.Size
 import org.hibernate.annotations.CreationTimestamp
@@ -14,7 +15,7 @@ import java.util.*
 class Bank(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID = UUID.randomUUID(),
+    override var id: UUID = UUID.randomUUID(),
 
     @field:Size(max = 64)
     @Column(name = "name", nullable = false, length = 64)
@@ -27,7 +28,7 @@ class Bank(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
-    var user: User,
+    override var user: User,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
@@ -41,4 +42,4 @@ class Bank(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-)
+): IdentifiableUserResource

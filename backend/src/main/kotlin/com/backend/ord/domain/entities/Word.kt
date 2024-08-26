@@ -1,6 +1,7 @@
 package com.backend.ord.domain.entities
 
 import com.backend.ord.domain.embedded.ExampleSentence
+import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
@@ -16,7 +17,7 @@ import java.util.*
 class Word(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID = UUID.randomUUID(),
+    override var id: UUID = UUID.randomUUID(),
 
     @Column(name = "origin", nullable = false)
     var origin: String,
@@ -60,7 +61,7 @@ class Word(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
-    var user: User,
+    override var user: User,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -74,4 +75,4 @@ class Word(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-)
+) : IdentifiableUserResource

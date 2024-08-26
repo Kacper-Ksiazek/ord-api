@@ -1,5 +1,6 @@
 package com.backend.ord.domain.entities
 
+import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Language.LanguageProficiencyLevel
 import jakarta.persistence.*
@@ -13,7 +14,7 @@ import java.util.*
 class QuicklyAddedWord(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID = UUID.randomUUID(),
+    override var id: UUID = UUID.randomUUID(),
 
     @Enumerated(EnumType.STRING)
     @Column(name = "typed_in_language", nullable = false)
@@ -24,7 +25,7 @@ class QuicklyAddedWord(
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    var user: User,
+    override var user: User,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
@@ -33,4 +34,4 @@ class QuicklyAddedWord(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-)
+) : IdentifiableUserResource

@@ -1,5 +1,6 @@
 package com.backend.ord.domain.entities
 
+import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.enums.StoryContextType
 import jakarta.persistence.*
 import jakarta.persistence.Table
@@ -14,7 +15,7 @@ import java.util.*
 class StoryContext(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    val id: UUID = UUID.randomUUID(),
+    override val id: UUID = UUID.randomUUID(),
 
     @Column(name = "title", length = 64)
     var title: String,
@@ -29,7 +30,7 @@ class StoryContext(
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id")
-    var user: User,
+    override var user: User,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
@@ -38,4 +39,4 @@ class StoryContext(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-)
+): IdentifiableUserResource

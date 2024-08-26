@@ -1,10 +1,12 @@
 package com.backend.ord.services.bases
 
+import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.bases.UserResourceRepository
 import org.springframework.data.repository.findByIdOrNull
 import java.util.UUID
 
-interface UserResourceService<T> {
+interface UserResourceService<T : IdentifiableUserResource> {
     val repository: UserResourceRepository<T>
 
     fun save(t: T): T {
