@@ -10,7 +10,26 @@ interface UserResourceService<T : IdentifiableUserResource> {
     val repository: UserResourceRepository<T>
 
     fun save(t: T): T {
-        return repository.save(t!!)
+        return repository.save(t)
+    }
+
+    fun update(
+        t: T,
+        userId: UUID,
+    ): T {
+        // Verify that user is the owner of the entity
+        this.findByIdOrFail(t.id, userId).let {
+            if (it.user.id != userId) throw NotFoundException("Entity not found")
+        }
+
+        return repository.save(t)
+    }
+
+    fun deleteById(
+        id: UUID,
+        userId: UUID,
+    ) {
+        repository.deleteOneForUser(userId, id)
     }
 
     fun findById(
@@ -22,6 +41,13 @@ interface UserResourceService<T : IdentifiableUserResource> {
         }
 
         return repository.findOneForUser(userId, id)
+    }
+
+    fun findByIdOrFail(
+        id: UUID,
+        userId: UUID? = null
+    ): T {
+        return this.findById(id, userId) ?: throw NotFoundException("Entity not found")
     }
 
     fun findAll(userId: UUID? = null): List<T> {

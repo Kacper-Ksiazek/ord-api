@@ -1,6 +1,7 @@
 package com.backend.ord.repositories.bases
 
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.NoRepositoryBean
 import java.util.*
@@ -12,4 +13,8 @@ interface UserResourceRepository<T> : JpaRepository<T, UUID> {
 
     @Query("SELECT r FROM #{#entityName} r WHERE r.user.id = :userId AND r.id = :id")
     fun findOneForUser(userId: UUID, id: UUID): T?
+
+    @Modifying
+    @Query("DELETE FROM #{#entityName} r WHERE r.user.id = :userId AND r.id = :id")
+    fun deleteOneForUser(userId: UUID, id: UUID): Int
 }
