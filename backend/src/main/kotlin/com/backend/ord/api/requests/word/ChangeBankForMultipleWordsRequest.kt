@@ -1,8 +1,8 @@
 package com.backend.ord.api.requests.word
 
-import java.util.UUID
+import java.util.*
 
-data class ChangeBankForMultipleWordsRequest(
-    val wordIds: List<UUID>,
+interface ChangeBankForMultipleWordsRequest {
+    val wordIds: List<UUID>
     val bankId: UUID?
-)
+}

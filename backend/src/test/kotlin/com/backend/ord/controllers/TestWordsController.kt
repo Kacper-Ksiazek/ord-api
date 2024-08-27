@@ -11,6 +11,7 @@ import com.backend.ord.domain.entities.Word
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
+import com.backend.ord.seeders.entities.WordSeeder
 import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
@@ -42,7 +43,8 @@ class TestWordsController @Autowired constructor(
     private val bankSeeder: BankSeeder,
     private val bankMockFactory: BankMockFactory,
     private val bankService: BankService,
-    private val userSeeder: UserSeeder
+    private val userSeeder: UserSeeder,
+    private val wordSeeder: WordSeeder,
 ) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
     private val BASE_URL = "/api/v1/words/"
 

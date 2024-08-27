@@ -1,9 +1,8 @@
 package com.backend.ord.controllers
 
-import com.backend.ord.api.requests.word.ChangeBankForMultipleWordsRequest
-import com.backend.ord.api.requests.word.ChangeBankForSingleWordRequest
-import com.backend.ord.api.requests.word.CreateWordRequest
-import com.backend.ord.api.requests.word.UpdateWordRequest
+import com.backend.ord.api.requests.word.data.ChangeBankForMultipleWordsRequestData
+import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
+import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.dto.WordDTO
 import com.backend.ord.domain.entities.User
@@ -56,7 +55,7 @@ class WordController(
     @PostMapping("/")
     fun createWord(
         request: HttpServletRequest,
-        @Valid @RequestBody body: CreateWordRequest
+        @Valid @RequestBody body: CreateWordRequestData
     ): ResponseEntity<WordDTO> {
         val user: User = jwtService.getAuthenticatedUser(request)!!
 
@@ -94,42 +93,42 @@ class WordController(
         return ResponseEntity.status(HttpStatus.CREATED).body(wordMapper.toDTO(result));
     }
 
-    @PatchMapping("/{id}")
-    fun updateWord(
-        request: HttpServletRequest,
-        @PathVariable id: UUID,
-        @Valid @RequestBody body: UpdateWordRequest
-    ): ResponseEntity<WordDTO> {
-        val user = jwtService.getAuthenticatedUser(request)!!
-
-        val result: Word = wordService.save(
-            wordMapper.toEntity(
-                WordDTO(
-                    id = id,
-                    origin = body.origin,
-                    translatedTo = body.translatedTo,
-                    translatedFrom = body.translatedFrom,
-                    type = body.type,
-                    exampleSentences = body.exampleSentences,
-                    translation = body.translation,
-                    extraMark = body.extraMark,
-                    definition = body.definition,
-                    useCases = body.useCases,
-
-                    user = userMapper.toDTO(user),
-                    bank = body.bankId?.let { bankMapper.toDTOOrNull(bankService.findById(id = it)) }
-                )
-            )
-        )
-
-        return ResponseEntity.status(HttpStatus.OK).body(wordMapper.toDTO(result))
-    }
+//    @PatchMapping("/{id}")
+//    fun updateWord(
+//        request: HttpServletRequest,
+//        @PathVariable id: UUID,
+//        @Valid @RequestBody body: UpdateWordRequest
+//    ): ResponseEntity<WordDTO> {
+//        val user = jwtService.getAuthenticatedUser(request)!!
+//
+//        val result: Word = wordService.save(
+//            wordMapper.toEntity(
+//                WordDTO(
+//                    id = id,
+//                    origin = body.origin,
+//                    translatedTo = body.translatedTo,
+//                    translatedFrom = body.translatedFrom,
+//                    type = body.type,
+//                    exampleSentences = body.exampleSentences,
+//                    translation = body.translation,
+//                    extraMark = body.extraMark,
+//                    definition = body.definition,
+//                    useCases = body.useCases,
+//
+//                    user = userMapper.toDTO(user),
+//                    bank = body.bankId?.let { bankMapper.toDTOOrNull(bankService.findById(id = it)) }
+//                )
+//            )
+//        )
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(wordMapper.toDTO(result))
+//    }
 
     @PostMapping("/{id}/change-bank")
     fun changeWordBank(
         request: HttpServletRequest,
         @PathVariable id: UUID,
-        @RequestBody body: ChangeBankForSingleWordRequest
+        @RequestBody body: ChangeBankForSingleWordRequestData
     ): ResponseEntity<WordDTO> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
@@ -145,7 +144,7 @@ class WordController(
     @PostMapping("/change-bank-for-multiple-words")
     fun changeBankForMultipleWords(
         request: HttpServletRequest,
-        @RequestBody body: ChangeBankForMultipleWordsRequest
+        @RequestBody body: ChangeBankForMultipleWordsRequestData
     ): ResponseEntity<List<WordDTO>> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
@@ -165,7 +164,10 @@ class WordController(
     ): ResponseEntity<Unit> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
-        // wordService.delete(id, user.id)
+        wordService.deleteById(
+            id = id,
+            userId = user.id
+        )
 
         return ResponseEntity.status(HttpStatus.OK).build()
     }

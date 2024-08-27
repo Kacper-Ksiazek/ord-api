@@ -1,7 +1,7 @@
 package com.backend.ord.api.requests.word
 
-import java.util.UUID
+import java.util.*
 
-data class ChangeBankForSingleWordRequest(
+interface ChangeBankForSingleWordRequest {
     val bankId: UUID?
-)
+}

@@ -1,7 +1,7 @@
 package com.backend.ord.controllers.request_factories
 
 import com.backend.ord.api.requests.bank.CreateBankRequest
-import com.backend.ord.api.requests.word.CreateWordRequest
+import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.enums.Language.LanguageName
@@ -57,7 +57,7 @@ class WordRequestFactory(
             .accept(MediaType.APPLICATION_JSON)
             .content(
                 objectMapper.writeValueAsString(
-                    CreateWordRequest(
+                    CreateWordRequestData(
                         origin = origin,
                         translation = translation,
                         translatedFrom = translatedFrom,

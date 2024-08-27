@@ -5,51 +5,22 @@ import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
-import com.backend.ord.validators.annotations.ValidStringSet
-import jakarta.validation.Valid
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
-import jakarta.validation.constraints.Size
 import java.util.*
 
-data class CreateWordRequest(
-    @field:NotBlank(message = "Origin word cannot be blank")
-    @field:Size(min = 1, max = 255, message = "Origin word must be between 1 and 255 characters")
-    var origin: String,
+interface CreateWordRequest {
+    val origin: String
+    val translation: String
+    val definition: String
 
-    @field:NotBlank(message = "Translation word cannot be blank")
-    @field:Size(min = 1, max = 255, message = "Translation word must be between 1 and 255 characters")
-    var translation: String,
+    val type: WordType
+    val extraMark: WordExtraMark?
+    val translatedTo: LanguageName?
+    val translatedFrom: LanguageName
 
-    @field:NotBlank(message = "Definition cannot be blank")
-    @field:Size(min = 1, max = 255, message = "Definition must be between 1 and 255 characters")
-    var definition: String,
+    val useCases: Set<String>
+    val exampleSentences: Set<ExampleSentence>
 
-    @field:ValidStringSet(
-        message = "Use cases are invalid",
-        minSetSize = 1,
-        maxSetSize = 5,
-        minElementSize = 5,
-        maxElementSize = 96
-    )
-    var useCases: Set<String> = emptySet(),
+    val bankId: UUID?
+    val bankToCreate: CreateBankRequest?
+}
 
-    @field:NotNull(message = "Type cannot be blank")
-    var type: WordType,
-
-    @field:NotNull(message = "Translated from cannot be blank")
-    var translatedFrom: LanguageName,
-
-    var extraMark: WordExtraMark? = null,
-
-    // By default, it will be translated to the native language of the user
-    var translatedTo: LanguageName? = null,
-
-    @field:Size(min = 1, max = 5, message = "Example sentences must be between 1 and 5")
-    @field:Valid
-    var exampleSentences: Set<ExampleSentence>,
-
-    var bankId: UUID? = null,
-
-    var bankToCreate: CreateBankRequest? = null
-)
