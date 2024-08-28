@@ -1,6 +1,7 @@
 package com.backend.ord.controllers.request_factories
 
-import com.backend.ord.api.requests.bank.CreateBankRequest
+import com.backend.ord.api.requests.bank.data.CreateBankRequest
+import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.embedded.ExampleSentence
@@ -49,7 +50,7 @@ class WordRequestFactory(
         authenticatedUser: MockedAuthenticatedUser? = null,
         extraMark: WordExtraMark? = WordExtraMark.SLANG,
         bankId: UUID? = null,
-        bankToCreate: CreateBankRequest? = null
+        bankToCreate: CreateBankRequestData? = null
 
     ): MockHttpServletRequestBuilder {
         return MockMvcRequestBuilders.post(BASE_URL)

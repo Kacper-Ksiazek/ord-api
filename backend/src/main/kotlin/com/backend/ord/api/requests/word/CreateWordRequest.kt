@@ -1,6 +1,6 @@
 package com.backend.ord.api.requests.word
 
-import com.backend.ord.api.requests.bank.CreateBankRequest
+import com.backend.ord.api.requests.bank.data.CreateBankRequest
 import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark

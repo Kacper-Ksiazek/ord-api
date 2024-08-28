@@ -1,6 +1,7 @@
 package com.backend.ord.api.requests.word.data
 
-import com.backend.ord.api.requests.bank.CreateBankRequest
+import com.backend.ord.api.requests.bank.data.CreateBankRequest
+import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.word.UpdateWordRequest
 import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.enums.Language.LanguageName
@@ -54,5 +55,5 @@ data class UpdateWordRequestData(
 
     override val bankId: UUID? = null,
 
-    override val bankToCreate: CreateBankRequest? = null
+    override val bankToCreate: CreateBankRequestData? = null
 ) : UpdateWordRequest
