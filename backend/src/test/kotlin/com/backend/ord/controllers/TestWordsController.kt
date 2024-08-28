@@ -8,6 +8,9 @@ import com.backend.ord.domain.dto.WordDTO
 import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.Word
+import com.backend.ord.enums.Language.LanguageName
+import com.backend.ord.enums.Word.WordExtraMark
+import com.backend.ord.enums.Word.WordType
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
@@ -16,6 +19,7 @@ import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -29,6 +33,7 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -352,25 +357,63 @@ class TestWordsController @Autowired constructor(
     // Update
     // -------
 
-//    @Test
-//    fun `A word can be updated`() {
-//        val authenticatedUser = mockAuthenticatedUser()
-//
-//        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-//
-//        val request = wordRequestFactory.updateWordRequest(
-//            authenticatedUser = authenticatedUser,
-//            wordId = word.id
-//        )
-//
-//        val response = mockMvc.perform(request).andExpect(
-//            MockMvcResultMatchers.status().isOk()
-//        ).andReturn().response
-//
-//        val wordUpdated: Word = assertThatWordActuallyExists(response, authenticatedUser)
-//
-//        assertEquals(word.id, wordUpdated.id)
-//    }
+    @Test
+    fun `A word can be updated`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            origin = "updated origin",
+            translatedTo = LanguageName.NORWEGIAN,
+            translatedFrom = LanguageName.POLISH,
+            type = WordType.VERB,
+            translation = "updated translation",
+            extraMark = WordExtraMark.SLANG,
+            exampleSentences = setOf(
+                ExampleSentence(
+                    sentence = "updated example sentence",
+                    translation = "przykladowe zdanie"
+                ),
+                ExampleSentence(
+                    sentence = "another updated example sentence",
+                    translation = "kolejne przykladowe zdanie"
+                )
+            ),
+            definition = "updated definition",
+            useCases = setOf("updated use case 1", "updated use case 2"),
+        )
+
+        val response = mockMvc.perform(request)
+            .andExpect { status().isOk }
+            .andReturn().response
+
+        val wordUpdated: Word = assertThatWordActuallyExists(response, authenticatedUser)
+
+        with(wordUpdated) {
+            id shouldBe word.id
+            origin shouldBe "updated origin"
+            translatedTo shouldBe LanguageName.NORWEGIAN
+            translatedFrom shouldBe LanguageName.POLISH
+            type shouldBe WordType.VERB
+            translation shouldBe "updated translation"
+            extraMark shouldBe WordExtraMark.SLANG
+            definition shouldBe "updated definition"
+            useCases shouldBe setOf("updated use case 1", "updated use case 2")
+            exampleSentences shouldBe setOf(
+                ExampleSentence(
+                    sentence = "updated example sentence",
+                    translation = "przykladowe zdanie"
+                ),
+                ExampleSentence(
+                    sentence = "another updated example sentence",
+                    translation = "kolejne przykladowe zdanie"
+                )
+            )
+        }
+    }
 
     private fun assertThatWordActuallyExists(
         response: MockHttpServletResponse,
