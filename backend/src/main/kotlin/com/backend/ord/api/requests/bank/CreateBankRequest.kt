@@ -1,4 +1,4 @@
-package com.backend.ord.api.requests.bank.data
+package com.backend.ord.api.requests.bank
 
 import java.util.*
 

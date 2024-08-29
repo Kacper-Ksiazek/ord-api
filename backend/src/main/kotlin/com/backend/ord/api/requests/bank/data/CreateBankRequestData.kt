@@ -1,5 +1,6 @@
 package com.backend.ord.api.requests.bank.data
 
+import com.backend.ord.api.requests.bank.CreateBankRequest
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import java.util.UUID
