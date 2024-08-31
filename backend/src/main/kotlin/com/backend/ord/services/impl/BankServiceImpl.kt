@@ -1,6 +1,6 @@
 package com.backend.ord.services.impl
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequest
+import com.backend.ord.api.requests.bank.CreateBankRequest
 import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.User
 import com.backend.ord.exceptions.REST.BadRequestException

@@ -1,6 +1,5 @@
 package com.backend.ord.api.requests.word.data
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequest
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.word.CreateWordRequest
 import com.backend.ord.domain.embedded.ExampleSentence

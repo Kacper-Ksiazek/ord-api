@@ -1,6 +1,5 @@
 package com.backend.ord.controllers
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequest
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.word.data.ChangeBankForMultipleWordsRequestData
 import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
