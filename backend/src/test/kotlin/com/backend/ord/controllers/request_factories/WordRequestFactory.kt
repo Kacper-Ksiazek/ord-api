@@ -1,6 +1,5 @@
 package com.backend.ord.controllers.request_factories
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequest
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
