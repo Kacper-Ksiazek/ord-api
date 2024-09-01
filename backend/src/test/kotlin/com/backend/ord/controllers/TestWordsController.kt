@@ -19,7 +19,6 @@ import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -365,54 +364,20 @@ class TestWordsController @Autowired constructor(
 
         val request = wordRequestFactory.updateWordRequest(
             wordId = word.id,
-            authenticatedUser = authenticatedUser,
-            origin = "updated origin",
-            translatedTo = LanguageName.NORWEGIAN,
-            translatedFrom = LanguageName.POLISH,
-            type = WordType.VERB,
-            translation = "updated translation",
-            extraMark = WordExtraMark.SLANG,
-            exampleSentences = setOf(
-                ExampleSentence(
-                    sentence = "updated example sentence",
-                    translation = "przykladowe zdanie"
-                ),
-                ExampleSentence(
-                    sentence = "another updated example sentence",
-                    translation = "kolejne przykladowe zdanie"
-                )
-            ),
-            definition = "updated definition",
-            useCases = setOf("updated use case 1", "updated use case 2"),
+            authenticatedUser = authenticatedUser
         )
 
         val response = mockMvc.perform(request)
             .andExpect { status().isOk }
             .andReturn().response
 
-        val wordUpdated: Word = assertThatWordActuallyExists(response, authenticatedUser)
+        val updatedWord: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
-        with(wordUpdated) {
-            id shouldBe word.id
-            origin shouldBe "updated origin"
-            translatedTo shouldBe LanguageName.NORWEGIAN
-            translatedFrom shouldBe LanguageName.POLISH
-            type shouldBe WordType.VERB
-            translation shouldBe "updated translation"
-            extraMark shouldBe WordExtraMark.SLANG
-            definition shouldBe "updated definition"
-            useCases shouldBe setOf("updated use case 1", "updated use case 2")
-            exampleSentences shouldBe setOf(
-                ExampleSentence(
-                    sentence = "updated example sentence",
-                    translation = "przykladowe zdanie"
-                ),
-                ExampleSentence(
-                    sentence = "another updated example sentence",
-                    translation = "kolejne przykladowe zdanie"
-                )
-            )
-        }
+
+        wordRequestFactory.assertWordWasUpdated(
+            idOfWordToUpdate = word.id,
+            updatedWord = updatedWord,
+        )
     }
 
     private fun assertThatWordActuallyExists(
