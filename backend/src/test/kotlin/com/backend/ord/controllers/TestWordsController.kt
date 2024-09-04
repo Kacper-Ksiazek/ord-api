@@ -8,9 +8,6 @@ import com.backend.ord.domain.dto.WordDTO
 import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.Language.LanguageName
-import com.backend.ord.enums.Word.WordExtraMark
-import com.backend.ord.enums.Word.WordType
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
@@ -31,7 +28,6 @@ import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
@@ -62,7 +58,7 @@ class TestWordsController @Autowired constructor(
         val request = wordRequestFactory.createWordRequest()
 
         mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isForbidden()
+            status().isForbidden()
         )
     }
 
@@ -75,7 +71,7 @@ class TestWordsController @Autowired constructor(
         )
 
         val response = mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isCreated()
+            status().isCreated()
         ).andReturn().response
 
         assertThatWordActuallyExists(response, authenticatedUser)
@@ -94,7 +90,7 @@ class TestWordsController @Autowired constructor(
         )
 
         val response = mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isCreated()
+            status().isCreated()
         ).andReturn().response
 
         val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
@@ -112,7 +108,7 @@ class TestWordsController @Autowired constructor(
         )
 
         val response = mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isCreated()
+            status().isCreated()
         ).andReturn().response
 
         val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
@@ -130,7 +126,7 @@ class TestWordsController @Autowired constructor(
         )
 
         val response = mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isCreated()
+            status().isCreated()
         ).andReturn().response
 
         assertThatWordActuallyExists(response, authenticatedUser)
@@ -146,7 +142,7 @@ class TestWordsController @Autowired constructor(
         )
 
         mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
+            status().isBadRequest()
         )
     }
 
@@ -160,7 +156,7 @@ class TestWordsController @Autowired constructor(
         )
 
         val response = mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isCreated()
+            status().isCreated()
         ).andReturn().response
 
         val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
@@ -187,7 +183,7 @@ class TestWordsController @Autowired constructor(
         )
 
         mockMvc.perform(request).andDo { it -> println(it) }.andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
+            status().isBadRequest()
         )
     }
 
@@ -206,7 +202,7 @@ class TestWordsController @Autowired constructor(
         )
 
         mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
+            status().isBadRequest()
         )
     }
 
@@ -223,7 +219,7 @@ class TestWordsController @Autowired constructor(
         )
 
         mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
+            status().isBadRequest()
         )
     }
 
@@ -241,7 +237,7 @@ class TestWordsController @Autowired constructor(
         )
 
         mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
+            status().isBadRequest()
         )
     }
 
@@ -258,7 +254,7 @@ class TestWordsController @Autowired constructor(
         )
 
         mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isNotFound()
+            status().isNotFound()
         )
     }
 
@@ -272,7 +268,7 @@ class TestWordsController @Autowired constructor(
         )
 
         mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
+            status().isBadRequest()
         )
     }
 
@@ -291,7 +287,7 @@ class TestWordsController @Autowired constructor(
         )
 
         mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
+            status().isBadRequest()
         )
     }
 
@@ -307,7 +303,7 @@ class TestWordsController @Autowired constructor(
         )
 
         mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
+            status().isBadRequest()
         )
     }
 
@@ -325,7 +321,7 @@ class TestWordsController @Autowired constructor(
         )
 
         mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
+            status().isBadRequest()
         )
     }
 
@@ -344,7 +340,7 @@ class TestWordsController @Autowired constructor(
         )
 
         val response = mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isCreated()
+            status().isCreated()
         ).andReturn().response
 
         val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
