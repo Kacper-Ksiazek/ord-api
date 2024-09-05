@@ -29,6 +29,7 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.util.*
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -376,6 +377,267 @@ class TestWordsController @Autowired constructor(
         )
     }
 
+    @Test
+    fun `Anonymous user cannot update a word`() {
+        val word = wordSeeder.seedOneEntity()
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = null
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isForbidden()
+        )
+    }
+
+    @Test
+    fun `A word cannot be updated with more than 5 example sentences`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            exampleSentences = mutableSetOf<ExampleSentence>().apply {
+                repeat(6) { index ->
+                    add(
+                        ExampleSentence(
+                            sentence = "example sentence - $index",
+                            translation = "przykladowe zdanie"
+                        )
+                    )
+                }
+            }
+        )
+
+        mockMvc.perform(request).andDo { it -> println(it) }.andExpect(
+            status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be updated with an example sentence that has more than 255 characters`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            exampleSentences = mutableSetOf(
+                ExampleSentence(
+                    sentence = "a".repeat(256),
+                    translation = "przykladowe zdanie"
+                )
+            )
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be updated with an example sentence that has empty translation`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            exampleSentences = mutableSetOf(
+                ExampleSentence(
+                    sentence = "example sentence",
+                    translation = ""
+                )
+            )
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be updated with use case of length greater than 255 characters`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            useCases = mutableSetOf(
+                "a".repeat(256)
+            )
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be updated with more than 5 use cases`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            useCases = mutableSetOf<String>().apply {
+                repeat(6) { index ->
+                    add("use case - $index")
+                }
+            }
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be updated with bankId and bankToCreate at the same time`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            bankId = bank.id,
+            bankToCreate = bankMockFactory.mockCreateRequest()
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be updated with bankToCreate name matching already existing bank name`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            bankToCreate = bankMockFactory.mockCreateRequest(
+                name = bank.name
+            )
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be updated with bankId referring to a bank of another user`() {
+        val authenticatedUser = mockAuthenticatedUser()
+        val anotherUser = userSeeder.seedOneEntity()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+        val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            bankId = bankOfAnotherUser.id
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isNotFound()
+        )
+    }
+
+    @Test
+    fun `A word can be updated with bankToCreate name identical to another bank name but for different user`() {
+        val authenticatedUser = mockAuthenticatedUser()
+        val anotherUser = userSeeder.seedOneEntity()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+        val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            bankToCreate = bankMockFactory.mockCreateRequest(
+                name = bankOfAnotherUser.name
+            )
+        )
+
+        val response = mockMvc.perform(request).andExpect(
+            status().isOk()
+        ).andReturn().response
+
+        val updatedWord: Word = assertThatWordActuallyExists(response, authenticatedUser)
+        val bank: Bank = assertThatBankActuallyExists(updatedWord.bank)
+    }
+
+    @Test
+    fun `A word cannot be updated with bankId referring to a bank that does not exist`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            bankId = UUID.randomUUID()
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isNotFound()
+        )
+    }
+
+    @Test
+    fun `A word cannot be updated with bankToCreate name that is empty`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            bankToCreate = bankMockFactory.mockCreateRequest(
+                name = ""
+            )
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isBadRequest()
+        )
+    }
+
+    @Test
+    fun `A word cannot be updated by other user than the one who created it`() {
+        val authenticatedUser = mockAuthenticatedUser()
+        val anotherUser = userSeeder.seedOneEntity()
+
+        val word = wordSeeder.seedOneEntityForUser(anotherUser)
+
+        val request = wordRequestFactory.updateWordRequest(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser
+        )
+
+        mockMvc.perform(request).andExpect(
+            status().isNotFound()
+        )
+    }
+
     private fun assertThatWordActuallyExists(
         response: MockHttpServletResponse,
         authenticatedUser: MockedAuthenticatedUser
@@ -388,6 +650,9 @@ class TestWordsController @Autowired constructor(
         val valueSavedInDatabase = wordRepository.findByIdOrNull(responseBody.id)
 
         assertNotNull(valueSavedInDatabase)
+
+        // Compare the values
+        // TODO: Implement a better way to compare the values
 
         return valueSavedInDatabase!!
     }
