@@ -54,5 +54,6 @@ data class UpdateWordRequestData(
 
     override val bankId: UUID? = null,
 
+    @field:Valid
     override val bankToCreate: CreateBankRequestData? = null
 ) : UpdateWordRequest
