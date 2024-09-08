@@ -14,9 +14,6 @@ import jakarta.validation.constraints.Size
 import java.util.*
 
 data class UpdateWordRequestData(
-    @field:NotNull(message = "Id cannot be blank")
-    override val id: UUID,
-
     @field:NotBlank(message = "Origin word cannot be blank")
     @field:Size(min = 1, max = 255, message = "Origin word must be between 1 and 255 characters")
     override val origin: String,

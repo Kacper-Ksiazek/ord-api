@@ -133,8 +133,6 @@ class WordRequestFactory(
             .content(
                 objectMapper.writeValueAsString(
                     UpdateWordRequestData(
-                        id = wordId,
-
                         origin = origin,
                         translation = translation,
                         translatedFrom = translatedFrom,

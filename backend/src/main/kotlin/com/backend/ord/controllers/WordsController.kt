@@ -100,6 +100,8 @@ class WordController(
     ): ResponseEntity<WordDTO> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
+        wordService.findByIdOrFail(id = id, userId = user.id)
+
         val bank = getBankFromRequest(
             bankId = body.bankId,
             bankToCreate = body.bankToCreate,
