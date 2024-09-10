@@ -16,6 +16,7 @@ import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -636,6 +637,37 @@ class TestWordsController @Autowired constructor(
         mockMvc.perform(request).andExpect(
             status().isNotFound()
         )
+    }
+
+    @Test
+    fun `A word can be updated with only one field being specified`() {
+        val authenticatedUser = mockAuthenticatedUser()
+
+        val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+        val request = wordRequestFactory.updateWordRequestWithNulls(
+            wordId = word.id,
+            authenticatedUser = authenticatedUser,
+            origin = "new origin",
+        )
+
+        val response = mockMvc.perform(request)
+            .andExpect { status().isOk }
+            .andReturn().response
+
+        val updatedWord: Word = assertThatWordActuallyExists(response, authenticatedUser)
+
+        updatedWord.origin shouldBe "new origin"
+
+        // Check if the other fields are the same
+        updatedWord.translatedTo shouldBe word.translatedTo
+        updatedWord.translatedFrom shouldBe word.translatedFrom
+        updatedWord.type shouldBe word.type
+        updatedWord.exampleSentences shouldBe word.exampleSentences
+        updatedWord.translation shouldBe word.translation
+        updatedWord.extraMark shouldBe word.extraMark
+        updatedWord.definition shouldBe word.definition
+        updatedWord.useCases shouldBe word.useCases
     }
 
     private fun assertThatWordActuallyExists(

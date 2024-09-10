@@ -100,7 +100,7 @@ class WordController(
     ): ResponseEntity<WordDTO> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
-        wordService.findByIdOrFail(id = id, userId = user.id)
+        val currentWord = wordService.findByIdOrFail(id = id, userId = user.id)
 
         val bank = getBankFromRequest(
             bankId = body.bankId,
@@ -112,15 +112,15 @@ class WordController(
             wordMapper.toEntity(
                 WordDTO(
                     id = id,
-                    origin = body.origin,
-                    translatedTo = body.translatedTo ?: user.nativeLanguage,
-                    translatedFrom = body.translatedFrom,
-                    type = body.type,
-                    exampleSentences = body.exampleSentences,
-                    translation = body.translation,
-                    extraMark = body.extraMark,
-                    definition = body.definition,
-                    useCases = body.useCases,
+                    origin = body.origin ?: currentWord.origin,
+                    translatedTo = body.translatedTo ?: currentWord.translatedTo,
+                    translatedFrom = body.translatedFrom ?: currentWord.translatedFrom,
+                    type = body.type ?: currentWord.type,
+                    exampleSentences = body.exampleSentences ?: currentWord.exampleSentences,
+                    translation = body.translation ?: currentWord.translation,
+                    extraMark = body.extraMark ?: currentWord.extraMark,
+                    definition = body.definition ?: currentWord.definition,
+                    useCases = body.useCases ?: currentWord.useCases,
 
                     user = userMapper.toDTO(user),
                     bank = bankMapper.toDTOOrNull(bank)

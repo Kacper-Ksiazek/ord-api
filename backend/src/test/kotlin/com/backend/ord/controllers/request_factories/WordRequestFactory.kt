@@ -111,17 +111,60 @@ class WordRequestFactory(
     fun updateWordRequest(
         wordId: UUID,
 
-        origin: String = UpdatedWordData.origin,
-        definition: String = UpdatedWordData.definition,
-        translation: String = UpdatedWordData.translation,
+        origin: String? = UpdatedWordData.origin,
+        definition: String? = UpdatedWordData.definition,
+        translation: String? = UpdatedWordData.translation,
 
-        type: WordType = UpdatedWordData.type,
+        type: WordType? = UpdatedWordData.type,
         extraMark: WordExtraMark? = UpdatedWordData.extraMark,
         translatedTo: LanguageName? = UpdatedWordData.translatedTo,
-        translatedFrom: LanguageName = UpdatedWordData.translatedFrom,
+        translatedFrom: LanguageName? = UpdatedWordData.translatedFrom,
 
-        useCases: Set<String> = UpdatedWordData.useCases,
-        exampleSentences: Set<ExampleSentence> = UpdatedWordData.exampleSentences,
+        useCases: Set<String>? = UpdatedWordData.useCases,
+        exampleSentences: Set<ExampleSentence>? = UpdatedWordData.exampleSentences,
+
+        authenticatedUser: MockedAuthenticatedUser? = null,
+        bankId: UUID? = null,
+        bankToCreate: CreateBankRequestData? = null
+    ): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders.patch("$BASE_URL/$wordId")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    UpdateWordRequestData(
+                        origin = origin,
+                        translation = translation,
+                        translatedFrom = translatedFrom,
+                        translatedTo = translatedTo,
+                        type = type,
+                        exampleSentences = exampleSentences,
+                        extraMark = extraMark,
+                        bankId = bankId,
+                        bankToCreate = bankToCreate,
+                        definition = definition,
+                        useCases = useCases
+                    )
+                )
+            ).apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+            }
+    }
+
+    fun updateWordRequestWithNulls(
+        wordId: UUID,
+
+        origin: String? = null,
+        definition: String? = null,
+        translation: String? = null,
+
+        type: WordType? = null,
+        extraMark: WordExtraMark? = null,
+        translatedTo: LanguageName? = null,
+        translatedFrom: LanguageName? = null,
+
+        useCases: Set<String>? = null,
+        exampleSentences: Set<ExampleSentence>? = null,
 
         authenticatedUser: MockedAuthenticatedUser? = null,
         bankId: UUID? = null,

@@ -14,17 +14,14 @@ import jakarta.validation.constraints.Size
 import java.util.*
 
 data class UpdateWordRequestData(
-    @field:NotBlank(message = "Origin word cannot be blank")
     @field:Size(min = 1, max = 255, message = "Origin word must be between 1 and 255 characters")
-    override val origin: String,
+    override val origin: String? = null,
 
-    @field:NotBlank(message = "Translation word cannot be blank")
     @field:Size(min = 1, max = 255, message = "Translation word must be between 1 and 255 characters")
-    override val translation: String,
+    override val translation: String? = null,
 
-    @field:NotBlank(message = "Definition cannot be blank")
     @field:Size(min = 1, max = 255, message = "Definition must be between 1 and 255 characters")
-    override val definition: String,
+    override val definition: String? = null,
 
     @field:ValidStringSet(
         message = "Use cases are invalid",
@@ -33,13 +30,11 @@ data class UpdateWordRequestData(
         minElementSize = 5,
         maxElementSize = 96
     )
-    override val useCases: Set<String> = emptySet(),
+    override val useCases: Set<String>? = null,
 
-    @field:NotNull(message = "Type cannot be blank")
-    override val type: WordType,
+    override val type: WordType? = null,
 
-    @field:NotNull(message = "Translated from cannot be blank")
-    override val translatedFrom: LanguageName,
+    override val translatedFrom: LanguageName? = null,
 
     override val extraMark: WordExtraMark? = null,
 
@@ -47,7 +42,7 @@ data class UpdateWordRequestData(
 
     @field:Size(min = 1, max = 5, message = "Example sentences must be between 1 and 5")
     @field:Valid
-    override val exampleSentences: Set<ExampleSentence>,
+    override val exampleSentences: Set<ExampleSentence>? = null,
 
     override val bankId: UUID? = null,
 

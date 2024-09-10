@@ -7,20 +7,20 @@ import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
 import java.util.*
 
-interface CreateWordRequest {
-    val origin: String
-    val translation: String
-    val definition: String
+interface CreateWordRequest : UpdateWordRequest {
+    override val origin: String
+    override val translation: String
+    override val definition: String
 
-    val type: WordType
-    val extraMark: WordExtraMark?
-    val translatedTo: LanguageName?
-    val translatedFrom: LanguageName
+    override val type: WordType
+    override val extraMark: WordExtraMark?
+    override val translatedTo: LanguageName?
+    override val translatedFrom: LanguageName
 
-    val useCases: Set<String>
-    val exampleSentences: Set<ExampleSentence>
+    override val useCases: Set<String>
+    override val exampleSentences: Set<ExampleSentence>
 
-    val bankId: UUID?
-    val bankToCreate: CreateBankRequest?
+    override val bankId: UUID?
+    override val bankToCreate: CreateBankRequest?
 }
 
