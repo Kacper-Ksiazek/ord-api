@@ -1,13 +1,20 @@
 package com.backend.ord.controllers
 
+import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.controllers.extensions.compareWith
+import com.backend.ord.controllers.extensions.detectChanges
 import com.backend.ord.controllers.request_factories.WordRequestFactory
+import com.backend.ord.controllers.request_factories.data.WordDataChanges
+import com.backend.ord.controllers.request_factories.data.compareWithDefaultCreateWordData
+import com.backend.ord.controllers.request_factories.data.compareWithDefaultUpdateWordData
 import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.dto.WordDTO
 import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.Word
+import com.backend.ord.domain.mappers.WordMapper
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
@@ -15,8 +22,8 @@ import com.backend.ord.seeders.entities.WordSeeder
 import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
+import com.backend.ord.utils.Optional
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.DisplayName
@@ -50,6 +57,7 @@ class TestWordsController @Autowired constructor(
     private val bankService: BankService,
     private val userSeeder: UserSeeder,
     private val wordSeeder: WordSeeder,
+    private val wordMapper: WordMapper
 ) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
     private val BASE_URL = "/api/v1/words/"
 
@@ -82,7 +90,9 @@ class TestWordsController @Autowired constructor(
                 status().isCreated()
             ).andReturn().response
 
-            assertThatWordActuallyExists(response, authenticatedUser)
+            val createdWord = assertThatWordActuallyExists(response, authenticatedUser)
+
+            createdWord.compareWithDefaultCreateWordData()
         }
 
 
@@ -103,6 +113,7 @@ class TestWordsController @Autowired constructor(
 
             val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
+            word.compareWithDefaultCreateWordData()
             assertEquals(bank.id, word.bank?.id)
         }
 
@@ -122,6 +133,8 @@ class TestWordsController @Autowired constructor(
             val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
             val bank: Bank = assertThatBankActuallyExists(word.bank)
+
+            word.compareWithDefaultCreateWordData()
         }
 
         @Test
@@ -137,7 +150,13 @@ class TestWordsController @Autowired constructor(
                 status().isCreated()
             ).andReturn().response
 
-            assertThatWordActuallyExists(response, authenticatedUser)
+            val createdWord = assertThatWordActuallyExists(response, authenticatedUser)
+
+            createdWord.compareWithDefaultCreateWordData(
+                differences = WordDataChanges(
+                    extraMark = Optional(null, true)
+                )
+            )
         }
 
         @Test
@@ -169,7 +188,11 @@ class TestWordsController @Autowired constructor(
 
             val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
-            assertEquals(authenticatedUser.userInfo.nativeLanguage, word.translatedTo)
+            word.compareWithDefaultCreateWordData(
+                differences = WordDataChanges(
+                    translatedTo = Optional(authenticatedUser.userInfo.nativeLanguage)
+                )
+            )
         }
 
         @Test
@@ -354,6 +377,8 @@ class TestWordsController @Autowired constructor(
             val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
             val bank: Bank = assertThatBankActuallyExists(word.bank)
+
+            word.compareWithDefaultCreateWordData()
         }
     }
 
@@ -377,10 +402,8 @@ class TestWordsController @Autowired constructor(
 
             val updatedWord: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
-
-            wordRequestFactory.assertWordWasUpdated(
-                idOfWordToUpdate = word.id,
-                updatedWord = updatedWord,
+            updatedWord.compareWithDefaultUpdateWordData(
+                idOfWordToUpdate = word.id
             )
         }
 
@@ -590,6 +613,10 @@ class TestWordsController @Autowired constructor(
 
             val updatedWord: Word = assertThatWordActuallyExists(response, authenticatedUser)
             val bank: Bank = assertThatBankActuallyExists(updatedWord.bank)
+
+            updatedWord.compareWithDefaultUpdateWordData(
+                idOfWordToUpdate = word.id
+            )
         }
 
         @Test
@@ -663,17 +690,12 @@ class TestWordsController @Autowired constructor(
 
             val updatedWord: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
-            updatedWord.origin shouldBe "new origin"
-
-            // Check if the other fields are the same
-            updatedWord.translatedTo shouldBe word.translatedTo
-            updatedWord.translatedFrom shouldBe word.translatedFrom
-            updatedWord.type shouldBe word.type
-            updatedWord.exampleSentences shouldBe word.exampleSentences
-            updatedWord.translation shouldBe word.translation
-            updatedWord.extraMark shouldBe word.extraMark
-            updatedWord.definition shouldBe word.definition
-            updatedWord.useCases shouldBe word.useCases
+            updatedWord.detectChanges(
+                before = word,
+                changes = WordDataChanges(
+                    origin = Optional("new origin")
+                )
+            )
         }
     }
 
@@ -693,14 +715,15 @@ class TestWordsController @Autowired constructor(
 
         assertEquals(authenticatedUser.userInfo.id, responseBody.user.id)
 
-        val valueSavedInDatabase = wordRepository.findByIdOrNull(responseBody.id)
+        val valueSavedInDatabase: Word? = wordRepository.findByIdOrNull(responseBody.id)
 
         assertNotNull(valueSavedInDatabase)
 
-        // Compare the values
-        // TODO: Implement a better way to compare the values
+        valueSavedInDatabase!!.compareWith(
+            wordMapper.toEntity(responseBody)
+        )
 
-        return valueSavedInDatabase!!
+        return valueSavedInDatabase
     }
 
     private fun assertThatBankActuallyExists(
