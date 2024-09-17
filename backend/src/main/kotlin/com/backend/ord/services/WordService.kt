@@ -9,11 +9,11 @@ interface WordService : UserResourceService<Word> {
         wordId: UUID,
         bankId: UUID?,
         userId: UUID
-    ): Word
+    ): Int
 
     fun changeBankForMultipleWords(
         wordIds: List<UUID>,
         bankId: UUID?,
         userId: UUID
-    ): List<Word>
+    ): Int
 }

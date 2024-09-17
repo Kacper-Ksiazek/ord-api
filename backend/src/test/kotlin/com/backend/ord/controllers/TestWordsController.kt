@@ -1,5 +1,6 @@
 package com.backend.ord.controllers
 
+import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.extensions.compareWith
 import com.backend.ord.controllers.extensions.detectChanges
@@ -804,6 +805,190 @@ class TestWordsController @Autowired constructor(
         }
     }
 
+    @Nested
+    @DisplayName("[POST] /api/v1/words/{id}/change-bank - change word's bank")
+    inner class ChangeSingleWordBankTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - Word's bank can be changed`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val firstBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                val secondBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+
+                val word: Word = wordSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(firstBank, true)
+                )
+
+                val request = wordRequestFactory.changeBankForSingleWord(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id,
+                    bankId = secondBank.id
+                )
+
+                mockMvc.perform(request).andExpect {
+                    status().isOk()
+                }.andReturn()
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).let {
+                    it.bank shouldNotBe null
+                    it.bank!!.id shouldBe secondBank.id
+                }
+            }
+
+            @Test
+            fun `200 - Word's bank can be changed to newly created bank`() {
+                val newBankName = "NEW_EXTRA_BANK_NAME"
+
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val initialBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                val word: Word = wordSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(initialBank, true)
+                )
+
+                initialBank.name shouldNotBe newBankName
+
+                val request = wordRequestFactory.changeBankForSingleWord(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id,
+                    bankToCreate = CreateBankRequestData(
+                        name = newBankName,
+                        description = "x".repeat(64)
+                    )
+                )
+
+                mockMvc.perform(request).andExpect {
+                    status().isOk()
+                }.andReturn()
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).let {
+                    it.bank shouldNotBe null
+                    it.bank!!.id shouldNotBe initialBank.id
+                    it.bank!!.name shouldBe newBankName
+                }
+            }
+
+            @Test
+            fun `200 - Word's bank can be change from null to already existing bank`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val word: Word = wordSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(null, true)
+                )
+                val newBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).let {
+                    it.bank shouldBe null
+                }
+
+                val request = wordRequestFactory.changeBankForSingleWord(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id,
+                    bankId = newBank.id
+                )
+
+                mockMvc.perform(request).andExpect {
+                    status().isOk()
+                }.andReturn()
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).let {
+                    it.bank shouldNotBe null
+                    it.bank!!.id shouldBe newBank.id
+                }
+            }
+
+            @Test
+            fun `200 - Word's bank can be change from null to newly created bank`() {
+                val newBankName = "NEW_EXTRA_BANK_NAME"
+
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val word: Word = wordSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(null, true)
+                )
+
+                val request = wordRequestFactory.changeBankForSingleWord(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id,
+                    bankToCreate = CreateBankRequestData(
+                        name = newBankName,
+                        description = "x".repeat(64)
+                    )
+                )
+
+                mockMvc.perform(request).andExpect {
+                    status().isOk()
+                }.andReturn()
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).let {
+                    it.bank shouldNotBe null
+                    it.bank!!.name shouldBe newBankName
+                }
+            }
+
+            @Test
+            fun `200 - Word's bank can be unassigned`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val initialBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                val word: Word = wordSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(initialBank, true)
+                )
+
+                val request = wordRequestFactory.changeBankForSingleWord(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id,
+                    bankToCreate = null,
+                    bankId = null
+                )
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).let {
+                    it.bank shouldNotBe null
+                }
+
+                mockMvc.perform(request).andExpect {
+                    status().isOk()
+                }.andReturn()
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).let {
+                    it.bank shouldBe null
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+
+        }
+    }
+
 
     private fun assertThatWordActuallyExists(
         response: MockHttpServletResponse,
@@ -835,4 +1020,5 @@ class TestWordsController @Autowired constructor(
             it!!
         }
     }
+
 }

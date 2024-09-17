@@ -1,6 +1,7 @@
 package com.backend.ord.controllers.request_factories
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
 import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.controllers.request_factories.data.CreateWordData
@@ -175,6 +176,34 @@ class WordRequestFactory(
         return MockMvcRequestBuilders.delete("$BASE_URL/$wordId").apply {
             if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
         }
+    }
+
+    /**
+     * POST /words/{wordId}/change-bank
+     */
+    fun changeBankForSingleWord(
+        wordId: UUID,
+        authenticatedUser: MockedAuthenticatedUser? = null,
+
+        bankId: UUID? = null,
+        bankToCreate: CreateBankRequestData? = null,
+    ): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders
+            .post("$BASE_URL/$wordId/change-bank")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    ChangeBankForSingleWordRequestData(
+                        bankId = bankId,
+                        bankToCreate = bankToCreate
+                    )
+                )
+            )
+            .apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+            }
+
     }
 
 }

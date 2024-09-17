@@ -62,11 +62,8 @@ class WordController(
     ): ResponseEntity<WordDTO> {
         val user: User = jwtService.getAuthenticatedUser(request)!!
 
-        if (body.bankToCreate != null && body.bankId != null) {
-            throw BadRequestException("You cannot create a new bank and use an existing bank at the same time")
-        }
 
-        val bank = getBankFromRequest(
+        val bank = getBankFromRequestOrNull(
             bankId = body.bankId,
             bankToCreate = body.bankToCreate,
             user = user
@@ -102,7 +99,7 @@ class WordController(
 
         val currentWord = wordService.findByIdOrFail(id = id, userId = user.id)
 
-        val bank = getBankFromRequest(
+        val bank = getBankFromRequestOrNull(
             bankId = body.bankId,
             bankToCreate = body.bankToCreate,
             user = user
@@ -136,32 +133,44 @@ class WordController(
         request: HttpServletRequest,
         @PathVariable id: UUID,
         @RequestBody body: ChangeBankForSingleWordRequestData
-    ): ResponseEntity<WordDTO> {
+    ): ResponseEntity<Unit> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
-        val result: Word = wordService.changeBankForSingleWord(
-            wordId = id,
+        val bank = getBankFromRequestOrNull(
+            user = user,
             bankId = body.bankId,
+            bankToCreate = body.bankToCreate
+        )
+
+        wordService.changeBankForSingleWord(
+            wordId = id,
+            bankId = bank?.id,
             userId = user.id
         )
 
-        return ResponseEntity.status(HttpStatus.OK).body(wordMapper.toDTO(result))
+        return ResponseEntity.status(HttpStatus.OK).build()
     }
 
     @PostMapping("/change-bank-for-multiple-words")
     fun changeBankForMultipleWords(
         request: HttpServletRequest,
         @RequestBody body: ChangeBankForMultipleWordsRequestData
-    ): ResponseEntity<List<WordDTO>> {
+    ): ResponseEntity<Unit> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
-        val result: List<Word> = wordService.changeBankForMultipleWords(
-            wordIds = body.wordIds,
+        val bank = getBankFromRequest(
+            user = user,
             bankId = body.bankId,
+            bankToCreate = body.bankToCreate
+        )
+
+        wordService.changeBankForMultipleWords(
+            wordIds = body.wordIds,
+            bankId = bank.id,
             userId = user.id
         )
 
-        return ResponseEntity.status(HttpStatus.OK).body(wordMapper.toDTOList(result))
+        return ResponseEntity.status(HttpStatus.OK).build()
     }
 
     @DeleteMapping("/{id}")
@@ -183,7 +192,35 @@ class WordController(
         bankId: UUID?,
         bankToCreate: CreateBankRequestData?,
         user: User
+    ): Bank {
+        if (bankToCreate == null && bankId == null) {
+            throw BadRequestException("Either bankToCreate or bankId has to be specifed")
+        }
+
+        if (bankToCreate != null && bankId != null) {
+            throw BadRequestException("You cannot create a new bank and use an existing bank at the same time")
+        }
+
+        return try {
+            bankService.findByIdOrCreate(
+                bankId = bankId,
+                bankToCreate = bankToCreate,
+                user = user
+            )!!
+        } catch (e: DataIntegrityViolationException) {
+            throw BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
+        }
+    }
+
+    private fun getBankFromRequestOrNull(
+        bankId: UUID?,
+        bankToCreate: CreateBankRequestData?,
+        user: User
     ): Bank? {
+        if (bankToCreate != null && bankId != null) {
+            throw BadRequestException("You cannot create a new bank and use an existing bank at the same time")
+        }
+
         return try {
             bankService.findByIdOrCreate(
                 bankId = bankId,

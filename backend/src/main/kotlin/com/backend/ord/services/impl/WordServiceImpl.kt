@@ -16,7 +16,7 @@ class WordServiceImpl(
         wordId: UUID,
         bankId: UUID?,
         userId: UUID
-    ): Word {
+    ): Int {
         return repository.changeBankForSingleWord(
             bankId = bankId,
             wordId = wordId,
@@ -24,11 +24,12 @@ class WordServiceImpl(
         )
     }
 
+    @Transactional
     override fun changeBankForMultipleWords(
         wordIds: List<UUID>,
         bankId: UUID?,
         userId: UUID
-    ): List<Word> {
+    ): Int {
         return repository.changeBankForMultipleWords(
             bankId = bankId,
             wordIds = wordIds,

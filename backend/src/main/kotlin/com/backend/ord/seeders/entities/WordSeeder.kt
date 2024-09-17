@@ -1,11 +1,13 @@
 package com.backend.ord.seeders.entities
 
 import com.backend.ord.domain.dto.UserDTO
+import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.utils.Optional
 import org.springframework.stereotype.Component
 
 @Component
@@ -18,12 +20,25 @@ class WordSeeder(
         return wordRepository.save(data ?: wordMockFactory.mockEntity())
     }
 
-    fun seedOneEntityForUser(user: User): Word {
-        return wordRepository.save(wordMockFactory.mockEntity(user = user))
+    fun seedOneEntityForUser(
+        user: User,
+        bank: Optional<Bank?> = Optional(null, false)
+    ): Word {
+        val mockEntity = wordMockFactory.mockEntity(user = user)
+
+        if (bank.isPresent) mockEntity.bank = bank.value
+
+        return wordRepository.save(mockEntity)
     }
 
-    fun seedOneEntityForUser(user: UserDTO): Word {
-        return seedOneEntityForUser(user = userMapper.toEntity(user))
+    fun seedOneEntityForUser(
+        user: UserDTO,
+        bank: Optional<Bank?> = Optional(null, false)
+    ): Word {
+        return seedOneEntityForUser(
+            user = userMapper.toEntity(user),
+            bank = bank
+        )
     }
 
     override fun deleteAll() {

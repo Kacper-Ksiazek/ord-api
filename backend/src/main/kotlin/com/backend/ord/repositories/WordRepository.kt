@@ -14,9 +14,9 @@ interface WordRepository : UserResourceRepository<Word> {
 
     @Modifying
     @Query("UPDATE Word w SET w.bank.id = :bankId WHERE w.id = :wordId AND w.user.id = :userId")
-    fun changeBankForSingleWord(wordId: UUID, bankId: UUID?, userId: UUID): Word
+    fun changeBankForSingleWord(wordId: UUID, bankId: UUID?, userId: UUID): Int
 
     @Modifying
     @Query("UPDATE Word w SET w.bank.id = :bankId WHERE w.id IN :wordIds AND w.user.id = :userId")
-    fun changeBankForMultipleWords(bankId: UUID?, wordIds: List<UUID>, userId: UUID): List<Word>
+    fun changeBankForMultipleWords(bankId: UUID?, wordIds: List<UUID>, userId: UUID): Int
 }

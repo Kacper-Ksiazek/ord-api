@@ -9,4 +9,3 @@ data class MockedAuthenticatedUser(
     var userInfo: UserDTO,
     var authCookie: Cookie
 )
-
