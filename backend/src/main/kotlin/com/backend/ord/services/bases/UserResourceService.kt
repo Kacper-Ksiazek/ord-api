@@ -4,6 +4,7 @@ import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.bases.UserResourceRepository
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 interface UserResourceService<T : IdentifiableUserResource> {
@@ -25,11 +26,15 @@ interface UserResourceService<T : IdentifiableUserResource> {
         return repository.save(t)
     }
 
+    @Transactional
     fun deleteById(
         id: UUID,
         userId: UUID,
     ) {
-        repository.deleteOneForUser(userId, id)
+        repository.deleteOneForUser(userId, id).let {
+//            it ?: throw NotFoundException("Entity not found")
+            println(it)
+        }
     }
 
     fun findById(

@@ -119,8 +119,12 @@ class WordRequestFactory(
             }
     }
 
+    /**
+     * PATCH /words/{wordId}
+     */
     fun updateWordRequestWithNulls(
         wordId: UUID,
+        authenticatedUser: MockedAuthenticatedUser? = null,
 
         origin: String? = null,
         definition: String? = null,
@@ -134,7 +138,6 @@ class WordRequestFactory(
         useCases: Set<String>? = null,
         exampleSentences: Set<ExampleSentence>? = null,
 
-        authenticatedUser: MockedAuthenticatedUser? = null,
         bankId: UUID? = null,
         bankToCreate: CreateBankRequestData? = null
     ): MockHttpServletRequestBuilder {
@@ -161,4 +164,17 @@ class WordRequestFactory(
                 if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
             }
     }
+
+    /**
+     * DELETE /words/{wordId}
+     */
+    fun deleteWordRequestWithNulls(
+        wordId: UUID,
+        authenticatedUser: MockedAuthenticatedUser? = null,
+    ): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders.delete("$BASE_URL/$wordId").apply {
+            if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+        }
+    }
+
 }

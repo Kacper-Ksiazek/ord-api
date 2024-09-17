@@ -24,6 +24,8 @@ import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import com.backend.ord.utils.Optional
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.DisplayName
@@ -724,7 +726,24 @@ class TestWordsController @Autowired constructor(
         @Nested
         @DisplayName("Positive")
         inner class Positive {
-            // TODO
+            @Test
+            fun `A word can be deleted`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                wordService.findById(id = word.id, userId = authenticatedUser.userInfo.id) shouldNotBe null
+
+                val request = wordRequestFactory.deleteWordRequestWithNulls(
+                    wordId = word.id,
+                    authenticatedUser = authenticatedUser
+                )
+
+                mockMvc.perform(request).andExpect {
+                    status().isOk()
+                }
+
+                wordService.findById(id = word.id, userId = authenticatedUser.userInfo.id) shouldBe null
+            }
         }
 
         @Nested
