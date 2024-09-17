@@ -1,6 +1,5 @@
 package com.backend.ord.controllers
 
-import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.extensions.compareWith
 import com.backend.ord.controllers.extensions.detectChanges
@@ -13,6 +12,7 @@ import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.dto.WordDTO
 import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.domain.entities.Bank
+import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.domain.mappers.WordMapper
 import com.backend.ord.repositories.WordRepository
@@ -749,7 +749,58 @@ class TestWordsController @Autowired constructor(
         @Nested
         @DisplayName("Negative")
         inner class Negative {
-            // TODO
+            @Test
+            fun `Word cannot be deleted by an anonymous user`() {
+                val user: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val word = wordSeeder.seedOneEntityForUser(user.userInfo)
+
+                wordService.findById(id = word.id, userId = user.userInfo.id) shouldNotBe null
+
+                val request = wordRequestFactory.deleteWordRequestWithNulls(
+                    wordId = word.id
+                )
+
+                mockMvc.perform(request).andExpect {
+                    status().isForbidden()
+                }
+
+                wordService.findById(id = word.id, userId = user.userInfo.id) shouldNotBe null
+            }
+
+            @Test
+            fun `Word can be deleted only by its owner`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val anotherUser: User = userSeeder.seedOneEntity()
+
+                val word = wordSeeder.seedOneEntityForUser(anotherUser)
+
+                wordService.findById(id = word.id, userId = anotherUser.id) shouldNotBe null
+
+                val request = wordRequestFactory.deleteWordRequestWithNulls(
+                    wordId = word.id,
+                    authenticatedUser = authenticatedUser
+                )
+
+                mockMvc.perform(request).andExpect {
+                    status().isNotFound()
+                }
+
+                wordService.findById(id = word.id, userId = anotherUser.id) shouldNotBe null
+            }
+
+            @Test
+            fun `404 while trying to remove not-existing word`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val request = wordRequestFactory.deleteWordRequestWithNulls(
+                    wordId = UUID.randomUUID(),
+                    authenticatedUser = authenticatedUser
+                )
+
+                mockMvc.perform(request).andExpect {
+                    status().isNotFound()
+                }
+            }
         }
     }
 
