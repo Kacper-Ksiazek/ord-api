@@ -20,6 +20,10 @@ class WordSeeder(
         return wordRepository.save(data ?: wordMockFactory.mockEntity())
     }
 
+    override fun deleteAll() {
+        wordRepository.deleteAll()
+    }
+
     fun seedOneEntityForUser(
         user: User,
         bank: Optional<Bank?> = Optional(null, false)
@@ -41,7 +45,29 @@ class WordSeeder(
         )
     }
 
-    override fun deleteAll() {
-        wordRepository.deleteAll()
+    fun seedMultipleEntitiesForUser(
+        user: User,
+        amount: Int,
+        bank: Optional<Bank?> = Optional(null, false)
+    ): List<Word> {
+        val words = mutableListOf<Word>()
+
+        for (i in 1..amount) {
+            words.add(seedOneEntityForUser(user, bank))
+        }
+
+        return words
+    }
+
+    fun seedMultipleEntitiesForUser(
+        user: UserDTO,
+        amount: Int,
+        bank: Optional<Bank?> = Optional(null, false)
+    ): List<Word> {
+        return seedMultipleEntitiesForUser(
+            user = userMapper.toEntity(user),
+            amount = amount,
+            bank = bank
+        )
     }
 }

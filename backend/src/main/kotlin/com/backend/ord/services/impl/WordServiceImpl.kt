@@ -1,6 +1,7 @@
 package com.backend.ord.services.impl
 
 import com.backend.ord.domain.entities.Word
+import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.services.WordService
 import jakarta.transaction.Transactional

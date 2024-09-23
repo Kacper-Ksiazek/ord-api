@@ -6,5 +6,8 @@ interface SeederInterface<T> {
      */
     fun seedOneEntity(data: T? = null): T
 
+    /**
+     * Delete all rows from the database
+     */
     fun deleteAll()
 }

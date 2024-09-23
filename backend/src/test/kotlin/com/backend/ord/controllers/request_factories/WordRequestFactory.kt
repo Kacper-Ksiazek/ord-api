@@ -1,6 +1,7 @@
 package com.backend.ord.controllers.request_factories
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.api.requests.word.data.ChangeBankForMultipleWordsRequestData
 import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
 import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
@@ -8,6 +9,7 @@ import com.backend.ord.controllers.request_factories.data.CreateWordData
 import com.backend.ord.controllers.request_factories.data.UpdateWordData
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.embedded.ExampleSentence
+import com.backend.ord.domain.entities.Word
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
@@ -203,7 +205,34 @@ class WordRequestFactory(
             .apply {
                 if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
             }
+    }
 
+    /**
+     * POST /words/change-bank-for-multiple-words
+     */
+    fun changeBankForMultipleWords(
+        authenticatedUser: MockedAuthenticatedUser? = null,
+
+        wordIds: List<Word>,
+        bankId: UUID? = null,
+        bankToCreate: CreateBankRequestData? = null,
+    ): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders
+            .post("$BASE_URL/change-bank-for-multiple-words")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    ChangeBankForMultipleWordsRequestData(
+                        wordIds = wordIds.map { it.id },
+                        bankId = bankId,
+                        bankToCreate = bankToCreate
+                    )
+                )
+            )
+            .apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+            }
     }
 
 }
