@@ -23,7 +23,7 @@ class BankMockFactory(
         )
     }
 
-    fun mockCreateRequest(
+    fun mockCreateRequestData(
         name: String = faker.name().fullName(),
         description: String = faker.lorem().sentence(),
         groupId: UUID? = null
