@@ -37,11 +37,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.*
 
 @SpringBootTest
@@ -83,9 +83,10 @@ class TestWordsController @Autowired constructor(
                     authenticatedUser = authenticatedUser
                 )
 
-                val response = mockMvc.perform(request).andExpect(
-                    status().isCreated()
-                ).andReturn().response
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.CREATED.value()
+                    it.response
+                }
 
                 val createdWord = assertThatWordActuallyExists(response, authenticatedUser)
 
@@ -104,9 +105,10 @@ class TestWordsController @Autowired constructor(
                     bankId = bank.id
                 )
 
-                val response = mockMvc.perform(request).andExpect(
-                    status().isCreated()
-                ).andReturn().response
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.CREATED.value()
+                    it.response
+                }
 
                 val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
@@ -123,9 +125,10 @@ class TestWordsController @Autowired constructor(
                     bankToCreate = bankMockFactory.mockCreateRequestData()
                 )
 
-                val response = mockMvc.perform(request).andExpect(
-                    status().isCreated()
-                ).andReturn().response
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.CREATED.value()
+                    it.response
+                }
 
                 val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
@@ -143,9 +146,10 @@ class TestWordsController @Autowired constructor(
                     extraMark = null
                 )
 
-                val response = mockMvc.perform(request).andExpect(
-                    status().isCreated()
-                ).andReturn().response
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.CREATED.value()
+                    it.response
+                }
 
                 val createdWord = assertThatWordActuallyExists(response, authenticatedUser)
 
@@ -165,9 +169,10 @@ class TestWordsController @Autowired constructor(
                     translatedTo = null
                 )
 
-                val response = mockMvc.perform(request).andExpect(
-                    status().isCreated()
-                ).andReturn().response
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.CREATED.value()
+                    it.response
+                }
 
                 val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
@@ -192,9 +197,10 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                val response = mockMvc.perform(request).andExpect(
-                    status().isCreated()
-                ).andReturn().response
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.CREATED.value()
+                    it.response
+                }
 
                 val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
@@ -211,9 +217,9 @@ class TestWordsController @Autowired constructor(
             fun `403 - Anonymous user cannot create a word`() {
                 val request = wordRequestFactory.createWordRequest()
 
-                mockMvc.perform(request).andExpect(
-                    status().isForbidden()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                }
             }
 
             @Test
@@ -225,9 +231,9 @@ class TestWordsController @Autowired constructor(
                     exampleSentences = emptySet()
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -248,9 +254,9 @@ class TestWordsController @Autowired constructor(
                     }
                 )
 
-                mockMvc.perform(request).andDo { it -> println(it) }.andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -267,9 +273,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -284,9 +290,9 @@ class TestWordsController @Autowired constructor(
                     bankToCreate = bankMockFactory.mockCreateRequestData()
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -302,9 +308,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -319,9 +325,9 @@ class TestWordsController @Autowired constructor(
                     bankId = bankOfAnotherUser.id
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isNotFound()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
             }
 
             @Test
@@ -333,9 +339,9 @@ class TestWordsController @Autowired constructor(
                     useCases = emptySet()
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -352,9 +358,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -368,9 +374,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -386,9 +392,9 @@ class TestWordsController @Autowired constructor(
                     }
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
         }
 
@@ -412,9 +418,10 @@ class TestWordsController @Autowired constructor(
                     authenticatedUser = authenticatedUser
                 )
 
-                val response = mockMvc.perform(request)
-                    .andExpect { status().isOk }
-                    .andReturn().response
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
 
                 val updatedWord: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
@@ -439,9 +446,10 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                val response = mockMvc.perform(request).andExpect(
-                    status().isOk()
-                ).andReturn().response
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
 
                 val updatedWord: Word = assertThatWordActuallyExists(response, authenticatedUser)
                 val bank: Bank = assertThatBankActuallyExists(updatedWord.bank)
@@ -463,9 +471,10 @@ class TestWordsController @Autowired constructor(
                     origin = "new origin",
                 )
 
-                val response = mockMvc.perform(request)
-                    .andExpect { status().isOk }
-                    .andReturn().response
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
 
                 val updatedWord: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
@@ -490,9 +499,9 @@ class TestWordsController @Autowired constructor(
                     authenticatedUser = null
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isForbidden()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                }
             }
 
             @Test
@@ -516,9 +525,9 @@ class TestWordsController @Autowired constructor(
                     }
                 )
 
-                mockMvc.perform(request).andDo { it -> println(it) }.andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -538,9 +547,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -560,9 +569,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -579,9 +588,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -600,9 +609,9 @@ class TestWordsController @Autowired constructor(
                     }
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -620,9 +629,9 @@ class TestWordsController @Autowired constructor(
                     bankToCreate = bankMockFactory.mockCreateRequestData()
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -641,9 +650,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -660,9 +669,10 @@ class TestWordsController @Autowired constructor(
                     bankId = bankOfAnotherUser.id
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isNotFound()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
+
             }
 
 
@@ -678,9 +688,9 @@ class TestWordsController @Autowired constructor(
                     bankId = UUID.randomUUID()
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isNotFound()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
             }
 
             @Test
@@ -697,9 +707,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isBadRequest()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
             @Test
@@ -714,9 +724,9 @@ class TestWordsController @Autowired constructor(
                     authenticatedUser = authenticatedUser
                 )
 
-                mockMvc.perform(request).andExpect(
-                    status().isNotFound()
-                )
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
             }
         }
     }
@@ -739,8 +749,8 @@ class TestWordsController @Autowired constructor(
                     authenticatedUser = authenticatedUser
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isOk()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
                 }
 
                 wordService.findById(id = word.id, userId = authenticatedUser.userInfo.id) shouldBe null
@@ -761,9 +771,10 @@ class TestWordsController @Autowired constructor(
                     wordId = word.id
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isForbidden()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
                 }
+
 
                 wordService.findById(id = word.id, userId = user.userInfo.id) shouldNotBe null
             }
@@ -782,8 +793,8 @@ class TestWordsController @Autowired constructor(
                     authenticatedUser = authenticatedUser
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isNotFound()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
                 }
 
                 wordService.findById(id = word.id, userId = anotherUser.id) shouldNotBe null
@@ -798,8 +809,8 @@ class TestWordsController @Autowired constructor(
                     authenticatedUser = authenticatedUser
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isNotFound()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
                 }
             }
         }
@@ -829,9 +840,9 @@ class TestWordsController @Autowired constructor(
                     bankId = secondBank.id
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isOk()
-                }.andReturn()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
 
                 wordService.findByIdOrFail(
                     id = word.id,
@@ -864,9 +875,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isOk()
-                }.andReturn()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
 
                 wordService.findByIdOrFail(
                     id = word.id,
@@ -901,9 +912,9 @@ class TestWordsController @Autowired constructor(
                     bankId = newBank.id
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isOk()
-                }.andReturn()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
 
                 wordService.findByIdOrFail(
                     id = word.id,
@@ -933,9 +944,9 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isOk()
-                }.andReturn()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
 
                 wordService.findByIdOrFail(
                     id = word.id,
@@ -969,9 +980,9 @@ class TestWordsController @Autowired constructor(
                     it.bank shouldNotBe null
                 }
 
-                mockMvc.perform(request).andExpect {
-                    status().isOk()
-                }.andReturn()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
 
                 wordService.findByIdOrFail(
                     id = word.id,
@@ -994,8 +1005,8 @@ class TestWordsController @Autowired constructor(
                     authenticatedUser = null
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isForbidden()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
                 }
             }
 
@@ -1011,8 +1022,8 @@ class TestWordsController @Autowired constructor(
                     wordId = word.id
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isNotFound()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
                 }
             }
 
@@ -1025,8 +1036,8 @@ class TestWordsController @Autowired constructor(
                     wordId = UUID.randomUUID()
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isNotFound()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
                 }
             }
 
@@ -1042,8 +1053,8 @@ class TestWordsController @Autowired constructor(
                     bankId = UUID.randomUUID()
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isNotFound()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
                 }
             }
 
@@ -1061,8 +1072,8 @@ class TestWordsController @Autowired constructor(
                     bankId = bank.id
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isNotFound()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
                 }
             }
 
@@ -1080,8 +1091,8 @@ class TestWordsController @Autowired constructor(
                     bankToCreate = bankMockFactory.mockCreateRequestData()
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isBadRequest()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                 }
             }
 
@@ -1099,8 +1110,8 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isBadRequest()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                 }
             }
 
@@ -1119,8 +1130,8 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isBadRequest()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                 }
             }
 
@@ -1138,8 +1149,8 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isBadRequest()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST
                 }
             }
 
@@ -1157,8 +1168,52 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andExpect {
-                    status().isBadRequest()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST
+                }
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/words/change-bank-for-multiple-words - change bank for multiple words")
+    inner class ChangeBankForManyWordsAtTheSameTime {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - Words' bank can be changed from null to an existing bank`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                    amount = 5,
+                    bank = Optional(null, true)
+                )
+
+                words.forEach {
+                    it.bank shouldBe null
+                }
+
+                val request = wordRequestFactory.changeBankForMultipleWords(
+                    authenticatedUser = authenticatedUser,
+                    wordIds = words,
+                    bankId = bank.id
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                words.forEach {
+                    wordService.findByIdOrFail(
+                        id = it.id,
+                        userId = authenticatedUser.userInfo.id
+                    ).let {
+                        bank shouldNotBe null
+                        bank.id shouldBe bank.id
+                    }
                 }
             }
         }
@@ -1195,5 +1250,4 @@ class TestWordsController @Autowired constructor(
             it!!
         }
     }
-
 }
