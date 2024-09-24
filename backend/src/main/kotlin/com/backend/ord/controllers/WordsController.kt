@@ -132,7 +132,7 @@ class WordController(
     fun changeWordBank(
         request: HttpServletRequest,
         @PathVariable id: UUID,
-        @RequestBody body: ChangeBankForSingleWordRequestData
+        @Valid @RequestBody body: ChangeBankForSingleWordRequestData
     ): ResponseEntity<Unit> {
         val user = jwtService.getAuthenticatedUser(request)!!
 

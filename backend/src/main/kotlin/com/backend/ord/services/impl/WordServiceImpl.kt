@@ -2,6 +2,7 @@ package com.backend.ord.services.impl
 
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.exceptions.REST.BadRequestException
+import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.services.WordService
 import jakarta.transaction.Transactional
@@ -22,7 +23,12 @@ class WordServiceImpl(
             bankId = bankId,
             wordId = wordId,
             userId = userId
-        )
+        ).let {
+            if (it == 0) {
+                throw NotFoundException("Word with id $wordId for user with id $userId not found")
+            }
+            it
+        }
     }
 
     @Transactional
@@ -35,6 +41,13 @@ class WordServiceImpl(
             bankId = bankId,
             wordIds = wordIds,
             userId = userId
-        )
+        ).let {
+            if (it == 0) {
+                throw NotFoundException("No words found for user with id $userId")
+            } else if (it != wordIds.size) {
+                throw BadRequestException("Not all words found for user with id $userId")
+            }
+            it
+        }
     }
 }

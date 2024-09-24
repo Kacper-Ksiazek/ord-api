@@ -32,8 +32,7 @@ interface UserResourceService<T : IdentifiableUserResource> {
         userId: UUID,
     ) {
         repository.deleteOneForUser(userId, id).let {
-//            it ?: throw NotFoundException("Entity not found")
-            println(it)
+            if (it == 0) throw NotFoundException("Entity with id $id for user with id $userId not found")
         }
     }
 

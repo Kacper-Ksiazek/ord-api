@@ -1150,7 +1150,7 @@ class TestWordsController @Autowired constructor(
                 )
 
                 mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                 }
             }
 
@@ -1169,7 +1169,7 @@ class TestWordsController @Autowired constructor(
                 )
 
                 mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                 }
             }
         }
