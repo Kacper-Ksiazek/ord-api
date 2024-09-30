@@ -217,6 +217,21 @@ class WordRequestFactory(
         bankId: UUID? = null,
         bankToCreate: CreateBankRequestData? = null,
     ): MockHttpServletRequestBuilder {
+        return changeBankForMultipleWords(
+            authenticatedUser = authenticatedUser,
+            wordIds = wordIds.map { it.id },
+            bankId = bankId,
+            bankToCreate = bankToCreate
+        )
+    }
+
+    fun changeBankForMultipleWords(
+        authenticatedUser: MockedAuthenticatedUser? = null,
+
+        wordIds: List<UUID>,
+        bankId: UUID? = null,
+        bankToCreate: CreateBankRequestData? = null,
+    ): MockHttpServletRequestBuilder {
         return MockMvcRequestBuilders
             .post("$BASE_URL/change-bank-for-multiple-words")
             .accept(MediaType.APPLICATION_JSON)
@@ -224,7 +239,7 @@ class WordRequestFactory(
             .content(
                 objectMapper.writeValueAsString(
                     ChangeBankForMultipleWordsRequestData(
-                        wordIds = wordIds.map { it.id },
+                        wordIds = wordIds,
                         bankId = bankId,
                         bankToCreate = bankToCreate
                     )
