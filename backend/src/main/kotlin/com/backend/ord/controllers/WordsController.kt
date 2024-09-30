@@ -154,7 +154,7 @@ class WordController(
     @PostMapping("/change-bank-for-multiple-words")
     fun changeBankForMultipleWords(
         request: HttpServletRequest,
-        @RequestBody body: ChangeBankForMultipleWordsRequestData
+        @Valid @RequestBody body: ChangeBankForMultipleWordsRequestData
     ): ResponseEntity<Unit> {
         val user = jwtService.getAuthenticatedUser(request)!!
 

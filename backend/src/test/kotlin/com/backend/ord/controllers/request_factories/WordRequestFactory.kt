@@ -210,6 +210,7 @@ class WordRequestFactory(
     /**
      * POST /words/change-bank-for-multiple-words
      */
+    @JvmName("changeBankForMultipleWordsWithWordIdsAsWordList")
     fun changeBankForMultipleWords(
         authenticatedUser: MockedAuthenticatedUser? = null,
 
@@ -225,6 +226,10 @@ class WordRequestFactory(
         )
     }
 
+    /**
+     * POST /words/change-bank-for-multiple-words
+     */
+    @JvmName("changeBankForMultipleWordsWithWordIdsAsUUIDList")
     fun changeBankForMultipleWords(
         authenticatedUser: MockedAuthenticatedUser? = null,
 

@@ -1188,7 +1188,6 @@ class TestWordsController @Autowired constructor(
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,
-                    amount = 5,
                     bank = Optional(null, true)
                 )
 
@@ -1224,7 +1223,6 @@ class TestWordsController @Autowired constructor(
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,
-                    amount = 5,
                     bank = Optional(null, true)
                 )
 
@@ -1264,7 +1262,6 @@ class TestWordsController @Autowired constructor(
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,
-                    amount = 5,
                     bank = Optional(firstBank, true)
                 )
 
@@ -1303,7 +1300,6 @@ class TestWordsController @Autowired constructor(
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,
-                    amount = 5,
                     bank = Optional(firstBank, true)
                 )
 
@@ -1344,9 +1340,10 @@ class TestWordsController @Autowired constructor(
             fun `403 - Anonymous user cannot change words' bank`() {
                 val user: User = userSeeder.seedOneEntity()
 
+                val initialBank = bankSeeder.seedOneEntityForUser(user = user)
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = user,
-                    amount = 5
+                    bank = Optional(initialBank, true)
                 )
 
                 val request = wordRequestFactory.changeBankForMultipleWords(
@@ -1357,6 +1354,10 @@ class TestWordsController @Autowired constructor(
                 mockMvc.perform(request).andReturn().let {
                     it.response.status shouldBe HttpStatus.FORBIDDEN.value()
                 }
+
+                words.map { wordService.findByIdOrFail(it.id) }.forEach {
+                    it.bank!!.id shouldBe initialBank.id
+                }
             }
 
             @Test
@@ -1365,16 +1366,17 @@ class TestWordsController @Autowired constructor(
                 val anotherUser: User = userSeeder.seedOneEntity()
 
                 val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                val bankToChange = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = anotherUser,
-                    amount = 5,
                     bank = Optional(initialBank, true)
                 )
 
                 val request = wordRequestFactory.changeBankForMultipleWords(
                     authenticatedUser = authenticatedUser,
-                    wordIds = words
+                    wordIds = words,
+                    bankId = bankToChange.id
                 )
 
                 mockMvc.perform(request).andReturn().let {
@@ -1395,7 +1397,7 @@ class TestWordsController @Autowired constructor(
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,
-                    amount = 5
+                    bank = Optional(initialBank, true),
                 )
 
                 val request = wordRequestFactory.changeBankForMultipleWords(
@@ -1420,7 +1422,6 @@ class TestWordsController @Autowired constructor(
                 val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,
-                    amount = 5,
                     bank = Optional(initialBank, true)
                 )
 
@@ -1444,54 +1445,218 @@ class TestWordsController @Autowired constructor(
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val anotherUser: User = userSeeder.seedOneEntity()
 
-                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(authenticatedUser.userInfo, 5)
-                val bank: Bank = bankSeeder.seedOneEntityForUser(anotherUser)
+                val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                val bankOfAnotherUser: Bank = bankSeeder.seedOneEntityForUser(anotherUser)
+
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(initialBank, true)
+                )
 
                 val request = wordRequestFactory.changeBankForMultipleWords(
                     authenticatedUser = authenticatedUser,
                     wordIds = words,
-                    bankId = bank.id
+                    bankId = bankOfAnotherUser.id
                 )
 
                 mockMvc.perform(request).andReturn().let {
                     it.response.status shouldBe HttpStatus.NOT_FOUND.value()
                 }
 
-//                words.map { wordService.findByIdOrFail(it.id) }.forEach {
-//                    it.bank!!.id shouldBe bank.id
-//                }
+                words.map { wordService.findByIdOrFail(it.id) }.forEach {
+                    it.bank!!.id shouldBe initialBank.id
+                }
             }
-        }
 
+            @Test
+            fun `400 - Words' bank cannot be changed if both bankId and bankToCreate are specified`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
-        private fun assertThatWordActuallyExists(
-            response: MockHttpServletResponse,
-            authenticatedUser: MockedAuthenticatedUser
-        ): Word {
-            val responseBody: WordDTO = getResponseBody<WordDTO>(response)
-            assertNotNull(responseBody.id)
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(null, true)
+                )
 
-            assertEquals(authenticatedUser.userInfo.id, responseBody.user.id)
+                val request = wordRequestFactory.changeBankForMultipleWords(
+                    authenticatedUser = authenticatedUser,
+                    wordIds = words,
+                    bankId = bank.id,
+                    bankToCreate = bankMockFactory.mockCreateRequestData()
+                )
 
-            val valueSavedInDatabase: Word? = wordRepository.findByIdOrNull(responseBody.id)
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
 
-            assertNotNull(valueSavedInDatabase)
+                words.map { wordService.findByIdOrFail(it.id) }.forEach {
+                    it.bank shouldBe null
+                }
+            }
 
-            valueSavedInDatabase!!.compareWith(
-                wordMapper.toEntity(responseBody)
-            )
+            @Test
+            fun `400 - Words' bank cannot be changed if neither bankId nor bankToCreate are specified`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
-            return valueSavedInDatabase
-        }
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(initialBank, true)
+                )
 
-        private fun assertThatBankActuallyExists(
-            bankToVerify: Bank?,
-        ): Bank {
-            assertNotNull(bankToVerify)
+                val request = wordRequestFactory.changeBankForMultipleWords(
+                    authenticatedUser = authenticatedUser,
+                    wordIds = words,
+                    bankId = null,
+                    bankToCreate = null
+                )
 
-            return bankService.findById(id = bankToVerify!!.id).let {
-                assertNotNull(it)
-                it!!
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
+
+                words.map { wordService.findByIdOrFail(it.id) }.forEach {
+                    it.bank!!.id shouldBe initialBank.id
+                }
+            }
+
+            @Test
+            fun `400 - Words' bank cannot be changed if bankToCreate name is empty`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(null, true)
+                )
+
+                val request = wordRequestFactory.changeBankForMultipleWords(
+                    authenticatedUser = authenticatedUser,
+                    wordIds = words,
+                    bankToCreate = bankMockFactory.mockCreateRequestData(
+                        name = ""
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
+
+                words.map { wordService.findByIdOrFail(it.id) }.forEach {
+                    it.bank shouldBe null
+                }
+            }
+
+            @Test
+            fun `400 - Words' bank cannot be changed if bankToCreate name is identical to already existing bank name`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(null, true)
+                )
+
+                val request = wordRequestFactory.changeBankForMultipleWords(
+                    authenticatedUser = authenticatedUser,
+                    wordIds = words,
+                    bankToCreate = bankMockFactory.mockCreateRequestData(
+                        name = bank.name
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
+
+                words.map { wordService.findByIdOrFail(it.id) }.forEach {
+                    it.bank shouldBe null
+                }
+            }
+
+            @Test
+            fun `400 - Words' bank cannot be changed if bankToCreate description is longer than 255 characters`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(null, true)
+                )
+
+                val request = wordRequestFactory.changeBankForMultipleWords(
+                    authenticatedUser = authenticatedUser,
+                    wordIds = words,
+                    bankToCreate = bankMockFactory.mockCreateRequestData(
+                        description = "x".repeat(256)
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
+
+                words.map { wordService.findByIdOrFail(it.id) }.forEach {
+                    it.bank shouldBe null
+                }
+            }
+
+            @Test
+            fun `400 - Words' bank cannot be changed if bankToCreate description is empty`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(null, true)
+                )
+
+                val request = wordRequestFactory.changeBankForMultipleWords(
+                    authenticatedUser = authenticatedUser,
+                    wordIds = words,
+                    bankToCreate = bankMockFactory.mockCreateRequestData(
+                        description = ""
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
+
+                words.map { wordService.findByIdOrFail(it.id) }.forEach {
+                    it.bank shouldBe null
+                }
             }
         }
     }
+
+    private fun assertThatWordActuallyExists(
+        response: MockHttpServletResponse,
+        authenticatedUser: MockedAuthenticatedUser
+    ): Word {
+        val responseBody: WordDTO = getResponseBody<WordDTO>(response)
+        assertNotNull(responseBody.id)
+
+        assertEquals(authenticatedUser.userInfo.id, responseBody.user.id)
+
+        val valueSavedInDatabase: Word? = wordRepository.findByIdOrNull(responseBody.id)
+
+        assertNotNull(valueSavedInDatabase)
+
+        valueSavedInDatabase!!.compareWith(
+            wordMapper.toEntity(responseBody)
+        )
+
+        return valueSavedInDatabase
+    }
+
+    private fun assertThatBankActuallyExists(
+        bankToVerify: Bank?,
+    ): Bank {
+        assertNotNull(bankToVerify)
+
+        return bankService.findById(id = bankToVerify!!.id).let {
+            assertNotNull(it)
+            it!!
+        }
+    }
+}

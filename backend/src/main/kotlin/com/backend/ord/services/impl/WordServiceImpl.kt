@@ -45,7 +45,7 @@ class WordServiceImpl(
             if (it == 0) {
                 throw NotFoundException("No words found for user with id $userId")
             } else if (it != wordIds.size) {
-                throw BadRequestException("Not all words found for user with id $userId")
+                throw NotFoundException("Not all words found for user with id $userId")
             }
             it
         }

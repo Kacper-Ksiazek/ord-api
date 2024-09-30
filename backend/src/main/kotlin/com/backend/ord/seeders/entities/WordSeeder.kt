@@ -47,7 +47,7 @@ class WordSeeder(
 
     fun seedMultipleEntitiesForUser(
         user: User,
-        amount: Int,
+        amount: Int = 5,
         bank: Optional<Bank?> = Optional(null, false)
     ): List<Word> {
         val words = mutableListOf<Word>()
@@ -61,7 +61,7 @@ class WordSeeder(
 
     fun seedMultipleEntitiesForUser(
         user: UserDTO,
-        amount: Int,
+        amount: Int = 5,
         bank: Optional<Bank?> = Optional(null, false)
     ): List<Word> {
         return seedMultipleEntitiesForUser(
