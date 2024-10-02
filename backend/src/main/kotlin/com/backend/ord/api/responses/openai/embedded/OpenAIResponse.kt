@@ -1,4 +1,4 @@
-package com.backend.ord.api.responses.openai
+package com.backend.ord.api.responses.openai.embedded
 
 
 class OpenAIResponse(
