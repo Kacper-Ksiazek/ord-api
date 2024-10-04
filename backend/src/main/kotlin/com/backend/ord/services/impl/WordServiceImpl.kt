@@ -1,11 +1,13 @@
 package com.backend.ord.services.impl
 
 import com.backend.ord.domain.entities.Word
+import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.services.WordService
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -49,5 +51,33 @@ class WordServiceImpl(
             }
             it
         }
+    }
+
+    override fun getWordsForPromptGeneration(
+        language: LanguageName,
+        amountOfLatestWord: Int,
+        amountOfProblematicWord: Int
+    ): Set<String> {
+        val latestWords = repository.findNOfLatestWords(
+            language = language,
+            pageable = PageRequest.of(0, amountOfLatestWord)
+        )
+
+        val problematicWords = repository.findNOfMostDifficultWords(
+            language = language,
+            pageable = PageRequest.of(0, amountOfProblematicWord)
+        )
+
+        return (latestWords + problematicWords).toSet()
+    }
+
+    override fun getWordsForPromptGeneration(
+        language: LanguageName,
+        banksIds: List<UUID>
+    ): Set<String> {
+        return repository.findAllWordsFromBanks(
+            language = language,
+            banksIds = banksIds
+        ).toSet()
     }
 }

@@ -1,10 +1,12 @@
 package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.data.ChangeBankForMultipleWordsRequestData
 import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
 import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
+import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.dto.WordDTO
 import com.backend.ord.domain.entities.Bank
@@ -13,6 +15,9 @@ import com.backend.ord.domain.entities.Word
 import com.backend.ord.domain.mappers.BankMapper
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.domain.mappers.WordMapper
+import com.backend.ord.enums.Language.LanguageName
+import com.backend.ord.enums.Word.WordExtraMark
+import com.backend.ord.enums.Word.WordType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
@@ -38,21 +43,26 @@ class WordController(
     fun getAllWords(
         request: HttpServletRequest,
 
-        // TODO: Implement missing parameters
-        @RequestParam(required = false) bankId: UUID?,
-        @RequestParam(required = false) wordId: UUID?,
-        @RequestParam(required = false) amount: Int?,
+        @RequestParam language: LanguageName,
 
-        // TODO: FInd better name for this parameter
-        // @RequestParam(required = false) wordsRandomizationMethod: ENUM { FULL_RANDOM ( DEFAULT ), PROBLEMATIC_FIRST, LEAST_RECENTLY_USED, RECENTLY_ADDED )
+        @RequestParam(required = false) page: Int? = 0,
+        @RequestParam(required = false) perPage: Int? = 10,
+
+        @RequestParam(required = false) wordType: WordType?,
+        @RequestParam(required = false) searchingPhrase: String?,
+        @RequestParam(required = false) wordExtraMark: WordExtraMark?,
+        @RequestParam(required = false) bookmarkedOnly: Boolean? = false,
+
+        @RequestParam(required = false) banksIds: List<UUID>?,
+
+        @RequestParam(required = false) sortDirection: SortDirection? = SortDirection.DESC,
+        @RequestParam(required = false) sortBy: GetAllWordsSortOptions? = GetAllWordsSortOptions.CREATED_AT
     ): ResponseEntity<List<WordDTO>> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
-        val words: List<WordDTO> = wordMapper.toDTOList(
-            wordService.findAll(userId = user.id)
-        )
+        // TODO: Implement this
 
-        return ResponseEntity.ok(words)
+        return ResponseEntity.ok().build()
     }
 
     @PostMapping("/")
