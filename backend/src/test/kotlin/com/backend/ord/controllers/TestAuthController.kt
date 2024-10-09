@@ -13,6 +13,7 @@ import jakarta.servlet.http.Cookie
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @ExtendWith(SpringExtension::class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
+@DisplayName("- AuthenticationController")
 class TestAuthController @Autowired constructor(
     mockMvc: MockMvc?,
     objectMapper: ObjectMapper,

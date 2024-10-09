@@ -48,7 +48,7 @@ import java.util.*
 @ExtendWith(SpringExtension::class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-@DisplayName("WordsController - tests")
+@DisplayName("- WordsController")
 class TestWordsController @Autowired constructor(
     mockMvc: MockMvc?,
     objectMapper: ObjectMapper,
