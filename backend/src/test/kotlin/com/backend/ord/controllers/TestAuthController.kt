@@ -9,16 +9,19 @@ import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.Cookie
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -66,55 +69,66 @@ class TestAuthController @Autowired constructor(
         )
     }
 
-    // ------------------------------
-    // /register
-    // ------------------------------
+    @Nested
+    @DisplayName("[POST] /api/v1/auth/register - register a new user account")
+    inner class RegisterTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `201 - new user can be registed`() {
+                // Initially, there should be no user with the email in the database
+                assertNull(userService.findUserByEmail(EMAIL))
+                // Create a request
+                val request = authRequestFactory.registerRequest()
 
-    @Test
-    fun `Register - endpoint should return 201 and create a user`() {
-        // Initially, there should be no user with the email in the database
-        assertNull(userService.findUserByEmail(EMAIL))
-        // Create a request
-        val request = authRequestFactory.registerRequest()
+                // Perform the request
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.CREATED.value()
+                    it.response
+                }
 
-        // Perform the request
-        val response = mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isCreated()
-        ).andReturn().response
+                // Perform all kinds of needed assertions
+                validateLoginOrRegisterResponse(response)
+            }
+        }
 
-        // Perform all kinds of needed assertions
-        validateLoginOrRegisterResponse(response)
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `400 - with an existing email should return 400`() {
+                // First, create a user
+                userSeeder.insertRowWithCredentials(EMAIL, PASSWORD)
+
+                // Create a request
+                val request = authRequestFactory.registerRequest()
+
+                // Perform the request
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+
+                // Assert the response body is empty
+                validateResponseBodyIsEmpty(response)
+            }
+
+            @Test
+            fun `403 - register route should be available only for anonymous users`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                // Create a request
+                val request = authRequestFactory.registerRequest(authenticatedUser)
+
+                // Perform the request
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                }
+            }
+        }
     }
 
-    @Test
-    fun `Register - with an existing email should return 400`() {
-        // First, create a user
-        userSeeder.insertRowWithCredentials(EMAIL, PASSWORD)
-
-        // Create a request
-        val request = authRequestFactory.registerRequest()
-
-        // Perform the request
-        val response = mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isBadRequest()
-        ).andReturn().response
-
-        // Assert the response body is empty
-        validateResponseBodyIsEmpty(response)
-    }
-
-    @Test
-    fun `Register - route should be available only for anonymous users`() {
-        val authenticatedUser = this.mockAuthenticatedUser()
-
-        // Create a request
-        val request = authRequestFactory.registerRequest(authenticatedUser)
-
-        // Perform the request
-        mockMvc.perform(request).andExpect(
-            MockMvcResultMatchers.status().isForbidden()
-        ).andReturn()
-    }
 
     // ------------------------------
     // /login
