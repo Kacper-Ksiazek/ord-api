@@ -163,11 +163,6 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
@@ -199,11 +194,6 @@
             <artifactId>arrow-core</artifactId>
             <version>1.2.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
 
     </dependencies>
 
@@ -233,6 +223,16 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <configuration>
+                            <compilerPlugins>
+                                <plugin>spring</plugin>
+                                <plugin>jpa</plugin>
+                                <plugin>no-arg</plugin>
+                            </compilerPlugins>
+                            <pluginOptions>
+                                <option>no-arg:annotation=jakarta.persistence.Entity</option>
+                            </pluginOptions>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>test-compile</id>
@@ -245,7 +245,7 @@
                                 <plugin>no-arg</plugin>
                             </compilerPlugins>
                             <pluginOptions>
-                                <option>no-arg:annotation=javax.persistence.Entity</option>
+                                <option>no-arg:annotation=jakarta.persistence.Entity</option>
                             </pluginOptions>
                         </configuration>
                     </execution>
@@ -262,12 +262,12 @@
                     <dependency>
                         <groupId>org.jetbrains.kotlin</groupId>
                         <artifactId>kotlin-maven-noarg</artifactId>
-                        <version>{kotlin.version}</version>
+                        <version>${kotlin.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.jetbrains.kotlin</groupId>
                         <artifactId>kotlin-maven-allopen</artifactId>
-                        <version>{kotlin.version}</version>
+                        <version>${kotlin.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
