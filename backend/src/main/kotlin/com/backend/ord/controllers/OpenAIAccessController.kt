@@ -87,6 +87,8 @@ class OpenAIAccessController(
         @RequestParam originalLanguage: LanguageName,
         @RequestParam(name = "level") receivedProficiencyLevel: LanguageProficiencyLevel?,
         @RequestParam(name = "translateTo") receivedTranslateToLanguage: LanguageName?
+        // TODO:
+        // @RequestParam(name = "definitionLanguage", required = false) definitionLanguage: LanguageName? = null,
     ): ResponseEntity<GenerateWordManualAIResponse> {
         val user: User = jwtService.getAuthenticatedUser(request)!!
 
@@ -150,8 +152,6 @@ class OpenAIAccessController(
             )
         }
 
-        // TODO: Save in the database the tokens usage for this OpenAI request
-
         with(response.data) {
             when {
                 contains("WORD_MISSPELLED") -> throw BadRequestException("The word $word in the language $originalLanguage is misspelled.")
@@ -159,6 +159,7 @@ class OpenAIAccessController(
 
                 else -> {
                     return ResponseEntity.ok().body(
+                        // TODO: Include the word in the response
                         jsonObjectMapper.readValue<GenerateWordManualAIResponse>(this)
                     )
                 }
