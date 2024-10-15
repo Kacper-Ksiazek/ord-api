@@ -68,7 +68,21 @@ headers = {
 # ------
 
 # Array to send in POST requests
-words = ["boardwalk", "beehive", "mutter"]
+words = [
+        "boardwalk",
+        "beehive",
+        "mutter",
+        "sluggish",
+        "lethargic",
+        "ephemeral",
+        "transient",
+        "fleeting",
+        "depletes",
+        "don't shoot them down in flames",
+        "fruit of thought",
+        "down the rabbit hole"
+]
+
 
 # URL for POST requests
 GENERATE_WORDS_URL = f"{API_URL}/openai/generate-word-manual?language={LANGUAGE}&originalLanguage={LANGUAGE}&translateTo=POLISH"
