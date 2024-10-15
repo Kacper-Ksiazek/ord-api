@@ -158,10 +158,10 @@ class OpenAIAccessController(
                 contains("NON_EXISTENT_WORD") -> throw NotFoundException("The word $word does not exist in the language $originalLanguage.")
 
                 else -> {
-                    return ResponseEntity.ok().body(
-                        // TODO: Include the word in the response
-                        jsonObjectMapper.readValue<GenerateWordManualAIResponse>(this)
-                    )
+                    val result = jsonObjectMapper.readValue<GenerateWordManualAIResponse>(this);
+                    result.originalWord = word
+
+                    return ResponseEntity.ok().body(result)
                 }
             }
         }
