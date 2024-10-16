@@ -39,11 +39,11 @@ CREATE TABLE IF NOT EXISTS "word_tokens_usages"
     output_tokens               INTEGER                           NOT NULL CHECK (output_tokens >= 0),
 
     -- Price for input and output tokens, in USD
-    price_for_mln_input_tokens  DECIMAL(10, 2)                    NOT NULL,
-    price_for_mln_output_tokens DECIMAL(10, 2)                    NOT NULL,
+    price_for_mln_input_tokens  DECIMAL(20, 10)                   NOT NULL,
+    price_for_mln_output_tokens DECIMAL(20, 10)                   NOT NULL,
 
     -- Total cost of the operation in USD
-    cost                        DECIMAL(10, 2)                    NOT NULL,
+    cost                        DECIMAL(20, 10)                   NOT NULL,
 
     "created_at"                TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     "updated_at"                TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
