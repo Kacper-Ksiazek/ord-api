@@ -141,14 +141,13 @@ class OpenAIAccessController(
 
             // Save the usage tokens consumption
             wordTokensUsageService.save(
-                WordTokensUsage(
-                    user = user,
-                    word = word,
-                    numberOfTokens = it.usage.total_tokens,
-                    translatedTo = translateTo,
-                    translatedFrom = originalLanguage,
-                    consumptionType = WordsGPTTokensConsumptionType.GENERATE_ENTIRE_MANUAL
-                )
+                user = user,
+                word = word,
+                translatedTo = translateTo,
+                translatedFrom = originalLanguage,
+                consumptionType = WordsGPTTokensConsumptionType.GENERATE_ENTIRE_MANUAL,
+                inputTokens = it.usage.prompt_tokens,
+                outputTokens = it.usage.completion_tokens,
             )
         }
 
