@@ -2,15 +2,18 @@ package com.backend.ord.config.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
+import java.math.BigDecimal
 
 @Configuration
 @ConfigurationProperties(prefix = "openai")
-open class OpenAIProperties(
+class OpenAIProperties(
     var apiKey: String = "",
     var apiUrl: String = "",
     var gptModel: String = "",
     var maxTokens: Int = 0,
-    var temperature: Float = 0f
+    var temperature: Float = 0f,
+    var pricePerMlnInputTokens: BigDecimal = BigDecimal.ZERO,
+    var pricePerMlnOutputTokens: BigDecimal = BigDecimal.ZERO
 ) {
     val authenticationHeaderValue: String
         get() = "Bearer $apiKey"

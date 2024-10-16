@@ -19,5 +19,10 @@
       "name": "jwt.user_id_claim_name",
       "type": "java.lang.String",
       "description": "Description for jwt.user_id_claim_name."
+    },
+    {
+      "name": "openai.price_per_mln_input_tokens",
+      "type": "java.lang.String",
+      "description": "Description for openai.price_per_mln_input_tokens."
     }
   ] }
