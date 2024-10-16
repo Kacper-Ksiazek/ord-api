@@ -3,23 +3,26 @@ package com.backend.ord.domain.mappers.impl.gpt_tokens_usage
 import com.backend.ord.domain.dto.gpt_tokens_usage.WordTokensUsageDTO
 import com.backend.ord.domain.entities.gpt_tokens_usage.WordTokensUsage
 import com.backend.ord.domain.mappers.UserMapper
-import com.backend.ord.domain.mappers.WordMapper
 import com.backend.ord.domain.mappers.gpt_tokens_usage.WordTokensUsageMapper
 import org.springframework.stereotype.Component
 
 @Component
 class WordTokensUsageMapper(
     private val userMapper: UserMapper,
-    private val wordMapper: WordMapper
 ) : WordTokensUsageMapper {
     override fun toEntity(dto: WordTokensUsageDTO): WordTokensUsage {
         return WordTokensUsage(
             id = dto.id,
 
+            cost = dto.cost,
             word = dto.word,
+            inputTokens = dto.inputTokens,
+            outputTokens = dto.outputTokens,
+            priceForMlnInputTokens = dto.priceForMlnInputTokens,
+            priceForMlnOutputTokens = dto.priceForMlnOutputTokens,
+
             translatedTo = dto.translatedTo,
             translatedFrom = dto.translatedFrom,
-            numberOfTokens = dto.numberOfTokens,
             consumptionType = dto.consumptionType,
 
             user = userMapper.toEntity(dto.user),
@@ -33,12 +36,18 @@ class WordTokensUsageMapper(
         return WordTokensUsageDTO(
             id = entity.id,
 
-            user = userMapper.toDTO(entity.user),
+            cost = entity.cost,
             word = entity.word,
+            inputTokens = entity.inputTokens,
+            outputTokens = entity.outputTokens,
+            priceForMlnInputTokens = entity.priceForMlnInputTokens,
+            priceForMlnOutputTokens = entity.priceForMlnOutputTokens,
+
             translatedTo = entity.translatedTo,
             translatedFrom = entity.translatedFrom,
-            numberOfTokens = entity.numberOfTokens,
             consumptionType = entity.consumptionType,
+
+            user = userMapper.toDTO(entity.user),
 
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt

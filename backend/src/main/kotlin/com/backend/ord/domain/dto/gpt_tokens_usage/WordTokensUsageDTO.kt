@@ -3,6 +3,7 @@ package com.backend.ord.domain.dto.gpt_tokens_usage
 import com.backend.ord.domain.dto.UserDTO
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.TokensUsage.WordsGPTTokensConsumptionType
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 
@@ -10,10 +11,16 @@ data class WordTokensUsageDTO(
     val id: UUID = UUID.randomUUID(),
 
     val word: String,
-    var numberOfTokens: Int,
+    val cost: BigDecimal,
+    val inputTokens: Int,
+    val outputTokens: Int,
+    val priceForMlnInputTokens: BigDecimal,
+    val priceForMlnOutputTokens: BigDecimal,
+
+
     var translatedTo: LanguageName,
     var translatedFrom: LanguageName,
-    var consumptionType:WordsGPTTokensConsumptionType,
+    var consumptionType: WordsGPTTokensConsumptionType,
 
     val user: UserDTO,
 

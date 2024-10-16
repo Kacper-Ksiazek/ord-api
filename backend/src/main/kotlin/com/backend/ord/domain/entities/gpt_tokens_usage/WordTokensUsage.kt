@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 
@@ -38,13 +39,13 @@ class WordTokensUsage(
     val outputTokens: Int,
 
     @Column(name = "price_for_mln_input_tokens", nullable = false)
-    val priceForMlnInputTokens: Double,
+    val priceForMlnInputTokens: BigDecimal,
 
     @Column(name = "price_for_mln_output_tokens", nullable = false)
-    val priceForMlnOutputTokens: Double,
+    val priceForMlnOutputTokens: BigDecimal,
 
     @Column(name = "cost", nullable = false)
-    val cost: Double,
+    val cost: BigDecimal,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "consumption_type", columnDefinition = "words_gpt_tokens_consumption_type(0, 0) not null")
