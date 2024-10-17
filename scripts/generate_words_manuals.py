@@ -1,4 +1,3 @@
-import argparse
 import json
 import os
 import sys
@@ -7,126 +6,127 @@ import time
 import requests
 from dotenv import load_dotenv
 
-# ------
-# 1. Load environment variables from .env file
-# ------
-
-load_dotenv()
-
-API_URL = os.getenv("API_URL")
-USER_EMAIL = os.getenv("USER_EMAIL")
-USER_PASSWORD = os.getenv("USER_PASSWORD")
-
-# ------
-# 2. Verify positional script arguments
-# ------
-
-parser = argparse.ArgumentParser(description="Process some arguments for level and language.")
-parser.add_argument('--level', required=True,
-                    help="The level to be used in the request (e.g., beginner, intermediate, advanced).")
-parser.add_argument('--language', required=True,
-                    help="The language to be used in the request (e.g., english, spanish).")
-
-# Parse the arguments
-args = parser.parse_args()
-
-# Extracting level and language from parsed arguments
-PROFICIENCY_LEVEL = args.level
-LANGUAGE = args.language
-
-# ------
-# 3. Authenticate and retrieve token
-# ------
-
-auth_url = f"{API_URL}/auth/login"
-auth_data = {
-    "email": USER_EMAIL,
-    "password": USER_PASSWORD
-}
-
-print(auth_data)
-
-try:
-    auth_response = requests.post(
-        url=auth_url,
-        json=auth_data,
-        headers={"Content-Type": "application/json"}
-    )
-    auth_response.raise_for_status()  # Raise an exception for HTTP errors
-    cookies = auth_response.cookies
-except requests.exceptions.RequestException as e:
-    print(f"Authentication failed: {e}")
-    sys.exit(1)
-
-# Headers with the authentication token
-headers = {
-    "Content-Type": "application/json",
-}
-
-# ------
-# 4. Send POST requests and save responses to a JSON file
-# ------
-
-# Array to send in POST requests
-words = [
-        "boardwalk",
-        "beehive",
-        "mutter",
-        "sluggish",
-        "lethargic",
-        "ephemeral",
-        "transient",
-        "fleeting",
-        "depletes",
-        "don't shoot them down in flames",
-        "fruit of thought",
-        "down the rabbit hole"
+LANGUAGE = "ENGLISH"
+PROFICIENCY_LEVEL = "C1"
+WORDS = [
+    "boardwalk",
+    "beehive",
+    "mutter",
+    "sluggish",
+    "lethargic",
+    "ephemeral",
+    "transient",
+    "fleeting",
+    "depletes",
+    "don't shoot them down in flames",
+    "fruit of thought",
+    "down the rabbit hole"
 ]
 
 
-# URL for POST requests
-GENERATE_WORDS_URL = f"{API_URL}/openai/generate-word-manual?language={LANGUAGE}&originalLanguage={LANGUAGE}&translateTo=POLISH"
+def generate_words_manuals(words):
+    # ------
+    # 1. Load environment variables from .env file
+    # ------
 
-# List to store the responses
-responses = []
+    load_dotenv()
 
-# Send POST requests for each word in the array with additional level and language
-for word in words:
+    API_URL = os.getenv("API_URL")
+    USER_EMAIL = os.getenv("USER_EMAIL")
+    USER_PASSWORD = os.getenv("USER_PASSWORD")
+
+    # ------
+    # 2. Authenticate and retrieve token
+    # ------
+
+    auth_url = f"{API_URL}/auth/login"
+    auth_data = {
+        "email": USER_EMAIL,
+        "password": USER_PASSWORD
+    }
+
     try:
-        time_start = time.time()
-
-        generated_manual = requests.get(
-            url=GENERATE_WORDS_URL + f"&word={word}",
-            headers=headers,
-            cookies=cookies
+        auth_response = requests.post(
+            url=auth_url,
+            json=auth_data,
+            headers={"Content-Type": "application/json"}
         )
-        generated_manual.raise_for_status()  # Check for HTTP errors
+        auth_response.raise_for_status()  # Raise an exception for HTTP errors
+        cookies = auth_response.cookies
+        print("🔓 Authentication successful")
 
-        # Add the response to the list
-        responses.append(generated_manual.json())
-
-        delta_time = time.time() - time_start
-        delta_time_in_seconds = round(delta_time, 2)
-
-        # Sleep for 1 second to avoid rate limiting
-        print(f"SUCCESS: {word} - {delta_time_in_seconds}s")
     except requests.exceptions.RequestException as e:
-        print(f"ERROR: {word} - {e}")
+        print(f"Authentication failed: {e}")
+        sys.exit(1)
 
-# Save all responses to words_mock.json
-print("Saving responses to words_mock.json")
+    # Headers with the authentication token
+    headers = {
+        "Content-Type": "application/json",
+    }
 
-try:
-    with open(
-            file="words_mock.json",
-            mode="w",
-            encoding="utf-8"
-    ) as file:
-        json.dump(
-            responses,
-            file,
-            indent=4,
-            ensure_ascii=False
-        )
-except Exception as e:
-    print(f"Error saving responses to words_mock.json: {e}")
+    # ------
+    # 3. Send POST requests and save responses to a JSON file
+    # ------
+
+    # URL for POST requests
+    GENERATE_WORDS_URL = f"{API_URL}/openai/generate-word-manual?language={LANGUAGE}&originalLanguage={LANGUAGE}&translateTo=POLISH"
+
+    # List to store the responses
+    responses = []
+
+    print(f"\nGenerating manuals for {len(words)} words in {PROFICIENCY_LEVEL} {LANGUAGE.lower()}\n")
+
+    beginning_time = time.time()
+
+    # Send POST requests for each word in the array with additional level and language
+    for _i, word in enumerate(words):
+        i = _i + 1
+
+        try:
+            time_start = time.time()
+
+            generated_manual = requests.get(
+                url=GENERATE_WORDS_URL + f"&word={word}",
+                headers=headers,
+                cookies=cookies
+            )
+            generated_manual.raise_for_status()  # Check for HTTP errors
+
+            # Add the response to the list
+            responses.append(generated_manual.json())
+
+            delta_time = time.time() - time_start
+            delta_time_in_seconds = round(delta_time, 2)
+
+            # Sleep for 1 second to avoid rate limiting
+            print(f"{i}. ✅ {word} - {delta_time_in_seconds}s")
+        except requests.exceptions.RequestException as e:
+            print(f"{i}. ❌ {word} - {e}")
+
+    # Calculate the total time
+    total_time = time.time() - beginning_time
+
+    print(f"\n⏰ Total time: {round(total_time, 2)}s")
+
+    # Save all responses to words_mock.json
+    print("\nSaving responses to words_mock.json... \n")
+
+    try:
+        with open(
+                file="words_mock.json",
+                mode="w",
+                encoding="utf-8"
+        ) as file:
+            json.dump(
+                responses,
+                file,
+                indent=4,
+                ensure_ascii=False
+            )
+
+        print("✅ Responses saved successfully")
+    except Exception as e:
+        print(f"❌ Failed to save responses to words_mock.json: {e}")
+
+
+generate_words_manuals(WORDS)
