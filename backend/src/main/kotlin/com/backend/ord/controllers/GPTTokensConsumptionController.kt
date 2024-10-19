@@ -34,7 +34,6 @@ class GPTTokensConsumptionController(
     // To retrieve detailed information about GPT tokens consumption for the current user:
 
     // 1. GET / - Get all GPT tokens consumption ( words, stories, games ) for the current user
-    // 2. GET /words - Get all GPT tokens consumption for words for the current user
     // 3. GET /stories - Get all GPT tokens consumption for stories for the current user
     // 4. GET /games - Get all GPT tokens consumption for games for the current user
 
@@ -46,7 +45,7 @@ class GPTTokensConsumptionController(
     // 7. GET /summary/stories - Get summary of GPT tokens consumption for stories for the current user ( grouped per consumption type )
     // 8. GET /summary/games - Get summary of GPT tokens consumption for games for the current user ( grouped per consumption type )
 
-    @GetMapping("/words")
+    @GetMapping("/words-detailed")
     fun getWordsConsumption(
         request: HttpServletRequest,
         @RequestParam month: Int = currentMonth,
