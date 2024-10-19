@@ -2,13 +2,15 @@ package com.backend.ord.services.gpt_tokens_usage.bases.impl
 
 import com.backend.ord.config.properties.OpenAIProperties
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
-import com.backend.ord.repositories.bases.UserResourceRepository
+import com.backend.ord.repositories.gpt_tokens_usage.bases.GPTTokensUsageRepository
 import com.backend.ord.services.gpt_tokens_usage.bases.TokensUsageServiceBase
 import java.math.BigDecimal
+import java.time.Month
+import java.util.UUID
 
 abstract class TokensUsageServiceBaseImpl<T : IdentifiableUserResource>(
     override val openAIProperties: OpenAIProperties,
-    override val repository: UserResourceRepository<T>
+    override val repository: GPTTokensUsageRepository<T>
 ) : TokensUsageServiceBase<T> {
     override fun computeCost(
         inputTokens: Int,
@@ -23,5 +25,17 @@ abstract class TokensUsageServiceBaseImpl<T : IdentifiableUserResource>(
                 outputCostPerToken.multiply(BigDecimal(outputTokens))
 
         return totalCost
+    }
+
+    override fun getTokensConsumptionForUserInMonth(
+        userId: UUID,
+        month: Month,
+        year: Int
+    ): List<T> {
+        return repository.findAllByUserInGivenMonth(
+            userId = userId,
+            month = month.value,
+            year = year
+        )
     }
 }

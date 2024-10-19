@@ -4,13 +4,8 @@ import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.gpt_tokens_usage.WordTokensUsage
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.TokensUsage.WordsGPTTokensConsumptionType
-import com.backend.ord.repositories.bases.UserResourceRepository
-import com.backend.ord.services.bases.UserResourceService
 import com.backend.ord.services.gpt_tokens_usage.bases.TokensUsageServiceBase
-import com.backend.ord.services.gpt_tokens_usage.bases.impl.TokensUsageServiceBaseImpl
-import org.springframework.stereotype.Service
 
-@Service
 interface WordTokensUsageService: TokensUsageServiceBase<WordTokensUsage> {
     fun save(
         user: User,

@@ -5,14 +5,14 @@ import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.gpt_tokens_usage.WordTokensUsage
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.TokensUsage.WordsGPTTokensConsumptionType
-import com.backend.ord.repositories.bases.UserResourceRepository
+import com.backend.ord.repositories.gpt_tokens_usage.bases.GPTTokensUsageRepository
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
 import com.backend.ord.services.gpt_tokens_usage.bases.impl.TokensUsageServiceBaseImpl
 import org.springframework.stereotype.Service
 
 @Service
 class WordTokensUsageServiceImpl(
-    override val repository: UserResourceRepository<WordTokensUsage>,
+    override val repository: GPTTokensUsageRepository<WordTokensUsage>,
     override val openAIProperties: OpenAIProperties
 ) : WordTokensUsageService, TokensUsageServiceBaseImpl<WordTokensUsage>(
     repository = repository,
