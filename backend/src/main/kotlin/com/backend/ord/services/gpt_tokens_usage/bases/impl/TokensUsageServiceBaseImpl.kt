@@ -5,7 +5,6 @@ import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.repositories.gpt_tokens_usage.bases.GPTTokensUsageRepository
 import com.backend.ord.services.gpt_tokens_usage.bases.TokensUsageServiceBase
 import java.math.BigDecimal
-import java.time.Month
 import java.util.UUID
 
 abstract class TokensUsageServiceBaseImpl<T : IdentifiableUserResource>(
@@ -29,12 +28,12 @@ abstract class TokensUsageServiceBaseImpl<T : IdentifiableUserResource>(
 
     override fun getTokensConsumptionForUserInMonth(
         userId: UUID,
-        month: Month,
+        month: Int,
         year: Int
     ): List<T> {
         return repository.findAllByUserInGivenMonth(
             userId = userId,
-            month = month.value,
+            month = month,
             year = year
         )
     }

@@ -4,7 +4,6 @@ import com.backend.ord.config.properties.OpenAIProperties
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.repositories.gpt_tokens_usage.bases.GPTTokensUsageRepository
 import java.math.BigDecimal
-import java.time.Month
 import java.util.UUID
 
 interface TokensUsageServiceBase<T : IdentifiableUserResource> {
@@ -15,7 +14,7 @@ interface TokensUsageServiceBase<T : IdentifiableUserResource> {
 
     fun getTokensConsumptionForUserInMonth(
         userId: UUID,
-        month: Month,
+        month: Int,
         year: Int
     ): List<T>
 }

@@ -1,20 +1,34 @@
 package com.backend.ord.controllers
 
+import com.backend.ord.api.responses.gpt_tokens_usage.DetailedWordTokensUsage
+import com.backend.ord.api.responses.gpt_tokens_usage.toDetailedWordTokensUsage
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.backend.ord.config.security.JwtService
+import com.backend.ord.domain.dto.gpt_tokens_usage.WordTokensUsageDTO
+import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.entities.gpt_tokens_usage.WordTokensUsage
+import com.backend.ord.domain.mappers.gpt_tokens_usage.WordTokensUsageMapper
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestParam
 import java.time.Month
+import java.util.Calendar
 
 @RestController
 @RequestMapping("/api/v1/gpt-tokens-consumption")
 class GPTTokensConsumptionController(
     private val jwtService: JwtService,
-    private val wordsTokensUsageService: WordTokensUsageService
+    private val wordsTokensUsageService: WordTokensUsageService,
+    private val wordTokensUsageMapper: WordTokensUsageMapper,
 ) {
+    private val calendar: Calendar = Calendar.getInstance()
+
+    private val currentMonth: Int = calendar.get(Calendar.MONTH) + 1
+    private val currentYear: Int = calendar.get(Calendar.YEAR)
+
     // TODO: Implement following endpoints:
 
     // To retrieve detailed information about GPT tokens consumption for the current user:
@@ -35,11 +49,17 @@ class GPTTokensConsumptionController(
     @GetMapping("/words")
     fun getWordsConsumption(
         request: HttpServletRequest,
-        @RequestParam month: Month,
-        @RequestParam year: Int
-    ): String {
-        val user = jwtService.getAuthenticatedUser(request)!!
+        @RequestParam month: Int = currentMonth,
+        @RequestParam year: Int = currentYear,
+    ): ResponseEntity<List<DetailedWordTokensUsage>> {
+        val user: User = jwtService.getAuthenticatedUser(request)!!
 
-        return wordsTokensUsageService.getTokensConsumptionForUserInMonth(user.id, month, year).toString()
+        return ResponseEntity.ok(
+            wordsTokensUsageService.getTokensConsumptionForUserInMonth(
+                userId = user.id,
+                month = month,
+                year = year
+            ).map { it.toDetailedWordTokensUsage() }
+        )
     }
 }
