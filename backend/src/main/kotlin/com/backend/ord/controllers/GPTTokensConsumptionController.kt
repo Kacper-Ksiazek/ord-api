@@ -16,11 +16,21 @@ class GPTTokensConsumptionController(
     private val wordsTokensUsageService: WordTokensUsageService
 ) {
     // TODO: Implement following endpoints:
+
+    // To retrieve detailed information about GPT tokens consumption for the current user:
+
     // 1. GET / - Get all GPT tokens consumption ( words, stories, games ) for the current user
     // 2. GET /words - Get all GPT tokens consumption for words for the current user
     // 3. GET /stories - Get all GPT tokens consumption for stories for the current user
     // 4. GET /games - Get all GPT tokens consumption for games for the current user
+
+    // TODO: To retrieve summarized & aggregated data
+
     // 5. GET /summary - Get summary of GPT tokens consumption for the current user
+    //                   Total cost & number of operations by category - words, stories, games
+    // 6. GET /summary/words - Get summary of GPT tokens consumption for words for the current user ( grouped per consumption type )
+    // 7. GET /summary/stories - Get summary of GPT tokens consumption for stories for the current user ( grouped per consumption type )
+    // 8. GET /summary/games - Get summary of GPT tokens consumption for games for the current user ( grouped per consumption type )
 
     @GetMapping("/words")
     fun getWordsConsumption(
