@@ -2,6 +2,7 @@ package com.backend.ord.config.security
 
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.domain.entities.User
+import com.backend.ord.exceptions.REST.ForbiddenException
 import com.backend.ord.services.UserService
 import com.backend.ord.utils.CookieUtils.getCookieValue
 import io.jsonwebtoken.Claims
@@ -21,7 +22,6 @@ class JwtService(
     private val userService: UserService,
     private val jwtProperties: JwtProperties
 ) {
-
     fun getJWTFromRequest(request: HttpServletRequest): String? =
         getCookieValue(jwtProperties.authCookieName, request)
 
@@ -30,6 +30,10 @@ class JwtService(
             val userId = extractUserId(jwtToken)
             userService.findById(userId)
         }
+
+    @Throws(ForbiddenException::class)
+    fun getAuthenticatedUserOrThrowForbidden(request: HttpServletRequest): User =
+        getAuthenticatedUser(request) ?: throw ForbiddenException("User is not authenticated")
 
     @Throws(ExpiredJwtException::class)
     fun extractUsername(jwtToken: String): String =

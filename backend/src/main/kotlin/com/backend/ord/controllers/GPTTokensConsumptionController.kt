@@ -52,7 +52,7 @@ class GPTTokensConsumptionController(
         @RequestParam month: Int = currentMonth,
         @RequestParam year: Int = currentYear,
     ): ResponseEntity<List<DetailedWordTokensUsage>> {
-        val user: User = jwtService.getAuthenticatedUser(request)!!
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         return ResponseEntity.ok(
             wordsTokensUsageService.getTokensConsumptionForUserInMonth(
