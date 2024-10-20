@@ -1,6 +1,7 @@
 package com.backend.ord.controllers
 
 import com.backend.ord.api.responses.gpt_tokens_usage.DetailedWordTokensUsage
+import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
 import com.backend.ord.api.responses.gpt_tokens_usage.toDetailedWordTokensUsage
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -8,13 +9,12 @@ import org.springframework.web.bind.annotation.RestController
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.dto.gpt_tokens_usage.WordTokensUsageDTO
 import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.gpt_tokens_usage.WordTokensUsage
 import com.backend.ord.domain.mappers.gpt_tokens_usage.WordTokensUsageMapper
+import com.backend.ord.enums.TokensUsage.WordsGPTTokensConsumptionType
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestParam
-import java.time.Month
 import java.util.Calendar
 
 @RestController
@@ -44,7 +44,6 @@ class GPTTokensConsumptionController(
     // 6. GET /summary/words - Get summary of GPT tokens consumption for words for the current user ( grouped per consumption type )
     // 7. GET /summary/stories - Get summary of GPT tokens consumption for stories for the current user ( grouped per consumption type )
     // 8. GET /summary/games - Get summary of GPT tokens consumption for games for the current user ( grouped per consumption type )
-
     @GetMapping("/words-detailed")
     fun getWordsConsumption(
         request: HttpServletRequest,
@@ -54,11 +53,28 @@ class GPTTokensConsumptionController(
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         return ResponseEntity.ok(
-            wordsTokensUsageService.getTokensConsumptionForUserInMonth(
+            wordsTokensUsageService.getDetailedConsumption(
                 userId = user.id,
                 month = month,
                 year = year
             ).map { it.toDetailedWordTokensUsage() }
+        )
+    }
+
+    @GetMapping("/words-summary")
+    fun getWordsConsumptionSummary(
+        request: HttpServletRequest,
+        @RequestParam month: Int = currentMonth,
+        @RequestParam year: Int = currentYear,
+    ): ResponseEntity<List<TokensUsageStatistics<WordsGPTTokensConsumptionType>>> {
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+
+        return ResponseEntity.ok(
+            wordsTokensUsageService.getConsumptionStatistics(
+                userId = user.id,
+                month = month,
+                year = year
+            )
         )
     }
 }

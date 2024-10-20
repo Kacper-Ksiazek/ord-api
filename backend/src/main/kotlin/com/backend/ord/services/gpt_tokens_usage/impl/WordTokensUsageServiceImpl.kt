@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class WordTokensUsageServiceImpl(
-    override val repository: GPTTokensUsageRepository<WordTokensUsage>,
+    override val repository: GPTTokensUsageRepository<WordTokensUsage, WordsGPTTokensConsumptionType>,
     override val openAIProperties: OpenAIProperties
-) : WordTokensUsageService, TokensUsageServiceBaseImpl<WordTokensUsage>(
+) : WordTokensUsageService, TokensUsageServiceBaseImpl<WordTokensUsage, WordsGPTTokensConsumptionType>(
     repository = repository,
     openAIProperties = openAIProperties,
 ) {
