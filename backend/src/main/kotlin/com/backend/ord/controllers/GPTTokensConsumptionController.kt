@@ -2,19 +2,18 @@ package com.backend.ord.controllers
 
 import com.backend.ord.api.responses.gpt_tokens_usage.DetailedWordTokensUsage
 import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
+import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageWithinTimePeriod
 import com.backend.ord.api.responses.gpt_tokens_usage.toDetailedWordTokensUsage
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.dto.gpt_tokens_usage.WordTokensUsageDTO
 import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.mappers.gpt_tokens_usage.WordTokensUsageMapper
 import com.backend.ord.enums.TokensUsage.WordsGPTTokensConsumptionType
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.util.Calendar
 
 @RestController
@@ -22,7 +21,6 @@ import java.util.Calendar
 class GPTTokensConsumptionController(
     private val jwtService: JwtService,
     private val wordsTokensUsageService: WordTokensUsageService,
-    private val wordTokensUsageMapper: WordTokensUsageMapper,
 ) {
     private val calendar: Calendar = Calendar.getInstance()
 
@@ -49,15 +47,19 @@ class GPTTokensConsumptionController(
         request: HttpServletRequest,
         @RequestParam month: Int = currentMonth,
         @RequestParam year: Int = currentYear,
-    ): ResponseEntity<List<DetailedWordTokensUsage>> {
+    ): ResponseEntity<TokensUsageWithinTimePeriod<DetailedWordTokensUsage>> {
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         return ResponseEntity.ok(
-            wordsTokensUsageService.getDetailedConsumption(
-                userId = user.id,
+            TokensUsageWithinTimePeriod(
                 month = month,
-                year = year
-            ).map { it.toDetailedWordTokensUsage() }
+                year = year,
+                data = wordsTokensUsageService.getDetailedConsumption(
+                    userId = user.id,
+                    month = month,
+                    year = year
+                ).map { it.toDetailedWordTokensUsage() }
+            )
         )
     }
 
@@ -66,14 +68,18 @@ class GPTTokensConsumptionController(
         request: HttpServletRequest,
         @RequestParam month: Int = currentMonth,
         @RequestParam year: Int = currentYear,
-    ): ResponseEntity<List<TokensUsageStatistics<WordsGPTTokensConsumptionType>>> {
+    ): ResponseEntity<TokensUsageWithinTimePeriod<TokensUsageStatistics<WordsGPTTokensConsumptionType>>> {
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         return ResponseEntity.ok(
-            wordsTokensUsageService.getConsumptionStatistics(
-                userId = user.id,
+            TokensUsageWithinTimePeriod(
                 month = month,
-                year = year
+                year = year,
+                data = wordsTokensUsageService.getConsumptionStatistics(
+                    userId = user.id,
+                    month = month,
+                    year = year
+                )
             )
         )
     }
