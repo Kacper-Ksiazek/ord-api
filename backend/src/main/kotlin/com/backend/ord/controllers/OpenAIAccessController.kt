@@ -5,16 +5,14 @@ import com.backend.ord.api.responses.GenerateWordManualAIResponse
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.embedded.ExampleSentence
+import com.backend.ord.domain.entities.LanguageProficiency
 import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.gpt_tokens_usage.WordTokensUsage
-import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Language.LanguageProficiencyLevel
 import com.backend.ord.enums.TokensUsage.WordsGPTTokensConsumptionType
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
 import com.backend.ord.exceptions.REST.BadRequestException
-import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
 import com.backend.ord.utils.Console
@@ -87,12 +85,10 @@ class OpenAIAccessController(
         @RequestParam originalLanguage: LanguageName,
         @RequestParam(name = "level") receivedProficiencyLevel: LanguageProficiencyLevel?,
         @RequestParam(name = "translateTo") receivedTranslateToLanguage: LanguageName?
-        // TODO:
-        // @RequestParam(name = "definitionLanguage", required = false) definitionLanguage: LanguageName? = null,
     ): ResponseEntity<GenerateWordManualAIResponse> {
-        val user: User = jwtService.getAuthenticatedUser(request)!!
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request);
 
-        val userProficiencyInRequestedLanguage =
+        val userProficiencyInRequestedLanguage: LanguageProficiency =
             languageProficiencyService.findUserProficiencyInLanguage(user.id, originalLanguage)
                 ?: throw BadRequestException("User does not have any proficiency in the requested language.")
 
@@ -104,28 +100,27 @@ class OpenAIAccessController(
         // Create the request
         val openAIRequest = openAIRequestFactory.createRequest(
             prompt = """
-                Response as a foreign language tutor. Generate a manual entry for $originalLanguage "$word" at $proficiencyLevel proficiency level in $translateTo language.
+                Response as a foreign language tutor. Generate a manual entry for $originalLanguage "$word" at $proficiencyLevel proficiency level in $translateTo language. 
+                Explain always the most common usage of the word, do not provide any rare or outdated meanings.
 
                 Generate response in JSON format matching following typescript interface:
 
                 type response = {
-                translation: string,
-                definition: string, // One or two short and concise sentences in $translateTo
+                translation: string, // Translation of the word in $translateTo. If the word is an idiom or a phrase, provide a translation that is as close as possible to the original meaning, do not translate it literally.
+                definition: string, // One or two short and concise sentences in ${userProficiencyInRequestedLanguage.generativeContentLanguage}
                 type: ${WordType::class.joinEnumValues(separator = " | ")},
                 extraMark: null | ${WordExtraMark::class.joinEnumValues(separator = " | ")}, // Leave null if none of the options are good enough
-                useCases: string[], // If word has multiple meanings, list them here, otherwise empty array. Give no more than 3 that are most common.
+                useCases: string[], // If word has multiple definitions, provide multiple use cases in ${userProficiencyInRequestedLanguage.generativeContentLanguage}
                 exampleSentences: {
                 	sentence: string, // Sentence in $originalLanguage
                 	translation: string // Sentence in $translateTo
-                }[] // 3 examples
+                }[] // At least 3 examples. In both languages, the word and its translation should be surrounded with single asterisks.
                 }
 
-                Additionally:
-                1. Wrap the word in the examples with asterisks to highlight it as well as the part of the translation that corresponds to the word.
-                2. Return exactly:
+                Additionally, return exactly:
                     - WORD_MISSPELLED if the word is misspelled
                     - NON_EXISTENT_WORD if the word does not exist in the language
-            """.trimIndent(),
+            """.trimIndent(), // TODO: Try removing new lines or tabulator to reduce the average amount of used tokens
             context =
             "I want my answer to be suitable for any JSON parser such as Jackson or JSON.parse from js. Do not add any markdown formatting around the examples, just raw JSON.",
         )
@@ -154,7 +149,7 @@ class OpenAIAccessController(
         with(response.data) {
             when {
                 contains("WORD_MISSPELLED") -> throw BadRequestException("The word $word in the language $originalLanguage is misspelled.")
-                contains("NON_EXISTENT_WORD") -> throw NotFoundException("The word $word does not exist in the language $originalLanguage.")
+                contains("NON_EXISTENT_WORD") -> throw BadRequestException("The word $word does not exist in the language $originalLanguage.")
 
                 else -> {
                     val result = jsonObjectMapper.readValue<GenerateWordManualAIResponse>(this);
