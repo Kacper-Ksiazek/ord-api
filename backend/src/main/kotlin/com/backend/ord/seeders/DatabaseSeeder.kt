@@ -6,7 +6,9 @@ import com.backend.ord.enums.Language.LanguageProficiencyLevel
 import com.backend.ord.enums.UserRole
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
 import com.backend.ord.seeders.entities.UserSeeder
+import com.backend.ord.seeders.entities.WordSeeder
 import com.backend.ord.seeders.factories.LanguageProficiencyMockFactory
+import com.backend.ord.seeders.mocks.words.MockWordsManuals
 import com.backend.ord.utils.Console
 import com.backend.ord.utils.Console.addBreakLine
 import com.backend.ord.utils.Console.ensureFunctionSuccess
@@ -26,11 +28,16 @@ class DatabaseSeeder(
     private val userSeeder: UserSeeder,
     private val passwordEncoder: PasswordEncoder,
     private val languageProficiencySeeder: LanguageProficiencySeeder,
-    private val languageProficiencyFactory: LanguageProficiencyMockFactory
+    private val languageProficiencyFactory: LanguageProficiencyMockFactory,
+    private val mockWordsManuals: MockWordsManuals
 ) : ApplicationRunner {
     override fun run(args: ApplicationArguments) {
         // Print a message to the console
         printCyan("Seeding database:\n")
+
+        val currentDirectory = System.getProperty("user.dir")
+        println("Current working directory: $currentDirectory")
+
 
         // Step 1: Remove existing data
         ensureFunctionSuccess("1. Removing an existing data...") { this.removeExistingData() }
@@ -72,7 +79,9 @@ class DatabaseSeeder(
         }
     }
 
-    private fun createMyUser() {
+    private fun createMyUser(): String {
+        //TODO: Add logging for populating data for root user
+
         // 1. Create a user
         val kacper = userSeeder.seedOneEntity(
             User(
@@ -105,6 +114,17 @@ class DatabaseSeeder(
             languageProficiency = LanguageProficiencyLevel.A1,
             generativeContentLanguage = LanguageName.ENGLISH
         )
+
+        // 3. Load mocked data and convert it into actual entities
+        val numberSeededWordsManuals: Int = mockWordsManuals.seedFromJSONFile(user = kacper)
+
+        return listOf(
+            "User account created successfully with email: ${kacper.email}",
+            "Languages proficiency seeded - English ( C1 ), German ( A2 ), Slovenian ( A1 )",
+            "$numberSeededWordsManuals words seeded"
+        ).joinToString(separator = "\n") {
+            "   - $it"
+        }
     }
 
     private fun removeExistingData() {

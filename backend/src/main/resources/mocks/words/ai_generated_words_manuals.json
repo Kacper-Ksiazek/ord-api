@@ -1,0 +1,806 @@
+[
+    {
+        "originalWord": "boardwalk",
+        "translation": "promenada",
+        "definition": "To szeroka ścieżka zwykle zbudowana wzdłuż plaży lub w parku, przeznaczona do spacerów i rekreacji.",
+        "type": "NOUN",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "The *boardwalk* was crowded with tourists enjoying the summer sun.",
+                "translation": "Na *promenadzie* było tłoczno od turystów cieszących się letnim słońcem."
+            },
+            {
+                "sentence": "We took a leisurely stroll along the *boardwalk*.",
+                "translation": "Wybraliśmy się na spokojny spacer wzdłuż *promenady*."
+            },
+            {
+                "sentence": "There are many shops and restaurants near the *boardwalk*.",
+                "translation": "W pobliżu *promenady* znajduje się wiele sklepów i restauracji."
+            }
+        ]
+    },
+    {
+        "originalWord": "beehive",
+        "translation": "ul",
+        "definition": "To miejsce, w którym pszczoły zbierają i przechowują miód oraz wychowują swoje potomstwo.",
+        "type": "NOUN",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "A *beehive* can contain thousands of bees.",
+                "translation": "*Ul* może pomieścić tysiące pszczół."
+            },
+            {
+                "sentence": "The *beehive* is buzzing with activity during the summer.",
+                "translation": "W *ulu* panuje ruch w czasie lata."
+            },
+            {
+                "sentence": "She carefully observed the *beehive* for any signs of disease.",
+                "translation": "Ona starannie obserwowała *ul* w poszukiwaniu oznak choroby."
+            }
+        ]
+    },
+    {
+        "originalWord": "mutter",
+        "translation": "mamrot",
+        "definition": "Czasownik oznaczający mówienie cicho, często w sposób niezrozumiały lub niechętny.",
+        "type": "VERB",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "He tends to *mutter* under his breath when he's annoyed.",
+                "translation": "On zwykle *mamrocze* pod nosem, gdy jest zdenerwowany."
+            },
+            {
+                "sentence": "Stop *muttering* and speak clearly.",
+                "translation": "Przestań *mamroczyć* i mów wyraźnie."
+            },
+            {
+                "sentence": "I could hear her *muttering* about the unfairness of the situation.",
+                "translation": "Słyszałem, jak *mamrocze* o niesprawiedliwości sytuacji."
+            }
+        ]
+    },
+    {
+        "originalWord": "sluggish",
+        "translation": "leniwy",
+        "definition": "Oznacza powolny lub mało aktywny. Może odnosić się do stanu fizycznego lub psychicznego.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "He felt *sluggish* after the heavy meal.",
+                "translation": "Czuł się *leniwy* po obfitym posiłku."
+            },
+            {
+                "sentence": "The team played *sluggishly* in the second half.",
+                "translation": "Drużyna grała *leniwe* w drugiej połowie."
+            },
+            {
+                "sentence": "On hot days, I often feel *sluggish* and tired.",
+                "translation": "W upalne dni często czuję się *leniwy* i zmęczony."
+            }
+        ]
+    },
+    {
+        "originalWord": "lethargic",
+        "translation": "letargiczny",
+        "definition": "Oznacza stan apatii lub braku energii. Osoba letargiczna często odczuwa zmęczenie i brak motywacji.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "The hot weather made everyone *lethargic*.",
+                "translation": "Gorąca pogoda sprawiła, że wszyscy byli *letargiczni*."
+            },
+            {
+                "sentence": "He tends to be *lethargic* in the mornings.",
+                "translation": "On ma tendencję do bycia *letargicznym* rano."
+            },
+            {
+                "sentence": "After the long meeting, I felt quite *lethargic*.",
+                "translation": "Po długim spotkaniu czułem się dość *letargiczny*."
+            }
+        ]
+    },
+    {
+        "originalWord": "ephemeral",
+        "translation": "przemijający",
+        "definition": "Termin odnoszący się do czegoś, co trwa tylko przez krótki czas lub jest ulotne.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "He enjoyed the **ephemeral** moments of joy.",
+                "translation": "Cieszył się **przemijającymi** chwilami radości."
+            },
+            {
+                "sentence": "Art can be **ephemeral**, like street art or ice sculptures.",
+                "translation": "Sztuka może być **przemijająca**, jak sztuka uliczna czy rzeźby z lodu."
+            },
+            {
+                "sentence": "The beauty of the sunset is **ephemeral**.",
+                "translation": "Piękno zachodu słońca jest **przemijające**."
+            }
+        ]
+    },
+    {
+        "originalWord": "transient",
+        "translation": "przejrzysty",
+        "definition": "Słowo 'transient' odnosi się do czegoś, co jest tymczasowe lub przejściowe.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "He experienced transient emotions during the movie.",
+                "translation": "Podczas filmu doświadczył *przejrzystych* emocji."
+            },
+            {
+                "sentence": "The transient visitors come and go, leaving no trace behind.",
+                "translation": "Przejrzystych odwiedzających przychodzi i odchodzi, nie zostawiając śladu."
+            },
+            {
+                "sentence": "The transient nature of life makes us cherish every moment.",
+                "translation": "Przejrzysty charakter życia sprawia, że każdą chwilę warto doceniać."
+            }
+        ]
+    },
+    {
+        "originalWord": "fleeting",
+        "translation": "przemijający",
+        "definition": "Oznacza coś, co jest efemeryczne lub krótkotrwałe, szybko mijające.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "The **fleeting** moment brought back fond memories.",
+                "translation": "To **przemijające** chwila przywołała miłe wspomnienia."
+            },
+            {
+                "sentence": "They enjoyed a **fleeting** sense of joy.",
+                "translation": "Cieszyli się **przemijającym** poczuciem radości."
+            },
+            {
+                "sentence": "Her **fleeting** smile brightened his day.",
+                "translation": "Jej **przemijający** uśmiech rozjaśnił jego dzień."
+            }
+        ]
+    },
+    {
+        "originalWord": "depletes",
+        "translation": "wyczerpuje",
+        "definition": "Oznacza zmniejszenie zasobów lub sił. Używane w kontekście zarządzania zasobami.",
+        "type": "VERB",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "Constantly working without breaks can *depletes* your energy.",
+                "translation": "Ciągła praca bez przerw może *wyczerpać* twoją energię."
+            },
+            {
+                "sentence": "Overfishing *depletes* marine life.",
+                "translation": "Nadmierne rybołówstwo *wyczerpuje* życie morskie."
+            },
+            {
+                "sentence": "The project *depletes* our resources.",
+                "translation": "Projekt *wyczerpuje* nasze zasoby."
+            }
+        ]
+    },
+    {
+        "originalWord": "don't shoot them down in flames",
+        "translation": "nie podcinaj ich skrzydeł",
+        "definition": "To wyrażenie oznacza zniechęcanie kogoś lub krytykowanie jego pomysłów w sposób, który może być demotywujący.",
+        "type": "IDIOM",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "If you disagree, express your opinion without shooting them down in flames.",
+                "translation": "Jeśli się nie zgadzasz, wyraź swoją opinię bez *podcinania* ich *skrzydeł*."
+            },
+            {
+                "sentence": "Don't shoot them down in flames when they present their ideas.",
+                "translation": "Nie *podcinaj* ich *skrzydeł*, gdy prezentują swoje pomysły."
+            },
+            {
+                "sentence": "It's important to encourage others, so don't shoot them down in flames.",
+                "translation": "To ważne, aby wspierać innych, więc nie *podcinaj* ich *skrzydeł*."
+            }
+        ]
+    },
+    {
+        "originalWord": "fruit of thought",
+        "translation": "owoc myśli",
+        "definition": "Termin oznaczający wynik refleksji lub rozważań. Często używany w kontekście kreatywności i pomysłów.",
+        "type": "IDIOM",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "Her *fruit of thought* inspired the entire project.",
+                "translation": "Jej *owoc myśli* zainspirował cały projekt."
+            },
+            {
+                "sentence": "He shared the *fruit of thought* with his team.",
+                "translation": "Podzielił się *owocem myśli* ze swoją ekipą."
+            },
+            {
+                "sentence": "The *fruit of thought* can lead to innovative solutions.",
+                "translation": "Owoc *myśli* może prowadzić do innowacyjnych rozwiązań."
+            }
+        ]
+    },
+    {
+        "originalWord": "down the rabbit hole",
+        "translation": "działka w króliczej norze",
+        "definition": "Wyrażenie opisujące sytuację, w której ktoś zagłębia się w skomplikowane lub dziwne zagadnienia, często w kontekście eksploracji myśli lub pomysłów.",
+        "type": "IDIOM",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "After reading that book, I feel like I've gone *down the rabbit hole*.",
+                "translation": "Po przeczytaniu tej książki czuję, że *zszedłem w króliczą norę*."
+            },
+            {
+                "sentence": "He went *down the rabbit hole* of conspiracy theories.",
+                "translation": "On *zszedł w króliczą norę* teorii spiskowych."
+            },
+            {
+                "sentence": "Exploring the internet can sometimes lead you *down the rabbit hole*.",
+                "translation": "Eksplorowanie internetu czasami może Cię *zanieść w króliczą norę*."
+            }
+        ]
+    },
+    {
+        "originalWord": "well-to-do",
+        "translation": "zamożny",
+        "definition": "Osoba posiadająca znaczne bogactwo lub wysokie dochody. Termin ten często odnosi się do osób żyjących w dostatku.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "The well-to-do family hosted a charity gala.",
+                "translation": "Rodzina *zamożna* zorganizowała galę charytatywną."
+            },
+            {
+                "sentence": "Many well-to-do individuals donate to the arts.",
+                "translation": "Wielu *zamożnych* ludzi wspiera sztukę."
+            },
+            {
+                "sentence": "He comes from a well-to-do background.",
+                "translation": "Pochodzi z *zamożnego* środowiska."
+            }
+        ]
+    },
+    {
+        "originalWord": "run-of-the-mill",
+        "translation": "zwykły",
+        "definition": "Oznacza coś przeciętnego, nie wyróżniającego się niczym szczególnym.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "He prefers *run-of-the-mill* movies over blockbusters.",
+                "translation": "On woli *zwykłe* filmy od blockbusterów."
+            },
+            {
+                "sentence": "Their *run-of-the-mill* approach did not impress anyone.",
+                "translation": "Ich *zwykłe* podejście nie zrobiło wrażenia na nikim."
+            },
+            {
+                "sentence": "This restaurant is quite *run-of-the-mill*.",
+                "translation": "Ta restauracja jest dość *zwykła*."
+            }
+        ]
+    },
+    {
+        "originalWord": "state-of-the-art",
+        "translation": "najnowocześniejszy",
+        "definition": "Określenie używane do opisania czegoś, co jest najbardziej rozwinięte i nowoczesne w danym momencie.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "The new smartphone is truly *state-of-the-art*.",
+                "translation": "Nowy smartfon jest naprawdę *najnowocześniejszy*."
+            },
+            {
+                "sentence": "This facility features *state-of-the-art* technology.",
+                "translation": "Ten obiekt wyposażony jest w *najnowocześniejszą* technologię."
+            },
+            {
+                "sentence": "Our team is working with *state-of-the-art* equipment.",
+                "translation": "Nasz zespół pracuje na *najnowocześniejszym* sprzęcie."
+            }
+        ]
+    },
+    {
+        "originalWord": "off-the-cuff",
+        "translation": "z marszu",
+        "definition": "Termin \"off-the-cuff\" odnosi się do czegoś, co jest mówione lub robione bez przygotowania.",
+        "type": "IDIOM",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "Her *off-the-cuff* remarks often lead to interesting discussions.",
+                "translation": "Jej *z marszu* uwagi często prowadzą do interesujących dyskusji."
+            },
+            {
+                "sentence": "Although it was *off-the-cuff*, his answer was very insightful.",
+                "translation": "Chociaż było *z marszu*, jego odpowiedź była bardzo wnikliwa."
+            },
+            {
+                "sentence": "He gave an *off-the-cuff* speech that impressed everyone.",
+                "translation": "Wygłosił *z marszu* przemówienie, które zaimponowało wszystkim."
+            }
+        ]
+    },
+    {
+        "originalWord": "larger-than-life",
+        "translation": "większy niż życie",
+        "definition": "Termin opisujący osobę, postać lub sytuację, która jest wyjątkowa, imponująca lub dramatyczna, często w sposób przesadzony.",
+        "type": "IDIOM",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "She has a *larger-than-life* presence that captivates everyone.",
+                "translation": "Ona ma *większą niż życie* obecność, która zauważa wszystkich."
+            },
+            {
+                "sentence": "The movie features a *larger-than-life* hero.",
+                "translation": "Film przedstawia *większego niż życie* bohatera."
+            },
+            {
+                "sentence": "His personality is truly *larger-than-life*.",
+                "translation": "Jego osobowość jest naprawdę *większa niż życie*."
+            }
+        ]
+    },
+    {
+        "originalWord": "middle-of-the-road",
+        "translation": "średniak",
+        "definition": "Termin odnoszący się do rzeczy lub osób, które są przeciętne lub umiarkowane w swoim charakterze.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "His opinions are quite *middle-of-the-road*, not leaning too far to either side.",
+                "translation": "Jego opinie są dość *średnie*, nie skłaniają się zbytnio na żadną ze stron."
+            },
+            {
+                "sentence": "She prefers *middle-of-the-road* music that everyone can enjoy.",
+                "translation": "Ona woli *średniak* muzykę, którą każdy może się cieszyć."
+            },
+            {
+                "sentence": "The restaurant serves *middle-of-the-road* dishes that appeal to a wide audience.",
+                "translation": "Restauracja serwuje *średniak* potraw, które podobają się szerokiej publiczności."
+            }
+        ]
+    },
+    {
+        "originalWord": "though-out",
+        "translation": "choćby",
+        "definition": "Używane do wprowadzenia kontrastującej myśli lub stwierdzenia.",
+        "type": "ADVERB",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "I will go to the party, though I don't really want to.",
+                "translation": "Pójdę na imprezę, *choćby* *nie* *chciał*."
+            },
+            {
+                "sentence": "She studied hard, though the topic was difficult.",
+                "translation": "Ona uczyła się pilnie, *choćby* *temat* *był* *trudny*."
+            },
+            {
+                "sentence": "They were late, though they had planned to arrive early.",
+                "translation": "Byli spóźnieni, *choćby* *zaplanowali* *przybyć* *wcześnie*."
+            }
+        ]
+    },
+    {
+        "originalWord": "paid-for",
+        "translation": "opłacony",
+        "definition": "Termin używany do opisania czegoś, za co zapłacono. Może odnosić się do usług lub produktów, które zostały sfinansowane.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "He prefers to use *paid-for* software for better support.",
+                "translation": "Woli używać *opłacanego* oprogramowania dla lepszej obsługi."
+            },
+            {
+                "sentence": "This is a *paid-for* service that guarantees fast delivery.",
+                "translation": "To *opłacona* usługa, która gwarantuje szybką dostawę."
+            },
+            {
+                "sentence": "I have a *paid-for* subscription to the magazine.",
+                "translation": "Mam *opłaconą* subskrypcję magazynu."
+            }
+        ]
+    },
+    {
+        "originalWord": "take-it-or-leave-it",
+        "translation": "weź to lub zostaw",
+        "definition": "Wyrażenie używane, gdy oferta jest nieodwołalna i nie można negocjować. Oznacza, że musisz zaakceptować warunki lub zrezygnować.",
+        "type": "IDIOM",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "He told her it was a *take-it-or-leave-it* decision regarding the job offer.",
+                "translation": "Powiedział jej, że to była *weź to lub zostaw* decyzja dotycząca oferty pracy."
+            },
+            {
+                "sentence": "The price is fixed at $100; it's a *take-it-or-leave-it* offer.",
+                "translation": "Cena jest ustalona na 100 dolarów; to jest *weź to lub zostaw* oferta."
+            },
+            {
+                "sentence": "You have to sign the contract now, it's a *take-it-or-leave-it* situation.",
+                "translation": "Musisz podpisać umowę teraz, to jest *weź to lub zostaw* sytuacja."
+            }
+        ]
+    },
+    {
+        "originalWord": "business-as-usual",
+        "translation": "business as usual",
+        "definition": "Termin oznaczający normalne funkcjonowanie organizacji lub systemu bez zakłóceń.",
+        "type": "PHRASE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "Despite the challenges, it's *business as usual* for the company.",
+                "translation": "Pomimo wyzwań, dla firmy to *normalne funkcjonowanie*."
+            },
+            {
+                "sentence": "They have assured us that it will be *business as usual* next week.",
+                "translation": "Zapewnili nas, że w przyszłym tygodniu będzie *normalne funkcjonowanie*."
+            },
+            {
+                "sentence": "In times of crisis, staying calm is key to maintaining *business as usual*.",
+                "translation": "W czasach kryzysu, zachowanie spokoju jest kluczowe dla utrzymania *normalnego funkcjonowania*."
+            }
+        ]
+    },
+    {
+        "originalWord": "all-you-can-eat",
+        "translation": "wszystko, co możesz zjeść",
+        "definition": "Termin ten odnosi się do oferty restauracji, w której klienci mogą zjeść dowolną ilość jedzenia za jedną stałą opłatę.",
+        "type": "PHRASE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "I love going to *all-you-can-eat* sushi places.",
+                "translation": "Uwielbiam chodzić do miejsc z *wszystko, co możesz zjeść* sushi."
+            },
+            {
+                "sentence": "This restaurant offers an *all-you-can-eat* buffet.",
+                "translation": "Ta restauracja oferuje *wszystko, co możesz zjeść* bufet."
+            },
+            {
+                "sentence": "The *all-you-can-eat* option is great for hungry diners.",
+                "translation": "Opcja *wszystko, co możesz zjeść* jest świetna dla głodnych gości."
+            }
+        ]
+    },
+    {
+        "originalWord": "mearge",
+        "translation": "scalanie",
+        "definition": "Mearge oznacza proces łączenia dwóch lub więcej elementów w jeden. Używa się go często w kontekście technologii, danych lub projektów.",
+        "type": "VERB",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "We need to *merge* these two datasets for the analysis.",
+                "translation": "Musimy *scalić* te dwa zestawy danych do analizy."
+            },
+            {
+                "sentence": "The company plans to *merge* with its competitor next year.",
+                "translation": "Firma planuje *scalić się* ze swoją konkurencją w przyszłym roku."
+            },
+            {
+                "sentence": "The software will automatically *merge* the files if they have the same name.",
+                "translation": "Oprogramowanie automatycznie *scali* pliki, jeśli mają tę samą nazwę."
+            }
+        ]
+    },
+    {
+        "originalWord": "firm",
+        "translation": "firma",
+        "definition": "Słowo 'firm' oznacza przedsiębiorstwo lub instytucję zajmującą się działalnością gospodarczą.",
+        "type": "NOUN",
+        "extraMark": null,
+        "useCases": [
+            "solidny (czyli mocny, stabilny)",
+            "ustalony (czyli postanowiony, stały)",
+            "firma"
+        ],
+        "exampleSentences": [
+            {
+                "sentence": "They reached a *firm* agreement.",
+                "translation": "Oni osiągnęli *ustaloną* umowę."
+            },
+            {
+                "sentence": "He has a *firm* handshake.",
+                "translation": "On ma *solidny* uścisk dłoni."
+            },
+            {
+                "sentence": "The *firm* announced a new product.",
+                "translation": "Ta *firma* ogłosiła nowy produkt."
+            }
+        ]
+    },
+    {
+        "originalWord": "doting",
+        "translation": "przesadna miłość",
+        "definition": "Słowo odnosi się do nadmiernego okazywania uczuć lub przywiązania do kogoś.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "His *doting* nature made him a favorite among the kids.",
+                "translation": "Jego *przesadna miłość* uczyniła go ulubieńcem dzieci."
+            },
+            {
+                "sentence": "She was *doting* on her grandchildren.",
+                "translation": "Ona *przesadnie kochała* swoje wnuki."
+            },
+            {
+                "sentence": "They became *doting* parents after their first child was born.",
+                "translation": "Oni stali się *przesadnie kochającymi* rodzicami po narodzinach swojego pierwszego dziecka."
+            }
+        ]
+    },
+    {
+        "originalWord": "bluntly",
+        "translation": "szczerze",
+        "definition": "Oznacza wyrażanie myśli lub opinii w sposób bezpośredni i bez owijania w bawełnę.",
+        "type": "ADVERB",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "He *bluntly* admitted his mistake.",
+                "translation": "On *szczerze* przyznał się do błędu."
+            },
+            {
+                "sentence": "She told him *bluntly* that she was not interested.",
+                "translation": "Powiedziała mu *szczerze*, że nie jest zainteresowana."
+            },
+            {
+                "sentence": "The report was *bluntly* critical of the government's policies.",
+                "translation": "Raport był *szczery* w krytyce polityki rządu."
+            }
+        ]
+    },
+    {
+        "originalWord": "to add insult to injury",
+        "translation": "dodawać obrazy do urazy",
+        "definition": "Wyrażenie używane, aby opisać sytuację, w której jedna zła rzecz jest zaostrzana przez kolejną jeszcze gorszą.",
+        "type": "IDIOM",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "Losing my job was tough, and then to add insult to injury, my car broke down.",
+                "translation": "Utrata pracy była trudna, a potem *dodawać obrazy do urazy*, zepsuł mi się samochód."
+            },
+            {
+                "sentence": "She was already feeling bad about the mistake, and then to add insult to injury, her friend laughed at her.",
+                "translation": "Już źle się czuła z powodu błędu, a potem *dodawać obrazy do urazy*, jej przyjaciółka się z niej śmiała."
+            },
+            {
+                "sentence": "He had a bad day at school, and to add insult to injury, he forgot his lunch.",
+                "translation": "Miał zły dzień w szkole, a potem *dodawać obrazy do urazy*, zapomniał swojego luncha."
+            }
+        ]
+    },
+    {
+        "originalWord": "to cap it all",
+        "translation": "na dodatek",
+        "definition": "Wyrażenie używane w celu podkreślenia ostatecznego elementu lub sytuacji, która spełnia wszystkie wcześniejsze negatywne aspekty.",
+        "type": "IDIOM",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "It's been a tough week, and to cap it all, I got sick.",
+                "translation": "To był trudny tydzień, a *na dodatek* zachorowałem."
+            },
+            {
+                "sentence": "The project failed, the team was demotivated, and to cap it all, they lost funding.",
+                "translation": "Projekt się nie powiódł, zespół był zdemotywowany, a *na dodatek* stracili fundusze."
+            },
+            {
+                "sentence": "He was late, unprepared, and to cap it all, he forgot the documents.",
+                "translation": "Spóźnił się, był nieprzygotowany, a *na dodatek* zapomniał dokumentów."
+            }
+        ]
+    },
+    {
+        "originalWord": "flusterted",
+        "translation": "zdezorientowany, zaniepokojony",
+        "definition": "Słowo 'flustered' opisuje stan, w którym dana osoba czuje się zdezorientowana lub zestresowana.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "Don't get *flustered* by the questions.",
+                "translation": "Nie daj się *zaniepokoić* pytaniami."
+            },
+            {
+                "sentence": "She felt *flustered* during the interview.",
+                "translation": "Czuła się *zdezorientowana* podczas rozmowy kwalifikacyjnej."
+            },
+            {
+                "sentence": "He was so *flustered* that he forgot his own name.",
+                "translation": "Był tak *zdezorientowany*, że zapomniał własnego imienia."
+            }
+        ]
+    },
+    {
+        "originalWord": "blunt",
+        "translation": "tępy",
+        "definition": "Przymiotnik opisujący coś, co nie ma ostrego końca lub krawędzi, lub odnoszący się do osoby, która nie jest bystra.",
+        "type": "ADJECTIVE",
+        "extraMark": null,
+        "useCases": [
+            "opisz kogoś jako mało inteligentnego",
+            "charakterystyka charakteru",
+            "opis narzędzi"
+        ],
+        "exampleSentences": [
+            {
+                "sentence": "The knife was too *blunt* to cut through the meat.",
+                "translation": "Nóż był zbyt *tępy*, aby przeciąć mięso."
+            },
+            {
+                "sentence": "His *blunt* remarks often hurt people's feelings.",
+                "translation": "Jego *tępe* uwagi często raniły uczucia innych."
+            },
+            {
+                "sentence": "She gave a *blunt* answer to the question.",
+                "translation": "Ona udzieliła *tępej* odpowiedzi na pytanie."
+            }
+        ]
+    },
+    {
+        "originalWord": "out of the blue",
+        "translation": "nagle, niespodziewanie",
+        "definition": "Wyrażenie używane, gdy coś wydarza się w sposób niespodziewany lub bez wcześniejszego ostrzeżenia.",
+        "type": "IDIOM",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "She decided to visit us *out of the blue*.",
+                "translation": "Ona postanowiła odwiedzić nas *nagle*."
+            },
+            {
+                "sentence": "The news came *out of the blue* and surprised everyone.",
+                "translation": "Wiadomość przyszła *niespodziewanie* i zaskoczyła wszystkich."
+            },
+            {
+                "sentence": "He called me *out of the blue* yesterday.",
+                "translation": "On zadzwonił do mnie *nagle* wczoraj."
+            }
+        ]
+    },
+    {
+        "originalWord": "mingle",
+        "translation": "mieszać się, spotykać się (z innymi)",
+        "definition": "W kontekście towarzyskim oznacza interakcję z innymi ludźmi w luźny sposób.",
+        "type": "VERB",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "She loves to *mingle* at social gatherings and meet new people.",
+                "translation": "Ona uwielbia *mieszać się* na spotkaniach towarzyskich i poznawać nowych ludzi."
+            },
+            {
+                "sentence": "At the party, everyone was encouraged to *mingle* and make new friends.",
+                "translation": "Na przyjęciu wszyscy byli zachęcani do *mieszania się* i nawiązywania nowych znajomości."
+            },
+            {
+                "sentence": "It's important to *mingle* with your colleagues during networking events.",
+                "translation": "Ważne jest, aby *mieszać się* ze współpracownikami podczas wydarzeń networkingowych."
+            }
+        ]
+    },
+    {
+        "originalWord": "hover",
+        "translation": "unosić się",
+        "definition": "Oznacza pozostawanie w powietrzu bez dotykania powierzchni; może też odnosić się do bycia w stanie niepewności.",
+        "type": "VERB",
+        "extraMark": null,
+        "useCases": [
+            "unosić się nad ziemią",
+            "unosić się w myślach",
+            "unosić się w powietrzu"
+        ],
+        "exampleSentences": [
+            {
+                "sentence": "The bird seemed to *hover* effortlessly in the sky.",
+                "translation": "Ptak wydawał się *unosić się* bez wysiłku na niebie."
+            },
+            {
+                "sentence": "His mind began to *hover* around the same thoughts.",
+                "translation": "Jego umysł zaczął *unosić się* wokół tych samych myśli."
+            },
+            {
+                "sentence": "She watched the drone *hover* above the field.",
+                "translation": "Obserwowała, jak dron *unosił się* nad polem."
+            }
+        ]
+    },
+    {
+        "originalWord": "pleasantry",
+        "translation": "grzeczność",
+        "definition": "Grzeczność to uprzejme i życzliwe zachowanie wobec innych. To także drobne, miłe słowa lub gesty, które poprawiają atmosferę rozmowy.",
+        "type": "NOUN",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "He greeted her with a *pleasantry* to break the ice.",
+                "translation": "Przywitał ją z *grzecznością*, aby przełamać lody."
+            },
+            {
+                "sentence": "Offering a compliment is a common *pleasantry* in social interactions.",
+                "translation": "Złożenie komplementu jest powszechną *grzecznością* w interakcjach towarzyskich."
+            },
+            {
+                "sentence": "They exchanged *pleasantries* before discussing the main topic.",
+                "translation": "Wymienili się *grzecznościami* przed omówieniem głównego tematu."
+            }
+        ]
+    },
+    {
+        "originalWord": "pick someones's brain",
+        "translation": "dowiedzieć się czegoś od kogoś",
+        "definition": "Wyrażenie to oznacza zadawanie pytań, aby uzyskać informacje lub porady od kogoś, kto ma większą wiedzę na dany temat.",
+        "type": "IDIOM",
+        "extraMark": null,
+        "useCases": [],
+        "exampleSentences": [
+            {
+                "sentence": "I just want to *pick your brain* for a moment.",
+                "translation": "Chcę tylko *dowiedzieć się od ciebie* przez chwilę."
+            },
+            {
+                "sentence": "She asked to *pick my brain* for some ideas.",
+                "translation": "Poprosiła, aby *dowiedzieć się ode mnie* kilku pomysłów."
+            },
+            {
+                "sentence": "I thought I could *pick his brain* about the project.",
+                "translation": "Myślałem, że mogę *dowiedzieć się od niego* o projekcie."
+            }
+        ]
+    }
+]

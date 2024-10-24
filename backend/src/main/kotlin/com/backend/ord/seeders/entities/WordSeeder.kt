@@ -24,6 +24,10 @@ class WordSeeder(
         wordRepository.deleteAll()
     }
 
+    fun saveMany(entities: List<Word>): List<Word> {
+        return wordRepository.saveAll(entities)
+    }
+
     fun seedOneEntityForUser(
         user: User,
         bank: Optional<Bank?> = Optional(null, false)
