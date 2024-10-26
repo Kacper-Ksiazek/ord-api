@@ -6,6 +6,11 @@ import time
 import requests
 from dotenv import load_dotenv
 
+OUTPUT_FILE_NAMES = {
+    "words": "ai_generated_words_manuals.json",
+    "statistics": "ai_generated_words_statistics.json"
+}
+
 LANGUAGE = "ENGLISH"
 PROFICIENCY_LEVEL = "C1"
 WORDS = [
@@ -91,7 +96,7 @@ def generate_words_manuals(words):
     }
 
     # ------
-    # 3. Send POST requests and save responses to a JSON file
+    # 3. Send GET requests and save responses to a JSON file
     # ------
 
     # URL for POST requests
@@ -134,12 +139,29 @@ def generate_words_manuals(words):
 
     print(f"\n⏰ Total time: {round(total_time, 2)}s")
 
-    # Save all responses to words_mock.json
-    print("\nSaving responses to words_mock.json... \n")
+    # ------
+    # 4. Send GET request to get statistics
+    # ------
+
+    statistics_url = f"{API_URL}/gpt-tokens-consumption/words-detailed"
+    statistics_response = requests.get(
+        url=statistics_url,
+        headers=headers,
+        cookies=cookies
+    )
+    statistics_response.raise_for_status()  # Check for HTTP errors
+
+    # ------
+    # 5. Save responses to a JSON file
+    # ------
+
+    # 5.1 - Save words to a JSON file
+    word_file_name = OUTPUT_FILE_NAMES["words"]
+    print(f"\nSaving responses to {word_file_name} file... \n")
 
     try:
         with open(
-                file="words_mock.json",
+                file=word_file_name,
                 mode="w",
                 encoding="utf-8"
         ) as file:
@@ -152,7 +174,27 @@ def generate_words_manuals(words):
 
         print("✅ Responses saved successfully")
     except Exception as e:
-        print(f"❌ Failed to save responses to words_mock.json: {e}")
+        print(f"❌ Failed to save responses to words_mock.json: {word_file_name}")
 
+    # 5.2 - Save statistics to a JSON file
+    statistics_file_name = OUTPUT_FILE_NAMES["statistics"]
+    print(f"\nSaving statistics to {statistics_file_name} file... \n")
+
+    try:
+        with open(
+                file=statistics_file_name,
+                mode="w",
+                encoding="utf-8"
+        ) as file:
+            json.dump(
+                statistics_response.json(),
+                file,
+                indent=4,
+                ensure_ascii=False
+            )
+
+        print("✅ Statistics saved successfully")
+    except Exception as e:
+        print(f"❌ Failed to save statistics to words_mock.json: {statistics_file_name}")
 
 generate_words_manuals(WORDS)
