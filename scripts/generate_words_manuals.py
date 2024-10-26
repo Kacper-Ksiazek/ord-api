@@ -2,9 +2,12 @@ import json
 import os
 import sys
 import time
+from math import floor
 
 import requests
 from dotenv import load_dotenv
+
+OUTPUT_DIR = os.getenv("OUTPUT_DIR") or "./output"
 
 OUTPUT_FILE_NAMES = {
     "words": "ai_generated_words_manuals.json",
@@ -53,6 +56,28 @@ WORDS = [
     "pleasantry",
     "pick someones's brain"
 ]
+
+
+def convert_seconds_into_time(_seconds):
+    seconds = floor(_seconds) % 60
+    minutes = floor(seconds / 60)
+    hours = floor(minutes / 60)
+
+    human_readable_time = ""
+
+    if hours:
+        human_readable_time += f"{hours}hours "
+    if minutes:
+        human_readable_time += f"{minutes}min "
+
+    human_readable_time += f"{seconds}sec"
+
+    return {
+        "hours": hours,
+        "minutes": minutes,
+        "seconds": seconds,
+        "human_readable_time": human_readable_time
+    }
 
 
 def generate_words_manuals(words):
@@ -135,9 +160,9 @@ def generate_words_manuals(words):
             print(f"{i}. ❌ {word} - {e}")
 
     # Calculate the total time
-    total_time = time.time() - beginning_time
+    generation_duration = convert_seconds_into_time(time.time() - beginning_time)["human_readable_time"]
 
-    print(f"\n⏰ Total time: {round(total_time, 2)}s")
+    print(f"\n⏰ Total time: {generation_duration}s")
 
     # ------
     # 4. Send GET request to get statistics
@@ -154,6 +179,7 @@ def generate_words_manuals(words):
     # ------
     # 5. Save responses to a JSON file
     # ------
+    print(f"\n📝 Saving responses to a JSON files in {OUTPUT_DIR} directory...")
 
     # 5.1 - Save words to a JSON file
     word_file_name = OUTPUT_FILE_NAMES["words"]
@@ -161,7 +187,7 @@ def generate_words_manuals(words):
 
     try:
         with open(
-                file=word_file_name,
+                file=os.path.expanduser(f"{OUTPUT_DIR}/{word_file_name}"),
                 mode="w",
                 encoding="utf-8"
         ) as file:
@@ -182,7 +208,7 @@ def generate_words_manuals(words):
 
     try:
         with open(
-                file=statistics_file_name,
+                file=os.path.expanduser(f"{OUTPUT_DIR}/{statistics_file_name}"),
                 mode="w",
                 encoding="utf-8"
         ) as file:
@@ -196,5 +222,6 @@ def generate_words_manuals(words):
         print("✅ Statistics saved successfully")
     except Exception as e:
         print(f"❌ Failed to save statistics to words_mock.json: {statistics_file_name}")
+
 
 generate_words_manuals(WORDS)
