@@ -18,7 +18,7 @@ class MockWordsManuals(
         return object : TypeReference<List<AIGeneratedWordManual>>() {}
     }
 
-    override val pathToJSONFile: String = "./src/main/resources/mocks/words/ai_generated_words_manuals.json"
+    override val pathToJSONFile: String = "/words/ai_generated_words_manuals.json"
 
     override fun convertToEntity(
         jsonData: AIGeneratedWordManual,

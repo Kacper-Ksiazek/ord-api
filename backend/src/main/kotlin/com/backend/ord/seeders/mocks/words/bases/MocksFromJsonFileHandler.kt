@@ -5,6 +5,18 @@ import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.repositories.bases.UserResourceRepository
 import com.backend.ord.utils.JsonReader
 import com.fasterxml.jackson.core.type.TypeReference
+import org.springframework.data.jpa.repository.JpaRepository
+import java.util.UUID
+
+private const val ROOT = "./src/main/resources/mocks/"
+
+private fun getAbsolutePath(path: String): String {
+    return if (path.startsWith('/')) {
+        ROOT + path
+    } else {
+        "$ROOT/$path"
+    }
+}
 
 interface MocksFromJsonFileHandler<
         RepositoryTargetType : IdentifiableUserResource, // Eg. Word
@@ -13,7 +25,7 @@ interface MocksFromJsonFileHandler<
     /**
      * The repository that will be used to save the data read from the JSON file
      */
-    val repository: UserResourceRepository<RepositoryTargetType>
+    val repository: JpaRepository<RepositoryTargetType, UUID>
 
     /**
      * The path to the JSON file that contains the data to be read
@@ -36,7 +48,7 @@ interface MocksFromJsonFileHandler<
     fun readFromJSONFile(): List<JSONDataModelType> {
         try {
             return JsonReader.readJsonFile(
-                pathToJSONFile = pathToJSONFile,
+                pathToJSONFile = getAbsolutePath(pathToJSONFile),
                 typeReference = typeReference()
             )
 

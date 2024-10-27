@@ -8,6 +8,8 @@ import com.backend.ord.seeders.entities.LanguageProficiencySeeder
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.entities.WordSeeder
 import com.backend.ord.seeders.factories.LanguageProficiencyMockFactory
+import com.backend.ord.seeders.mocks.MockedEntitySummary
+import com.backend.ord.seeders.mocks.MocksFromJSONFiles
 import com.backend.ord.seeders.mocks.words.MockWordsManuals
 import com.backend.ord.utils.Console
 import com.backend.ord.utils.Console.addBreakLine
@@ -29,7 +31,7 @@ class DatabaseSeeder(
     private val passwordEncoder: PasswordEncoder,
     private val languageProficiencySeeder: LanguageProficiencySeeder,
     private val languageProficiencyFactory: LanguageProficiencyMockFactory,
-    private val mockWordsManuals: MockWordsManuals
+    private val mocksFromJSONFiles:  MocksFromJSONFiles
 ) : ApplicationRunner {
     override fun run(args: ApplicationArguments) {
         // Print a message to the console
@@ -115,13 +117,16 @@ class DatabaseSeeder(
             generativeContentLanguage = LanguageName.ENGLISH
         )
 
-        // 3. Load mocked data and convert it into actual entities
-        val numberSeededWordsManuals: Int = mockWordsManuals.seedFromJSONFile(user = kacper)
+        // 3. Seed database with data from json files
+        val dataFromJSON: List<MockedEntitySummary> = mocksFromJSONFiles.run(kacper)
+
+
 
         return listOf(
             "User account created successfully with email: ${kacper.email}",
-            "Languages proficiency seeded - English ( C1 ), German ( A2 ), Slovenian ( A1 )",
-            "$numberSeededWordsManuals words seeded"
+            "Languages proficiency: English ( C1 ), German ( A2 ), Slovenian ( A1 )",
+
+            dataFromJSON.map { "${it.name}: ${it.amount}" }.joinToString(separator = "\n")
         ).joinToString(separator = "\n") {
             "   - $it"
         }
