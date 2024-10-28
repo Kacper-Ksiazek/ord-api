@@ -2,7 +2,6 @@ package com.backend.ord.seeders.mocks.words.bases
 
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
-import com.backend.ord.repositories.bases.UserResourceRepository
 import com.backend.ord.utils.JsonReader
 import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.data.jpa.repository.JpaRepository
@@ -20,6 +19,7 @@ private fun getAbsolutePath(path: String): String {
 
 interface MocksFromJsonFileHandler<
         RepositoryTargetType : IdentifiableUserResource, // Eg. Word
+        FileContent, // Eg. List<AIGeneratedWordManual>
         JSONDataModelType  // Eg. AIGeneratedWordManual
         > {
     /**
@@ -40,12 +40,12 @@ interface MocksFromJsonFileHandler<
     /**
      * Provides the `TypeReference` for the specific `JSONDataModelType` at runtime.
      */
-    fun typeReference(): TypeReference<List<JSONDataModelType>>
+    fun typeReference(): TypeReference<FileContent>
 
     /**
      * Reads data from a JSON file and returns a list of JSON data models
      */
-    fun readFromJSONFile(): List<JSONDataModelType> {
+    fun readFromJSONFile(): FileContent {
         try {
             return JsonReader.readJsonFile(
                 pathToJSONFile = getAbsolutePath(pathToJSONFile),
@@ -59,11 +59,17 @@ interface MocksFromJsonFileHandler<
         }
     }
 
+    fun parseFileContent(fileContent: FileContent): List<JSONDataModelType>;
+
     /**
      * Seeds the data from the JSON file to the database. Returns the number of records seeded
      */
     fun seedFromJSONFile(user: User): Int {
-        val data = readFromJSONFile().map {
+        print(readFromJSONFile());
+
+        val data = parseFileContent(
+            readFromJSONFile()
+        ).map {
             this.convertToEntity(
                 jsonData = it,
                 user = user

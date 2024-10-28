@@ -82,8 +82,6 @@ class DatabaseSeeder(
     }
 
     private fun createMyUser(): String {
-        //TODO: Add logging for populating data for root user
-
         // 1. Create a user
         val kacper = userSeeder.seedOneEntity(
             User(
@@ -122,12 +120,10 @@ class DatabaseSeeder(
 
 
 
-        return listOf(
+        return (listOf(
             "User account created successfully with email: ${kacper.email}",
             "Languages proficiency: English ( C1 ), German ( A2 ), Slovenian ( A1 )",
-
-            dataFromJSON.map { "${it.name}: ${it.amount}" }.joinToString(separator = "\n")
-        ).joinToString(separator = "\n") {
+        ) + dataFromJSON.map { "${it.name}: ${it.amount}" }).joinToString(separator = "\n") {
             "   - $it"
         }
     }

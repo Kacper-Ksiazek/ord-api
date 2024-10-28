@@ -21,7 +21,7 @@ data class DetailedWordTokensUsage(
     var translatedFrom: LanguageName,
     var consumptionType: WordsGPTTokensConsumptionType,
 
-    val createdAt: Instant = Instant.now(),
+    val createdAt: Instant,
 )
 
 fun WordTokensUsage.toDetailedWordTokensUsage(): DetailedWordTokensUsage {

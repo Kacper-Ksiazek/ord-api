@@ -13,9 +13,17 @@ import org.springframework.stereotype.Component
 @Component
 class MockWordsManuals(
     override val repository: WordRepository
-) : MocksFromJsonFileHandler<Word, AIGeneratedWordManual> {
+) : MocksFromJsonFileHandler<
+        Word,
+        List<AIGeneratedWordManual>,
+        AIGeneratedWordManual
+        > {
     override fun typeReference(): TypeReference<List<AIGeneratedWordManual>> {
         return object : TypeReference<List<AIGeneratedWordManual>>() {}
+    }
+
+    override fun parseFileContent(fileContent: List<AIGeneratedWordManual>): List<AIGeneratedWordManual> {
+        return fileContent
     }
 
     override val pathToJSONFile: String = "/words/ai_generated_words_manuals.json"
