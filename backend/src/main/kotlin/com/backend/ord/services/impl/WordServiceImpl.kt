@@ -1,7 +1,12 @@
 package com.backend.ord.services.impl
 
+import com.backend.ord.api.requests.enums.SortDirection
+import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.enums.Language.LanguageName
+import com.backend.ord.enums.Word.WordExtraMark
+import com.backend.ord.enums.Word.WordType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.WordRepository
@@ -79,5 +84,41 @@ class WordServiceImpl(
             language = language,
             banksIds = banksIds
         ).toSet()
+    }
+
+    override fun findManyWords(
+        searchingPhrase: String?,
+        bookmarkedOnly: Boolean?,
+
+        banksIds: List<UUID>?,
+
+        wordType: WordType?,
+        language: LanguageName,
+        sortDirection: SortDirection?,
+        wordExtraMark: WordExtraMark?,
+        sortBy: GetAllWordsSortOptions?,
+
+        user: User,
+
+        page: Int,
+        perPage: Int
+    ): List<Word> {
+        return repository.findManyWords(
+            language = language,
+            bookmarkedOnly = bookmarkedOnly,
+
+            wordType = wordType,
+            wordExtraMark = wordExtraMark,
+            searchingPhrase = searchingPhrase,
+            sortDirection = sortDirection ?: SortDirection.DESC,
+            sortBy = sortBy ?: GetAllWordsSortOptions.CREATED_AT,
+
+            banksIds = banksIds,
+
+            user = user,
+
+            page = page,
+            perPage = perPage
+        )?.filterIsInstance<Word>() ?: listOf()
     }
 }

@@ -45,8 +45,8 @@ class WordController(
 
         @RequestParam language: LanguageName,
 
-        @RequestParam(required = false) page: Int? = 0,
-        @RequestParam(required = false) perPage: Int? = 10,
+        @RequestParam(required = false) page: Int = 0,
+        @RequestParam(required = false) perPage: Int = 10,
 
         @RequestParam(required = false) wordType: WordType?,
         @RequestParam(required = false) searchingPhrase: String?,
@@ -57,12 +57,26 @@ class WordController(
 
         @RequestParam(required = false) sortDirection: SortDirection? = SortDirection.DESC,
         @RequestParam(required = false) sortBy: GetAllWordsSortOptions? = GetAllWordsSortOptions.CREATED_AT
-    ): ResponseEntity<List<WordDTO>> {
-        val user = jwtService.getAuthenticatedUser(request)!!
+    ): ResponseEntity<List<Word>> {
+        val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
-        // TODO: Implement this
+        return ResponseEntity.status(HttpStatus.OK).body(
+            wordService.findManyWords(
+                language = language,
+                wordType = wordType,
+                searchingPhrase = searchingPhrase,
+                wordExtraMark = wordExtraMark,
+                bookmarkedOnly = bookmarkedOnly,
+                banksIds = banksIds,
+                sortDirection = sortDirection,
+                sortBy = sortBy,
 
-        return ResponseEntity.ok().build()
+                user = user,
+
+                page = page,
+                perPage = perPage
+            )
+        )
     }
 
     @PostMapping("/")
