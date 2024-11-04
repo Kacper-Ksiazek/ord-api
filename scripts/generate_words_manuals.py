@@ -7,11 +7,9 @@ from math import floor
 import requests
 from dotenv import load_dotenv
 
-OUTPUT_DIR = os.getenv("OUTPUT_DIR") or "./output"
-
 OUTPUT_FILE_NAMES = {
     "words": "ai_generated_words_manuals.json",
-    "statistics": "ai_generated_words_statistics.json"
+    "statistics": "gpt_tokens_used_to_generate_ai_words_manuals.json"
 }
 
 LANGUAGE = "ENGLISH"
@@ -90,6 +88,7 @@ def generate_words_manuals(words):
     API_URL = os.getenv("API_URL")
     USER_EMAIL = os.getenv("USER_EMAIL")
     USER_PASSWORD = os.getenv("USER_PASSWORD")
+    OUTPUT_DIR = os.getenv("OUTPUT_DIR") or "./output"
 
     # ------
     # 2. Authenticate and retrieve token

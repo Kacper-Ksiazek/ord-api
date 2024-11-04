@@ -44,7 +44,7 @@ class WordRepositoryCustomMethodsImpl(
         // Mandatory predicate
         predicates.add(criteriaBuilder.equal(root.get<LanguageName>("translatedFrom"), language))
 
-//        predicates.add(criteriaBuilder.equal(root.get<UUID>("userId"), user.id))
+        predicates.add(criteriaBuilder.equal(root.get<UUID>("userId"), user.id))
 
         // Optional predicates
         wordType?.let {

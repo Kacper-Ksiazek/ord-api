@@ -28,7 +28,10 @@ class WordMapperImpl(
             translatedTo = dto.translatedTo,
             exampleSentences = dto.exampleSentences,
 
+            userId = dto.userId,
             user = userMapper.toEntity(dto.user),
+
+            bankId = dto.bankId,
             bank = bankMapper.toEntityOrNull(dto.bank),
 
             createdAt = dto.createdAt,
@@ -52,7 +55,10 @@ class WordMapperImpl(
             translatedTo = entity.translatedTo,
             exampleSentences = entity.exampleSentences,
 
+            userId = entity.userId,
             user = userMapper.toDTO(entity.user),
+
+            bankId = entity.bankId,
             bank = bankMapper.toDTOOrNull(entity.bank),
 
             createdAt = entity.createdAt,

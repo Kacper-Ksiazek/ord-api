@@ -46,7 +46,8 @@ class MockWordsManuals(
             useCases = jsonData.useCases.toSet(),
             exampleSentences = jsonData.exampleSentences.toSet(),
 
-            user = user
+            user = user,
+            userId = user.id
         )
     }
 

@@ -24,9 +24,11 @@ class WordDTO(
     var exampleSentences: Set<ExampleSentence> = emptySet(),
 
     val user: UserDTO,
+    val userId: UUID = user.id,
+
     var bank: BankDTO? = null,
+    var bankId: UUID? = bank?.id,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),
 )
-

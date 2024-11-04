@@ -57,7 +57,9 @@ class WordMockFactory(
             translatedTo = translatedTo,
             exampleSentences = exampleSentences,
             user = user,
-            bank = bank
+            userId = user.id,
+            bank = bank,
+            bankId = bank?.id
         )
     }
 }

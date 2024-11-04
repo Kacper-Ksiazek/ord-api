@@ -58,10 +58,17 @@ class Word(
     @JdbcTypeCode(SqlTypes.JSON)
     var exampleSentences: Set<ExampleSentence> = emptySet(),
 
+    // Direct user ID column for simpler queries
+    @Column(name = "user_id", insertable = false, updatable = false)
+    var userId: UUID,
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
     override var user: User,
+
+    @Column(name = "bank_id", nullable = true, insertable = false, updatable = false)
+    var bankId: UUID? = null, // Optional column for bank ID
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -75,4 +82,11 @@ class Word(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-) : IdentifiableUserResource
+) : IdentifiableUserResource {
+    @PostLoad
+    fun populateUserId() {
+        userId = user.id
+        bankId = bank?.id
+    }
+}
+
