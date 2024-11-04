@@ -40,7 +40,7 @@ class MockWordsManuals(
             translatedTo = LanguageName.POLISH,
             translatedFrom = LanguageName.ENGLISH,
 
-            type = WordType.ADJECTIVE,
+            type = jsonData.type,
             extraMark = null,
 
             useCases = jsonData.useCases.toSet(),
