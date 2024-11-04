@@ -3,12 +3,12 @@ package com.backend.ord.seeders.mocks.words
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.enums.Language.LanguageName
-import com.backend.ord.enums.Word.WordType
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.mocks.words.bases.MocksFromJsonFileHandler
 import com.backend.ord.seeders.mocks.words.json_data_models.AIGeneratedWordManual
 import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.stereotype.Component
+import kotlin.random.Random
 
 @Component
 class MockWordsManuals(
@@ -45,6 +45,8 @@ class MockWordsManuals(
 
             useCases = jsonData.useCases.toSet(),
             exampleSentences = jsonData.exampleSentences.toSet(),
+
+            isBookmarked = Random.nextBoolean(),
 
             user = user,
             userId = user.id
