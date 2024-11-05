@@ -52,7 +52,26 @@ WORDS = [
     "mingle",
     "hover",
     "pleasantry",
-    "pick someones's brain"
+    "pick someones's brain",
+    "go through",
+    "redundancy",
+    "upward trend",
+    "tipping point",
+    "to be on the up",
+    "albeit",
+    "cumbersome",
+    "infringe",
+    "permissible",
+    "admissible",
+    "spur",
+    "brick-and-mortar",
+    "certanity",
+    "palpable",
+    "lull",
+    "ruminate",
+    "chamomile",
+    "vocational school",
+    "shed",
 ]
 
 
