@@ -41,7 +41,7 @@ class MockWordsManuals(
             translatedFrom = LanguageName.ENGLISH,
 
             type = jsonData.type,
-            extraMark = null,
+            extraMark = jsonData.extraMark,
 
             useCases = jsonData.useCases.toSet(),
             exampleSentences = jsonData.exampleSentences.toSet(),
