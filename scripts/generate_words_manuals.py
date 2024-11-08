@@ -7,6 +7,8 @@ from math import floor
 import requests
 from dotenv import load_dotenv
 
+# TODO: Implement a way to store output files in separate directories!
+
 OUTPUT_FILE_NAMES = {
     "words": "ai_generated_words_manuals.json",
     "statistics": "gpt_tokens_used_to_generate_ai_words_manuals.json"
@@ -35,7 +37,7 @@ WORDS = [
     "off-the-cuff",
     "larger-than-life",
     "middle-of-the-road",
-    "though-out",
+    "thought-out",
     "paid-for",
     "take-it-or-leave-it",
     "business-as-usual",
