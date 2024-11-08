@@ -44,7 +44,13 @@ class WordController(
     fun getAllWords(
         request: HttpServletRequest,
 
-        // TODO: Add field validation for all request params
+        // TODO: 1. Add field validation for all request params
+
+        // TODO: 2. Prepare a mocks for banks and banks' groups
+
+        // TODO: 3. Implement sorting
+
+        // TODO: 4. Implement phrase search
 
         @RequestParam language: LanguageName,
 
