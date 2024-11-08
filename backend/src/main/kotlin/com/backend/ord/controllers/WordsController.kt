@@ -7,6 +7,7 @@ import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
 import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.dto.WordDTO
 import com.backend.ord.domain.entities.Bank
@@ -43,6 +44,8 @@ class WordController(
     fun getAllWords(
         request: HttpServletRequest,
 
+        // TODO: Add field validation for all request params
+
         @RequestParam language: LanguageName,
 
         @RequestParam(required = false) page: Int = 0,
@@ -57,7 +60,7 @@ class WordController(
 
         @RequestParam(required = false) sortDirection: SortDirection? = SortDirection.DESC,
         @RequestParam(required = false) sortBy: GetAllWordsSortOptions? = GetAllWordsSortOptions.CREATED_AT
-    ): ResponseEntity<List<Word>> {
+    ): ResponseEntity<List<WordAsGetManyWordResponse>> {
         val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         return ResponseEntity.status(HttpStatus.OK).body(

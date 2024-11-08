@@ -6,6 +6,7 @@ import com.backend.ord.services.bases.UserResourceService
 import java.util.UUID
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.domain.entities.User
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
@@ -51,5 +52,5 @@ interface WordService : UserResourceService<Word> {
 
         page: Int,
         perPage: Int
-    ): List<Word>
+    ): List<WordAsGetManyWordResponse>
 }

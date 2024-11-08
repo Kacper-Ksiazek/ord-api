@@ -2,12 +2,12 @@ package com.backend.ord.services.impl
 
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
-import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.services.WordService
@@ -102,7 +102,7 @@ class WordServiceImpl(
 
         page: Int,
         perPage: Int
-    ): List<Word> {
+    ): List<WordAsGetManyWordResponse> {
         return repository.findManyWords(
             language = language,
             bookmarkedOnly = bookmarkedOnly,
@@ -119,6 +119,6 @@ class WordServiceImpl(
 
             page = page,
             perPage = perPage
-        )?.filterIsInstance<Word>() ?: listOf()
+        )?.filterIsInstance<WordAsGetManyWordResponse>() ?: listOf()
     }
 }

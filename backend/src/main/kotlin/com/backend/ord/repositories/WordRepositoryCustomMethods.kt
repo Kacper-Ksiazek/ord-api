@@ -2,6 +2,7 @@ package com.backend.ord.repositories
 
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.enums.Language.LanguageName
@@ -27,5 +28,5 @@ interface WordRepositoryCustomMethods {
 
         page: Int,
         perPage: Int
-    ): List<Word?>?
+    ): List<WordAsGetManyWordResponse>?
 }
