@@ -24,6 +24,10 @@ import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.Positive
+import jakarta.validation.constraints.Size
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -44,18 +48,18 @@ class WordController(
     fun getAllWords(
         request: HttpServletRequest,
 
-        // TODO: 1. Add field validation for all request params
-
         // TODO: 2. Prepare a mocks for banks and banks' groups
 
         // TODO: 3. Implement sorting
 
         // TODO: 4. Implement phrase search
 
+        // TODO: 5. Return the total amount of pages for the given pagination parameters
+
         @RequestParam language: LanguageName,
 
-        @RequestParam(required = false) page: Int = 0,
-        @RequestParam(required = false) perPage: Int = 10,
+        @RequestParam(required = false) @Positive page: Int = 0,
+        @RequestParam(required = false) @Min(10) @Max(500) perPage: Int = 10,
 
         @RequestParam(required = false) wordType: WordType?,
         @RequestParam(required = false) searchingPhrase: String?,
@@ -94,7 +98,6 @@ class WordController(
         @Valid @RequestBody body: CreateWordRequestData
     ): ResponseEntity<WordDTO> {
         val user: User = jwtService.getAuthenticatedUser(request)!!
-
 
         val bank = getBankFromRequestOrNull(
             bankId = body.bankId,
