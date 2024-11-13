@@ -1,0 +1,22 @@
+[
+  {
+    "id": "e790c20e-6018-4bf7-94fd-38e763a0a90f",
+    "name": "Yellow Valley",
+    "color": "#FFD700"
+  },
+  {
+    "id": "0c470e76-126a-441c-bb00-3693f993b6a0",
+    "name": "Blue Ocean",
+    "color": "#0000FF"
+  },
+  {
+    "id": "f3f2529d-7e38-405b-b2fa-797a3c4b813b",
+    "name": "Green Forest",
+    "color": "#008000"
+  },
+  {
+    "id": "e7602ed2-421a-4130-998b-6bb449ce06ca",
+    "name": "Red Desert",
+    "color": "#FF0000"
+  }
+]
