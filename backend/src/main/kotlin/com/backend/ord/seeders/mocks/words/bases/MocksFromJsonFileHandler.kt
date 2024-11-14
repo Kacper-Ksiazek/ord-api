@@ -59,7 +59,10 @@ interface MocksFromJsonFileHandler<
         }
     }
 
-    fun parseFileContent(fileContent: FileContent): List<JSONDataModelType>;
+    fun parseFileContent(fileContent: FileContent): List<JSONDataModelType> {
+        @Suppress("UNCHECKED_CAST")
+        return fileContent as List<JSONDataModelType>;
+    }
 
     /**
      * Seeds the data from the JSON file to the database. Returns the number of records seeded
