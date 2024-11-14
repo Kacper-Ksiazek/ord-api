@@ -1,6 +1,7 @@
 package com.backend.ord.seeders.mocks
 
 import com.backend.ord.domain.entities.User
+import com.backend.ord.seeders.mocks.bank_groups.MockBankGroups
 import com.backend.ord.seeders.mocks.words.MockWordsManuals
 import com.backend.ord.seeders.mocks.words_gpt_tokens_usage.MockDetailedWordsGPTTokensConsumption
 import org.springframework.stereotype.Component
@@ -16,10 +17,18 @@ data class MockedEntitySummary(
 @Component
 class MocksFromJSONFiles(
     private val mockWordsManuals: MockWordsManuals,
-    private val mockDetailedWordsGPTTokensConsumption: MockDetailedWordsGPTTokensConsumption
+    private val mockDetailedWordsGPTTokensConsumption: MockDetailedWordsGPTTokensConsumption,
+    private val mockBankGroups: MockBankGroups
 ) {
     fun run(user: User): List<MockedEntitySummary> {
         val result = mutableListOf<MockedEntitySummary>();
+
+        result.add(
+            MockedEntitySummary(
+                name = "Bank groups",
+                amount = mockBankGroups.seedFromJSONFile(user)
+            )
+        )
 
         result.add(
             MockedEntitySummary(
@@ -28,10 +37,12 @@ class MocksFromJSONFiles(
             )
         )
 
-        result.add(MockedEntitySummary(
-            name = "GPT Tokens Usage on Words",
-            amount = mockDetailedWordsGPTTokensConsumption.seedFromJSONFile(user)
-        ))
+        result.add(
+            MockedEntitySummary(
+                name = "GPT Tokens Usage on Words",
+                amount = mockDetailedWordsGPTTokensConsumption.seedFromJSONFile(user)
+            )
+        )
 
         return result;
     }
