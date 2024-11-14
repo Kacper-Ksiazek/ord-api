@@ -5,5 +5,10 @@ import java.util.UUID
 data class BankInJSON(
     val name: String,
     val description: String,
-    val groupId: UUID
+
+    /**
+     * This is the unique name of a group of banks, which will be then used
+     * to map the relationship between the bank and the group
+     * */
+    val groupName: String
 )

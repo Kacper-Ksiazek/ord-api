@@ -68,8 +68,6 @@ interface MocksFromJsonFileHandler<
      * Seeds the data from the JSON file to the database. Returns the number of records seeded
      */
     fun seedFromJSONFile(user: User): List<RepositoryTargetType> {
-        print(readFromJSONFile());
-
         val data = parseFileContent(
             readFromJSONFile()
         ).map {

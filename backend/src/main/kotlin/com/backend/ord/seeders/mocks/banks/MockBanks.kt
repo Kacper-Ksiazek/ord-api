@@ -25,12 +25,12 @@ class MockBanks(
         jsonData: BankInJSON,
         user: User
     ): Bank {
+
         return Bank(
             name = jsonData.name,
             description = jsonData.description,
 
-            // Find bank by json.groupId or null
-            bank = this
+            bankGroup = this.bankGroups.find { it.name == jsonData.groupName },
 
             user = user
         )

@@ -27,7 +27,6 @@ class MockBankGroups(
         user: User
     ): BankGroup {
         return BankGroup(
-            id = jsonData.id,
             name = jsonData.name,
             color = jsonData.color,
 
