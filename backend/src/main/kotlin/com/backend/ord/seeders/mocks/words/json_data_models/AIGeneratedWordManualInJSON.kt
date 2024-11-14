@@ -4,7 +4,7 @@ import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
 
-data class AIGeneratedWordManual(
+data class AIGeneratedWordManualInJSON(
     val originalWord: String,
     val translation: String,
     val definition: String,
