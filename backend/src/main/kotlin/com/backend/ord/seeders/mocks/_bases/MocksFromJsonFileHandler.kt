@@ -1,4 +1,4 @@
-package com.backend.ord.seeders.mocks.words.bases
+package com.backend.ord.seeders.mocks._bases
 
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
