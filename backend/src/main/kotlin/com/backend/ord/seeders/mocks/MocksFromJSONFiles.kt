@@ -1,7 +1,9 @@
 package com.backend.ord.seeders.mocks
 
+import com.backend.ord.domain.entities.BankGroup
 import com.backend.ord.domain.entities.User
 import com.backend.ord.seeders.mocks.bank_groups.MockBankGroups
+import com.backend.ord.seeders.mocks.banks.MockBanks
 import com.backend.ord.seeders.mocks.words.MockWordsManuals
 import com.backend.ord.seeders.mocks.words_gpt_tokens_usage.MockDetailedWordsGPTTokensConsumption
 import org.springframework.stereotype.Component
@@ -18,29 +20,44 @@ data class MockedEntitySummary(
 class MocksFromJSONFiles(
     private val mockWordsManuals: MockWordsManuals,
     private val mockDetailedWordsGPTTokensConsumption: MockDetailedWordsGPTTokensConsumption,
-    private val mockBankGroups: MockBankGroups
+    private val mockBankGroups: MockBankGroups,
+    private val mockBanks: MockBanks
 ) {
     fun run(user: User): List<MockedEntitySummary> {
         val result = mutableListOf<MockedEntitySummary>();
 
+        val bankGroups: List<BankGroup> = mockBankGroups.seedFromJSONFile(user)
+
+        val banks = mockBanks.seedFromJSONFile(
+            user = user,
+            bankGroups = bankGroups
+        )
+
         result.add(
             MockedEntitySummary(
                 name = "Bank groups",
-                amount = mockBankGroups.seedFromJSONFile(user)
+                amount = bankGroups.size
+            )
+        )
+
+        result.add(
+            MockedEntitySummary(
+                name = "Banks",
+                amount = banks.size
             )
         )
 
         result.add(
             MockedEntitySummary(
                 name = "Words",
-                amount = mockWordsManuals.seedFromJSONFile(user)
+                amount = mockWordsManuals.seedFromJSONFile(user).size
             )
         )
 
         result.add(
             MockedEntitySummary(
                 name = "GPT Tokens Usage on Words",
-                amount = mockDetailedWordsGPTTokensConsumption.seedFromJSONFile(user)
+                amount = mockDetailedWordsGPTTokensConsumption.seedFromJSONFile(user).size
             )
         )
 

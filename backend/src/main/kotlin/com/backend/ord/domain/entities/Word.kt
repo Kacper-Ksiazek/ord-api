@@ -70,6 +70,8 @@ class Word(
     @Column(name = "bank_id", nullable = true, insertable = false, updatable = false)
     var bankId: UUID? = null, // Optional column for bank ID
 
+    // TODO: Add bankGroupId field
+
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "bank_id", nullable = true)

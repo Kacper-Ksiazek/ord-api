@@ -18,7 +18,10 @@ class BankMapperImpl(
 
             name = dto.name,
             description = dto.description,
+
             user = userMapper.toEntity(dto.user),
+
+            bankGroupId = dto.bankGroupId,
             bankGroup = bankGroupMapper.toEntityOrNull(dto.bankGroup),
 
             createdAt = dto.createdAt,
@@ -32,7 +35,10 @@ class BankMapperImpl(
 
             name = entity.name,
             description = entity.description,
+
             user = userMapper.toDTO(entity.user),
+
+            bankGroupId = entity.bankGroupId,
             bankGroup = bankGroupMapper.toDTOOrNull(entity.bankGroup),
 
             createdAt = entity.createdAt,

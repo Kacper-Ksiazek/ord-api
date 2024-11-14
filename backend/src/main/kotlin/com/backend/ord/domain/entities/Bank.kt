@@ -30,6 +30,9 @@ class Bank(
     @JoinColumn(name = "user_id", nullable = false)
     override var user: User,
 
+    @Column(name = "group_id", nullable = true, insertable = false, updatable = false)
+    var bankGroupId: UUID? = null,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "group_id")
@@ -42,4 +45,9 @@ class Bank(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-): IdentifiableUserResource
+) : IdentifiableUserResource {
+    @PostLoad
+    fun populateBankGroupId(){
+        bankGroupId = bankGroup?.id
+    }
+}

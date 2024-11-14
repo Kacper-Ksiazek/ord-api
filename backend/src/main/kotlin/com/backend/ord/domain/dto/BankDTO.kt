@@ -10,7 +10,9 @@ data class BankDTO(
     var description: String,
 
     val user: UserDTO,
+
     var bankGroup: BankGroupDTO? = null,
+    var bankGroupId: UUID? = bankGroup?.id,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),
