@@ -33,6 +33,8 @@ class MocksFromJSONFiles(
             bankGroups = bankGroups
         )
 
+        // TODO: Add random banks assigment to the words
+
         result.add(
             MockedEntitySummary(
                 name = "Bank groups",
