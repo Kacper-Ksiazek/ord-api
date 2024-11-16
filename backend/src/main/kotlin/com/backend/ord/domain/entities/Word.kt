@@ -58,30 +58,30 @@ class Word(
     @JdbcTypeCode(SqlTypes.JSON)
     var exampleSentences: Set<ExampleSentence> = emptySet(),
 
-    // Direct user ID column for simpler queries
-    @Column(name = "user_id", insertable = false, updatable = false)
-    var userId: UUID,
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
     override var user: User,
 
-    @Column(name = "bank_id", nullable = true, insertable = false, updatable = false)
-    var bankId: UUID? = null, // Optional column for bank ID
-
-    // TODO: Add bankGroupId field
+    @Column(name = "user_id", insertable = false, updatable = false)
+    var userId: UUID = user.id,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "bank_id", nullable = true)
     var bank: Bank? = null,
 
+    @Column(name = "bank_id", nullable = true, insertable = false, updatable = false)
+    var bankId: UUID? = bank?.id,
+
+    @Column(name = "bank_group_id", nullable = true, updatable = false)
+    var bankGroupId: UUID? = bank?.bankGroupId,
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     var createdAt: Instant = Instant.now(),
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false, updatable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
 ) : IdentifiableUserResource {
@@ -89,6 +89,7 @@ class Word(
     fun populateUserId() {
         userId = user.id
         bankId = bank?.id
+        bankGroupId = bank?.bankGroupId
     }
 }
 

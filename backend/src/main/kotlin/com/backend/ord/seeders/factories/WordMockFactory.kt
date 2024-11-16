@@ -59,7 +59,8 @@ class WordMockFactory(
             user = user,
             userId = user.id,
             bank = bank,
-            bankId = bank?.id
+            bankId = bank?.id,
+            bankGroupId = bank?.bankGroupId
         )
     }
 }

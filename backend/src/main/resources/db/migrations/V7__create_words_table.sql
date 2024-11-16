@@ -48,8 +48,11 @@ CREATE TABLE IF NOT EXISTS "words"
     -- Set<ExampleSentence> of example sentences which are used to explain the word in context
     "example_sentences" JSONB         NOT NULL,
 
-    "bank_id"           UUID                     DEFAULT NULL REFERENCES "banks" ("id") ON DELETE SET NULL,
     "user_id"           UUID          NOT NULL REFERENCES "users" ("id") ON DELETE CASCADE,
+    "bank_id"           UUID                     DEFAULT NULL REFERENCES "banks" ("id") ON DELETE SET NULL,
+
+    -- This property is not a FK, because it is only used to streamline the process of fetching words from the same bank group
+    "bank_group_id"     UUID                     DEFAULT NULL,
 
     "created_at"        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     "updated_at"        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

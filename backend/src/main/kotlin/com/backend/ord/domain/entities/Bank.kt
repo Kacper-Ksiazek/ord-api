@@ -30,13 +30,13 @@ class Bank(
     @JoinColumn(name = "user_id", nullable = false)
     override var user: User,
 
-    @Column(name = "group_id", nullable = true, insertable = false, updatable = false)
-    var bankGroupId: UUID? = null,
-
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "group_id")
     var bankGroup: BankGroup? = null,
+
+    @Column(name = "group_id", nullable = true, insertable = false, updatable = false)
+    var bankGroupId: UUID? = bankGroup?.id,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

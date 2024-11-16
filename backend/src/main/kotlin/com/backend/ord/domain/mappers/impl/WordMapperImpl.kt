@@ -61,6 +61,8 @@ class WordMapperImpl(
             bankId = entity.bankId,
             bank = bankMapper.toDTOOrNull(entity.bank),
 
+            bankGroupId = entity.bank?.bankGroupId,
+
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
         )
