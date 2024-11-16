@@ -31,15 +31,7 @@ class MockWordsManuals(
         jsonData: AIGeneratedWordManualInJSON,
         user: User
     ): Word {
-        val bank: Bank? = getRandomBank().let {
-            if (it == null) {
-                null
-            } else {
-                println("Bank: ${it.bankGroupId}")
-                it
-            }
-        }
-
+        val bank: Bank? = getRandomBank()
 
         return Word(
             origin = jsonData.originalWord,
