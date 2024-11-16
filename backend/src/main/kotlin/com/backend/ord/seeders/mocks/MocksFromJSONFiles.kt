@@ -33,7 +33,10 @@ class MocksFromJSONFiles(
             bankGroups = bankGroups
         )
 
-        // TODO: Add random banks assigment to the words
+        val words = mockWordsManuals.seedFromJSONFile(
+            user = user,
+            banks = banks
+        )
 
         result.add(
             MockedEntitySummary(
@@ -52,7 +55,7 @@ class MocksFromJSONFiles(
         result.add(
             MockedEntitySummary(
                 name = "Words",
-                amount = mockWordsManuals.seedFromJSONFile(user).size
+                amount = words.size
             )
         )
 

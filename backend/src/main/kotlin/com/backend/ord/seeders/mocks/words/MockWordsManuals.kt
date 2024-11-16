@@ -1,5 +1,6 @@
 package com.backend.ord.seeders.mocks.words
 
+import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.enums.Language.LanguageName
@@ -18,6 +19,8 @@ class MockWordsManuals(
         List<AIGeneratedWordManualInJSON>,
         AIGeneratedWordManualInJSON
         > {
+    private lateinit var availableBanks: List<Bank>;
+
     override fun typeReference(): TypeReference<List<AIGeneratedWordManualInJSON>> {
         return object : TypeReference<List<AIGeneratedWordManualInJSON>>() {}
     }
@@ -28,6 +31,8 @@ class MockWordsManuals(
         jsonData: AIGeneratedWordManualInJSON,
         user: User
     ): Word {
+        val bank: Bank? = getRandomBank()
+
         return Word(
             origin = jsonData.originalWord,
             definition = jsonData.definition,
@@ -45,8 +50,29 @@ class MockWordsManuals(
             isBookmarked = Random.nextBoolean(),
 
             user = user,
-            userId = user.id
+            userId = user.id,
+
+            bank = bank,
+            bankId = bank?.id
         )
     }
 
+    fun seedFromJSONFile(
+        user: User,
+        banks: List<Bank>
+    ): List<Word> {
+        this.availableBanks = banks;
+
+        return seedFromJSONFile(user)
+    }
+
+    fun getRandomBank(
+        likelihoodOfReturningNull: Int = 25
+    ): Bank? {
+        return if (Random.nextInt(100) < likelihoodOfReturningNull) {
+            null
+        } else {
+            availableBanks.random()
+        }
+    }
 }
