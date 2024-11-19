@@ -91,6 +91,7 @@ class WordServiceImpl(
         bookmarkedOnly: Boolean?,
 
         banksIds: List<UUID>?,
+        bankGroupsIds: List<UUID>?,
 
         wordType: WordType?,
         language: LanguageName,
@@ -110,10 +111,12 @@ class WordServiceImpl(
             wordType = wordType,
             wordExtraMark = wordExtraMark,
             searchingPhrase = searchingPhrase,
+
             sortDirection = sortDirection ?: SortDirection.DESC,
             sortBy = sortBy ?: GetAllWordsSortOptions.CREATED_AT,
 
             banksIds = banksIds,
+            bankGroupsIds = bankGroupsIds,
 
             user = user,
 

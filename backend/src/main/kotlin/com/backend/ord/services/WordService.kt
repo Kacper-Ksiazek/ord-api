@@ -41,6 +41,7 @@ interface WordService : UserResourceService<Word> {
         bookmarkedOnly: Boolean?,
 
         banksIds: List<UUID>?,
+        bankGroupsIds: List<UUID>?,
 
         wordType: WordType?,
         language: LanguageName,

@@ -48,8 +48,6 @@ class WordController(
     fun getAllWords(
         request: HttpServletRequest,
 
-        // TODO: 2. Prepare a mocks for banks and banks' groups
-
         // TODO: 3. Implement sorting
 
         // TODO: 4. Implement phrase search
@@ -67,6 +65,7 @@ class WordController(
         @RequestParam(required = false) bookmarkedOnly: Boolean? = false,
 
         @RequestParam(required = false) banksIds: List<UUID>?,
+        @RequestParam(required = false) bankGroupsIds: List<UUID>?,
 
         @RequestParam(required = false) sortDirection: SortDirection? = SortDirection.DESC,
         @RequestParam(required = false) sortBy: GetAllWordsSortOptions? = GetAllWordsSortOptions.CREATED_AT
@@ -77,10 +76,13 @@ class WordController(
             wordService.findManyWords(
                 language = language,
                 wordType = wordType,
-                searchingPhrase = searchingPhrase,
                 wordExtraMark = wordExtraMark,
                 bookmarkedOnly = bookmarkedOnly,
+                searchingPhrase = searchingPhrase,
+
                 banksIds = banksIds,
+                bankGroupsIds = bankGroupsIds,
+
                 sortDirection = sortDirection,
                 sortBy = sortBy,
 

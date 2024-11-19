@@ -14,6 +14,8 @@ import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
 import com.backend.ord.repositories.WordRepositoryCustomMethods
 import jakarta.persistence.EntityManager
+import jakarta.persistence.Tuple
+import jakarta.persistence.TypedQuery
 import jakarta.persistence.criteria.JoinType
 import jakarta.persistence.criteria.Predicate
 import org.springframework.stereotype.Repository
@@ -28,35 +30,57 @@ class WordRepositoryCustomMethodsImpl(
     override fun findManyWords(
         searchingPhrase: String?,
         bookmarkedOnly: Boolean?,
+
         banksIds: List<UUID>?,
+        bankGroupsIds: List<UUID>?,
+
         wordType: WordType?,
         language: LanguageName,
         sortDirection: SortDirection,
         wordExtraMark: WordExtraMark?,
         sortBy: GetAllWordsSortOptions,
+
         user: User,
+
         page: Int,
         perPage: Int
     ): List<WordAsGetManyWordResponse> {
-
+        // ---
+        // 1. Create CriteriaBuilder and CriteriaQuery
+        // ---
         val criteriaBuilder = entityManager.criteriaBuilder
         val criteriaQuery = criteriaBuilder.createTupleQuery()
-        val root = criteriaQuery.from(Word::class.java)
 
-        // Join bank and bankGroup
+        // ---
+        // 2. Prepare root and joins
+        // ---
+        val root = criteriaQuery.from(Word::class.java)
         val bankJoin = root.join<Word, Bank>("bank", JoinType.LEFT)
         val bankGroupJoin = bankJoin.join<Bank, BankGroup>("bankGroup", JoinType.LEFT)
 
+        // ---
+        // 3. Prepare predicates
+        // ---
         val predicates = mutableListOf<Predicate>()
 
-        // Mandatory predicates
-        predicates.add(criteriaBuilder.equal(root.get<LanguageName>("translatedFrom"), language))
+        // 3.1 Mandatory predicates
         predicates.add(criteriaBuilder.equal(root.get<UUID>("userId"), user.id))
+        predicates.add(criteriaBuilder.equal(root.get<LanguageName>("translatedFrom"), language))
 
-        // Apply predicates
+        // 3.2 Optional predicates
+        // TODO: Implement following predicates:
+        // - bookmarkedOnly
+        // - wordType
+        // - banksIds
+        // - bankGroupsIds
+        // - searchingPhrase
+
+        // 3.3 Apply predicates
         criteriaQuery.where(*predicates.toTypedArray())
 
-        // Sorting
+        // ---
+        // 4. Prepare sorting
+        // ---
 //        val order = if (sortDirection == SortDirection.DESC) {
 //            criteriaBuilder.desc(root.get<Any>(sortBy.name))
 //        } else {
@@ -64,7 +88,14 @@ class WordRepositoryCustomMethodsImpl(
 //        }
 //        criteriaQuery.orderBy(order)
 
-        // Select fields using multiselect
+        // ---
+        // 5. Count total amount of results and calculate total amount of pages
+        // ---
+        // TODO: 5. Return the total amount of pages for the given pagination parameters
+
+        // ---
+        // 6. Select fields using multiselect
+        // ---
         criteriaQuery.multiselect(
             // Word fields
             root.get<UUID>("id"),                       // 0
@@ -90,15 +121,14 @@ class WordRepositoryCustomMethodsImpl(
             root.get<Instant>("updatedAt")              // 17
         )
 
-        // Execute query with pagination
-        val query = entityManager.createQuery(criteriaQuery)
+        // 6.1 Execute query with pagination
+        val query: TypedQuery<Tuple> = entityManager.createQuery(criteriaQuery)
             .setFirstResult(page * perPage)
             .setMaxResults(perPage)
 
-        val resultList = query.resultList
 
-        // Map results to DTOs
-        return resultList.map { tuple ->
+        // 6.2 Map results to DTOs
+        return query.resultList.map { tuple ->
             val id = tuple.get(0, UUID::class.java)
             val points = tuple.get(1, Int::class.java)
             val origin = tuple.get(2, String::class.java)
@@ -140,7 +170,6 @@ class WordRepositoryCustomMethodsImpl(
                 )
             } else null
 
-            // Construct WordAsGetManyWordResponse
             WordAsGetManyWordResponse(
                 id = id,
                 points = points,

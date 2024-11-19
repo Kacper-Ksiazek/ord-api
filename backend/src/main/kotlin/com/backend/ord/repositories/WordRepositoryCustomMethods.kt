@@ -17,6 +17,7 @@ interface WordRepositoryCustomMethods {
         bookmarkedOnly: Boolean?,
 
         banksIds: List<UUID>?,
+        bankGroupsIds: List<UUID>?,
 
         wordType: WordType?,
         language: LanguageName,
