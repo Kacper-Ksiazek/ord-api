@@ -54,9 +54,9 @@ class WordController(
 
         // TODO: 5. Return the total amount of pages for the given pagination parameters
 
-        @RequestParam language: LanguageName,
+        @RequestParam(required = true) language: LanguageName,
 
-        @RequestParam(required = false) @Positive page: Int = 0,
+        @RequestParam(required = false) @Min(0) page: Int = 0,
         @RequestParam(required = false) @Min(10) @Max(500) perPage: Int = 10,
 
         @RequestParam(required = false) wordType: WordType?,
