@@ -68,12 +68,46 @@ class WordRepositoryCustomMethodsImpl(
         predicates.add(criteriaBuilder.equal(root.get<LanguageName>("translatedFrom"), language))
 
         // 3.2 Optional predicates
-        // TODO: Implement following predicates:
-        // - bookmarkedOnly
-        // - wordType
-        // - banksIds
-        // - bankGroupsIds
-        // - searchingPhrase
+
+        // 3.2.1 - isBookmarked
+        bookmarkedOnly?.let {
+            predicates.add(criteriaBuilder.equal(root.get<Boolean>("isBookmarked"), it))
+        }
+
+        // 3.2.2 - wordType
+        wordType?.let {
+            predicates.add(criteriaBuilder.equal(root.get<WordType>("type"), it))
+        }
+
+        // 3.2.3 - searchingPhrase
+        searchingPhrase?.let {
+            predicates.add(
+                criteriaBuilder.or(
+                    // Search by origin - in learning language
+                    criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get<String>("origin")),
+                        "%${it.lowercase()}%"
+                    ),
+                    // Search by translation - in translated to ( native ) language
+                    criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get<String>("translation")),
+                        "%${it.lowercase()}%"
+                    )
+                )
+            )
+        }
+
+        // 3.2.4 - banksIds
+        banksIds?.let {
+            val bankIdPath = root.get<UUID>("bankId")
+            predicates.add(bankIdPath.`in`(it))
+        }
+
+        // 3.2.5 - bankGroupsIds
+        bankGroupsIds?.let {
+            val bankGroupIdPath = bankJoin.get<UUID>("bankGroupId")
+            predicates.add(bankGroupIdPath.`in`(it))
+        }
 
         // 3.3 Apply predicates
         criteriaQuery.where(*predicates.toTypedArray())
