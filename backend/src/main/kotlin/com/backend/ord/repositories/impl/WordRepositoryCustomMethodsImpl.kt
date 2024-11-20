@@ -2,6 +2,8 @@ package com.backend.ord.repositories.impl
 
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.responses.PaginatedDataResponse
+import com.backend.ord.api.responses.PaginationData
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.api.responses.words.embedded.BankCompact
 import com.backend.ord.api.responses.words.embedded.BankGroupCompact
@@ -16,8 +18,11 @@ import com.backend.ord.repositories.WordRepositoryCustomMethods
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
 import jakarta.persistence.TypedQuery
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.JoinType
 import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 import org.springframework.stereotype.Repository
 import java.time.Instant
 import java.util.UUID
@@ -44,7 +49,7 @@ class WordRepositoryCustomMethodsImpl(
 
         page: Int,
         perPage: Int
-    ): List<WordAsGetManyWordResponse> {
+    ): PaginatedDataResponse<WordAsGetManyWordResponse> {
         // ---
         // 1. Create CriteriaBuilder and CriteriaQuery
         // ---
@@ -61,56 +66,21 @@ class WordRepositoryCustomMethodsImpl(
         // ---
         // 3. Prepare predicates
         // ---
-        val predicates = mutableListOf<Predicate>()
 
-        // 3.1 Mandatory predicates
-        predicates.add(criteriaBuilder.equal(root.get<UUID>("userId"), user.id))
-        predicates.add(criteriaBuilder.equal(root.get<LanguageName>("translatedFrom"), language))
+        applyPredicates<Tuple>(
+            criteriaBuilder = criteriaBuilder,
+            criteriaQuery = criteriaQuery,
+            root = root,
 
-        // 3.2 Optional predicates
+            userId = user.id,
+            language = language,
 
-        // 3.2.1 - isBookmarked
-        bookmarkedOnly?.let {
-            predicates.add(criteriaBuilder.equal(root.get<Boolean>("isBookmarked"), it))
-        }
-
-        // 3.2.2 - wordType
-        wordType?.let {
-            predicates.add(criteriaBuilder.equal(root.get<WordType>("type"), it))
-        }
-
-        // 3.2.3 - searchingPhrase
-        searchingPhrase?.let {
-            predicates.add(
-                criteriaBuilder.or(
-                    // Search by origin - in learning language
-                    criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get<String>("origin")),
-                        "%${it.lowercase()}%"
-                    ),
-                    // Search by translation - in translated to ( native ) language
-                    criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get<String>("translation")),
-                        "%${it.lowercase()}%"
-                    )
-                )
-            )
-        }
-
-        // 3.2.4 - banksIds
-        banksIds?.let {
-            val bankIdPath = root.get<UUID>("bankId")
-            predicates.add(bankIdPath.`in`(it))
-        }
-
-        // 3.2.5 - bankGroupsIds
-        bankGroupsIds?.let {
-            val bankGroupIdPath = bankJoin.get<UUID>("bankGroupId")
-            predicates.add(bankGroupIdPath.`in`(it))
-        }
-
-        // 3.3 Apply predicates
-        criteriaQuery.where(*predicates.toTypedArray())
+            wordType = wordType,
+            banksIds = banksIds,
+            searchingPhrase = searchingPhrase,
+            bookmarkedOnly = bookmarkedOnly,
+            bankGroupsIds = bankGroupsIds
+        )
 
         // ---
         // 4. Prepare sorting
@@ -125,7 +95,26 @@ class WordRepositoryCustomMethodsImpl(
         // ---
         // 5. Count total amount of results and calculate total amount of pages
         // ---
-        // TODO: 5. Return the total amount of pages for the given pagination parameters
+        val countCriteriaQuery = criteriaBuilder.createQuery(Long::class.java)
+        val countRoot = countCriteriaQuery.from(Word::class.java)
+        countCriteriaQuery.select(criteriaBuilder.count(countRoot))
+
+        applyPredicates<Long>(
+            criteriaBuilder = criteriaBuilder,
+            criteriaQuery = countCriteriaQuery,
+            root = countRoot,
+
+            userId = user.id,
+            language = language,
+
+            wordType = wordType,
+            banksIds = banksIds,
+            searchingPhrase = searchingPhrase,
+            bookmarkedOnly = bookmarkedOnly,
+            bankGroupsIds = bankGroupsIds
+        )
+
+        val totalRecords: Long = entityManager.createQuery(countCriteriaQuery).singleResult
 
         // ---
         // 6. Select fields using multiselect
@@ -162,7 +151,7 @@ class WordRepositoryCustomMethodsImpl(
 
 
         // 6.2 Map results to DTOs
-        return query.resultList.map { tuple ->
+        val responseData = query.resultList.map { tuple ->
             val id = tuple.get(0, UUID::class.java)
             val points = tuple.get(1, Int::class.java)
             val origin = tuple.get(2, String::class.java)
@@ -220,6 +209,83 @@ class WordRepositoryCustomMethodsImpl(
                 updatedAt = updatedAt
             )
         }
+
+        return PaginatedDataResponse(
+            data = responseData,
+            pagination = PaginationData(
+                page = page,
+                perPage = perPage,
+                totalRecords = totalRecords,
+                recordsOnCurrentPage = responseData.size
+            )
+        )
+    }
+
+    fun <T> applyPredicates(
+        criteriaBuilder: CriteriaBuilder,
+        criteriaQuery: CriteriaQuery<T>,
+        root: Root<Word>,
+
+        userId: UUID,
+        language: LanguageName,
+
+        wordType: WordType?,
+        banksIds: List<UUID>?,
+        searchingPhrase: String?,
+        bookmarkedOnly: Boolean?,
+        bankGroupsIds: List<UUID>?,
+    ) {
+        val predicates = mutableListOf<Predicate>()
+
+        // 3.1 Mandatory predicates
+        predicates.add(criteriaBuilder.equal(root.get<UUID>("userId"), userId))
+        predicates.add(criteriaBuilder.equal(root.get<LanguageName>("translatedFrom"), language))
+
+        // 3.2 Optional predicates
+
+        // 3.2.1 - isBookmarked
+        bookmarkedOnly?.let {
+            if (bookmarkedOnly == true) {
+                predicates.add(criteriaBuilder.isTrue(root.get<Boolean>("isBookmarked")))
+            }
+        }
+
+        // 3.2.2 - wordType
+        wordType?.let {
+            predicates.add(criteriaBuilder.equal(root.get<WordType>("type"), it))
+        }
+
+        // 3.2.3 - searchingPhrase
+        searchingPhrase?.let {
+            predicates.add(
+                criteriaBuilder.or(
+                    // Search by origin - in learning language
+                    criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get<String>("origin")),
+                        "%${it.lowercase()}%"
+                    ),
+                    // Search by translation - in translated to ( native ) language
+                    criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get<String>("translation")),
+                        "%${it.lowercase()}%"
+                    )
+                )
+            )
+        }
+
+        // 3.2.4 - banksIds
+        banksIds?.let {
+            val bankIdPath = root.get<UUID>("bankId")
+            predicates.add(bankIdPath.`in`(it))
+        }
+
+        // 3.2.5 - bankGroupsIds
+        bankGroupsIds?.let {
+            val bankGroupIdPath = root.get<UUID>("bankGroupId")
+            predicates.add(bankGroupIdPath.`in`(it))
+        }
+
+        criteriaQuery.where(*predicates.toTypedArray());
     }
 }
 

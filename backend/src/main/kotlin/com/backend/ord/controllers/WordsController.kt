@@ -7,6 +7,7 @@ import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
 import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.dto.WordDTO
@@ -26,8 +27,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.Positive
-import jakarta.validation.constraints.Size
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -69,7 +68,7 @@ class WordController(
 
         @RequestParam(required = false) sortDirection: SortDirection? = SortDirection.DESC,
         @RequestParam(required = false) sortBy: GetAllWordsSortOptions? = GetAllWordsSortOptions.CREATED_AT
-    ): ResponseEntity<List<WordAsGetManyWordResponse>> {
+    ): ResponseEntity<PaginatedDataResponse<WordAsGetManyWordResponse>> {
         val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         return ResponseEntity.status(HttpStatus.OK).body(
