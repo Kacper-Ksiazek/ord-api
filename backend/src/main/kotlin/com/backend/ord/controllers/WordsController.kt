@@ -49,10 +49,6 @@ class WordController(
 
         // TODO: 3. Implement sorting
 
-        // TODO: 4. Implement phrase search
-
-        // TODO: 5. Return the total amount of pages for the given pagination parameters
-
         @RequestParam(required = true) language: LanguageName,
 
         @RequestParam(required = false) @Min(0) page: Int = 0,

@@ -1,7 +1,9 @@
 package com.backend.ord.repositories.impl
 
 import com.backend.ord.api.requests.enums.SortDirection
+import com.backend.ord.api.requests.enums.isDesc
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.requests.word.enums.toSQLColumnName
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.PaginationData
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
@@ -85,12 +87,13 @@ class WordRepositoryCustomMethodsImpl(
         // ---
         // 4. Prepare sorting
         // ---
-//        val order = if (sortDirection == SortDirection.DESC) {
-//            criteriaBuilder.desc(root.get<Any>(sortBy.name))
-//        } else {
-//            criteriaBuilder.asc(root.get<Any>(sortBy.name))
-//        }
-//        criteriaQuery.orderBy(order)
+        val sortByColumn = sortBy.toSQLColumnName()
+
+        if (sortDirection.isDesc()) {
+            criteriaQuery.orderBy(criteriaBuilder.desc(root.get<Any>(sortByColumn)))
+        } else {
+            criteriaQuery.orderBy(criteriaBuilder.asc(root.get<Any>(sortByColumn)))
+        }
 
         // ---
         // 5. Count total amount of results and calculate total amount of pages
