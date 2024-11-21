@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.backend.ord.repositories.impl
 
 import com.backend.ord.api.requests.enums.SortDirection
@@ -6,9 +8,11 @@ import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.toSQLColumnName
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.PaginationData
+import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.api.responses.words.embedded.BankCompact
 import com.backend.ord.api.responses.words.embedded.BankGroupCompact
+import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.BankGroup
 import com.backend.ord.domain.entities.User
@@ -16,11 +20,11 @@ import com.backend.ord.domain.entities.Word
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
+import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.WordRepositoryCustomMethods
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
 import jakarta.persistence.TypedQuery
-import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.JoinType
 import jakarta.persistence.criteria.Predicate
@@ -33,6 +37,99 @@ import java.util.UUID
 class WordRepositoryCustomMethodsImpl(
     private val entityManager: EntityManager
 ) : WordRepositoryCustomMethods {
+    private val criteriaBuilder = entityManager.criteriaBuilder;
+
+    override fun findOneWord(
+        wordId: UUID,
+        user: User
+    ): SingleWordResponse {
+        val criteriaQuery = criteriaBuilder.createTupleQuery();
+
+        val root = criteriaQuery.from(Word::class.java)
+        val bankJoin = root.join<Word, Bank>("bank", JoinType.LEFT)
+        val bankGroupJoin = bankJoin.join<Bank, BankGroup>("bankGroup", JoinType.LEFT)
+
+        criteriaQuery.multiselect(
+            root.get<UUID>("id"),                       // 0
+
+            // Primitive type fields
+            root.get<Int>("points"),                    // 1
+            root.get<String>("origin"),                 // 2
+            root.get<String>("translation"),            // 3
+            root.get<String>("definition"),             // 5
+            root.get<Boolean>("isBookmarked"),          // 6
+
+            // Enum types
+            root.get<WordType>("type"),                 // 7
+            root.get<WordExtraMark?>("extraMark"),      // 8
+            root.get<LanguageName>("translatedTo"),     // 9
+            root.get<LanguageName>("translatedFrom"),   // 10
+
+            // Lists fields
+            root.get<String>("useCases"),               // 11
+            root.get<Int>("exampleSentences"),          // 12
+
+            // Bank fields
+            bankJoin.get<UUID?>("id"),                  // 13
+            bankJoin.get<String?>("name"),              // 14
+            bankJoin.get<String?>("description"),       // 15
+
+            // BankGroup fields
+            bankGroupJoin.get<UUID?>("id"),             // 16
+            bankGroupJoin.get<String?>("name"),         // 17
+            bankGroupJoin.get<String?>("color"),        // 18
+
+            // Timestamps
+            root.get<Instant>("createdAt"),             // 19
+            root.get<Instant>("updatedAt")              // 20
+        )
+
+        criteriaQuery.where(
+            criteriaBuilder.equal(root.get<UUID>("id"), wordId),
+            criteriaBuilder.equal(root.get<UUID>("userId"), user.id)
+        )
+
+        val query: TypedQuery<Tuple> = entityManager.createQuery(criteriaQuery)
+
+        val result = query.singleResult
+
+        if (result == null) {
+            throw NotFoundException("Word with id $wordId not found for user with id ${user.id}")
+        }
+
+        return SingleWordResponse(
+            id = result.get(0, UUID::class.java),
+
+            points = result.get(1, Int::class.java),
+            origin = result.get(2, String::class.java),
+            translation = result.get(3, String::class.java),
+            definition = result.get(4, String::class.java),
+            isBookmarked = result.get(5, Boolean::class.java),
+
+            type = result.get(6, WordType::class.java),
+            extraMark = result.get(7, WordExtraMark::class.java),
+            translatedTo = result.get(8, LanguageName::class.java),
+            translatedFrom = result.get(9, LanguageName::class.java),
+
+            useCases = result.get(10, Set::class.java) as Set<String>,
+            exampleSentences = result.get(11, Set::class.java) as Set<ExampleSentence>,
+
+            bank = BankCompact(
+                id = result.get(12, UUID::class.java),
+                name = result.get(13, String::class.java) ?: "",
+                description = result.get(14, String::class.java) ?: "",
+
+                bankGroup = BankGroupCompact(
+                    id = result.get(15, UUID::class.java),
+                    name = result.get(16, String::class.java) ?: "",
+                    color = result.get(17, String::class.java) ?: ""
+                )
+            ),
+
+            createdAt = result.get(18, Instant::class.java),
+            updatedAt = result.get(19, Instant::class.java)
+        )
+    }
 
     override fun findManyWords(
         searchingPhrase: String?,
@@ -53,9 +150,8 @@ class WordRepositoryCustomMethodsImpl(
         perPage: Int
     ): PaginatedDataResponse<WordAsGetManyWordResponse> {
         // ---
-        // 1. Create CriteriaBuilder and CriteriaQuery
+        // 1. Create and CriteriaQuery
         // ---
-        val criteriaBuilder = entityManager.criteriaBuilder
         val criteriaQuery = criteriaBuilder.createTupleQuery()
 
         // ---
@@ -68,10 +164,8 @@ class WordRepositoryCustomMethodsImpl(
         // ---
         // 3. Prepare predicates
         // ---
-
-        applyPredicates<Tuple>(
-            criteriaBuilder = criteriaBuilder,
-            criteriaQuery = criteriaQuery,
+        applyPredicatesToQuery<Tuple>(
+            query = criteriaQuery,
             root = root,
 
             userId = user.id,
@@ -102,9 +196,8 @@ class WordRepositoryCustomMethodsImpl(
         val countRoot = countCriteriaQuery.from(Word::class.java)
         countCriteriaQuery.select(criteriaBuilder.count(countRoot))
 
-        applyPredicates<Long>(
-            criteriaBuilder = criteriaBuilder,
-            criteriaQuery = countCriteriaQuery,
+        applyPredicatesToQuery<Long>(
+            query = countCriteriaQuery,
             root = countRoot,
 
             userId = user.id,
@@ -224,9 +317,8 @@ class WordRepositoryCustomMethodsImpl(
         )
     }
 
-    fun <T> applyPredicates(
-        criteriaBuilder: CriteriaBuilder,
-        criteriaQuery: CriteriaQuery<T>,
+    private fun <T> applyPredicatesToQuery(
+        query: CriteriaQuery<T>,
         root: Root<Word>,
 
         userId: UUID,
@@ -288,7 +380,7 @@ class WordRepositoryCustomMethodsImpl(
             predicates.add(bankGroupIdPath.`in`(it))
         }
 
-        criteriaQuery.where(*predicates.toTypedArray());
+        query.where(*predicates.toTypedArray());
     }
 }
 

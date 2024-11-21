@@ -3,6 +3,7 @@ package com.backend.ord.services.impl
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.PaginatedDataResponse
+import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.domain.entities.User
 import com.backend.ord.enums.Language.LanguageName
@@ -122,6 +123,16 @@ class WordServiceImpl(
 
             page = page,
             perPage = perPage
+        )
+    }
+
+    override fun findOneWord(
+        wordId: UUID,
+        user: User
+    ): SingleWordResponse {
+        return repository.findOneWord(
+            wordId = wordId,
+            user = user
         )
     }
 }

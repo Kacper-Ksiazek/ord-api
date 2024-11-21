@@ -13,9 +13,6 @@ import java.util.*
 interface WordRepository :
     UserResourceRepository<Word>,
     WordRepositoryCustomMethods {
-    @Query("SELECT w FROM Word w WHERE w.user.id = :userId AND (lower(w.origin) LIKE lower(concat('%', :phrase, '%')) OR lower(w.translation) LIKE lower(concat('%', :phrase, '%')))")
-    fun findAllForUserBySearchingPhrase(userId: UUID, phrase: String): List<Word>
-
     @Query("SELECT w.origin FROM Word w WHERE w.translatedFrom = :language ORDER BY w.createdAt DESC")
     fun findNOfLatestWords(language: LanguageName, pageable: Pageable): List<String>
 

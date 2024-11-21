@@ -8,6 +8,7 @@ import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.PaginatedDataResponse
+import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.dto.WordDTO
@@ -46,8 +47,6 @@ class WordController(
     @GetMapping("/")
     fun getAllWords(
         request: HttpServletRequest,
-
-        // TODO: 3. Implement sorting
 
         @RequestParam(required = true) language: LanguageName,
 
@@ -88,6 +87,22 @@ class WordController(
             )
         )
     }
+
+    @GetMapping("/{id}")
+    fun getWord(
+        request: HttpServletRequest,
+        @PathVariable id: UUID
+    ): ResponseEntity<SingleWordResponse> {
+        val user = jwtService.getAuthenticatedUser(request)!!
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            wordService.findOneWord(
+                wordId = id,
+                user = user
+            )
+        )
+    }
+
 
     @PostMapping("/")
     fun createWord(
