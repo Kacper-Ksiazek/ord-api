@@ -70,6 +70,12 @@ class TestWordsController @Autowired constructor(
     )
 
     @Nested
+    @DisplayName("[GET] /api/v1/words/ - get many words")
+    inner class GetManyWords {
+       // TODO: Implement this
+    }
+
+    @Nested
     @DisplayName("[POST] /api/v1/words/ - create a word")
     inner class CreateWordTests {
         @Nested
