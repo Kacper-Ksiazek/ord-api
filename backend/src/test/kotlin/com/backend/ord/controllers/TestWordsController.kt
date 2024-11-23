@@ -72,7 +72,163 @@ class TestWordsController @Autowired constructor(
     @Nested
     @DisplayName("[GET] /api/v1/words/ - get many words")
     inner class GetManyWords {
-       // TODO: Implement this
+        // Add before all clause to fill the database with 100 different
+        // words and assign them to different banks but to the one user
+
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - Words can be fetched`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - All words should belong to the user who requested them`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - Words can be fetched with pagination`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - Words can be fetched with sorting`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - Words can be fetched with filtering - by word type`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - Words can be fetched with filtering - by searching phrase`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - Words can be fetched with filtering - by extra mark`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - Words can be fetched with filtering - by bookmarked`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - Words can be fetched with filtering - by bank`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - Words can be fetched with filtering - by bank group`() {
+                // TODO
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `403 - Anonymous user cannot fetch words`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched without a language specified`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - page`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - perPage`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - sortBy`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - sortDirection`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - wordType`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - searchPhrase`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - extraMark`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - bookmarkedOnly`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - banksIds`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - bankGroupsIds`() {
+                // TODO
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[GET] /api/v1/words/{id} - get a single word")
+    inner class GetSingleWords {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - Word can be fetched by its owner`() {
+                // TODO
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `403 - Anonymous user cannot fetch a word`() {
+                // TODO
+            }
+
+            @Test
+            fun `404 - Word cannot be fetched by other user than the one who created it`() {
+                // TODO
+            }
+
+            @Test
+            fun `404 - Word cannot be fetched if it does not exist`() {
+                // TODO
+            }
+
+            @Test
+            fun `400 - Word cannot be fetched if id is not a valid UUID`() {
+                // TODO
+            }
+        }
     }
 
     @Nested
