@@ -30,6 +30,5 @@ class MissingServletRequestParameterExceptionHandler {
             ),
             HttpStatus.BAD_REQUEST
         )
-
     }
 }
