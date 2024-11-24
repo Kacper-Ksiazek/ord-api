@@ -11,7 +11,14 @@ data class ValidationFieldError(
     val receivedValue: String
 ) : FieldError(field, errorMessage)
 
-data class ValidationErrorResponse(
+data class InvalidTypeFieldError(
+    override val field: String,
+    override val errorMessage: String,
+    val receivedValue: String,
+    val expectedType: String
+) : FieldError(field, errorMessage)
+
+data class BadRequestResponse(
     val status: Int,
     val message: String,
     val errors: List<FieldError>

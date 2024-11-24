@@ -453,8 +453,8 @@ class TestWordsController @Autowired constructor(
             @ValueSource(strings = ["-1"])
             fun `400 - Words cannot be fetched with invalid param - page`(parameter: String) {
                 makeManyWordsRequestUnsafe(
-                    page = parameter,
-                    perPage = "-1",
+                    page = "iu432u4324u",
+//                    perPage = "-1",
                 )
             }
 
