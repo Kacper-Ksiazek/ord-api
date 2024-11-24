@@ -1,9 +1,15 @@
 package com.backend.ord.api.responses
 
-data class FieldError(
-    val field: String,
-    val errorMessage: String,
+open class FieldError(
+    open val field: String,
+    open val errorMessage: String,
 )
+
+data class ValidationFieldError(
+    override val field: String,
+    override val errorMessage: String,
+    val receivedValue: String
+) : FieldError(field, errorMessage)
 
 data class ValidationErrorResponse(
     val status: Int,
