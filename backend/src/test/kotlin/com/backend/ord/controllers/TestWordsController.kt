@@ -51,6 +51,7 @@ import com.backend.ord.enums.Word.WordType
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.domain.mappers.UserMapper
+import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
 
 
@@ -72,7 +73,8 @@ class TestWordsController @Autowired constructor(
     private val bankService: BankService,
     private val userSeeder: UserSeeder,
     private val wordSeeder: WordSeeder,
-    private val wordMapper: WordMapper
+    private val wordMapper: WordMapper,
+    private val bankGroupSeeder: BankGroupSeeder
 ) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
     @Autowired
     private lateinit var userMapper: UserMapper
@@ -138,7 +140,7 @@ class TestWordsController @Autowired constructor(
                     wordExtraMark = wordExtraMark,
 
                     banksIds = banksIds,
-                    banksGroupsIds = banksGroupsIds,
+                    bankGroupsIds = banksGroupsIds,
 
                     sortDirection = sortDirection,
                     sortBy = sortBy
@@ -313,28 +315,72 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Words can be fetched with filtering - by bank`() {
-                val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val bankOne = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val bankTwo = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 wordSeeder.seedMultipleEntitiesForUser(
                     amount = 10,
                     user = userMapper.toEntity(authenticatedUser.userInfo),
-                    bank = Optional(bank),
+                    bank = Optional(bankOne),
+                    language = learningLanguage
+                )
+
+                wordSeeder.seedMultipleEntitiesForUser(
+                    amount = 10,
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    bank = Optional(bankTwo),
                     language = learningLanguage
                 )
 
                 val body = makeManyWordsRequest(
-                    banksIds = setOf(bank.id),
+                    banksIds = setOf(bankOne.id),
                     perPage = 500
                 );
 
                 body.data.forEach {
-                    it.bank?.id shouldBe bank.id
+                    it.bank?.id shouldBe bankOne.id
                 }
             }
 
             @Test
             fun `200 - Words can be fetched with filtering - by bank group`() {
-                // TODO
+                val bankGroupOne = bankGroupSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val bankGroupTwo = bankGroupSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val bankOne = bankSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                    bankGroup = bankGroupOne
+                )
+
+                val bankTwo = bankSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                    bankGroup = bankGroupTwo
+                )
+
+                wordSeeder.seedMultipleEntitiesForUser(
+                    amount = 24,
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    bank = Optional(bankOne),
+                    language = learningLanguage
+                )
+
+                wordSeeder.seedMultipleEntitiesForUser(
+                    amount = 5,
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    bank = Optional(bankTwo),
+                    language = learningLanguage
+                )
+
+                val body = makeManyWordsRequest(
+                    banksGroupsIds = setOf(bankGroupOne.id),
+                    perPage = 500
+                );
+
+                println(body.data.map { it.bank?.bankGroup?.id })
+
+                body.data.forEach {
+                    it.bank?.bankGroup?.id shouldBe bankGroupOne.id
+                }
             }
         }
 

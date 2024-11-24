@@ -42,7 +42,7 @@ class WordRequestFactory(
         wordExtraMark: WordExtraMark? = null,
 
         banksIds: Set<UUID>? = null,
-        banksGroupsIds: Set<UUID>? = null,
+        bankGroupsIds: Set<UUID>? = null,
 
         sortDirection: SortDirection? = null,
         sortBy: GetAllWordsSortOptions? = null,
@@ -64,7 +64,7 @@ class WordRequestFactory(
 
         // Assign optional predicates of list type
         if (banksIds != null) url += "banksIds=${banksIds.joinToString(",")}&"
-        if (banksGroupsIds != null) url += "banksGroupsIds=${banksGroupsIds.joinToString(",")}&"
+        if (bankGroupsIds != null) url += "bankGroupsIds=${bankGroupsIds.joinToString(",")}&"
 
         // Assign optional sorting
         if (sortDirection != null) url += "sortDirection=$sortDirection&"
