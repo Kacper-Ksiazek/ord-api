@@ -5,6 +5,8 @@ import com.backend.ord.api.requests.word.data.ChangeBankForMultipleWordsRequestD
 import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
 import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
+import com.backend.ord.api.requests.enums.SortDirection
+import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.controllers.request_factories.data.CreateWordData
 import com.backend.ord.controllers.request_factories.data.UpdateWordData
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
@@ -27,8 +29,51 @@ class WordRequestFactory(
         // TODO
     }
 
-    fun getAllWordsRequest() {
-        // TODO
+    fun getManyWordsRequest(
+        authenticatedUser: MockedAuthenticatedUser? = null,
+        language: LanguageName? = null,
+
+        page: Int? = null,
+        perPage: Int? = null,
+
+        wordType: WordType? = null,
+        searchingPhrase: String? = null,
+        bookmarkedOnly: Boolean? = null,
+        wordExtraMark: WordExtraMark? = null,
+
+        banksIds: Set<UUID>? = null,
+        banksGroupsIds: Set<UUID>? = null,
+
+        sortDirection: SortDirection? = null,
+        sortBy: GetAllWordsSortOptions? = null,
+    ): MockHttpServletRequestBuilder {
+        // Create a url and add params to it
+        var url = "$BASE_URL?"
+
+        if (language != null) url += "language=$language&"
+
+        // Assign pagination properties
+        if (page != null) url += "page=$page&"
+        if (perPage != null) url += "perPage=$perPage&"
+
+        // Assign optional predicates of non list type
+        if (wordType != null) url += "wordType=$wordType&"
+        if (searchingPhrase != null) url += "searchingPhrase=$searchingPhrase&"
+        if (bookmarkedOnly != null) url += "bookmarkedOnly=$bookmarkedOnly&"
+        if (wordExtraMark != null) url += "wordExtraMark=$wordExtraMark&"
+
+        // Assign optional predicates of list type
+        if (banksIds != null) url += "banksIds=${banksIds.joinToString(",")}&"
+        if (banksGroupsIds != null) url += "banksGroupsIds=${banksGroupsIds.joinToString(",")}&"
+
+        // Assign optional sorting
+        if (sortDirection != null) url += "sortDirection=$sortDirection&"
+        if (sortBy != null) url += "sortBy=$sortBy&"
+
+
+        return MockMvcRequestBuilders.get(url).apply {
+            if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+        }
     }
 
     /**

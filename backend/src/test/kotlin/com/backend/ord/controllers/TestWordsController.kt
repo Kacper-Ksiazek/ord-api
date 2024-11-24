@@ -1,6 +1,8 @@
 package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.api.responses.PaginatedDataResponse
+import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.extensions.compareWith
 import com.backend.ord.controllers.extensions.detectChanges
@@ -16,6 +18,7 @@ import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.domain.mappers.WordMapper
+import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
@@ -29,6 +32,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -42,6 +46,14 @@ import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
+import com.backend.ord.enums.Word.WordExtraMark
+import com.backend.ord.enums.Word.WordType
+import com.backend.ord.api.requests.enums.SortDirection
+import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.domain.mappers.UserMapper
+import com.backend.ord.seeders.factories.WordMockFactory
+
+
 import java.util.*
 
 @SpringBootTest
@@ -62,6 +74,11 @@ class TestWordsController @Autowired constructor(
     private val wordSeeder: WordSeeder,
     private val wordMapper: WordMapper
 ) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
+    @Autowired
+    private lateinit var userMapper: UserMapper
+
+    @Autowired
+    private lateinit var wordMockFactory: WordMockFactory
     private val BASE_URL = "/api/v1/words/"
 
     private val wordRequestFactory = WordRequestFactory(
@@ -69,58 +86,250 @@ class TestWordsController @Autowired constructor(
         objectMapper = objectMapper
     )
 
+    lateinit var authenticatedUser: MockedAuthenticatedUser;
+
+    @BeforeEach
+    fun beforeEach() {
+        authenticatedUser = mockAuthenticatedUser()
+    }
+
     @Nested
     @DisplayName("[GET] /api/v1/words/ - get many words")
     inner class GetManyWords {
-        // Add before all clause to fill the database with 100 different
-        // words and assign them to different banks but to the one user
+        val learningLanguage: LanguageName = LanguageName.NORWEGIAN;
+
+        @BeforeEach
+        fun seedDatabaseWithWords() {
+            wordSeeder.seedMultipleEntitiesForUser(
+                user = authenticatedUser.userInfo,
+                amount = 100,
+                language = learningLanguage
+            )
+        }
 
         @Nested
         @DisplayName("Positive")
         inner class Positive {
+            private fun makeManyWordsRequest(
+                page: Int? = null,
+                perPage: Int? = null,
+
+                wordType: WordType? = null,
+                searchingPhrase: String? = null,
+                bookmarkedOnly: Boolean? = null,
+                wordExtraMark: WordExtraMark? = null,
+
+                banksIds: Set<UUID>? = null,
+                banksGroupsIds: Set<UUID>? = null,
+
+                sortDirection: SortDirection? = null,
+                sortBy: GetAllWordsSortOptions? = null,
+            ): PaginatedDataResponse<WordAsGetManyWordResponse> {
+                val request = wordRequestFactory.getManyWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    language = learningLanguage,
+
+                    page = page,
+                    perPage = perPage,
+
+                    wordType = wordType,
+                    searchingPhrase = searchingPhrase,
+                    bookmarkedOnly = bookmarkedOnly,
+                    wordExtraMark = wordExtraMark,
+
+                    banksIds = banksIds,
+                    banksGroupsIds = banksGroupsIds,
+
+                    sortDirection = sortDirection,
+                    sortBy = sortBy
+                )
+
+                val response: MockHttpServletResponse = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
+
+                return getResponseBody<PaginatedDataResponse<WordAsGetManyWordResponse>>(response)
+            }
+
+
             @Test
             fun `200 - Words can be fetched`() {
-                // TODO
+                makeManyWordsRequest()
             }
 
             @Test
             fun `200 - All words should belong to the user who requested them`() {
-                // TODO
+                // Generate a few random words for different user
+                val anotherUser = userSeeder.seedOneEntity()
+
+                wordSeeder.seedMultipleEntitiesForUser(
+                    user = anotherUser,
+                    amount = 10,
+                    language = learningLanguage
+                )
+
+                val expectedAmountOfAllWords = wordRepository.findAllForUser(authenticatedUser.userInfo.id).size
+                val actualAmountOfWords = makeManyWordsRequest(perPage = 500).data.size
+
+                actualAmountOfWords shouldBe expectedAmountOfAllWords
             }
 
             @Test
             fun `200 - Words can be fetched with pagination`() {
-                // TODO
+                val pageOne = makeManyWordsRequest(page = 0, perPage = 10);
+                val pageSix = makeManyWordsRequest(page = 5, perPage = 10);
+
+                pageOne.pagination.totalPages shouldBe 10
+
+                pageOne.data.size shouldBe 10
+                pageOne.pagination.page shouldBe 0
+
+                pageSix.data.size shouldBe 10
+                pageSix.pagination.page shouldBe 5
+
+                pageOne.data.forEach { wordFromPageOne ->
+                    pageSix.data.find { it.id == wordFromPageOne.id } shouldBe null
+                }
             }
 
             @Test
             fun `200 - Words can be fetched with sorting`() {
-                // TODO
+                val withDefaultSorting = makeManyWordsRequest();
+                val ascSorted = makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN);
+                val descSorted =
+                    makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN, sortDirection = SortDirection.DESC);
+
+                repeat(withDefaultSorting.data.size) { index ->
+                    withDefaultSorting.data[index].origin shouldNotBe ascSorted.data[index].origin
+                    withDefaultSorting.data[index].origin shouldNotBe descSorted.data[index].origin
+                }
             }
 
             @Test
             fun `200 - Words can be fetched with filtering - by word type`() {
-                // TODO
+                val body = makeManyWordsRequest(
+                    wordType = WordType.IDIOM,
+                    perPage = 500
+                );
+
+                body.data.forEach {
+                    it.type shouldBe WordType.IDIOM
+                }
             }
 
             @Test
             fun `200 - Words can be fetched with filtering - by searching phrase`() {
-                // TODO
+                val user = userMapper.toEntity(authenticatedUser.userInfo)
+                val expectedWordMark: String = "EXPECTED_WORD_MARK"
+
+                wordRepository.save(
+                    wordMockFactory.mockEntity(
+                        user = user,
+                        origin = "kacper1",
+                        translation = expectedWordMark,
+                        translatedFrom = learningLanguage
+                    )
+                )
+
+                wordRepository.save(
+                    wordMockFactory.mockEntity(
+                        user = user,
+                        origin = "KACPER2",
+                        translation = expectedWordMark,
+                        translatedFrom = learningLanguage
+                    )
+                )
+
+                wordRepository.save(
+                    wordMockFactory.mockEntity(
+                        user = user,
+                        origin = "per3",
+                        translation = expectedWordMark,
+                        translatedFrom = learningLanguage
+                    )
+                )
+
+                wordRepository.save(
+                    wordMockFactory.mockEntity(
+                        user = user,
+                        origin = expectedWordMark + "1",
+                        translation = "kacper",
+                        translatedFrom = learningLanguage
+                    )
+                )
+
+                wordRepository.save(
+                    wordMockFactory.mockEntity(
+                        user = user,
+                        origin = expectedWordMark + "2",
+                        translation = "KACPER",
+                        translatedFrom = learningLanguage
+                    )
+                )
+
+                wordRepository.save(
+                    wordMockFactory.mockEntity(
+                        user = user,
+                        origin = expectedWordMark + "3",
+                        translation = "PER",
+                        translatedFrom = learningLanguage
+                    )
+                )
+
+                val body = makeManyWordsRequest(
+                    searchingPhrase = "kacper",
+                    perPage = 500
+                );
+
+                body.data.forEach { t ->
+                    assert(t.origin.contains(expectedWordMark) || t.translation.contains(expectedWordMark))
+                }
             }
 
             @Test
             fun `200 - Words can be fetched with filtering - by extra mark`() {
-                // TODO
+                val body = makeManyWordsRequest(
+                    wordExtraMark = WordExtraMark.OFFENSIVE,
+                    perPage = 500
+                );
+
+                body.data.forEach {
+                    it.extraMark shouldBe WordExtraMark.OFFENSIVE
+                }
             }
 
             @Test
             fun `200 - Words can be fetched with filtering - by bookmarked`() {
-                // TODO
+                val body = makeManyWordsRequest(
+                    bookmarkedOnly = true,
+                    perPage = 500
+                );
+
+                body.data.forEach {
+                    it.isBookmarked shouldBe true
+                }
             }
 
             @Test
             fun `200 - Words can be fetched with filtering - by bank`() {
-                // TODO
+                val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                wordSeeder.seedMultipleEntitiesForUser(
+                    amount = 10,
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    bank = Optional(bank),
+                    language = learningLanguage
+                )
+
+                val body = makeManyWordsRequest(
+                    banksIds = setOf(bank.id),
+                    perPage = 500
+                );
+
+                body.data.forEach {
+                    it.bank?.id shouldBe bank.id
+                }
             }
 
             @Test

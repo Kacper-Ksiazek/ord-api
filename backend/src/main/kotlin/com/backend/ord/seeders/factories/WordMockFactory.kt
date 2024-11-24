@@ -11,13 +11,15 @@ import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.utils.EnumUtils.getRandomValue
 import com.backend.ord.utils.EnumUtils.getRandomValueOrNull
 import org.springframework.stereotype.Component
+import java.util.UUID
+import kotlin.uuid.Uuid
 
 @Component
 class WordMockFactory(
     private val userSeeder: UserSeeder,
 ) : AbstractFactory() {
     fun mockEntity(
-        origin: String = faker.name().title(),
+        origin: String = UUID.randomUUID().toString(),
         translation: String = faker.name().title(),
         definition: String = faker.name().title(),
         useCases: Set<String> = mutableSetOf<String>().apply {

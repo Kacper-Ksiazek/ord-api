@@ -5,6 +5,7 @@ import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.domain.mappers.UserMapper
+import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.utils.Optional
@@ -30,9 +31,11 @@ class WordSeeder(
 
     fun seedOneEntityForUser(
         user: User,
-        bank: Optional<Bank?> = Optional(null, false)
+        bank: Optional<Bank?> = Optional(null, false),
+        language: LanguageName = LanguageName.ENGLISH
     ): Word {
-        val mockEntity = wordMockFactory.mockEntity(user = user)
+        val mockEntity: Word = wordMockFactory.mockEntity(user = user)
+        mockEntity.translatedFrom = language
 
         if (bank.isPresent) mockEntity.bank = bank.value
 
@@ -52,13 +55,22 @@ class WordSeeder(
     fun seedMultipleEntitiesForUser(
         user: User,
         amount: Int = 5,
-        bank: Optional<Bank?> = Optional(null, false)
+        bank: Optional<Bank?> = Optional(null, false),
+        language: LanguageName = LanguageName.ENGLISH
     ): List<Word> {
         val words = mutableListOf<Word>()
 
-        for (i in 1..amount) {
-            words.add(seedOneEntityForUser(user, bank))
+        repeat(amount) {
+            words.add(
+                wordMockFactory.mockEntity(
+                    user = user,
+                    bank = if (bank.isPresent) bank.value else null,
+                    translatedFrom = language
+                )
+            )
         }
+
+        wordRepository.saveAll(words)
 
         return words
     }
@@ -66,12 +78,14 @@ class WordSeeder(
     fun seedMultipleEntitiesForUser(
         user: UserDTO,
         amount: Int = 5,
-        bank: Optional<Bank?> = Optional(null, false)
+        bank: Optional<Bank?> = Optional(null, false),
+        language: LanguageName = LanguageName.ENGLISH
     ): List<Word> {
         return seedMultipleEntitiesForUser(
             user = userMapper.toEntity(user),
             amount = amount,
-            bank = bank
+            bank = bank,
+            language = language
         )
     }
 }
