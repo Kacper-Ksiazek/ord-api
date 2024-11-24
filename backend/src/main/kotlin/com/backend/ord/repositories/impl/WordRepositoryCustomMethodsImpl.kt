@@ -172,11 +172,11 @@ class WordRepositoryCustomMethodsImpl(
             language = language,
 
             wordType = wordType,
-            banksIds = banksIds,
             searchingPhrase = searchingPhrase,
             bookmarkedOnly = bookmarkedOnly,
             wordExtraMark = wordExtraMark,
 
+            banksIds = banksIds,
             bankGroupsIds = bankGroupsIds
         )
 
@@ -329,10 +329,11 @@ class WordRepositoryCustomMethodsImpl(
         language: LanguageName,
 
         wordType: WordType?,
-        banksIds: List<UUID>?,
         searchingPhrase: String?,
         wordExtraMark: WordExtraMark?,
         bookmarkedOnly: Boolean?,
+
+        banksIds: List<UUID>?,
         bankGroupsIds: List<UUID>?,
     ) {
         val predicates = mutableListOf<Predicate>()

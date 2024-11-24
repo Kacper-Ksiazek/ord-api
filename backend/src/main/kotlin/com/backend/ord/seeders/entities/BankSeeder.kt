@@ -2,6 +2,7 @@ package com.backend.ord.seeders.entities
 
 import com.backend.ord.domain.dto.UserDTO
 import com.backend.ord.domain.entities.Bank
+import com.backend.ord.domain.entities.BankGroup
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.repositories.BankRepository
@@ -18,12 +19,26 @@ class BankSeeder(
         return bankRepository.save(data ?: bankMockFactory.mockEntity())
     }
 
-    fun seedOneEntityForUser(user: User): Bank {
-        return bankRepository.save(bankMockFactory.mockEntity(user = user))
+    fun seedOneEntityForUser(
+        user: User,
+        bankGroup: BankGroup? = null
+    ): Bank {
+        return bankRepository.save(
+            bankMockFactory.mockEntity(
+                user = user,
+                bankGroup = bankGroup
+            )
+        )
     }
 
-    fun seedOneEntityForUser(user: UserDTO): Bank {
-        return seedOneEntityForUser(userMapper.toEntity(user))
+    fun seedOneEntityForUser(
+        user: UserDTO,
+        bankGroup: BankGroup? = null
+    ): Bank {
+        return seedOneEntityForUser(
+            user = userMapper.toEntity(user),
+            bankGroup = bankGroup
+        )
     }
 
     override fun deleteAll() {

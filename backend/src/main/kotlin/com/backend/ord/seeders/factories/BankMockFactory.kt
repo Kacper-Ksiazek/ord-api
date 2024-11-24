@@ -2,6 +2,7 @@ package com.backend.ord.seeders.factories
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.domain.entities.Bank
+import com.backend.ord.domain.entities.BankGroup
 import com.backend.ord.domain.entities.User
 import com.backend.ord.seeders.entities.UserSeeder
 import org.springframework.stereotype.Component
@@ -14,12 +15,14 @@ class BankMockFactory(
     fun mockEntity(
         name: String = faker.name().fullName(),
         description: String = faker.lorem().sentence(),
-        user: User = userSeeder.seedOneEntity()
+        user: User = userSeeder.seedOneEntity(),
+        bankGroup: BankGroup? = null
     ): Bank {
         return Bank(
             name = name,
             description = description,
-            user = user
+            user = user,
+            bankGroup = bankGroup
         )
     }
 

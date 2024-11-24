@@ -74,6 +74,7 @@ class WordController(
                 bookmarkedOnly = bookmarkedOnly,
                 searchingPhrase = searchingPhrase,
 
+                // TODO: Refactor into sets
                 banksIds = banksIds,
                 bankGroupsIds = bankGroupsIds,
 

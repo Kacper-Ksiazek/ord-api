@@ -53,6 +53,8 @@ import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 
 import java.util.*
@@ -387,19 +389,73 @@ class TestWordsController @Autowired constructor(
         @Nested
         @DisplayName("Negative")
         inner class Negative {
+            private fun makeManyWordsRequestUnsafe(
+                page: Any? = null,
+                perPage: Any? = null,
+
+                language: Any? = learningLanguage,
+                wordType: Any? = null,
+                searchingPhrase: Any? = null,
+                bookmarkedOnly: Any? = null,
+                wordExtraMark: Any? = null,
+
+                banksIds: Any? = null,
+                banksGroupsIds: Any? = null,
+
+                sortDirection: Any? = null,
+                sortBy: Any? = null,
+            ) {
+                val request = wordRequestFactory.getManyWordsRequestUnsafe(
+                    authenticatedUser = authenticatedUser,
+                    language = language,
+
+                    page = page,
+                    perPage = perPage,
+
+                    wordType = wordType,
+                    searchingPhrase = searchingPhrase,
+                    bookmarkedOnly = bookmarkedOnly,
+                    wordExtraMark = wordExtraMark,
+
+                    banksIds = banksIds,
+                    bankGroupsIds = banksGroupsIds,
+
+                    sortDirection = sortDirection,
+                    sortBy = sortBy
+                )
+
+                mockMvc.perform(request).andReturn().let {
+//                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
+            }
+
+
             @Test
             fun `403 - Anonymous user cannot fetch words`() {
-                // TODO
+                val request = wordRequestFactory.getManyWordsRequest(
+                    authenticatedUser = null
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                }
             }
 
             @Test
             fun `400 - Words cannot be fetched without a language specified`() {
-                // TODO
+                makeManyWordsRequestUnsafe(language = null)
             }
 
-            @Test
-            fun `400 - Words cannot be fetched with invalid param - page`() {
-                // TODO
+            @ParameterizedTest
+//            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
+            @ValueSource(strings = ["-1"])
+            fun `400 - Words cannot be fetched with invalid param - page`(parameter: String) {
+                makeManyWordsRequestUnsafe(
+                    page = parameter,
+                    perPage = "-1",
+                )
             }
 
             @Test

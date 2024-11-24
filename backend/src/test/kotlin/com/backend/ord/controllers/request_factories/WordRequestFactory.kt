@@ -76,6 +76,60 @@ class WordRequestFactory(
         }
     }
 
+    fun getManyWordsRequestUnsafe(
+        authenticatedUser: MockedAuthenticatedUser? = null,
+        language: Any? = null,
+
+        page: Any? = null,
+        perPage: Any? = null,
+
+        wordType: Any? = null,
+        searchingPhrase: Any? = null,
+        bookmarkedOnly: Any? = null,
+        wordExtraMark: Any? = null,
+
+        banksIds: Any? = null,
+        bankGroupsIds: Any? = null,
+
+        sortDirection: Any? = null,
+        sortBy: Any? = null,
+    ): MockHttpServletRequestBuilder {
+        // Create a url and add params to it
+        var url = "$BASE_URL?"
+
+        if (language != null) url += "language=$language&"
+
+        // Assign pagination properties
+        if (page != null) url += "page=$page&"
+        if (perPage != null) url += "perPage=$perPage&"
+
+        // Assign optional predicates of non list type
+        if (wordType != null) url += "wordType=$wordType&"
+        if (searchingPhrase != null) url += "searchingPhrase=$searchingPhrase&"
+        if (bookmarkedOnly != null) url += "bookmarkedOnly=$bookmarkedOnly&"
+        if (wordExtraMark != null) url += "wordExtraMark=$wordExtraMark&"
+
+        // Assign optional predicates of list type
+        if (banksIds != null) {
+            url += if (banksIds is List<*>) "banksIds=${banksIds.joinToString(",")}&"
+            else "banksIds=$banksIds&"
+        }
+        if (bankGroupsIds != null) {
+            url += if (bankGroupsIds is List<*>) "bankGroupsIds=${bankGroupsIds.joinToString(",")}&"
+            else "bankGroupsIds=$bankGroupsIds&"
+        }
+
+        // Assign optional sorting
+        if (sortDirection != null) url += "sortDirection=$sortDirection&"
+        if (sortBy != null) url += "sortBy=$sortBy&"
+
+
+        return MockMvcRequestBuilders.get(url).apply {
+            if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+        }
+    }
+
+
     /**
      * POST /words/
      */
