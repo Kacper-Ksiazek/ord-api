@@ -175,6 +175,8 @@ class WordRepositoryCustomMethodsImpl(
             banksIds = banksIds,
             searchingPhrase = searchingPhrase,
             bookmarkedOnly = bookmarkedOnly,
+            wordExtraMark = wordExtraMark,
+
             bankGroupsIds = bankGroupsIds
         )
 
@@ -207,6 +209,8 @@ class WordRepositoryCustomMethodsImpl(
             banksIds = banksIds,
             searchingPhrase = searchingPhrase,
             bookmarkedOnly = bookmarkedOnly,
+            wordExtraMark = wordExtraMark,
+
             bankGroupsIds = bankGroupsIds
         )
 
@@ -327,6 +331,7 @@ class WordRepositoryCustomMethodsImpl(
         wordType: WordType?,
         banksIds: List<UUID>?,
         searchingPhrase: String?,
+        wordExtraMark: WordExtraMark?,
         bookmarkedOnly: Boolean?,
         bankGroupsIds: List<UUID>?,
     ) {
@@ -350,7 +355,12 @@ class WordRepositoryCustomMethodsImpl(
             predicates.add(criteriaBuilder.equal(root.get<WordType>("type"), it))
         }
 
-        // 3.2.3 - searchingPhrase
+        // 3.2.3 - wordExtraMark
+        wordExtraMark?.let {
+            predicates.add(criteriaBuilder.equal(root.get<WordExtraMark>("extraMark"), it))
+        }
+
+        // 3.2.4 - searchingPhrase
         searchingPhrase?.let {
             predicates.add(
                 criteriaBuilder.or(
@@ -368,13 +378,13 @@ class WordRepositoryCustomMethodsImpl(
             )
         }
 
-        // 3.2.4 - banksIds
+        // 3.2.5 - banksIds
         banksIds?.let {
             val bankIdPath = root.get<UUID>("bankId")
             predicates.add(bankIdPath.`in`(it))
         }
 
-        // 3.2.5 - bankGroupsIds
+        // 3.2.6 - bankGroupsIds
         bankGroupsIds?.let {
             val bankGroupIdPath = root.get<UUID>("bankGroupId")
             predicates.add(bankGroupIdPath.`in`(it))
