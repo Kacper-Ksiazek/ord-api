@@ -22,6 +22,7 @@ import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
 import com.backend.ord.exceptions.REST.BadRequestException
+import com.backend.ord.extensions.convertToSetExplicitly
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import jakarta.servlet.http.HttpServletRequest
@@ -74,9 +75,8 @@ class WordController(
                 bookmarkedOnly = bookmarkedOnly,
                 searchingPhrase = searchingPhrase,
 
-                // TODO: Refactor into sets
-                banksIds = banksIds,
-                bankGroupsIds = bankGroupsIds,
+                banksIds = banksIds?.convertToSetExplicitly(paramName = "banksIds"),
+                bankGroupsIds = bankGroupsIds?.convertToSetExplicitly(paramName = "bankGroupsIds"),
 
                 sortDirection = sortDirection,
                 sortBy = sortBy,

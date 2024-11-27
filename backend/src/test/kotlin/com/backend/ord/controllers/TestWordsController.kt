@@ -400,7 +400,7 @@ class TestWordsController @Autowired constructor(
                 wordExtraMark: Any? = null,
 
                 banksIds: Any? = null,
-                banksGroupsIds: Any? = null,
+                bankGroupsIds: Any? = null,
 
                 sortDirection: Any? = null,
                 sortBy: Any? = null,
@@ -418,7 +418,7 @@ class TestWordsController @Autowired constructor(
                     wordExtraMark = wordExtraMark,
 
                     banksIds = banksIds,
-                    bankGroupsIds = banksGroupsIds,
+                    bankGroupsIds = bankGroupsIds,
 
                     sortDirection = sortDirection,
                     sortBy = sortBy
@@ -532,20 +532,39 @@ class TestWordsController @Autowired constructor(
                 )
             }
 
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - banksIds - list uuids with duplicates`() {
+                val generatedUUID = UUID.randomUUID()
+
+                makeManyWordsRequestUnsafe(
+                    banksIds = listOf(generatedUUID, generatedUUID)
+                )
+            }
+
             @ParameterizedTest
             @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
             fun `400 - Words cannot be fetched with invalid param - bankGroupsIds - non list`(parameter: String) {
                 makeManyWordsRequestUnsafe(
-                    banksGroupsIds = parameter
+                    bankGroupsIds = parameter
                 )
             }
 
             @Test
             fun `400 - Words cannot be fetched with invalid param - bankGroupsIds - list of non uuids`() {
                 makeManyWordsRequestUnsafe(
-                    banksGroupsIds = listOf("abc", "def")
+                    bankGroupsIds = listOf("abc", "def")
                 )
             }
+
+            @Test
+            fun `400 - Words cannot be fetched with invalid param - bankGroupsIds - list uuids with duplicates`() {
+                val generatedUUID = UUID.randomUUID()
+
+                makeManyWordsRequestUnsafe(
+                    bankGroupsIds = listOf (generatedUUID, generatedUUID)
+                )
+            }
+
         }
     }
 

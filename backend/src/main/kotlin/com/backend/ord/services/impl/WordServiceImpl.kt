@@ -91,8 +91,8 @@ class WordServiceImpl(
         searchingPhrase: String?,
         bookmarkedOnly: Boolean?,
 
-        banksIds: List<UUID>?,
-        bankGroupsIds: List<UUID>?,
+        banksIds: Set<UUID>?,
+        bankGroupsIds: Set<UUID>?,
 
         wordType: WordType?,
         language: LanguageName,
