@@ -425,8 +425,7 @@ class TestWordsController @Autowired constructor(
                 )
 
                 mockMvc.perform(request).andReturn().let {
-//                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                     it.response
                 }
             }
@@ -449,58 +448,103 @@ class TestWordsController @Autowired constructor(
             }
 
             @ParameterizedTest
-//            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
-            @ValueSource(strings = ["-1"])
+            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
             fun `400 - Words cannot be fetched with invalid param - page`(parameter: String) {
                 makeManyWordsRequestUnsafe(
-                    page = "iu432u4324u",
-//                    perPage = "-1",
+                    page = parameter
+                )
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
+            fun `400 - Words cannot be fetched with invalid param - perPage`(parameter: String) {
+                makeManyWordsRequestUnsafe(
+                    perPage = parameter
+                )
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
+            fun `400 - Words cannot be fetched with invalid param - sortBy`(parameter: String) {
+                makeManyWordsRequestUnsafe(
+                    sortBy = parameter
+                )
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = ["desc", "asc", "1.5", "abc"])
+            fun `400 - Words cannot be fetched with invalid param - sortDirection`(parameter: String) {
+                makeManyWordsRequestUnsafe(
+                    sortDirection = parameter
+                )
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
+            fun `400 - Words cannot be fetched with invalid param - wordType`() {
+                makeManyWordsRequestUnsafe(
+                    wordType = "abc"
                 )
             }
 
             @Test
-            fun `400 - Words cannot be fetched with invalid param - perPage`() {
-                // TODO
+            fun `400 - Words cannot be fetched with invalid param - searchPhrase too long`() {
+                makeManyWordsRequestUnsafe(
+                    searchingPhrase = "x".repeat(65)
+                )
             }
 
             @Test
-            fun `400 - Words cannot be fetched with invalid param - sortBy`() {
-                // TODO
+            fun `400 - Words cannot be fetched with invalid param - searchPhrase too short`() {
+                makeManyWordsRequestUnsafe(
+                    searchingPhrase = "x".repeat(1)
+                )
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
+            fun `400 - Words cannot be fetched with invalid param - extraMark`(parameter: String) {
+                makeManyWordsRequestUnsafe(
+                    wordExtraMark = parameter
+                )
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
+            fun `400 - Words cannot be fetched with invalid param - bookmarkedOnly`(parameter: String) {
+                makeManyWordsRequestUnsafe(
+                    bookmarkedOnly = parameter
+                )
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
+            fun `400 - Words cannot be fetched with invalid param - banksIds - non list `(parameter: String) {
+                makeManyWordsRequestUnsafe(
+                    banksIds = parameter
+                )
             }
 
             @Test
-            fun `400 - Words cannot be fetched with invalid param - sortDirection`() {
-                // TODO
+            fun `400 - Words cannot be fetched with invalid param - banksIds - list of non uuids`() {
+                makeManyWordsRequestUnsafe(
+                    banksIds = listOf("abc", "def")
+                )
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
+            fun `400 - Words cannot be fetched with invalid param - bankGroupsIds - non list`(parameter: String) {
+                makeManyWordsRequestUnsafe(
+                    banksGroupsIds = parameter
+                )
             }
 
             @Test
-            fun `400 - Words cannot be fetched with invalid param - wordType`() {
-                // TODO
-            }
-
-            @Test
-            fun `400 - Words cannot be fetched with invalid param - searchPhrase`() {
-                // TODO
-            }
-
-            @Test
-            fun `400 - Words cannot be fetched with invalid param - extraMark`() {
-                // TODO
-            }
-
-            @Test
-            fun `400 - Words cannot be fetched with invalid param - bookmarkedOnly`() {
-                // TODO
-            }
-
-            @Test
-            fun `400 - Words cannot be fetched with invalid param - banksIds`() {
-                // TODO
-            }
-
-            @Test
-            fun `400 - Words cannot be fetched with invalid param - bankGroupsIds`() {
-                // TODO
+            fun `400 - Words cannot be fetched with invalid param - bankGroupsIds - list of non uuids`() {
+                makeManyWordsRequestUnsafe(
+                    banksGroupsIds = listOf("abc", "def")
+                )
             }
         }
     }

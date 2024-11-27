@@ -54,7 +54,7 @@ class WordController(
         @RequestParam(required = false) @Min(10) @Max(500) perPage: Int = 10,
 
         @RequestParam(required = false) wordType: WordType?,
-        @RequestParam(required = false) searchingPhrase: String?,
+        @RequestParam(required = false) @Min(1) @Max(64) searchingPhrase: String?, // TODO: Split it into 1. containPhrase and 2. startWithPhrase
         @RequestParam(required = false) wordExtraMark: WordExtraMark?,
         @RequestParam(required = false) bookmarkedOnly: Boolean? = false,
 
