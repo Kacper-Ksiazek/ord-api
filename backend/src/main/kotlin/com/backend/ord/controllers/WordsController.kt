@@ -1,12 +1,7 @@
 package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
-import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.data.ChangeBankForMultipleWordsRequestData
-import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
-import com.backend.ord.api.requests.word.data.CreateWordRequestData
-import com.backend.ord.api.requests.word.data.UpdateWordRequestData
-import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
@@ -18,17 +13,12 @@ import com.backend.ord.domain.entities.Word
 import com.backend.ord.domain.mappers.BankMapper
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.domain.mappers.WordMapper
-import com.backend.ord.enums.Language.LanguageName
-import com.backend.ord.enums.Word.WordExtraMark
-import com.backend.ord.enums.Word.WordType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.extensions.convertToSetExplicitly
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -45,46 +35,31 @@ class WordController(
     private val wordService: WordService,
     private val bankMapper: BankMapper
 ) {
-    @GetMapping("/")
+    @PostMapping("/get-many-words")
     fun getAllWords(
         request: HttpServletRequest,
-
-        @RequestParam(required = true) language: LanguageName,
-
-        @RequestParam(required = false) @Min(0) page: Int = 0,
-        @RequestParam(required = false) @Min(10) @Max(500) perPage: Int = 10,
-
-        @RequestParam(required = false) wordType: WordType?,
-        @RequestParam(required = false) @Min(1) @Max(64) searchingPhrase: String?, // TODO: Split it into 1. containPhrase and 2. startWithPhrase
-        @RequestParam(required = false) wordExtraMark: WordExtraMark?,
-        @RequestParam(required = false) bookmarkedOnly: Boolean? = false,
-
-        @RequestParam(required = false) banksIds: List<UUID>?,
-        @RequestParam(required = false) bankGroupsIds: List<UUID>?,
-
-        @RequestParam(required = false) sortDirection: SortDirection? = SortDirection.DESC,
-        @RequestParam(required = false) sortBy: GetAllWordsSortOptions? = GetAllWordsSortOptions.CREATED_AT
+        @RequestBody @Valid requestBody: GetManyWordsRequestData,
     ): ResponseEntity<PaginatedDataResponse<WordAsGetManyWordResponse>> {
         val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         return ResponseEntity.status(HttpStatus.OK).body(
             wordService.findManyWords(
-                language = language,
-                wordType = wordType,
-                wordExtraMark = wordExtraMark,
-                bookmarkedOnly = bookmarkedOnly,
-                searchingPhrase = searchingPhrase,
+                language = requestBody.language,
+                wordType = requestBody.wordType,
+                wordExtraMark = requestBody.wordExtraMark,
+                bookmarkedOnly = requestBody.bookmarkedOnly,
+                searchingPhrase = requestBody.searchingPhrase,
 
-                banksIds = banksIds?.convertToSetExplicitly(paramName = "banksIds"),
-                bankGroupsIds = bankGroupsIds?.convertToSetExplicitly(paramName = "bankGroupsIds"),
+                banksIds = requestBody.banksIds?.convertToSetExplicitly(paramName = "banksIds"),
+                bankGroupsIds = requestBody.bankGroupsIds?.convertToSetExplicitly(paramName = "bankGroupsIds"),
 
-                sortDirection = sortDirection,
-                sortBy = sortBy,
+                sortDirection = requestBody.sortDirection,
+                sortBy = requestBody.sortBy,
 
                 user = user,
 
-                page = page,
-                perPage = perPage
+                page = requestBody.page ?: 0,
+                perPage = requestBody.perPage ?: 10
             )
         )
     }
