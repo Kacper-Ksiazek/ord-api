@@ -561,7 +561,7 @@ class TestWordsController @Autowired constructor(
                 val generatedUUID = UUID.randomUUID()
 
                 makeManyWordsRequestUnsafe(
-                    bankGroupsIds = listOf (generatedUUID, generatedUUID)
+                    bankGroupsIds = listOf(generatedUUID, generatedUUID)
                 )
             }
 
@@ -613,8 +613,6 @@ class TestWordsController @Autowired constructor(
         inner class Positive {
             @Test
             fun `201 - Word can be created without bank being specified`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser
                 )
@@ -632,8 +630,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `201 - Word can be created and assigned to an existing bank`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.createWordRequest(
@@ -654,8 +650,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `201 - Word and a bank can be created at the same time`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser,
                     bankToCreate = bankMockFactory.mockCreateRequestData()
@@ -675,8 +669,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `201 - Word can be create with no extra mark specified`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser,
                     extraMark = null
@@ -698,7 +690,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `201 - Word can be created with no translated to language specified defaulting to the user's native language`() {
-                val authenticatedUser = mockAuthenticatedUser()
 
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser,
@@ -721,7 +712,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `201 - Word can be created even with bank name identical to another bank name but for different user`() {
-                val authenticatedUser = mockAuthenticatedUser()
                 val anotherUser = userSeeder.seedOneEntity()
 
                 val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
@@ -760,8 +750,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be created without example sentences`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser,
                     exampleSentences = emptySet()
@@ -774,8 +762,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be created with more than 5 example sentences`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser,
                     exampleSentences = mutableSetOf<ExampleSentence>().apply {
@@ -797,8 +783,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be created with an example sentence that has more than 255 characters`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser,
                     exampleSentences = mutableSetOf(
@@ -816,8 +800,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be created with bankId and bankToCreate at the same time`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.createWordRequest(
@@ -833,8 +815,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be created with bankToCreate name matching already existing bank name`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.createWordRequest(
@@ -851,7 +831,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word cannot be created with bankId referring to a bank of another user`() {
-                val authenticatedUser = mockAuthenticatedUser()
                 val anotherUser = userSeeder.seedOneEntity()
 
                 val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
@@ -868,8 +847,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be created with no use cases`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser,
                     useCases = emptySet()
@@ -882,8 +859,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word cannot be created with an example sentence that has empty translation`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser,
                     exampleSentences = mutableSetOf(
@@ -901,8 +876,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be created with use case of length greater than 255 characters`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser,
                     useCases = mutableSetOf(
@@ -917,8 +890,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be created with more than 5 use cases`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.createWordRequest(
                     authenticatedUser = authenticatedUser,
                     useCases = mutableSetOf<String>().apply {
@@ -945,8 +916,6 @@ class TestWordsController @Autowired constructor(
         inner class Positive {
             @Test
             fun `200 - Word can be updated`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.updateWordRequest(
@@ -968,7 +937,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Word can be updated with bankToCreate name identical to another bank name but for different user`() {
-                val authenticatedUser = mockAuthenticatedUser()
                 val anotherUser = userSeeder.seedOneEntity()
 
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
@@ -997,8 +965,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Word can be updated with only one field being specified`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.updateWordRequestWithNulls(
@@ -1042,8 +1008,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be updated with more than 5 example sentences`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.updateWordRequest(
@@ -1068,8 +1032,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be updated with an example sentence that has more than 255 characters`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.updateWordRequest(
@@ -1090,8 +1052,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be updated with an example sentence that has empty translation`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.updateWordRequest(
@@ -1112,8 +1072,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be updated with use case of length greater than 255 characters`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.updateWordRequest(
@@ -1131,8 +1089,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be updated with more than 5 use cases`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.updateWordRequest(
@@ -1152,8 +1108,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be updated with bankId and bankToCreate at the same time`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
@@ -1172,8 +1126,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be updated with bankToCreate name matching already existing bank name`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
@@ -1193,7 +1145,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word cannot be updated with bankId referring to a bank of another user`() {
-                val authenticatedUser = mockAuthenticatedUser()
                 val anotherUser = userSeeder.seedOneEntity()
 
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
@@ -1214,8 +1165,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word cannot be updated with bankId referring to a bank that does not exist`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.updateWordRequest(
@@ -1231,8 +1180,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word cannot be updated with bankToCreate name that is empty`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.updateWordRequest(
@@ -1250,7 +1197,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word cannot be updated by other user than the one who created it`() {
-                val authenticatedUser = mockAuthenticatedUser()
                 val anotherUser = userSeeder.seedOneEntity()
 
                 val word = wordSeeder.seedOneEntityForUser(anotherUser)
@@ -1275,7 +1221,6 @@ class TestWordsController @Autowired constructor(
         inner class Positive {
             @Test
             fun `200 - Word can be deleted`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 wordService.findById(id = word.id, userId = authenticatedUser.userInfo.id) shouldNotBe null
@@ -1298,10 +1243,9 @@ class TestWordsController @Autowired constructor(
         inner class Negative {
             @Test
             fun `403 - Word cannot be deleted by an anonymous user`() {
-                val user: MockedAuthenticatedUser = mockAuthenticatedUser()
-                val word = wordSeeder.seedOneEntityForUser(user.userInfo)
+                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
-                wordService.findById(id = word.id, userId = user.userInfo.id) shouldNotBe null
+                wordService.findById(id = word.id, userId = authenticatedUser.userInfo.id) shouldNotBe null
 
                 val request = wordRequestFactory.deleteWordRequestWithNulls(
                     wordId = word.id
@@ -1312,12 +1256,11 @@ class TestWordsController @Autowired constructor(
                 }
 
 
-                wordService.findById(id = word.id, userId = user.userInfo.id) shouldNotBe null
+                wordService.findById(id = word.id, userId =authenticatedUser.userInfo.id) shouldNotBe null
             }
 
             @Test
             fun `404 - Word can be deleted only by its owner`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val anotherUser: User = userSeeder.seedOneEntity()
 
                 val word = wordSeeder.seedOneEntityForUser(anotherUser)
@@ -1338,8 +1281,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Cannot remove non existing word`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.deleteWordRequestWithNulls(
                     wordId = UUID.randomUUID(),
                     authenticatedUser = authenticatedUser
@@ -1360,8 +1301,6 @@ class TestWordsController @Autowired constructor(
         inner class Positive {
             @Test
             fun `200 - Word's bank can be changed`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val firstBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val secondBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
@@ -1393,7 +1332,6 @@ class TestWordsController @Autowired constructor(
             fun `200 - Word's bank can be changed to newly created bank`() {
                 val newBankName = "NEW_EXTRA_BANK_NAME"
 
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val initialBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val word: Word = wordSeeder.seedOneEntityForUser(
                     user = authenticatedUser.userInfo,
@@ -1427,8 +1365,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Word's bank can be change from null to already existing bank`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val word: Word = wordSeeder.seedOneEntityForUser(
                     user = authenticatedUser.userInfo,
                     bank = Optional(null, true)
@@ -1465,7 +1401,6 @@ class TestWordsController @Autowired constructor(
             fun `200 - Word's bank can be change from null to newly created bank`() {
                 val newBankName = "NEW_EXTRA_BANK_NAME"
 
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val word: Word = wordSeeder.seedOneEntityForUser(
                     user = authenticatedUser.userInfo,
                     bank = Optional(null, true)
@@ -1495,7 +1430,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Word's bank can be unassigned`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val initialBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val word: Word = wordSeeder.seedOneEntityForUser(
                     user = authenticatedUser.userInfo,
@@ -1548,7 +1482,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word's bank cannot be changed by other user than the one who created it`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val anotherUser: User = userSeeder.seedOneEntity()
 
                 val word: Word = wordSeeder.seedOneEntityForUser(anotherUser)
@@ -1565,8 +1498,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word's bank cannot be changed if word does not exist`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val request = wordRequestFactory.changeBankForSingleWord(
                     authenticatedUser = authenticatedUser,
                     wordId = UUID.randomUUID()
@@ -1579,8 +1510,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word's bank cannot be changed if bank does not exist`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.changeBankForSingleWord(
@@ -1596,7 +1525,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word's bank cannot be changed if bank does not belong to the user`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val anotherUser: User = userSeeder.seedOneEntity()
 
                 val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
@@ -1615,8 +1543,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word's bank cannot be changed if both bankId and bankToCreate are specified`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
                 val bank: Bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
@@ -1634,8 +1560,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word's bank cannot be changed if bankToCreate name is empty`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.changeBankForSingleWord(
@@ -1653,8 +1577,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word's bank cannot be changed if bankToCreate name is identical to already existing bank name`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
                 val bank: Bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
@@ -1673,8 +1595,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word's bank cannot be changed if bankToCreate description is longer than 255 characters`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.changeBankForSingleWord(
@@ -1692,8 +1612,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Word's bank cannot be changed if bankToCreate description is empty`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.changeBankForSingleWord(
@@ -1719,7 +1637,6 @@ class TestWordsController @Autowired constructor(
         inner class Positive {
             @Test
             fun `200 - Words' bank can be changed from null to an existing bank`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
@@ -1754,7 +1671,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Words' bank can be changed from null to a newly created bank`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val bankName = "NEW_EXTRA_BANK_NAME"
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
@@ -1792,7 +1708,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Words' bank can be changed from an existing bank to another existing bank`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val firstBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val secondBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
@@ -1829,7 +1744,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Words' bank can be changed from an existing bank to a newly created bank`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val newBankName = "NEW_EXTRA_BANK_NAME"
 
                 val firstBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
@@ -1898,7 +1812,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Words' bank cannot be changed by other user than the one who created them`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val anotherUser: User = userSeeder.seedOneEntity()
 
                 val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
@@ -1926,8 +1839,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Words' bank cannot be changed if one of the words does not exist`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val bankToChange = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
@@ -1953,8 +1864,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Words' bank cannot be changed if bank does not exist`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,
@@ -1978,7 +1887,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Words' bank cannot be changed if bank does not belong to the user`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val anotherUser: User = userSeeder.seedOneEntity()
 
                 val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
@@ -2006,7 +1914,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Words' bank cannot be changed if both bankId and bankToCreate are specified`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
@@ -2032,7 +1939,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Words' bank cannot be changed if neither bankId nor bankToCreate are specified`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
@@ -2058,7 +1964,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Words' bank cannot be changed if bankToCreate name is empty`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
@@ -2085,7 +1990,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Words' bank cannot be changed if bankToCreate name is identical to already existing bank name`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
@@ -2112,8 +2016,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Words' bank cannot be changed if bankToCreate description is longer than 255 characters`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,
                     bank = Optional(null, true)
@@ -2138,7 +2040,6 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Words' bank cannot be changed if bankToCreate description is empty`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
