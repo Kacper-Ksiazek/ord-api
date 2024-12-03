@@ -27,8 +27,17 @@ class WordRequestFactory(
     private val BASE_URL: String,
     private val objectMapper: ObjectMapper,
 ) {
-    fun getSingleWordRequest() {
-        // TODO
+    fun getSingleWordRequest(
+        authenticatedUser: MockedAuthenticatedUser? = null,
+        wordId: UUID? = null
+    ): MockHttpServletRequestBuilder {
+        val url = "$BASE_URL/$wordId"
+
+        return MockMvcRequestBuilders
+            .get(url)
+            .apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+            }
     }
 
     fun getManyWordsRequest(

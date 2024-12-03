@@ -97,6 +97,9 @@ class WordRepositoryCustomMethodsImpl(
             throw NotFoundException("Word with id $wordId not found for user with id ${user.id}")
         }
 
+        val bankId = result.get(13, UUID::class.java)
+        val bankGroupId = result.get(16, UUID::class.java)
+
         return SingleWordResponse(
             id = result.get(0, UUID::class.java),
 
@@ -114,17 +117,20 @@ class WordRepositoryCustomMethodsImpl(
             useCases = result.get(10, Set::class.java) as Set<String>,
             exampleSentences = result.get(11, Set::class.java) as Set<ExampleSentence>,
 
-            bank = BankCompact(
-                id = result.get(12, UUID::class.java),
-                name = result.get(13, String::class.java) ?: "",
-                description = result.get(14, String::class.java) ?: "",
-
-                bankGroup = BankGroupCompact(
-                    id = result.get(15, UUID::class.java),
-                    name = result.get(16, String::class.java) ?: "",
-                    color = result.get(17, String::class.java) ?: ""
+            bank = if (bankId != null) {
+                BankCompact(
+                    id = bankId,
+                    name = result.get(14, String::class.java) ?: "",
+                    description = result.get(15, String::class.java) ?: "",
+                    bankGroup = if (bankGroupId != null) {
+                        BankGroupCompact(
+                            id = bankGroupId,
+                            name = result.get(17, String::class.java) ?: "",
+                            color = result.get(18, String::class.java) ?: ""
+                        )
+                    } else null
                 )
-            ),
+            } else null,
 
             createdAt = result.get(18, Instant::class.java),
             updatedAt = result.get(19, Instant::class.java)

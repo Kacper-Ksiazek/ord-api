@@ -25,7 +25,7 @@ data class SingleWordResponse(
     var useCases: Set<String>,
     var exampleSentences: Set<ExampleSentence>,
 
-    var bank: BankCompact,
+    var bank: BankCompact?,
 
     val createdAt: Instant,
     var updatedAt: Instant,

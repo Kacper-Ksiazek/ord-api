@@ -50,6 +50,7 @@ import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
@@ -575,7 +576,21 @@ class TestWordsController @Autowired constructor(
         inner class Positive {
             @Test
             fun `200 - Word can be fetched by its owner`() {
-                // TODO
+                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val request = wordRequestFactory.getSingleWordRequest(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id
+                )
+
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
+
+                val fetchedWord = getResponseBody<SingleWordResponse>(response)
+
+                fetchedWord.id shouldBe word.id
             }
         }
 
@@ -1255,7 +1270,7 @@ class TestWordsController @Autowired constructor(
                 }
 
 
-                wordService.findById(id = word.id, userId =authenticatedUser.userInfo.id) shouldNotBe null
+                wordService.findById(id = word.id, userId = authenticatedUser.userInfo.id) shouldNotBe null
             }
 
             @Test
