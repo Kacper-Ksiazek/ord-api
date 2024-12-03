@@ -45,6 +45,8 @@ class WordServiceImpl(
         bankId: UUID?,
         userId: UUID
     ): Int {
+        val words = repository.findAll()
+
         return repository.changeBankForMultipleWords(
             bankId = bankId,
             wordIds = wordIds,

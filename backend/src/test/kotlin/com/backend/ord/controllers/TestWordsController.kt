@@ -83,10 +83,9 @@ class TestWordsController @Autowired constructor(
 
     @Autowired
     private lateinit var wordMockFactory: WordMockFactory
-    private val BASE_URL = "/api/v1/words/"
 
     private val wordRequestFactory = WordRequestFactory(
-        BASE_URL = BASE_URL,
+        BASE_URL = "/api/v1/words/",
         objectMapper = objectMapper
     )
 
@@ -433,7 +432,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `403 - Anonymous user cannot fetch words`() {
-                val request = wordRequestFactory.getManyWordsRequest(
+                val request = wordRequestFactory.getManyWordsRequestUnsafe(
                     authenticatedUser = null
                 )
 
@@ -497,7 +496,7 @@ class TestWordsController @Autowired constructor(
             @Test
             fun `400 - Words cannot be fetched with invalid param - searchPhrase too short`() {
                 makeManyWordsRequestUnsafe(
-                    searchingPhrase = "x".repeat(1)
+                    searchingPhrase = "x".repeat(0)
                 )
             }
 

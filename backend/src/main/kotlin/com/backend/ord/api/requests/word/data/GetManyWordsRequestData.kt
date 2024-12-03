@@ -6,18 +6,21 @@ import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
-import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
-import java.util.UUID
+import java.util.*
 
 data class GetManyWordsRequestData(
-    @field:NotBlank(message = "Language is required")
+    @field:NotNull(message = "Language is required")
     override val language: LanguageName,
 
-    @field:Size(min = 0, message = "Page must be greater than or equal to 0")
+    @field:Min(value = 0, message = "Page must be greater than or equal to 0")
     override val page: Int?,
 
-    @field:Size(min = 10, max = 500, message = "Per page must be between 10 and 500")
+    @field:Min(value = 1, message = "Per page must be greater than 0")
+    @field:Max(value = 500, message = "Per page must be less than or equal to 500")
     override val perPage: Int?,
 
     @field:Size(min = 1, max = 64, message = "Searching phrase must be between 1 and 64 characters")

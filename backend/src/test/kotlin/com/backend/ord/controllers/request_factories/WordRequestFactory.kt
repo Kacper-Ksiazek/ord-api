@@ -6,6 +6,7 @@ import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
 import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.api.requests.enums.SortDirection
+import com.backend.ord.api.requests.word.data.GetManyWordsRequestData
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.controllers.request_factories.data.CreateWordData
 import com.backend.ord.controllers.request_factories.data.UpdateWordData
@@ -15,6 +16,7 @@ import com.backend.ord.domain.entities.Word
 import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.Word.WordExtraMark
 import com.backend.ord.enums.Word.WordType
+import com.backend.ord.unsage_api_requests.UnsafeGetManyWordsRequestData
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
@@ -31,7 +33,7 @@ class WordRequestFactory(
 
     fun getManyWordsRequest(
         authenticatedUser: MockedAuthenticatedUser? = null,
-        language: LanguageName? = null,
+        language: LanguageName,
 
         page: Int? = null,
         perPage: Int? = null,
@@ -47,33 +49,36 @@ class WordRequestFactory(
         sortDirection: SortDirection? = null,
         sortBy: GetAllWordsSortOptions? = null,
     ): MockHttpServletRequestBuilder {
-        // Create a url and add params to it
-        var url = "$BASE_URL?"
+        var url = "$BASE_URL/get-many-words"
 
-        if (language != null) url += "language=$language&"
+        return MockMvcRequestBuilders
+            .post(url)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+            }
+            .content(
+                objectMapper.writeValueAsString(
+                    GetManyWordsRequestData(
+                        language = language,
 
-        // Assign pagination properties
-        if (page != null) url += "page=$page&"
-        if (perPage != null) url += "perPage=$perPage&"
+                        page = page,
+                        perPage = perPage,
 
-        // Assign optional predicates of non list type
-        if (wordType != null) url += "wordType=$wordType&"
-        if (searchingPhrase != null) url += "searchingPhrase=$searchingPhrase&"
-        if (bookmarkedOnly != null) url += "bookmarkedOnly=$bookmarkedOnly&"
-        if (wordExtraMark != null) url += "wordExtraMark=$wordExtraMark&"
+                        wordType = wordType,
+                        wordExtraMark = wordExtraMark,
+                        bookmarkedOnly = bookmarkedOnly,
+                        searchingPhrase = searchingPhrase,
 
-        // Assign optional predicates of list type
-        if (banksIds != null) url += "banksIds=${banksIds.joinToString(",")}&"
-        if (bankGroupsIds != null) url += "bankGroupsIds=${bankGroupsIds.joinToString(",")}&"
+                        banksIds = banksIds?.toList(),
+                        bankGroupsIds = bankGroupsIds?.toList(),
 
-        // Assign optional sorting
-        if (sortDirection != null) url += "sortDirection=$sortDirection&"
-        if (sortBy != null) url += "sortBy=$sortBy&"
-
-
-        return MockMvcRequestBuilders.get(url).apply {
-            if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
-        }
+                        sortBy = sortBy,
+                        sortDirection = sortDirection
+                    )
+                )
+            )
     }
 
     fun getManyWordsRequestUnsafe(
@@ -94,39 +99,36 @@ class WordRequestFactory(
         sortDirection: Any? = null,
         sortBy: Any? = null,
     ): MockHttpServletRequestBuilder {
-        // Create a url and add params to it
-        var url = "$BASE_URL?"
+        var url = "$BASE_URL/get-many-words"
 
-        if (language != null) url += "language=$language&"
+        return MockMvcRequestBuilders
+            .post(url)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+            }
+            .content(
+                objectMapper.writeValueAsString(
+                    UnsafeGetManyWordsRequestData(
+                        language = language,
 
-        // Assign pagination properties
-        if (page != null) url += "page=$page&"
-        if (perPage != null) url += "perPage=$perPage&"
+                        page = page,
+                        perPage = perPage,
 
-        // Assign optional predicates of non list type
-        if (wordType != null) url += "wordType=$wordType&"
-        if (searchingPhrase != null) url += "searchingPhrase=$searchingPhrase&"
-        if (bookmarkedOnly != null) url += "bookmarkedOnly=$bookmarkedOnly&"
-        if (wordExtraMark != null) url += "wordExtraMark=$wordExtraMark&"
+                        wordType = wordType,
+                        wordExtraMark = wordExtraMark,
+                        bookmarkedOnly = bookmarkedOnly,
+                        searchingPhrase = searchingPhrase,
 
-        // Assign optional predicates of list type
-        if (banksIds != null) {
-            url += if (banksIds is List<*>) "banksIds=${banksIds.joinToString(",")}&"
-            else "banksIds=$banksIds&"
-        }
-        if (bankGroupsIds != null) {
-            url += if (bankGroupsIds is List<*>) "bankGroupsIds=${bankGroupsIds.joinToString(",")}&"
-            else "bankGroupsIds=$bankGroupsIds&"
-        }
+                        banksIds = banksIds,
+                        bankGroupsIds = bankGroupsIds,
 
-        // Assign optional sorting
-        if (sortDirection != null) url += "sortDirection=$sortDirection&"
-        if (sortBy != null) url += "sortBy=$sortBy&"
-
-
-        return MockMvcRequestBuilders.get(url).apply {
-            if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
-        }
+                        sortBy = sortBy,
+                        sortDirection = sortDirection
+                    )
+                )
+            )
     }
 
 

@@ -70,9 +70,7 @@ class WordSeeder(
             )
         }
 
-        wordRepository.saveAll(words)
-
-        return words
+        return wordRepository.saveAll(words)
     }
 
     fun seedMultipleEntitiesForUser(
