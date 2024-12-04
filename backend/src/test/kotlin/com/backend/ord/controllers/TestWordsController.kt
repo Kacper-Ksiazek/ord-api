@@ -54,6 +54,7 @@ import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
+import io.kotest.matchers.comparables.shouldBeLessThan
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
@@ -198,15 +199,24 @@ class TestWordsController @Autowired constructor(
             }
 
             @Test
-            fun `200 - Words can be fetched with sorting`() {
-                val withDefaultSorting = makeManyWordsRequest();
-                val ascSorted = makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN);
+            fun `200 - Words can be fetched with sorting - DESC`() {
                 val descSorted =
                     makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN, sortDirection = SortDirection.DESC);
 
-                repeat(withDefaultSorting.data.size) { index ->
-                    withDefaultSorting.data[index].origin shouldNotBe ascSorted.data[index].origin
-                    withDefaultSorting.data[index].origin shouldNotBe descSorted.data[index].origin
+                descSorted.data.map { it.origin }.zipWithNext { previous, current ->
+                    // Check if the previous value is greater than the current one
+                    current.compareTo(previous) shouldBeLessThan 0
+                }
+            }
+
+            @Test
+            fun `200 - Words can be fetched with sorting - ASC`() {
+                val descSorted =
+                    makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN, sortDirection = SortDirection.ASC);
+
+                descSorted.data.map { it.origin }.zipWithNext { previous, current ->
+                    // Check if the previous value is greater than the current one
+                    previous.compareTo(current) shouldBeLessThan 0
                 }
             }
 
