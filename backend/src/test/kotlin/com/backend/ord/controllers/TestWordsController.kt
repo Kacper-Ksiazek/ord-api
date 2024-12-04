@@ -57,6 +57,7 @@ import com.backend.ord.seeders.factories.WordMockFactory
 import io.kotest.matchers.comparables.shouldBeLessThan
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
 
 import java.util.*
@@ -91,7 +92,7 @@ class TestWordsController @Autowired constructor(
         objectMapper = objectMapper
     )
 
-    lateinit var authenticatedUser: MockedAuthenticatedUser;
+    lateinit var authenticatedUser: MockedAuthenticatedUser
 
     @BeforeEach
     fun beforeEach() {
@@ -101,7 +102,7 @@ class TestWordsController @Autowired constructor(
     @Nested
     @DisplayName("[GET] /api/v1/words/ - get many words")
     inner class GetManyWords {
-        val learningLanguage: LanguageName = LanguageName.NORWEGIAN;
+        val learningLanguage: LanguageName = LanguageName.NORWEGIAN
 
         @BeforeEach
         fun seedDatabaseWithWords() {
@@ -182,8 +183,8 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Words can be fetched with pagination`() {
-                val pageOne = makeManyWordsRequest(page = 0, perPage = 10);
-                val pageSix = makeManyWordsRequest(page = 5, perPage = 10);
+                val pageOne = makeManyWordsRequest(page = 0, perPage = 10)
+                val pageSix = makeManyWordsRequest(page = 5, perPage = 10)
 
                 pageOne.pagination.totalPages shouldBe 10
 
@@ -201,7 +202,7 @@ class TestWordsController @Autowired constructor(
             @Test
             fun `200 - Words can be fetched with sorting - DESC`() {
                 val descSorted =
-                    makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN, sortDirection = SortDirection.DESC);
+                    makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN, sortDirection = SortDirection.DESC)
 
                 descSorted.data.map { it.origin }.zipWithNext { previous, current ->
                     // Check if the previous value is greater than the current one
@@ -212,7 +213,7 @@ class TestWordsController @Autowired constructor(
             @Test
             fun `200 - Words can be fetched with sorting - ASC`() {
                 val descSorted =
-                    makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN, sortDirection = SortDirection.ASC);
+                    makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN, sortDirection = SortDirection.ASC)
 
                 descSorted.data.map { it.origin }.zipWithNext { previous, current ->
                     // Check if the previous value is greater than the current one
@@ -225,7 +226,7 @@ class TestWordsController @Autowired constructor(
                 val body = makeManyWordsRequest(
                     wordType = WordType.IDIOM,
                     perPage = 500
-                );
+                )
 
                 body.data.forEach {
                     it.type shouldBe WordType.IDIOM
@@ -235,7 +236,7 @@ class TestWordsController @Autowired constructor(
             @Test
             fun `200 - Words can be fetched with filtering - by searching phrase`() {
                 val user = userMapper.toEntity(authenticatedUser.userInfo)
-                val expectedWordMark: String = "EXPECTED_WORD_MARK"
+                val expectedWordMark = "EXPECTED_WORD_MARK"
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
@@ -294,7 +295,7 @@ class TestWordsController @Autowired constructor(
                 val body = makeManyWordsRequest(
                     searchingPhrase = "kacper",
                     perPage = 500
-                );
+                )
 
                 body.data.forEach { t ->
                     assert(t.origin.contains(expectedWordMark) || t.translation.contains(expectedWordMark))
@@ -306,7 +307,7 @@ class TestWordsController @Autowired constructor(
                 val body = makeManyWordsRequest(
                     wordExtraMark = WordExtraMark.OFFENSIVE,
                     perPage = 500
-                );
+                )
 
                 body.data.forEach {
                     it.extraMark shouldBe WordExtraMark.OFFENSIVE
@@ -318,7 +319,7 @@ class TestWordsController @Autowired constructor(
                 val body = makeManyWordsRequest(
                     bookmarkedOnly = true,
                     perPage = 500
-                );
+                )
 
                 body.data.forEach {
                     it.isBookmarked shouldBe true
@@ -347,7 +348,7 @@ class TestWordsController @Autowired constructor(
                 val body = makeManyWordsRequest(
                     banksIds = setOf(bankOne.id),
                     perPage = 500
-                );
+                )
 
                 body.data.forEach {
                     it.bank?.id shouldBe bankOne.id
@@ -386,7 +387,7 @@ class TestWordsController @Autowired constructor(
                 val body = makeManyWordsRequest(
                     banksGroupsIds = setOf(bankGroupOne.id),
                     perPage = 500
-                );
+                )
 
                 println(body.data.map { it.bank?.bankGroup?.id })
 
@@ -585,8 +586,8 @@ class TestWordsController @Autowired constructor(
         @DisplayName("Positive")
         inner class Positive {
             @Test
-            fun `200 - Word can be fetched by its owner`() {
-                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+            fun `200 - Word without bank can be fetched by its owner`() {
+                val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.getSingleWordRequest(
                     authenticatedUser = authenticatedUser,
@@ -602,6 +603,66 @@ class TestWordsController @Autowired constructor(
 
                 fetchedWord.id shouldBe word.id
             }
+
+            @Test
+            fun `200 - Word with bank but without bank group can be fetched by its owner`() {
+                val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val wordWithBank = wordSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(bank)
+                )
+
+                val request = wordRequestFactory.getSingleWordRequest(
+                    authenticatedUser = authenticatedUser,
+                    wordId = wordWithBank.id
+                )
+
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
+
+                val fetchedWord = getResponseBody<SingleWordResponse>(response)
+
+                fetchedWord.id shouldBe wordWithBank.id
+                fetchedWord.bank shouldNotBe null
+                fetchedWord.bank?.id shouldBe bank.id
+                fetchedWord.bank?.bankGroup shouldBe null
+            }
+
+
+            @Test
+            fun `200 - Word with bank and bank group can be fetched by its owner`() {
+                val bankGroup = bankGroupSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val bank = bankSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                    bankGroup = bankGroup
+                )
+
+                val wordWithBankAndGroup = wordSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                    bank = Optional(bank)
+                )
+
+                val request = wordRequestFactory.getSingleWordRequest(
+                    authenticatedUser = authenticatedUser,
+                    wordId = wordWithBankAndGroup.id
+                )
+
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
+
+                val fetchedWord = getResponseBody<SingleWordResponse>(response)
+
+                fetchedWord.id shouldBe wordWithBankAndGroup.id
+                fetchedWord.bank shouldNotBe null
+                fetchedWord.bank?.id shouldBe bank.id
+                fetchedWord.bank?.bankGroup shouldNotBe null
+                fetchedWord.bank?.bankGroup?.id shouldBe bankGroup.id
+            }
         }
 
         @Nested
@@ -609,22 +670,58 @@ class TestWordsController @Autowired constructor(
         inner class Negative {
             @Test
             fun `403 - Anonymous user cannot fetch a word`() {
-                // TODO
+                val word = wordSeeder.seedOneEntity()
+
+                val request = wordRequestFactory.getSingleWordRequest(
+                    authenticatedUser = null,
+                    wordId = word.id
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                }
             }
 
             @Test
             fun `404 - Word cannot be fetched by other user than the one who created it`() {
-                // TODO
+                val anotherUser = userSeeder.seedOneEntity()
+
+                val word = wordSeeder.seedOneEntityForUser(anotherUser)
+
+                val request = wordRequestFactory.getSingleWordRequest(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
             }
 
             @Test
             fun `404 - Word cannot be fetched if it does not exist`() {
-                // TODO
+                val request = wordRequestFactory.getSingleWordRequest(
+                    authenticatedUser = authenticatedUser,
+                    wordId = UUID.randomUUID()
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
             }
 
-            @Test
-            fun `400 - Word cannot be fetched if id is not a valid UUID`() {
-                // TODO
+            @ParameterizedTest
+            @ValueSource(strings = ["abc", "-1", "123123123"])
+            fun `400 - Word cannot be fetched if id is not a valid UUID`(id: String) {
+                val request = MockMvcRequestBuilders
+                    .get("/api/v1/words/$id")
+                    .apply {
+                        this.cookie(authenticatedUser.authCookie)
+                    }
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
         }
     }
@@ -686,7 +783,7 @@ class TestWordsController @Autowired constructor(
 
                 val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
-                val bank: Bank = assertThatBankActuallyExists(word.bank)
+                assertThatBankActuallyExists(word.bank)
 
                 word.compareWithDefaultCreateWordData()
             }
@@ -754,7 +851,7 @@ class TestWordsController @Autowired constructor(
 
                 val word: Word = assertThatWordActuallyExists(response, authenticatedUser)
 
-                val bank: Bank = assertThatBankActuallyExists(word.bank)
+                assertThatBankActuallyExists(word.bank)
 
                 word.compareWithDefaultCreateWordData()
             }
@@ -980,7 +1077,7 @@ class TestWordsController @Autowired constructor(
                 }
 
                 val updatedWord: Word = assertThatWordActuallyExists(response, authenticatedUser)
-                val bank: Bank = assertThatBankActuallyExists(updatedWord.bank)
+                assertThatBankActuallyExists(updatedWord.bank)
 
                 updatedWord.compareWithDefaultUpdateWordData(
                     idOfWordToUpdate = word.id
@@ -1988,7 +2085,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Words' bank cannot be changed if bankToCreate name is empty`() {
-                val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,
@@ -2064,7 +2161,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `400 - Words' bank cannot be changed if bankToCreate description is empty`() {
-                val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,

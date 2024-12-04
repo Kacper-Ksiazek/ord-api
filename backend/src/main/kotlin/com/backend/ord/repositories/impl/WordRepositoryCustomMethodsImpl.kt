@@ -31,19 +31,19 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import org.springframework.stereotype.Repository
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 @Repository
 class WordRepositoryCustomMethodsImpl(
     private val entityManager: EntityManager
 ) : WordRepositoryCustomMethods {
-    private val criteriaBuilder = entityManager.criteriaBuilder;
+    private val criteriaBuilder = entityManager.criteriaBuilder
 
     override fun findOneWord(
         wordId: UUID,
         user: User
     ): SingleWordResponse {
-        val criteriaQuery = criteriaBuilder.createTupleQuery();
+        val criteriaQuery = criteriaBuilder.createTupleQuery()
 
         val root = criteriaQuery.from(Word::class.java)
         val bankJoin = root.join<Word, Bank>("bank", JoinType.LEFT)
@@ -56,32 +56,32 @@ class WordRepositoryCustomMethodsImpl(
             root.get<Int>("points"),                    // 1
             root.get<String>("origin"),                 // 2
             root.get<String>("translation"),            // 3
-            root.get<String>("definition"),             // 5
-            root.get<Boolean>("isBookmarked"),          // 6
+            root.get<String>("definition"),             // 4
+            root.get<Boolean>("isBookmarked"),          // 5
 
             // Enum types
-            root.get<WordType>("type"),                 // 7
-            root.get<WordExtraMark?>("extraMark"),      // 8
-            root.get<LanguageName>("translatedTo"),     // 9
-            root.get<LanguageName>("translatedFrom"),   // 10
+            root.get<WordType>("type"),                 // 6
+            root.get<WordExtraMark?>("extraMark"),      // 7
+            root.get<LanguageName>("translatedTo"),     // 8
+            root.get<LanguageName>("translatedFrom"),   // 9
 
             // Lists fields
-            root.get<String>("useCases"),               // 11
-            root.get<Int>("exampleSentences"),          // 12
+            root.get<String>("useCases"),               // 10
+            root.get<Int>("exampleSentences"),          // 11
 
             // Bank fields
-            bankJoin.get<UUID?>("id"),                  // 13
-            bankJoin.get<String?>("name"),              // 14
-            bankJoin.get<String?>("description"),       // 15
+            bankJoin.get<UUID?>("id"),                  // 12
+            bankJoin.get<String?>("name"),              // 13
+            bankJoin.get<String?>("description"),       // 14
 
             // BankGroup fields
-            bankGroupJoin.get<UUID?>("id"),             // 16
-            bankGroupJoin.get<String?>("name"),         // 17
-            bankGroupJoin.get<String?>("color"),        // 18
+            bankGroupJoin.get<UUID?>("id"),             // 15
+            bankGroupJoin.get<String?>("name"),         // 16
+            bankGroupJoin.get<String?>("color"),        // 17
 
             // Timestamps
-            root.get<Instant>("createdAt"),             // 19
-            root.get<Instant>("updatedAt")              // 20
+            root.get<Instant>("createdAt"),             // 18
+            root.get<Instant>("updatedAt")              // 19
         )
 
         criteriaQuery.where(
@@ -91,14 +91,14 @@ class WordRepositoryCustomMethodsImpl(
 
         val query: TypedQuery<Tuple> = entityManager.createQuery(criteriaQuery)
 
-        val result = query.singleResult
-
-        if (result == null) {
+        if (query.resultList.isEmpty()) {
             throw NotFoundException("Word with id $wordId not found for user with id ${user.id}")
         }
 
-        val bankId = result.get(13, UUID::class.java)
-        val bankGroupId = result.get(16, UUID::class.java)
+        val result: Tuple = query.singleResult!!
+
+        val bankId = result.get(12, UUID::class.java)
+        val bankGroupId = result.get(15, UUID::class.java)
 
         return SingleWordResponse(
             id = result.get(0, UUID::class.java),
@@ -120,13 +120,13 @@ class WordRepositoryCustomMethodsImpl(
             bank = if (bankId != null) {
                 BankCompact(
                     id = bankId,
-                    name = result.get(14, String::class.java) ?: "",
-                    description = result.get(15, String::class.java) ?: "",
+                    name = result.get(13, String::class.java) ?: "",
+                    description = result.get(14, String::class.java) ?: "",
                     bankGroup = if (bankGroupId != null) {
                         BankGroupCompact(
                             id = bankGroupId,
-                            name = result.get(17, String::class.java) ?: "",
-                            color = result.get(18, String::class.java) ?: ""
+                            name = result.get(16, String::class.java) ?: "",
+                            color = result.get(17, String::class.java) ?: ""
                         )
                     } else null
                 )
@@ -397,7 +397,7 @@ class WordRepositoryCustomMethodsImpl(
             predicates.add(bankGroupIdPath.`in`(it))
         }
 
-        query.where(*predicates.toTypedArray());
+        query.where(*predicates.toTypedArray())
     }
 }
 
