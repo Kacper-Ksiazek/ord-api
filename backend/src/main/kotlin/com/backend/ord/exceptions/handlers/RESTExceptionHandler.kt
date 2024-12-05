@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 
 
-/**
- * TODO: Add docs
- */
 @ControllerAdvice
 class RESTExceptionHandler {
     @ExceptionHandler(
