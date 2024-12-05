@@ -1,6 +1,6 @@
 package com.backend.ord.domain.entities
 
-import com.backend.ord.enums.Language.LanguageName
+import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.enums.UserRole
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp

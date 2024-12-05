@@ -4,10 +4,9 @@ import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.request_factories.AuthRequestFactory
 import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
 import com.backend.ord.domain.mappers.UserMapper
-import com.backend.ord.enums.Language.LanguageName
+import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
-import com.backend.ord.seeders.entities.UserSeeder
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test

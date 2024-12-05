@@ -1,8 +1,8 @@
 package com.backend.ord.domain.entities
 
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
-import com.backend.ord.enums.Game.GameStatus
-import com.backend.ord.enums.Game.GameType
+import com.backend.ord.enums.game.GameStatus
+import com.backend.ord.enums.game.GameType
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete

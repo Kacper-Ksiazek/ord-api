@@ -1,7 +1,7 @@
 package com.backend.ord.domain.dto
 
-import com.backend.ord.enums.Language.LanguageName
-import com.backend.ord.enums.Language.LanguageProficiencyLevel
+import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.enums.language.LanguageProficiencyLevel
 import java.time.Instant
 import java.util.*
 

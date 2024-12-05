@@ -1,7 +1,7 @@
 package com.backend.ord.seeders
 
-import com.backend.ord.enums.Language.LanguageName
-import com.backend.ord.enums.Language.LanguageProficiencyLevel
+import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.enums.language.LanguageProficiencyLevel
 import com.github.javafaker.Faker
 
 object EnumValuesGenerator {

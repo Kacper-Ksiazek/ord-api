@@ -2,7 +2,7 @@ package com.backend.ord.seeders.factories
 
 import com.backend.ord.domain.entities.LanguageProficiency
 import com.backend.ord.domain.entities.User
-import com.backend.ord.enums.Language.LanguageName
+import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.seeders.EnumValuesGenerator
 import com.backend.ord.utils.EnumUtils.getRandomValue
 import org.springframework.stereotype.Component
