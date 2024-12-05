@@ -8,3 +8,6 @@ enum class WordType {
     IDIOM,
     PHRASE
 }
+
+// For prompts
+// type: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE

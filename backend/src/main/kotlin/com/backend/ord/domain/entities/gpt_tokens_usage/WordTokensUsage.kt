@@ -1,15 +1,16 @@
 package com.backend.ord.domain.entities.gpt_tokens_usage
 
+import com.backend.ord.config.properties.OpenAIProperties
 import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.Word
+import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.TokensUsage.WordsGPTTokensConsumptionType
 import jakarta.persistence.*
-import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.Size
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 
@@ -18,31 +19,48 @@ import java.util.*
 class WordTokensUsage(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID = UUID.randomUUID(),
+    override val id: UUID = UUID.randomUUID(),
 
-    @field:Min(0)
-    @Column(name = "number_of_tokens", nullable = false)
-    var numberOfTokens: Int,
+    @Column(name = "word", nullable = false)
+    val word: String,
+
+    @Column(name = "translated_to", nullable = false)
+    @Enumerated(EnumType.STRING)
+    val translatedTo: LanguageName,
+
+    @Column(name = "translated_from", nullable = false)
+    @Enumerated(EnumType.STRING)
+    val translatedFrom: LanguageName,
+
+    @Column(name = "input_tokens", nullable = false)
+    val inputTokens: Int,
+
+    @Column(name = "output_tokens", nullable = false)
+    val outputTokens: Int,
+
+    @Column(name = "price_for_mln_input_tokens", nullable = false)
+    val priceForMlnInputTokens: BigDecimal,
+
+    @Column(name = "price_for_mln_output_tokens", nullable = false)
+    val priceForMlnOutputTokens: BigDecimal,
+
+    @Column(name = "cost", nullable = false)
+    val cost: BigDecimal,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "consumption_type", columnDefinition = "words_gpt_tokens_consumption_type(0, 0) not null")
-    var consumptionType: WordsGPTTokensConsumptionType,
+    val consumptionType: WordsGPTTokensConsumptionType,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "user_id")
-    var user: User,
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "word_id")
-    var word: Word,
+    override val user: User,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
-    var createdAt: Instant = Instant.now(),
+    val createdAt: Instant = Instant.now(),
 
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
-    var updatedAt: Instant = Instant.now()
-)
+    val updatedAt: Instant = Instant.now()
+) : IdentifiableUserResource

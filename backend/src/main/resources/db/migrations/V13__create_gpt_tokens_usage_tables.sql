@@ -24,18 +24,29 @@ CALL create_enum_type(
 
 CREATE TABLE IF NOT EXISTS "word_tokens_usages"
 (
-    id               UUID PRIMARY KEY,
+    id                          UUID PRIMARY KEY,
 
-    user_id          UUID                              REFERENCES users (id) ON DELETE SET NULL,
-    word_id          UUID                              REFERENCES words (id) ON DELETE SET NULL,
+    user_id                     UUID                              REFERENCES users (id) ON DELETE SET NULL,
 
-    consumption_type words_gpt_tokens_consumption_type NOT NULL,
+    word                        VARCHAR(255)                      NOT NULL,
+    translated_from             language_name                     NOT NULL,
+    translated_to               language_name                     NOT NULL,
+
+    consumption_type            words_gpt_tokens_consumption_type NOT NULL,
 
     -- Number of Open AI tokens consumed
-    number_of_tokens INTEGER                           NOT NULL CHECK (number_of_tokens >= 0),
+    input_tokens                INTEGER                           NOT NULL CHECK (input_tokens >= 0),
+    output_tokens               INTEGER                           NOT NULL CHECK (output_tokens >= 0),
 
-    "created_at"     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    "updated_at"     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    -- Price for input and output tokens, in USD
+    price_for_mln_input_tokens  DECIMAL(20, 10)                   NOT NULL,
+    price_for_mln_output_tokens DECIMAL(20, 10)                   NOT NULL,
+
+    -- Total cost of the operation in USD
+    cost                        DECIMAL(20, 10)                   NOT NULL,
+
+    "created_at"                TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    "updated_at"                TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS "game_tokens_usages"

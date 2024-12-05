@@ -51,6 +51,7 @@ class SecurityConfiguration(
             "/api/v1/auth/logout",
             "/api/v1/auth/current-user-info",
             "/api/v1/openai/**",
+            "/api/v1/words/**",
             "/users/"
         )
     }

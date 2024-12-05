@@ -9,10 +9,9 @@ import org.springframework.stereotype.Component
 class UserSeeder(
     private val userRepository: UserRepository,
     private val userMockFactory: UserMockFactory
-) :
-    SeederInterface<User> {
-    override fun insertRow(): User {
-        return userRepository.save(userMockFactory.mockEntity())
+) : SeederInterface<User> {
+    override fun seedOneEntity(data: User?): User {
+        return userRepository.save(data ?: userMockFactory.mockEntity())
     }
 
     fun insertRowWithCredentials(email: String, password: String): User {

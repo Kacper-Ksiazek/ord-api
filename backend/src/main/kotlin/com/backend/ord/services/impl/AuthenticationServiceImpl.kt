@@ -42,7 +42,8 @@ class AuthenticationServiceImpl(
                 name = request.name,
                 email = request.email,
                 password = passwordEncoder.encode(request.password),
-                role = UserRole.USER
+                role = UserRole.USER,
+                nativeLanguage = request.nativeLanguage
             )
         )
 

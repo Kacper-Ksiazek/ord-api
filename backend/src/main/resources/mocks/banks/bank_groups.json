@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Yellow Valley",
+    "color": "#FFD700"
+  },
+  {
+    "name": "Blue Ocean",
+    "color": "#0000FF"
+  },
+  {
+    "name": "Green Forest",
+    "color": "#008000"
+  },
+  {
+    "name": "Red Desert",
+    "color": "#FF0000"
+  }
+]

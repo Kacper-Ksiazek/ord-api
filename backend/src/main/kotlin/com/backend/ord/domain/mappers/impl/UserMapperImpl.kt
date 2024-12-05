@@ -15,6 +15,7 @@ class UserMapperImpl() : UserMapper {
             email = dto.email,
             role = dto.role,
             password = dto.password,
+            nativeLanguage = dto.nativeLanguage,
 
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt
@@ -29,6 +30,7 @@ class UserMapperImpl() : UserMapper {
             email = entity.email,
             role = entity.role,
             password = entity.password,
+            nativeLanguage = entity.nativeLanguage,
 
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt

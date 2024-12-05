@@ -12,4 +12,12 @@ interface MapperBase<Entity, DTO> {
     fun toEntityOrNull(dto: DTO?): Entity? {
         return dto?.let { toEntity(it) }
     }
+
+    fun toDTOList(entities: List<Entity>): List<DTO> {
+        return entities.map { toDTO(it) }
+    }
+
+    fun toEntityList(dtos: List<DTO>): List<Entity> {
+        return dtos.map { toEntity(it) }
+    }
 }

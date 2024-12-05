@@ -1,5 +1,6 @@
 package com.backend.ord.domain.entities
 
+import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
@@ -13,7 +14,7 @@ import java.util.*
 class UserSession(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID = UUID.randomUUID(),
+    override var id: UUID = UUID.randomUUID(),
 
     @Column(name = "token", nullable = false, updatable = false, unique = true)
     var token: String,
@@ -21,7 +22,7 @@ class UserSession(
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    var user: User,
+    override var user: User,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
@@ -30,4 +31,4 @@ class UserSession(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-)
+) : IdentifiableUserResource

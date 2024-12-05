@@ -1,5 +1,6 @@
 package com.backend.ord.domain.entities
 
+import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.enums.Game.GameStatus
 import com.backend.ord.enums.Game.GameType
 import jakarta.persistence.*
@@ -15,7 +16,7 @@ import java.util.*
 class Game(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID = UUID.randomUUID(),
+    override var id: UUID = UUID.randomUUID(),
 
     @Column(name = "accuracy_rate", nullable = false)
     var accuracyRate: Int = 0,
@@ -37,7 +38,7 @@ class Game(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
-    var user: User,
+    override var user: User,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
@@ -46,4 +47,4 @@ class Game(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-)
+) : IdentifiableUserResource

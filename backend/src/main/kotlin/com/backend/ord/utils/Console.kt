@@ -31,7 +31,7 @@ object Console {
             printGreen(" ✅ DONE\n")
 
             if (outroMsg is String) {
-                print(outroMsg)
+                println(outroMsg)
             }
         } catch (e: Exception) {
             printRed(" ❌ ERROR\n")

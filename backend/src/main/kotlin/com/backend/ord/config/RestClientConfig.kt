@@ -1,7 +1,7 @@
 package com.backend.ord.config
 
 import com.backend.ord.api.requests.openai.OpenAIRequest
-import com.backend.ord.api.responses.openai.OpenAIResponse
+import com.backend.ord.api.responses.openai.embedded.OpenAIResponse
 import com.backend.ord.config.properties.OpenAIProperties
 import com.backend.ord.exceptions.OpenAIResponseIsNullException
 import org.springframework.context.annotation.Configuration

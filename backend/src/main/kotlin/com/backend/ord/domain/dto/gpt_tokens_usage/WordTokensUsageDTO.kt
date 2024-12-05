@@ -1,19 +1,27 @@
 package com.backend.ord.domain.dto.gpt_tokens_usage
 
 import com.backend.ord.domain.dto.UserDTO
-import com.backend.ord.domain.dto.WordDTO
-import com.backend.ord.enums.TokensUsage.StoriesGPTTokensConsumptionType
+import com.backend.ord.enums.Language.LanguageName
 import com.backend.ord.enums.TokensUsage.WordsGPTTokensConsumptionType
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 
 data class WordTokensUsageDTO(
     val id: UUID = UUID.randomUUID(),
 
-    var numberOfTokens: Int,
-    var consumptionType:WordsGPTTokensConsumptionType,
+    val word: String,
+    val cost: BigDecimal,
+    val inputTokens: Int,
+    val outputTokens: Int,
+    val priceForMlnInputTokens: BigDecimal,
+    val priceForMlnOutputTokens: BigDecimal,
 
-    val word: WordDTO,
+
+    var translatedTo: LanguageName,
+    var translatedFrom: LanguageName,
+    var consumptionType: WordsGPTTokensConsumptionType,
+
     val user: UserDTO,
 
     val createdAt: Instant = Instant.now(),
