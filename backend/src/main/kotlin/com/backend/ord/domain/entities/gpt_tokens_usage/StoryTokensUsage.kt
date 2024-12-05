@@ -3,7 +3,7 @@ package com.backend.ord.domain.entities.gpt_tokens_usage
 import com.backend.ord.domain.entities.Story
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
-import com.backend.ord.enums.TokensUsage.StoriesGPTTokensConsumptionType
+import com.backend.ord.enums.tokens_usage.StoriesGPTTokensConsumptionType
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete

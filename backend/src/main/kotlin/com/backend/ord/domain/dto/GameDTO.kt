@@ -1,7 +1,7 @@
 package com.backend.ord.domain.dto
 
-import com.backend.ord.enums.Game.GameStatus
-import com.backend.ord.enums.Game.GameType
+import com.backend.ord.enums.game.GameStatus
+import com.backend.ord.enums.game.GameType
 import java.time.Instant
 import java.util.*
 

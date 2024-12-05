@@ -1,4 +1,4 @@
-package com.backend.ord.enums.Game
+package com.backend.ord.enums.game
 
 enum class GameStatus {
     IN_PROGRESS,

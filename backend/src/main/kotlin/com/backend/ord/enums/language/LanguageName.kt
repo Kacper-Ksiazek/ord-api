@@ -1,4 +1,4 @@
-package com.backend.ord.enums.Language
+package com.backend.ord.enums.language
 
 enum class LanguageName {
     POLISH,

@@ -3,7 +3,7 @@ package com.backend.ord.domain.entities.gpt_tokens_usage
 import com.backend.ord.domain.entities.Game
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
-import com.backend.ord.enums.TokensUsage.GamesGPTTokensConsumptionType
+import com.backend.ord.enums.tokens_usage.GamesGPTTokensConsumptionType
 import jakarta.persistence.*
 import jakarta.validation.constraints.Min
 import org.hibernate.annotations.CreationTimestamp

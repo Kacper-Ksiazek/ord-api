@@ -1,6 +1,6 @@
 package com.backend.ord.api.requests
 
-import com.backend.ord.enums.Language.LanguageName
+import com.backend.ord.enums.language.LanguageName
 
 data class RegisterRequest(
     val name: String,

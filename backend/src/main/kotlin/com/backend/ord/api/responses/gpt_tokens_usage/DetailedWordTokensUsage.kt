@@ -1,8 +1,8 @@
 package com.backend.ord.api.responses.gpt_tokens_usage
 
 import com.backend.ord.domain.entities.gpt_tokens_usage.WordTokensUsage
-import com.backend.ord.enums.Language.LanguageName
-import com.backend.ord.enums.TokensUsage.WordsGPTTokensConsumptionType
+import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.enums.tokens_usage.WordsGPTTokensConsumptionType
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID

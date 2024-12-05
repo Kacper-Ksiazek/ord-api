@@ -18,7 +18,7 @@ import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.domain.mappers.WordMapper
-import com.backend.ord.enums.Language.LanguageName
+import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
@@ -46,8 +46,8 @@ import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import com.backend.ord.enums.Word.WordExtraMark
-import com.backend.ord.enums.Word.WordType
+import com.backend.ord.enums.word.WordExtraMark
+import com.backend.ord.enums.word.WordType
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.words.SingleWordResponse

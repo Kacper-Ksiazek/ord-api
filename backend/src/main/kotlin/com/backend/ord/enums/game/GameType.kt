@@ -1,4 +1,4 @@
-package com.backend.ord.enums.Game
+package com.backend.ord.enums.game
 
 enum class GameType {
     WORDS_TYPING,
