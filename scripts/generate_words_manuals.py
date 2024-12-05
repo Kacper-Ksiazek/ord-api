@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 # TODO: Implement a way to store output files in separate directories!
 
 OUTPUT_FILE_NAMES = {
-    "words": "ai_generated_words_manuals.json",
-    "statistics": "gpt_tokens_used_to_generate_ai_words_manuals.json"
+    "words": "words/ai_generated_words_manuals.json",
+    "statistics": "gpt_tokens_usage/gpt_tokens_used_to_generate_ai_words_manuals.json"
 }
 
 LANGUAGE = "ENGLISH"
@@ -29,7 +29,7 @@ WORDS = [
     "don't shoot them down in flames",
     "fruit of thought",
     "down the rabbit hole",
-    "uheard",
+    "unheard",
     "well-to-do",
     "across-the-board",
     "run-of-the-mill",
@@ -48,13 +48,13 @@ WORDS = [
     "bluntly",
     "to add insult to injury",
     "to cap it all",
-    "flusterted",
+    "flustered",
     "blunt",
     "out of the blue",
     "mingle",
     "hover",
     "pleasantry",
-    "pick someones's brain",
+    "pick someone's brain",
     "go through",
     "redundancy",
     "upward trend",
@@ -67,13 +67,19 @@ WORDS = [
     "admissible",
     "spur",
     "brick-and-mortar",
-    "certanity",
+    "certainty",
     "palpable",
     "lull",
     "ruminate",
     "chamomile",
     "vocational school",
     "shed",
+    "strain",
+    "stall",
+    "thwarted",
+    "diverted",
+    "visceral",
+    "grinding"
 ]
 
 
