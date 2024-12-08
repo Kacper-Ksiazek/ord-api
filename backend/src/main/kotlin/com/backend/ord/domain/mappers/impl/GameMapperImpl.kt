@@ -16,6 +16,9 @@ class GameMapperImpl(
 
             type = dto.type,
             status = dto.status,
+            difficulty = dto.difficulty,
+            instruction = dto.instruction,
+
             duration = dto.duration,
             acquiredPoints = dto.acquiredPoints,
             accuracyRate = dto.accuracyRate,
@@ -33,6 +36,9 @@ class GameMapperImpl(
 
             type = entity.type,
             status = entity.status,
+            difficulty = entity.difficulty,
+            instruction = entity.instruction,
+
             duration = entity.duration,
             accuracyRate = entity.accuracyRate,
             acquiredPoints = entity.acquiredPoints,
