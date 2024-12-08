@@ -56,6 +56,7 @@ class AIGameServiceImpl(
         val questionsAmountBasedOnDifficulty: Int = 12; // TODO: Implement difficulty based questions amount
 
         // TODO: Verify that there are enough words
+        // TODO: Generate 2 buffer words for the game, just in case ( verify if it is needed for higher difficulties )
 
         // Prepare an API request
         val openAIRequest: OpenAIRequest = openAIRequestFactory.createRequest(
