@@ -14,7 +14,7 @@ data class CrosswordQuestion(
     val endCoordinates: Pair<Int, Int>,
     val startCoordinates: Pair<Int, Int>,
 
-    val answerComponent: List<AnswerComponent>?
+    val answerComponent: List<AnswerComponent>? = null
 )
 
 data class AnswerComponent(
