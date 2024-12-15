@@ -18,6 +18,25 @@ private fun CrosswordWordDirection.opposite(): CrosswordWordDirection {
     }
 }
 
+private fun CrosswordQuestion.getCoordinatesOfLetterAtIndex(index: Int): Pair<Int, Int> {
+    val (x, y) = this.startCoordinates
+
+    return when (this.direction) {
+        CrosswordWordDirection.HORIZONTAL -> Pair(x + index, y)
+        CrosswordWordDirection.VERTICAL -> Pair(x, y + index)
+    }
+}
+
+private fun Pair<Int, Int>.shiftInDirection(
+    direction: CrosswordWordDirection,
+    offset: Int
+): Pair<Int, Int> {
+    return when (direction) {
+        CrosswordWordDirection.HORIZONTAL -> Pair(this.first - offset, this.second)
+        CrosswordWordDirection.VERTICAL -> Pair(this.first, this.second - offset)
+    }
+}
+
 private fun MutableList<AIGeneratedCrosswordQuestion>.pickRandomQuestion(): AIGeneratedCrosswordQuestion {
     val randomIndex = (0 until this.size).random()
     return this[randomIndex]
@@ -199,28 +218,16 @@ object CrosswordUtils {
                     }
 
                     for (commonLetter in commonLetters) {
-                        val x = previousQuestion.startCoordinates.first
-                        val y = previousQuestion.startCoordinates.second
-
-                        // 1. Find the location of the letter in the previous word
-                        val coordinatesOfLetterInPreviousLetter: Pair<Int, Int> =
-                            when (previousQuestion.direction) {
-                                CrosswordWordDirection.HORIZONTAL -> Pair(x + previousQuestionLetter.index, y)
-                                CrosswordWordDirection.VERTICAL -> Pair(x, y + previousQuestionLetter.index)
-                            }
-
-                        // 2. Establish the starting position of the new word by shifting it by the common letter's index
-                        val startingPosition: Pair<Int, Int> = when (directionInWhichToInsert) {
-                            CrosswordWordDirection.HORIZONTAL -> Pair(
-                                coordinatesOfLetterInPreviousLetter.first - commonLetter.index,
-                                coordinatesOfLetterInPreviousLetter.second
+                        // Establish the starting position of the new word by shifting it by the common letter's index
+                        val startingPosition: Pair<Int, Int> = previousQuestion
+                            .getCoordinatesOfLetterAtIndex(
+                                index = previousQuestionLetter.index
+                            )
+                            .shiftInDirection(
+                                direction = directionInWhichToInsert,
+                                offset = commonLetter.index
                             )
 
-                            CrosswordWordDirection.VERTICAL -> Pair(
-                                coordinatesOfLetterInPreviousLetter.first,
-                                coordinatesOfLetterInPreviousLetter.second - commonLetter.index
-                            )
-                        }
 
                         wordHasBeenPlaced = board.insertIfFits(
                             question = drawnWord,
