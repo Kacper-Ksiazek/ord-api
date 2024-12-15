@@ -6,6 +6,7 @@ import com.backend.ord.enums.game.GameDifficulty
 import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
+import com.backend.ord.utils.games.CrosswordUtils
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -28,8 +29,23 @@ class GamesController(
             difficulty = GameDifficulty.HARD
         )
 
+        val board = CrosswordUtils.createBoard(
+            aiGeneratedQuestions = aiGeneratedCrosswordBase,
+            difficulty = GameDifficulty.HARD
+        )
+
+        // Print the board
+        board.forEach { row ->
+            print("|")
+            row.forEach { cell ->
+                print("${cell ?: ' '} ")
+            }
+            print("|")
+            println()
+        }
+
         return ResponseEntity.ok(
-            aiGeneratedCrosswordBase
+            board
         )
     }
 
