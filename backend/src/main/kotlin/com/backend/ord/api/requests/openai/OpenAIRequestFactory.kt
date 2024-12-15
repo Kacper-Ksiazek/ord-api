@@ -29,7 +29,7 @@ class OpenAIRequestFactory(
         )
     }
 
-    fun createRequest(prompt: String): OpenAIRequest {
+    fun createRequestWithoutContext(prompt: String): OpenAIRequest {
         return OpenAIRequest(
             model = openAIProperties.gptModel,
             temperature = openAIProperties.temperature,

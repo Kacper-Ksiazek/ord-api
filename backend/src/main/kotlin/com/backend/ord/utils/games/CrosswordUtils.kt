@@ -219,7 +219,7 @@ object CrosswordUtils {
         while (remainingWords.isNotEmpty()) {
             val drawnWord = remainingWords.pickRandomQuestion()
 
-            val wordHasBeenPlaced = run placeWord@{
+            val wordHasBeenPlaced: Boolean = run placeWord@{
                 questionsToInstruction.reversed().forEach { previousQuestion ->
                     val wordLetters = previousQuestion.word.withIndex().toList().shuffled()
                     val directionInWhichToInsert = previousQuestion.direction.opposite()
@@ -237,15 +237,6 @@ object CrosswordUtils {
                                 .getCoordinatesOfLetterAtIndex(previousQuestionLetter.index)
                                 .shiftInDirection(directionInWhichToInsert, -commonLetter.index)
 
-                            board.insertIfFits(
-                                question = drawnWord,
-                                startCoordinates = startingPosition,
-                                direction = directionInWhichToInsert,
-                                questionsToInstruction = questionsToInstruction
-                            )?.let {
-                                remainingWords.removeQuestion(drawnWord)
-                                return@placeWord true // Word placed successfully
-                            }
                             board.insertIfFits(
                                 question = drawnWord,
                                 startCoordinates = startingPosition,
