@@ -32,8 +32,8 @@ private fun Pair<Int, Int>.shiftInDirection(
     offset: Int
 ): Pair<Int, Int> {
     return when (direction) {
-        CrosswordWordDirection.HORIZONTAL -> Pair(this.first - offset, this.second)
-        CrosswordWordDirection.VERTICAL -> Pair(this.first, this.second - offset)
+        CrosswordWordDirection.HORIZONTAL -> Pair(this.first + offset, this.second)
+        CrosswordWordDirection.VERTICAL -> Pair(this.first, this.second + offset)
     }
 }
 
@@ -186,7 +186,6 @@ private fun MutableList<MutableList<String?>>.trim(): MutableList<MutableList<St
 object CrosswordUtils {
     fun createBoard(
         aiGeneratedQuestions: AIGeneratedCrossword,
-        difficulty: GameDifficulty,
         boardSizeX: Int = 32,
         boardSizeY: Int = 24,
         firstWordStartingCoordinates: Pair<Int, Int> = Pair(5, 5)
@@ -218,105 +217,75 @@ object CrosswordUtils {
 
         // Keep drawing words until there are no more words to draw
         while (remainingWords.isNotEmpty()) {
-            var wordHasBeenPlaced = false
-            val drawnWord = remainingWords.pickRandomQuestion();
+            val drawnWord = remainingWords.pickRandomQuestion()
 
-            // Iterate over the board from the last inserted word
-            for (previousQuestion in questionsToInstruction.reversed()) {
-                // Prepare a list of Pair word's letter and its index in the word string
-                val wordLetters: List<IndexedValue<Char>> = previousQuestion.word.withIndex().toList().shuffled()
+            val wordHasBeenPlaced = run placeWord@{
+                questionsToInstruction.reversed().forEach { previousQuestion ->
+                    val wordLetters = previousQuestion.word.withIndex().toList().shuffled()
+                    val directionInWhichToInsert = previousQuestion.direction.opposite()
 
-                // New word should be perpendicular to the last inserted word
-                val directionInWhichToInsert: CrosswordWordDirection = previousQuestion.direction.opposite()
+                    wordLetters.forEach { previousQuestionLetter ->
+                        val commonLetters = drawnWord.word
+                            .toCharArray()
+                            .withIndex()
+                            .filter { it.value == previousQuestionLetter.value }
 
-                // Find a place to insert the word
-                for (previousQuestionLetter in wordLetters) {
-                    // Find all the indexes of the letter in the drawn word
-                    val commonLetters: List<IndexedValue<Char>> = drawnWord.word
-                        .toCharArray()
-                        .withIndex()
-                        .filter { it.value == previousQuestionLetter.value }
+                        if (commonLetters.isEmpty()) return@forEach // Continue to the next letter
 
-                    if (commonLetters.isEmpty()) {
-                        continue
-                    }
+                        commonLetters.forEach { commonLetter ->
+                            val startingPosition = previousQuestion
+                                .getCoordinatesOfLetterAtIndex(previousQuestionLetter.index)
+                                .shiftInDirection(directionInWhichToInsert, -commonLetter.index)
 
-                    for (commonLetter in commonLetters) {
-                        // Establish the starting position of the new word by shifting it by the common letter's index
-                        val startingPosition: Pair<Int, Int> = previousQuestion
-                            .getCoordinatesOfLetterAtIndex(
-                                index = previousQuestionLetter.index
-                            )
-                            .shiftInDirection(
+                            board.insertIfFits(
+                                question = drawnWord,
+                                startCoordinates = startingPosition,
                                 direction = directionInWhichToInsert,
-                                offset = commonLetter.index
-                            )
-
-
-                        wordHasBeenPlaced = board.insertIfFits(
-                            question = drawnWord,
-                            startCoordinates = startingPosition,
-                            direction = directionInWhichToInsert,
-                            questionsToInstruction = questionsToInstruction
-                        ) != null
-
-                        if (wordHasBeenPlaced) {
-                            remainingWords.removeQuestion(drawnWord)
-                            break
+                                questionsToInstruction = questionsToInstruction
+                            )?.let {
+                                remainingWords.removeQuestion(drawnWord)
+                                return@placeWord true // Word placed successfully
+                            }
+                            board.insertIfFits(
+                                question = drawnWord,
+                                startCoordinates = startingPosition,
+                                direction = directionInWhichToInsert,
+                                questionsToInstruction = questionsToInstruction
+                            )?.let {
+                                remainingWords.removeQuestion(drawnWord)
+                                return@placeWord true // Word placed successfully
+                            }
                         }
                     }
-                    if (wordHasBeenPlaced) break
                 }
 
-                if (wordHasBeenPlaced) break
+                return@placeWord false// No place found for the word
             }
 
-            // If no word has been placed, then add a separator and add a word after it
             if (!wordHasBeenPlaced) {
-                // Get the end position of the last inserted word
-                val lastInsertedWord = questionsToInstruction.last()
+                val longestWord = remainingWords.maxByOrNull { it.word.length }!!
+                run insertSeparator@{
+                    questionsToInstruction.reversed().forEach { lastInsertedWord ->
+                        val separatorCoordinates = lastInsertedWord.endCoordinates.shiftInDirection(
+                            direction = lastInsertedWord.direction,
+                            offset = 1
+                        )
+                        val coordinatesOfWordToInsert = separatorCoordinates.shiftInDirection(
+                            direction = lastInsertedWord.direction,
+                            offset = 1
+                        )
 
-                // Find the longest word in the remaining words
-                val longestWord: AIGeneratedCrosswordQuestion = remainingWords.maxByOrNull { it.word.length }!!
-
-                // TODO: Validate whether the longest word fits on the board
-                val separatorCoordinates: Pair<Int, Int> = when (lastInsertedWord.direction) {
-                    CrosswordWordDirection.HORIZONTAL -> Pair(
-                        lastInsertedWord.endCoordinates.first + 1,
-                        lastInsertedWord.endCoordinates.second
-                    )
-
-                    CrosswordWordDirection.VERTICAL -> Pair(
-                        lastInsertedWord.endCoordinates.first,
-                        lastInsertedWord.endCoordinates.second + 1
-                    )
+                        board.insertIfFits(
+                            question = longestWord,
+                            startCoordinates = coordinatesOfWordToInsert,
+                            direction = lastInsertedWord.direction.opposite(),
+                            questionsToInstruction = questionsToInstruction
+                        )?.let {
+                            remainingWords.removeQuestion(longestWord)
+                            return@insertSeparator
+                        }
+                    }
                 }
-
-                // Insert a new word after the separator
-                val coordinatesOfWordToInsert = when (lastInsertedWord.direction) {
-                    CrosswordWordDirection.HORIZONTAL -> Pair(
-                        separatorCoordinates.first + 1,
-                        separatorCoordinates.second
-                    )
-
-                    CrosswordWordDirection.VERTICAL -> Pair(
-                        separatorCoordinates.first,
-                        separatorCoordinates.second + 1
-                    )
-                }
-
-                board.insertIfFits(
-                    question = longestWord,
-                    startCoordinates = coordinatesOfWordToInsert,
-                    direction = directionOfLastInsertedWord.opposite(),
-                    questionsToInstruction = questionsToInstruction
-                )?.let {
-                    remainingWords.removeQuestion(longestWord)
-                    // Insert the separator
-                    board[separatorCoordinates.second][separatorCoordinates.first] = Symbols.SEPARATOR
-                }
-
-                //TODO: If this word cannot be placed, then add a separator and try again
             }
         }
 
