@@ -39,32 +39,39 @@ private fun MutableList<MutableList<String?>>.checkIfWordFits(
 ): Boolean {
     val wordSize: Int = question.word.length
 
-    if (direction == CrosswordWordDirection.HORIZONTAL) {
-        val x = startCoordinates.first
-        val y = startCoordinates.second
+    val x = startCoordinates.first
+    val y = startCoordinates.second
 
+    if (x < 0 || y < 0) {
+        return false
+    }
+
+    if (direction == CrosswordWordDirection.HORIZONTAL) {
         // Check if the word fits horizontally - meaning if it fits within the board's width
         if (x + wordSize > this[0].size) {
             return false
         }
 
         // Check all the cells in the row where the word is supposed to be placed without the one cell in which the word starts
-        for (i in 1 until wordSize) {
-            if (this[y][x + i] != null) {
+        for (i in 0 until wordSize) {
+            val boardValueAtGivenLocation: String? = this[y][x + i]
+            val questionValueAtGivenIndex: String = question.word[i].toString()
+
+            if (this[y][x + i] != null && boardValueAtGivenLocation != questionValueAtGivenIndex) {
                 return false
             }
         }
     } else {
-        val x = startCoordinates.first
-        val y = startCoordinates.second
-
         // Check if the word fits vertically - meaning if it fits within the board's height
         if (y + wordSize > this.size) {
             return false
         }
 
-        for (i in 1 until wordSize) {
-            if (this[y + i][x] != null) {
+        for (i in 0 until wordSize) {
+            val boardValueAtGivenLocation: String? = this[y + i][x]
+            val questionValueAtGivenIndex: String = question.word[i].toString()
+
+            if (this[y + i][x] != null && boardValueAtGivenLocation != questionValueAtGivenIndex) {
                 return false
             }
         }
