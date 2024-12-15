@@ -159,6 +159,30 @@ private fun MutableList<MutableList<String?>>.insertIfFits(
     return null
 }
 
+private fun MutableList<MutableList<String?>>.trim(): MutableList<MutableList<String?>> {
+    // Trim null-filled rows from the top
+    while (this.isNotEmpty() && this.first().all { it == null }) {
+        this.removeAt(0)
+    }
+
+    // Trim null-filled rows from the bottom
+    while (this.isNotEmpty() && this.last().all { it == null }) {
+        this.removeAt(this.size - 1)
+    }
+
+    // Trim null-filled columns from the left
+    while (this.isNotEmpty() && this.all { it.first() == null }) {
+        this.forEach { it.removeAt(0) }
+    }
+
+    // Trim null-filled columns from the right
+    while (this.isNotEmpty() && this.all { it.last() == null }) {
+        this.forEach { it.removeAt(it.size - 1) }
+    }
+
+    return this
+}
+
 object CrosswordUtils {
     fun createBoard(
         aiGeneratedQuestions: AIGeneratedCrossword,
@@ -296,7 +320,6 @@ object CrosswordUtils {
             }
         }
 
-
-        return board;
+        return board.trim();
     }
 }
