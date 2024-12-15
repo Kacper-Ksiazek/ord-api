@@ -9,6 +9,7 @@ import com.backend.ord.config.RestClientConfig
 import com.backend.ord.domain.entities.LanguageProficiency
 import com.backend.ord.domain.entities.User
 import com.backend.ord.enums.game.GameDifficulty
+import com.backend.ord.enums.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.LanguageProficiencyService
@@ -31,7 +32,6 @@ class AIGameServiceImpl(
 
     /**
      * Generates a crossword game.
-     *
      */
     override fun generateCrosswordGame(
         user: User,
@@ -52,12 +52,10 @@ class AIGameServiceImpl(
             sortBy = GetAllWordsSortOptions.ORIGIN,
             sortDirection = SortDirection.DESC
             // TODO: Add more filters
-        ).data.map { it.origin }
-
-        val questionsAmountBasedOnDifficulty: Int = 12; // TODO: Implement difficulty based questions amount
-
-        // TODO: Verify that there are enough words
-        // TODO: Generate 2 buffer words for the game, just in case ( verify if it is needed for higher difficulties )
+        ).data
+            .shuffled()
+            .take(questionsAmountBasedOnDifficulty)
+            .map { it.origin }
 
         // Prepare an API request
         val openAIRequest: OpenAIRequest = openAIRequestFactory.createRequest(
