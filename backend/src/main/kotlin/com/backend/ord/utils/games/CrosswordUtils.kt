@@ -93,7 +93,7 @@ private fun MutableList<MutableList<String?>>.insertWord(
         val x = startCoordinates.first
         val y = startCoordinates.second
 
-        for (i in 1 until wordSize) {
+        for (i in 0 until wordSize) {
             this[y][x + i] = question.word[i].toString()
         }
 
@@ -102,7 +102,7 @@ private fun MutableList<MutableList<String?>>.insertWord(
         val x = startCoordinates.first
         val y = startCoordinates.second
 
-        for (i in 1 until wordSize) {
+        for (i in 0 until wordSize) {
             this[y + i][x] = question.word[i].toString()
         }
 
