@@ -11,7 +11,7 @@ import com.backend.ord.domain.entities.User
 import com.backend.ord.enums.game.GameDifficulty
 import com.backend.ord.enums.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.exceptions.REST.BadRequestException
+import com.backend.ord.prompts.Prompts
 import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
@@ -59,35 +59,45 @@ class AIGameServiceImpl(
 
         // Prepare an API request
         val openAIRequest: OpenAIRequest = openAIRequestFactory.createRequest(
-            prompt = """
-               Generate a foreign language practicing crossword. The game difficulty is set to $difficulty, and the foreign language is $language at $userProficiencyInRequestedLanguage proficiency level.
-               
-               I want my answer to match this json format.
-               
-               {
-                 answer: string // Either a new word or a short phrase. Do not use a word from the list provided
-                 answerExplanation: string // DO NOT include an answer in its explanation
-                 questions: {
-                   word: string // Use words for the provided list
-                   clue: string
-                 }[] // A list of $questionsAmountBasedOnDifficulty questions with words from the provided list
-               }
-               
-               Words: [
-                ${words.joinToString(", ") { it }}
-               ]
-            """.trimIndent(),
-            context = """
-                Do not include anything more than this json and do not add markdown formatting. I want your output to be suitable for jsonObjectMapper.readValue.
-            """.trimIndent()
+            prompt = Prompts.generateCrosswordQuestionsPrompt(
+                wordsToUse = words,
+                language = language,
+                difficulty = difficulty,
+                amountOfQuestions = questionsAmountBasedOnDifficulty,
+                languageProficiency = userProficiencyInRequestedLanguage.proficiency
+            )
         )
 
-        // Send the request to OpenAI
-        val response: OpenAIResponse = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
-            // TODO: Save the usage tokens consumption
-        }
+        var response: OpenAIResponse
+        var parsedResponseBody: AIGeneratedCrossword?
 
-        // Parse the response
-        return jsonObjectMapper.readValue<AIGeneratedCrossword>(response.data)
+        do {
+            // Send the request to the OpenAI API
+            response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
+                // TODO: Track and save token usage
+            }
+
+            // Attempt to parse the response into the expected AIGeneratedCrossword object
+            parsedResponseBody = try {
+                val readValue = jsonObjectMapper.readValue<AIGeneratedCrossword>(response.data)
+
+                readValue.copy(
+                    questions = with(readValue.questions) {
+                        if (size > questionsAmountBasedOnDifficulty) {
+                            shuffled().take(questionsAmountBasedOnDifficulty)
+                        } else {
+                            this
+                        }
+                    }
+                )
+            } catch (_: Exception) {
+                null // Handle parsing failure by returning null
+            }
+
+            // Retry if the response doesn't have the expected number of questions
+        } while (parsedResponseBody?.questions?.size != questionsAmountBasedOnDifficulty)
+
+        // Return the validated crossword response
+        return parsedResponseBody
     }
 }
