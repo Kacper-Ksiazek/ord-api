@@ -40,8 +40,9 @@ class AIGameServiceImpl(
     ): AIGeneratedCrossword {
         // Get user proficiency in the requested language
         val userProficiencyInRequestedLanguage: LanguageProficiency =
-            languageProficiencyService.findUserProficiencyInLanguage(user.id, language)
-                ?: throw BadRequestException("User does not have any proficiency in the requested language.")
+            languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, language)
+
+        val questionsAmountBasedOnDifficulty: Int = difficulty.getNumberOfWordsForCrossword()
 
         // Get words for the game
         val words = wordService.findManyWords(
