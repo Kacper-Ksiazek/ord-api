@@ -184,6 +184,8 @@ private fun MutableList<MutableList<String?>>.trim(): MutableList<MutableList<St
 }
 
 object CrosswordUtils {
+    // TODO: Prepare a function to hide the answers ( make some letters empty string with the likelihood depending on the difficulty )
+
     fun createBoard(
         aiGeneratedQuestions: AIGeneratedCrossword,
         boardSizeX: Int = 32,
