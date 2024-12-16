@@ -11,12 +11,22 @@ import org.springframework.stereotype.Component
 class GameTokensUsageMapperImpl(
     private val userMapper: UserMapper,
     private val gameMapper: GameMapper
-): GameTokensUsageMapper {
+) : GameTokensUsageMapper {
     override fun toEntity(dto: GameTokensUsageDTO): GameTokensUsage {
         return GameTokensUsage(
             id = dto.id,
-            numberOfTokens = dto.numberOfTokens,
+
+            gameType = dto.gameType,
+            gameDifficulty = dto.gameDifficulty,
             consumptionType = dto.consumptionType,
+            leadingLanguage = dto.leadingLanguage,
+            instructionLanguage = dto.instructionLanguage,
+
+            cost = dto.cost,
+            inputTokens = dto.inputTokens,
+            outputTokens = dto.outputTokens,
+            priceForMlnInputTokens = dto.priceForMlnInputTokens,
+            priceForMlnOutputTokens = dto.priceForMlnOutputTokens,
 
             user = userMapper.toEntity(dto.user),
             game = gameMapper.toEntity(dto.game),
@@ -30,8 +40,17 @@ class GameTokensUsageMapperImpl(
         return GameTokensUsageDTO(
             id = entity.id,
 
-            numberOfTokens = entity.numberOfTokens,
+            gameType = entity.gameType,
+            gameDifficulty = entity.gameDifficulty,
             consumptionType = entity.consumptionType,
+            leadingLanguage = entity.leadingLanguage,
+            instructionLanguage = entity.instructionLanguage,
+
+            cost = entity.cost,
+            inputTokens = entity.inputTokens,
+            outputTokens = entity.outputTokens,
+            priceForMlnInputTokens = entity.priceForMlnInputTokens,
+            priceForMlnOutputTokens = entity.priceForMlnOutputTokens,
 
             user = userMapper.toDTO(entity.user),
             game = gameMapper.toDTO(entity.game),
