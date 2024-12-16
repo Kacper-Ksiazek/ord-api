@@ -29,7 +29,7 @@ class GameTokensUsageMapperImpl(
             priceForMlnOutputTokens = dto.priceForMlnOutputTokens,
 
             user = userMapper.toEntity(dto.user),
-            game = gameMapper.toEntity(dto.game),
+            game = gameMapper.toEntityOrNull(dto.game),
 
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt
@@ -53,7 +53,7 @@ class GameTokensUsageMapperImpl(
             priceForMlnOutputTokens = entity.priceForMlnOutputTokens,
 
             user = userMapper.toDTO(entity.user),
-            game = gameMapper.toDTO(entity.game),
+            game = gameMapper.toDTOOrNull(entity.game),
 
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt

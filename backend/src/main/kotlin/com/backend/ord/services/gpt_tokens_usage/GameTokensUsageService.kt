@@ -1,18 +1,30 @@
 package com.backend.ord.services.gpt_tokens_usage
 
+import com.backend.ord.domain.entities.Game
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.gpt_tokens_usage.GameTokensUsage
+import com.backend.ord.enums.game.GameDifficulty
+import com.backend.ord.enums.game.GameType
+import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.enums.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.services.gpt_tokens_usage.bases.TokensUsageServiceBase
 
 interface GameTokensUsageService : TokensUsageServiceBase<GameTokensUsage, GamesGPTTokensConsumptionType> {
-    // TODO: Ogarnac jak polaczyc relacja z gra, bo UUID nie jest znane w momencie generowania tego logu
-
     fun save(
         user: User,
-        game: String,
+
+        gameType: GameType,
+        leadingLanguage: LanguageName,
+        gameDifficulty: GameDifficulty,
+        instructionLanguage: LanguageName,
         consumptionType: GamesGPTTokensConsumptionType,
+
         inputTokens: Int,
         outputTokens: Int,
     ): GameTokensUsage
+
+    fun assignGameToMultiple(
+        gptTokensUsageLogs: List<GameTokensUsage>,
+        gameToAssign: Game,
+    ): List<GameTokensUsage>
 }

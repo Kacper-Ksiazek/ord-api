@@ -64,10 +64,10 @@ class GameTokensUsage(
     @JoinColumn(name = "user_id")
     override var user: User,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "game_id")
-    var game: Game,
+    var game: Game? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

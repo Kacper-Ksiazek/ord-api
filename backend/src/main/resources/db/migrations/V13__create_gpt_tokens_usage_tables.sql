@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS "game_tokens_usages"
     id                          UUID PRIMARY KEY,
 
     user_id                     UUID                              REFERENCES users (id) ON DELETE SET NULL,
-    game_id                     UUID                              REFERENCES games (id) ON DELETE SET NULL,
+    game_id                     UUID                              REFERENCES games (id) ON DELETE SET NULL DEFAULT NULL,
 
     game_type                   game_type                         NOT NULL,
     game_difficulty             game_difficulty                   NOT NULL,
@@ -74,8 +74,8 @@ CREATE TABLE IF NOT EXISTS "game_tokens_usages"
     price_for_mln_output_tokens DECIMAL(20, 10)                   NOT NULL,
 
 
-    created_at                  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at                  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at                  TIMESTAMP WITH TIME ZONE                                                   DEFAULT CURRENT_TIMESTAMP,
+    updated_at                  TIMESTAMP WITH TIME ZONE                                                   DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS "story_tokens_usages"

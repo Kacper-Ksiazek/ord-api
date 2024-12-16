@@ -26,7 +26,7 @@ data class GameTokensUsageDTO(
     val priceForMlnOutputTokens: BigDecimal,
 
     val user: UserDTO,
-    val game: GameDTO,
+    val game: GameDTO? = null,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),
