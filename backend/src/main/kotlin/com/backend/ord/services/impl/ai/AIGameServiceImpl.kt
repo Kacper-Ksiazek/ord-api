@@ -8,14 +8,18 @@ import com.backend.ord.api.responses.openai.embedded.OpenAIResponse
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.domain.entities.LanguageProficiency
 import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.game.GameDifficulty
+import com.backend.ord.enums.game.GameType
 import com.backend.ord.enums.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.enums.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.prompts.Prompts
 import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
+import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -27,6 +31,7 @@ class AIGameServiceImpl(
     private val openAIRequestFactory: OpenAIRequestFactory,
     private val wordService: WordService,
     private val languageProficiencyService: LanguageProficiencyService,
+    private val gameTokensUsageService: GameTokensUsageService
 ) : AIGameService {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
@@ -37,7 +42,10 @@ class AIGameServiceImpl(
         user: User,
         language: LanguageName,
         difficulty: GameDifficulty
-    ): AIGeneratedCrossword {
+    ): Pair<AIGeneratedCrossword, Set<GameTokensUsage>> {
+        // Store all token usage logs for the game
+        val gameTokensUsageLogs: MutableSet<GameTokensUsage> = mutableSetOf()
+
         // Get user proficiency in the requested language
         val userProficiencyInRequestedLanguage: LanguageProficiency =
             languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, language)
@@ -74,7 +82,22 @@ class AIGameServiceImpl(
         do {
             // Send the request to the OpenAI API
             response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
-                // TODO: Track and save token usage
+                // Log the token usage for the request
+                gameTokensUsageLogs.add(
+                    gameTokensUsageService.save(
+                        user = user,
+
+                        leadingLanguage = language,
+                        gameDifficulty = difficulty,
+                        instructionLanguage = language,
+
+                        gameType = GameType.CROSSWORD,
+                        consumptionType = GamesGPTTokensConsumptionType.GENERATE,
+
+                        inputTokens = it.usage.prompt_tokens,
+                        outputTokens = it.usage.completion_tokens
+                    )
+                )
             }
 
             // Attempt to parse the response into the expected AIGeneratedCrossword object
@@ -98,6 +121,9 @@ class AIGameServiceImpl(
         } while (parsedResponseBody?.questions?.size != questionsAmountBasedOnDifficulty)
 
         // Return the validated crossword response
-        return parsedResponseBody
+        return Pair(
+            parsedResponseBody,
+            gameTokensUsageLogs
+        )
     }
 }

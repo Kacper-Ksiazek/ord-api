@@ -24,7 +24,7 @@ interface GameTokensUsageService : TokensUsageServiceBase<GameTokensUsage, Games
     ): GameTokensUsage
 
     fun assignGameToMultiple(
-        gptTokensUsageLogs: List<GameTokensUsage>,
+        gptTokensUsageLogs: Set<GameTokensUsage>,
         gameToAssign: Game,
     ): List<GameTokensUsage>
 }

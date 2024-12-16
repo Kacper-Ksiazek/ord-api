@@ -1,10 +1,10 @@
 package com.backend.ord.services.ai
 
-import com.backend.ord.domain.entities.LanguageProficiency
+import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.game.GameDifficulty
 import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
-import com.backend.ord.domain.entities.User
 
 /**
  * Service for generating games via AI requests.
@@ -23,5 +23,5 @@ interface AIGameService {
         user: User,
         language: LanguageName,
         difficulty: GameDifficulty
-    ): AIGeneratedCrossword
+    ): Pair<AIGeneratedCrossword, Set<GameTokensUsage>>
 }

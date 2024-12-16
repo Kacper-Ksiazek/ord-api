@@ -10,6 +10,7 @@ import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.services.GameService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
+import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.backend.ord.utils.games.CrosswordUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -42,7 +43,9 @@ private fun List<List<String?>>.print() {
 class GamesController(
     private val aIGameService: AIGameService,
     private val jwtService: JwtService,
-    private val gameService: GameService
+    private val gameService: GameService,
+    private val gameTokensUsageService: GameTokensUsageService
+
 ) {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
@@ -85,10 +88,10 @@ class GamesController(
     @PostMapping("/start/crossword")
     fun startGame(
         request: HttpServletRequest
-    ): ResponseEntity<*> {
+    ): ResponseEntity<CrosswordInstruction> {
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
-        val aiGeneratedCrosswordBase: AIGeneratedCrossword = aIGameService.generateCrosswordGame(
+        val (aiGeneratedCrosswordBase, gpTokensUsageLogs) = aIGameService.generateCrosswordGame(
             user = user,
             language = LanguageName.ENGLISH,
             difficulty = GameDifficulty.HARD
@@ -100,7 +103,7 @@ class GamesController(
 
         instruction.board.print()
 
-        gameService.save(
+        val savedGame: Game = gameService.save(
             Game(
                 user = user,
                 difficulty = GameDifficulty.HARD,
@@ -109,8 +112,11 @@ class GamesController(
             )
         )
 
-        return ResponseEntity.ok(
-            instruction
+        gameTokensUsageService.assignGameToMultiple(
+            gptTokensUsageLogs = gpTokensUsageLogs,
+            gameToAssign = savedGame
         )
+
+        return ResponseEntity.ok(instruction)
     }
 }

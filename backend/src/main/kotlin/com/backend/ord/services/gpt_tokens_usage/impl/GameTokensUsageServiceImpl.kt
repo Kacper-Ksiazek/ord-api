@@ -37,8 +37,8 @@ class GameTokensUsageServiceImpl(
 
                 gameType = gameType,
                 gameDifficulty = gameDifficulty,
+                translatedFrom = leadingLanguage,
                 consumptionType = consumptionType,
-                leadingLanguage = leadingLanguage,
                 instructionLanguage = instructionLanguage,
 
                 inputTokens = inputTokens,
@@ -52,7 +52,7 @@ class GameTokensUsageServiceImpl(
     }
 
     override fun assignGameToMultiple(
-        gptTokensUsageLogs: List<GameTokensUsage>,
+        gptTokensUsageLogs: Set<GameTokensUsage>,
         gameToAssign: Game
     ): List<GameTokensUsage> {
         return repository.saveAll(
