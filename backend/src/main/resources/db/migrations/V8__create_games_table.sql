@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS "games"
     "accuracy_rate"   INTEGER         NOT NULL CHECK ( accuracy_rate >= 0 AND accuracy_rate <= 100),
     "acquired_points" INTEGER         NOT NULL CHECK ( acquired_points >= 0 AND acquired_points <= 1000) DEFAULT 0,
 
-    "instruction"     json            NOT NULL,
+    "instruction"     TEXT            NOT NULL,
 
     -- An id o the user who is doing the activity ( foreign key to the users table)
     "user_id"         UUID            NOT NULL REFERENCES users (id) ON DELETE CASCADE,
