@@ -14,7 +14,7 @@ data class GameTokensUsageDTO(
     val id: UUID = UUID.randomUUID(),
 
     var gameType: GameType,
-    val leadingLanguage: LanguageName,
+    val translatedFrom: LanguageName,
     var gameDifficulty: GameDifficulty,
     val instructionLanguage: LanguageName,
     var consumptionType: GamesGPTTokensConsumptionType,

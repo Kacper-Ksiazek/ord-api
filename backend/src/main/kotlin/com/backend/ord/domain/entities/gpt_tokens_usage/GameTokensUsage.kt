@@ -36,9 +36,9 @@ class GameTokensUsage(
     @Column(name = "price_for_mln_output_tokens", nullable = false)
     val priceForMlnOutputTokens: BigDecimal,
 
-    @Column(name = "leading_language", nullable = false)
+    @Column(name = "translated_from", nullable = false)
     @Enumerated(EnumType.STRING)
-    val leadingLanguage: LanguageName,
+    val translatedFrom: LanguageName,
 
     @Column(name = "instruction_language", nullable = false)
     @Enumerated(EnumType.STRING)

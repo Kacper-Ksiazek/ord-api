@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS "game_tokens_usages"
     game_type                   game_type                         NOT NULL,
     game_difficulty             game_difficulty                   NOT NULL,
     consumption_type            games_gpt_tokens_consumption_type NOT NULL,
-    leading_language            language_name                     NOT NULL,
+    translated_from             language_name                     NOT NULL,
     instruction_language        language_name                     NOT NULL,
 
     -- Number of Open AI tokens consumed

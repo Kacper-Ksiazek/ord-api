@@ -19,7 +19,7 @@ class GameTokensUsageMapperImpl(
             gameType = dto.gameType,
             gameDifficulty = dto.gameDifficulty,
             consumptionType = dto.consumptionType,
-            leadingLanguage = dto.leadingLanguage,
+            translatedFrom = dto.translatedFrom,
             instructionLanguage = dto.instructionLanguage,
 
             cost = dto.cost,
@@ -43,7 +43,7 @@ class GameTokensUsageMapperImpl(
             gameType = entity.gameType,
             gameDifficulty = entity.gameDifficulty,
             consumptionType = entity.consumptionType,
-            leadingLanguage = entity.leadingLanguage,
+            translatedFrom = entity.translatedFrom,
             instructionLanguage = entity.instructionLanguage,
 
             cost = entity.cost,
