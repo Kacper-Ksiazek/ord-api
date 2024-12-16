@@ -41,7 +41,7 @@ class Game(
     var status: GameStatus = GameStatus.IN_PROGRESS,
 
     @Column(name = "instruction", nullable = false, columnDefinition = "json")
-    var instruction: String, // How to set this type properly??
+    var instruction: String,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

@@ -1,12 +1,18 @@
 package com.backend.ord.controllers
 
 import com.backend.ord.config.security.JwtService
+import com.backend.ord.domain.embedded.game_instructions.CrosswordInstruction
+import com.backend.ord.domain.entities.Game
 import com.backend.ord.domain.entities.User
 import com.backend.ord.enums.game.GameDifficulty
+import com.backend.ord.enums.game.GameType
 import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.services.GameService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.utils.games.CrosswordUtils
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 // An irrelevant extension function to print the board
-private fun MutableList<MutableList<String?>>.print() {
+private fun List<List<String?>>.print() {
     print('+')
     repeat(this[0].size) { print("-") }
     println('+')
@@ -36,8 +42,10 @@ private fun MutableList<MutableList<String?>>.print() {
 class GamesController(
     private val aIGameService: AIGameService,
     private val jwtService: JwtService,
-    // TODO: Prepare game repository and service and store the game in the database
+    private val gameService: GameService
 ) {
+    private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
+
     // +-----------------------------+
     // |    GAMES ENDPOINTS PLAN:    |
     // +-----------------------------+
@@ -86,15 +94,23 @@ class GamesController(
             difficulty = GameDifficulty.HARD
         )
 
-        val board: MutableList<MutableList<String?>> = CrosswordUtils.createBoard(
+        val instruction: CrosswordInstruction = CrosswordUtils.createInstruction(
             aiGeneratedQuestions = aiGeneratedCrosswordBase,
         )
 
-        board.print()
+        instruction.board.print()
 
-        // TODO: Prepare a proper ( yet undefined ) response body and hash the answers
+        gameService.save(
+            Game(
+                user = user,
+                difficulty = GameDifficulty.HARD,
+                type = GameType.CROSSWORD,
+                instruction = jsonObjectMapper.writeValueAsString(instruction)
+            )
+        )
+
         return ResponseEntity.ok(
-            board
+            instruction
         )
     }
 }

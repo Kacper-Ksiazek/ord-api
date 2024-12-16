@@ -1,8 +1,8 @@
 package com.backend.ord.utils.games
 
+import com.backend.ord.domain.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.embedded.game_instructions.CrosswordQuestion
 import com.backend.ord.domain.embedded.game_instructions.CrosswordWordDirection
-import com.backend.ord.enums.game.GameDifficulty
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.ai.dto.AIGeneratedCrosswordQuestion
 
@@ -106,7 +106,7 @@ private fun MutableList<MutableList<String?>>.insertWord(
     questionsToInstruction: MutableSet<CrosswordQuestion>
 ): CrosswordQuestion {
     val wordSize: Int = question.word.length
-    val endCoordinates: Pair<Int, Int>;
+    val endCoordinates: Pair<Int, Int>
 
     if (direction == CrosswordWordDirection.HORIZONTAL) {
         val x = startCoordinates.first
@@ -186,12 +186,12 @@ private fun MutableList<MutableList<String?>>.trim(): MutableList<MutableList<St
 object CrosswordUtils {
     // TODO: Prepare a function to hide the answers ( make some letters empty string with the likelihood depending on the difficulty )
 
-    fun createBoard(
+    fun createInstruction(
         aiGeneratedQuestions: AIGeneratedCrossword,
         boardSizeX: Int = 32,
         boardSizeY: Int = 24,
         firstWordStartingCoordinates: Pair<Int, Int> = Pair(5, 5)
-    ): MutableList<MutableList<String?>> {
+    ): CrosswordInstruction {
         // This is a set of questions that will be returned as a final instruction's component
         val questionsToInstruction: MutableSet<CrosswordQuestion> = mutableSetOf()
 
@@ -275,6 +275,9 @@ object CrosswordUtils {
                             questionsToInstruction = questionsToInstruction
                         )?.let {
                             remainingWords.removeQuestion(longestWord)
+
+                            board[separatorCoordinates.first][separatorCoordinates.second] = Symbols.SEPARATOR
+
                             return@insertSeparator
                         }
                     }
@@ -282,6 +285,11 @@ object CrosswordUtils {
             }
         }
 
-        return board.trim();
+        return CrosswordInstruction(
+            board = board.trim(),
+            answer = aiGeneratedQuestions.answer,
+            answerExplanation = aiGeneratedQuestions.answerExplanation,
+            questions = questionsToInstruction
+        )
     }
 }

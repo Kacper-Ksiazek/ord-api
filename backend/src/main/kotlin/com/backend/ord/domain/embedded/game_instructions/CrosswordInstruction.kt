@@ -25,6 +25,6 @@ data class AnswerComponent(
 data class CrosswordInstruction(
     val answer: String,
     val answerExplanation: String,
-    val questions: List<CrosswordQuestion>,
+    val questions: Set<CrosswordQuestion>,
     val board: List<List<String?>>
 )
