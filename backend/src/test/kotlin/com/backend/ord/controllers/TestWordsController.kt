@@ -50,12 +50,14 @@ import com.backend.ord.enums.word.WordExtraMark
 import com.backend.ord.enums.word.WordType
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
 import io.kotest.matchers.comparables.shouldBeLessThan
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
@@ -2183,6 +2185,82 @@ class TestWordsController @Autowired constructor(
                 words.map { wordService.findByIdOrFail(it.id) }.forEach {
                     it.bank shouldBe null
                 }
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/words/{id}/toggle-property - toggle word's property")
+    inner class TogglePropertyForOneWordTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            // Register a utility function to assert the boolean property of a word
+            private fun Word.assertBooleanProperty(property: WordToggleableProperty, expectedValue: Boolean) {
+                when (property) {
+                    WordToggleableProperty.IS_COMPLETED -> isCompleted shouldBe expectedValue
+                    WordToggleableProperty.IS_BOOKMARKED -> isBookmarked shouldBe expectedValue
+                }
+            }
+
+            // Register a utility function to update the boolean property of a word and also assert its new value
+            private fun Word.updateBooleanProperty(property: WordToggleableProperty, value: Boolean) {
+                when (property) {
+                    WordToggleableProperty.IS_COMPLETED -> isCompleted = value
+                    WordToggleableProperty.IS_BOOKMARKED -> isBookmarked = value
+                }
+
+                wordRepository.save(this)
+
+                this.assertBooleanProperty(property, value)
+            }
+
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - Word's boolean properties can be toggled from false to true`(property: WordToggleableProperty) {
+                val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                word.updateBooleanProperty(property, false)
+
+                val request = wordRequestFactory.togglePropertyRequest(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id,
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).assertBooleanProperty(property, true)
+            }
+
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - Word's boolean properties can be toggled from true to false`(property: WordToggleableProperty) {
+                val word: Word = wordSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                )
+
+                word.updateBooleanProperty(property, true)
+
+                val request = wordRequestFactory.togglePropertyRequest(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id,
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).assertBooleanProperty(property, false)
             }
         }
     }
