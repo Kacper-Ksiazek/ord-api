@@ -15,6 +15,7 @@ class WordDTO(
     var definition: String,
     var useCases: Set<String> = emptySet(),
     var isBookmarked: Boolean = false,
+    var completed: Boolean = false,
     var type: WordType,
     var extraMark: WordExtraMark? = null,
     var translatedFrom: LanguageName,

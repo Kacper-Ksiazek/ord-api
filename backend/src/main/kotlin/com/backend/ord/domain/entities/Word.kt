@@ -35,6 +35,9 @@ class Word(
     @Column(name = "is_bookmarked", nullable = false)
     var isBookmarked: Boolean = false,
 
+    @Column(name = "completed", nullable = false)
+    var completed: Boolean = false,
+
     @Column(name = "points", nullable = false)
     var points: Int = 0,
 
