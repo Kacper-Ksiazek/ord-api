@@ -249,7 +249,7 @@ class WordController(
                 bankToCreate = bankToCreate,
                 user = user
             )!!
-        } catch (e: DataIntegrityViolationException) {
+        } catch (_: DataIntegrityViolationException) {
             throw BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
         }
     }
