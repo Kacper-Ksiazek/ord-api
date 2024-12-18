@@ -36,14 +36,14 @@ CREATE TABLE IF NOT EXISTS "words"
     -- Describes the language to which the word has been translated to | `example: POLISH`
     "translated_to"     language_name NOT NULL,
 
+    -- If true then the word will not be included in any games and exercises
+    "is_completed"      BOOLEAN       NOT NULL   DEFAULT FALSE,
+
     -- If set to true, the word is marked as bookmarked and therefore can be access more easily
     "is_bookmarked"     BOOLEAN       NOT NULL   DEFAULT FALSE,
 
     -- The number of points gathered by the user during participating in different exercises
     "points"            INTEGER       NOT NULL   DEFAULT 0,
-
-    -- If true then the word will not be included in any games and exercises
-    "completed"         BOOLEAN       NOT NULL   DEFAULT FALSE,
 
     -- The total number of tokens used to generate examples, manuals, explanations, etc.
     "used_gpt_tokens"   INTEGER       NOT NULL   DEFAULT 0 CHECK ( "used_gpt_tokens" >= 0 ),
