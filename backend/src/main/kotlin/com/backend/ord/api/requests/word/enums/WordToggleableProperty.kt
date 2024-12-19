@@ -1,6 +1,17 @@
 package com.backend.ord.api.requests.word.enums
 
-enum class WordToggleableProperty{
+import com.backend.ord.domain.entities.Word
+
+enum class WordToggleableProperty {
     IS_BOOKMARKED,
     IS_COMPLETED,
+}
+
+fun Word.toggleProperty(property: WordToggleableProperty): Word {
+    when (property) {
+        WordToggleableProperty.IS_BOOKMARKED -> isBookmarked = !isBookmarked
+        WordToggleableProperty.IS_COMPLETED -> isCompleted = !isCompleted
+    }
+
+    return this
 }

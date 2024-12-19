@@ -199,7 +199,7 @@ class WordController(
     }
 
     @PostMapping("/{id}/toggle-property")
-    fun bookmarkWord(
+    fun togglePropertyForOneWord(
         request: HttpServletRequest,
         @PathVariable id: UUID,
         @RequestParam(required = false) property: WordToggleableProperty
@@ -208,6 +208,23 @@ class WordController(
 
         wordService.toggleProperty(
             wordId = id,
+            userId = user.id,
+            property = property
+        )
+
+        return ResponseEntity.status(HttpStatus.OK).build()
+    }
+
+    @PostMapping("/toggle-property-for-multiple-words")
+    fun togglePropertyForManyWords(
+        request: HttpServletRequest,
+        @RequestParam(required = false) property: WordToggleableProperty,
+        @Valid @RequestBody body: WordBulkActionRequestData
+    ): ResponseEntity<Unit> {
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+
+        wordService.togglePropertyForManyWords(
+            wordIds = body.ids.convertToSetExplicitly(paramName = "ids"),
             userId = user.id,
             property = property
         )
