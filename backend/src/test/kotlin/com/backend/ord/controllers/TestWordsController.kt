@@ -2196,26 +2196,6 @@ class TestWordsController @Autowired constructor(
         @Nested
         @DisplayName("Positive")
         inner class Positive {
-            // Register a utility function to assert the boolean property of a word
-            private fun Word.assertBooleanProperty(property: WordToggleableProperty, expectedValue: Boolean) {
-                when (property) {
-                    WordToggleableProperty.IS_COMPLETED -> isCompleted shouldBe expectedValue
-                    WordToggleableProperty.IS_BOOKMARKED -> isBookmarked shouldBe expectedValue
-                }
-            }
-
-            // Register a utility function to update the boolean property of a word and also assert its new value
-            private fun Word.updateBooleanProperty(property: WordToggleableProperty, value: Boolean) {
-                when (property) {
-                    WordToggleableProperty.IS_COMPLETED -> isCompleted = value
-                    WordToggleableProperty.IS_BOOKMARKED -> isBookmarked = value
-                }
-
-                wordRepository.save(this)
-
-                this.assertBooleanProperty(property, value)
-            }
-
             @ParameterizedTest
             @EnumSource(WordToggleableProperty::class)
             fun `200 - Word's boolean properties can be toggled from false to true`(property: WordToggleableProperty) {
@@ -2333,6 +2313,41 @@ class TestWordsController @Autowired constructor(
         }
     }
 
+    @Nested
+    @DisplayName("[POST] /api/v1/words/toggle-property-for-multiple-words - toggle property for multiple words")
+    inner class TogglePropertyForManyWordsTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - Words' boolean properties can be toggled from false to true`(property: WordToggleableProperty) {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                )
+
+                words.forEach {
+                    it.updateBooleanProperty(property, false)
+                }
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words,
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
+                    it.assertBooleanProperty(property, true)
+                }
+            }
+        }
+
+    }
+
     private fun assertThatWordActuallyExists(
         response: MockHttpServletResponse,
         authenticatedUser: MockedAuthenticatedUser
@@ -2362,5 +2377,25 @@ class TestWordsController @Autowired constructor(
             assertNotNull(it)
             it!!
         }
+    }
+
+    // Register a utility function to assert the boolean property of a word
+    private fun Word.assertBooleanProperty(property: WordToggleableProperty, expectedValue: Boolean) {
+        when (property) {
+            WordToggleableProperty.IS_COMPLETED -> isCompleted shouldBe expectedValue
+            WordToggleableProperty.IS_BOOKMARKED -> isBookmarked shouldBe expectedValue
+        }
+    }
+
+    // Register a utility function to update the boolean property of a word and also assert its new value
+    private fun Word.updateBooleanProperty(property: WordToggleableProperty, value: Boolean) {
+        when (property) {
+            WordToggleableProperty.IS_COMPLETED -> isCompleted = value
+            WordToggleableProperty.IS_BOOKMARKED -> isBookmarked = value
+        }
+
+        wordRepository.save(this)
+
+        this.assertBooleanProperty(property, value)
     }
 }
