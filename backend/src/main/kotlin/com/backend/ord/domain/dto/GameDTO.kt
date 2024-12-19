@@ -1,5 +1,6 @@
 package com.backend.ord.domain.dto
 
+import com.backend.ord.enums.game.GameDifficulty
 import com.backend.ord.enums.game.GameStatus
 import com.backend.ord.enums.game.GameType
 import java.time.Instant
@@ -11,6 +12,8 @@ data class GameDTO(
     var finalScore: Int = 0,
     var accuracyRate: Int = 0,
     var acquiredPoints: Int = 0,
+    var instruction: String,
+    var difficulty: GameDifficulty,
 
     var duration: String = "00:00:00",
 

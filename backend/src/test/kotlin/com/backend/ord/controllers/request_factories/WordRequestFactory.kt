@@ -8,6 +8,7 @@ import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.data.GetManyWordsRequestData
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.controllers.request_factories.data.CreateWordData
 import com.backend.ord.controllers.request_factories.data.UpdateWordData
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
@@ -362,6 +363,22 @@ class WordRequestFactory(
             )
             .apply {
                 if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+            }
+    }
+
+    /**
+     * POST /words/{wordId}/toggle-property
+     */
+    fun togglePropertyRequest(
+        wordId: UUID,
+        authenticatedUser: MockedAuthenticatedUser? = null,
+        property: WordToggleableProperty? = null
+    ): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders
+            .post("$BASE_URL/$wordId/toggle-property")
+            .apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+                if (property != null) this.param("property", property.toString())
             }
     }
 
