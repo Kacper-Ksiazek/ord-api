@@ -60,6 +60,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.util.LinkedMultiValueMap
 
 
 import java.util.*
@@ -2261,6 +2262,73 @@ class TestWordsController @Autowired constructor(
                     id = word.id,
                     userId = authenticatedUser.userInfo.id
                 ).assertBooleanProperty(property, false)
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `403 - Anonymous user cannot toggle word's property`() {
+                val word: Word = wordSeeder.seedOneEntity()
+
+                val request = wordRequestFactory.togglePropertyRequest(
+                    wordId = word.id,
+                    property = WordToggleableProperty.IS_COMPLETED,
+                    authenticatedUser = null
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                }
+            }
+
+            @Test
+            fun `404 - Word's property cannot be toggled by other user than the one who created it`() {
+                val anotherUser: User = userSeeder.seedOneEntity()
+
+                val word: Word = wordSeeder.seedOneEntityForUser(anotherUser)
+
+                val request = wordRequestFactory.togglePropertyRequest(
+                    wordId = word.id,
+                    property = WordToggleableProperty.IS_COMPLETED,
+                    authenticatedUser = authenticatedUser
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
+            }
+
+            @Test
+            fun `404 - Word's property cannot be toggled if word does not exist`() {
+                val request = wordRequestFactory.togglePropertyRequest(
+                    wordId = UUID.randomUUID(),
+                    property = WordToggleableProperty.IS_COMPLETED,
+                    authenticatedUser = authenticatedUser
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
+            }
+
+            @Test
+            fun `400 - Word's property cannot be toggled if property is not boolean`() {
+                val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val request = wordRequestFactory.togglePropertyRequest(
+                    wordId = word.id,
+                    property = null,
+                    authenticatedUser = authenticatedUser
+                )
+
+                // Override the property param
+                request.param("property", "not_boolean")
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
         }
     }
