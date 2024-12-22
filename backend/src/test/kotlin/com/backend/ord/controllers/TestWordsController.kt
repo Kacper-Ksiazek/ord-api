@@ -2314,6 +2314,7 @@ class TestWordsController @Autowired constructor(
     }
 
     @Nested
+
     @DisplayName("[POST] /api/v1/words/toggle-property-for-multiple-words - toggle property for multiple words")
     inner class TogglePropertyForManyWordsTests {
         @Nested
@@ -2343,6 +2344,98 @@ class TestWordsController @Autowired constructor(
                 words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
                     it.assertBooleanProperty(property, true)
                 }
+            }
+
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - Words' boolean properties can be toggled from true to false`(property: WordToggleableProperty) {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                )
+
+                words.forEach {
+                    it.updateBooleanProperty(property, true)
+                }
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words,
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
+                    it.assertBooleanProperty(property, false)
+                }
+            }
+        }
+
+        @ParameterizedTest
+        @EnumSource(WordToggleableProperty::class)
+        fun `200 - All words should be toggled even if one word does not exist`(property: WordToggleableProperty) {
+            val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                user = authenticatedUser.userInfo,
+            )
+
+            words.forEach {
+                it.updateBooleanProperty(property, false)
+            }
+
+            val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                authenticatedUser = authenticatedUser,
+                words = words + wordSeeder.seedOneEntity(),
+                property = property
+            )
+
+            mockMvc.perform(request).andReturn().let {
+                it.response.status shouldBe HttpStatus.OK.value()
+
+            }
+
+            words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
+                it.assertBooleanProperty(property, true)
+            }
+        }
+
+        @ParameterizedTest
+        @EnumSource(WordToggleableProperty::class)
+        fun `200 - Word of another user should no te toggled`(property: WordToggleableProperty) {
+            val anotherUser: User = userSeeder.seedOneEntity()
+
+            val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                user = authenticatedUser.userInfo
+            )
+
+            val wordsFromAnotherUser: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                user = anotherUser
+            )
+
+            (words + wordsFromAnotherUser).forEach {
+                it.updateBooleanProperty(property, true)
+            }
+
+
+            val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                authenticatedUser = authenticatedUser,
+                words = words + wordsFromAnotherUser,
+                property = property
+            )
+
+            mockMvc.perform(request).andReturn().let {
+                it.response.status shouldBe HttpStatus.OK.value()
+            }
+
+            // All words from authenticated user should be toggled
+            words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
+                it.assertBooleanProperty(property, false)
+            }
+
+            // All words from another user should not be toggled
+            wordsFromAnotherUser.map { wordService.findByIdOrFail(it.id, anotherUser.id) }.forEach {
+                it.assertBooleanProperty(property, true)
             }
         }
 
