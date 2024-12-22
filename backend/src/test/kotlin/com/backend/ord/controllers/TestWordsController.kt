@@ -2371,71 +2371,169 @@ class TestWordsController @Autowired constructor(
                     it.assertBooleanProperty(property, false)
                 }
             }
+
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - All words should be toggled even if one word does not exist`(property: WordToggleableProperty) {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                )
+
+                words.forEach {
+                    it.updateBooleanProperty(property, false)
+                }
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words + wordSeeder.seedOneEntity(),
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+
+                }
+
+                words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
+                    it.assertBooleanProperty(property, true)
+                }
+            }
+
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - Word of another user should no te toggled`(property: WordToggleableProperty) {
+                val anotherUser: User = userSeeder.seedOneEntity()
+
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo
+                )
+
+                val wordsFromAnotherUser: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = anotherUser
+                )
+
+                (words + wordsFromAnotherUser).forEach {
+                    it.updateBooleanProperty(property, true)
+                }
+
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words + wordsFromAnotherUser,
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                // All words from authenticated user should be toggled
+                words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
+                    it.assertBooleanProperty(property, false)
+                }
+
+                // All words from another user should not be toggled
+                wordsFromAnotherUser.map { wordService.findByIdOrFail(it.id, anotherUser.id) }.forEach {
+                    it.assertBooleanProperty(property, true)
+                }
+            }
         }
 
-        @ParameterizedTest
-        @EnumSource(WordToggleableProperty::class)
-        fun `200 - All words should be toggled even if one word does not exist`(property: WordToggleableProperty) {
-            val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
-                user = authenticatedUser.userInfo,
-            )
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `403 - Anonymous user cannot toggle words' property`() {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo
+                )
 
-            words.forEach {
-                it.updateBooleanProperty(property, false)
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    words = words,
+                    authenticatedUser = null
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                }
             }
 
-            val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                authenticatedUser = authenticatedUser,
-                words = words + wordSeeder.seedOneEntity(),
-                property = property
-            )
+            @Test
+            fun `400 - not found when no words' ids are provided`() {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                )
 
-            mockMvc.perform(request).andReturn().let {
-                it.response.status shouldBe HttpStatus.OK.value()
+                words.forEach {
+                    it.updateBooleanProperty(WordToggleableProperty.IS_COMPLETED, false)
+                }
 
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = listOf(),
+                    property = WordToggleableProperty.IS_COMPLETED
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
-            words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
-                it.assertBooleanProperty(property, true)
-            }
-        }
+            @Test
+            fun `400 - cannot change non boolean property for multiple words`() {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                )
 
-        @ParameterizedTest
-        @EnumSource(WordToggleableProperty::class)
-        fun `200 - Word of another user should no te toggled`(property: WordToggleableProperty) {
-            val anotherUser: User = userSeeder.seedOneEntity()
+                words.forEach {
+                    it.updateBooleanProperty(WordToggleableProperty.IS_COMPLETED, false)
+                }
 
-            val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
-                user = authenticatedUser.userInfo
-            )
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words,
+                    property = null
+                )
 
-            val wordsFromAnotherUser: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
-                user = anotherUser
-            )
+                request.param("property", "not_boolean")
 
-            (words + wordsFromAnotherUser).forEach {
-                it.updateBooleanProperty(property, true)
-            }
-
-
-            val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                authenticatedUser = authenticatedUser,
-                words = words + wordsFromAnotherUser,
-                property = property
-            )
-
-            mockMvc.perform(request).andReturn().let {
-                it.response.status shouldBe HttpStatus.OK.value()
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
             }
 
-            // All words from authenticated user should be toggled
-            words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
-                it.assertBooleanProperty(property, false)
+            @Test
+            fun `404 - when all words do not belong to the user`() {
+                val anotherUser: User = userSeeder.seedOneEntity()
+
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = anotherUser
+                )
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words,
+                    property = WordToggleableProperty.IS_COMPLETED
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
             }
 
-            // All words from another user should not be toggled
-            wordsFromAnotherUser.map { wordService.findByIdOrFail(it.id, anotherUser.id) }.forEach {
-                it.assertBooleanProperty(property, true)
+            @Test
+            fun `404 - when all words do not exist`() {
+                val words: List<Word> = List(5, init = { wordMockFactory.mockEntity() })
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words,
+                    property = WordToggleableProperty.IS_COMPLETED
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
             }
         }
 
