@@ -3,6 +3,7 @@ package com.backend.ord.services.impl
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
+import com.backend.ord.api.requests.word.enums.toggleProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
@@ -148,16 +149,27 @@ class WordServiceImpl(
         val word: Word = repository.findOneForUser(id = wordId, userId = userId)
             ?: throw NotFoundException("Word with id $wordId not found")
 
-        when (property) {
-            WordToggleableProperty.IS_BOOKMARKED -> {
-                word.isBookmarked = !word.isBookmarked
-            }
+        return repository.save(
+            word.toggleProperty(property)
+        )
+    }
 
-            WordToggleableProperty.IS_COMPLETED -> {
-                word.isCompleted = !word.isCompleted
-            }
+    override fun togglePropertyForManyWords(
+        wordIds: Set<UUID>,
+        userId: UUID,
+        property: WordToggleableProperty
+    ): List<Word> {
+        val words = repository.findAllForUser(ids = wordIds, userId = userId)
+
+        // Handle partial save
+        if (words.isEmpty()) {
+            throw NotFoundException("No requested words found for user with id $userId")
         }
 
-        return repository.save(word)
+        return repository.saveAll(
+            words.map {
+                it.toggleProperty(property)
+            }
+        )
     }
 }

@@ -69,4 +69,10 @@ interface WordService : UserResourceService<Word> {
         userId: UUID,
         property: WordToggleableProperty
     ): Word
+
+    fun togglePropertyForManyWords(
+        wordIds: Set<UUID>,
+        userId: UUID,
+        property: WordToggleableProperty
+    ): List<Word>
 }

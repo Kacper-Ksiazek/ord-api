@@ -7,6 +7,7 @@ import com.backend.ord.api.requests.word.data.CreateWordRequestData
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.data.GetManyWordsRequestData
+import com.backend.ord.api.requests.word.data.WordBulkActionRequestData
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.controllers.request_factories.data.CreateWordData
@@ -380,6 +381,34 @@ class WordRequestFactory(
                 if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
                 if (property != null) this.param("property", property.toString())
             }
+    }
+
+    /**
+     * POST /words/toggle-property-for-multiple-words
+     */
+    fun togglePropertyForMultipleWordsRequest(
+        authenticatedUser: MockedAuthenticatedUser? = null,
+        words: List<Word>? = null,
+        property: WordToggleableProperty? = null
+    ): MockHttpServletRequestBuilder {
+        val wordIds = words?.map { it.id }
+
+        return MockMvcRequestBuilders
+            .post("$BASE_URL/toggle-property-for-multiple-words")
+            .apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+                if (property != null) this.param("property", property.toString())
+            }
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    when (wordIds) {
+                        null -> null
+                        else -> WordBulkActionRequestData(ids = wordIds)
+                    }
+                )
+            )
     }
 
 }
