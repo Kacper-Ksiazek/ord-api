@@ -367,9 +367,7 @@ class WordRepositoryCustomMethodsImpl(
 
         // 2.1 - isBookmarked
         bookmarkedOnly?.let {
-            if (bookmarkedOnly == true) {
-                predicates.add(criteriaBuilder.isTrue(root.get<Boolean>("isBookmarked")))
-            }
+            predicates.add(criteriaBuilder.equal(root.get<Boolean>("isBookmarked"), bookmarkedOnly))
         }
 
         // 2.2 - completed

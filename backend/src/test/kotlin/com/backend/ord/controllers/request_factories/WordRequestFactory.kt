@@ -98,6 +98,7 @@ class WordRequestFactory(
         wordType: Any? = null,
         searchingPhrase: Any? = null,
         bookmarkedOnly: Any? = null,
+        completed: Any? = null,
         wordExtraMark: Any? = null,
 
         banksIds: Any? = null,
@@ -124,6 +125,7 @@ class WordRequestFactory(
                         perPage = perPage,
 
                         wordType = wordType,
+                        completed = completed,
                         wordExtraMark = wordExtraMark,
                         bookmarkedOnly = bookmarkedOnly,
                         searchingPhrase = searchingPhrase,

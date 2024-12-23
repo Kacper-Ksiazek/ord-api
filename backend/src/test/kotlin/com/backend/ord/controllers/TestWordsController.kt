@@ -1,7 +1,11 @@
 package com.backend.ord.controllers
 
+
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.api.requests.enums.SortDirection
+import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.PaginatedDataResponse
+import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.extensions.compareWith
@@ -17,17 +21,23 @@ import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
+import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.domain.mappers.WordMapper
 import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.enums.word.WordExtraMark
+import com.backend.ord.enums.word.WordType
 import com.backend.ord.repositories.WordRepository
+import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.entities.WordSeeder
 import com.backend.ord.seeders.factories.BankMockFactory
+import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import com.backend.ord.utils.Optional
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -37,6 +47,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -46,20 +58,7 @@ import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
-import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
-import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.domain.mappers.UserMapper
-import com.backend.ord.seeders.entities.BankGroupSeeder
-import com.backend.ord.seeders.factories.WordMockFactory
-import io.kotest.matchers.comparables.shouldBeLessThan
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-
-
 import java.util.*
 
 @SpringBootTest
@@ -121,6 +120,7 @@ class TestWordsController @Autowired constructor(
                 perPage: Int? = null,
 
                 wordType: WordType? = null,
+                completed: Boolean? = null,
                 searchingPhrase: String? = null,
                 bookmarkedOnly: Boolean? = null,
                 wordExtraMark: WordExtraMark? = null,
@@ -139,6 +139,7 @@ class TestWordsController @Autowired constructor(
                     perPage = perPage,
 
                     wordType = wordType,
+                    completed = completed,
                     searchingPhrase = searchingPhrase,
                     bookmarkedOnly = bookmarkedOnly,
                     wordExtraMark = wordExtraMark,
@@ -314,17 +315,48 @@ class TestWordsController @Autowired constructor(
                 }
             }
 
-            @Test
-            fun `200 - Words can be fetched with filtering - by bookmarked`() {
+            @ParameterizedTest
+            @ValueSource(booleans = [true, false])
+            fun `200 - Words can be fetched with filtering - by bookmarked `(bookmarked: Boolean) {
+                val wordsToAdd = List(10) {
+                    wordMockFactory.mockEntity(
+                        user = userMapper.toEntity(authenticatedUser.userInfo),
+                    ).apply { isBookmarked = bookmarked }
+                }
+
+                wordRepository.saveAll(wordsToAdd)
+
                 val body = makeManyWordsRequest(
-                    bookmarkedOnly = true,
+                    bookmarkedOnly = bookmarked,
                     perPage = 500
                 )
 
                 body.data.forEach {
-                    it.isBookmarked shouldBe true
+                    it.isBookmarked shouldBe bookmarked
                 }
             }
+
+            @ParameterizedTest
+            @ValueSource(booleans = [true, false])
+            fun `200 - Words can be fetched with filtering - by completed status `(completed: Boolean) {
+                val wordsToAdd = List(10) {
+                    wordMockFactory.mockEntity(
+                        user = userMapper.toEntity(authenticatedUser.userInfo),
+                    ).apply { isCompleted = completed }
+                }
+
+                wordRepository.saveAll(wordsToAdd)
+
+                val body: PaginatedDataResponse<WordAsGetManyWordResponse> = makeManyWordsRequest(
+                    completed = completed,
+                    perPage = 500
+                )
+
+                body.data.forEach {
+                    it.isCompleted shouldBe completed
+                }
+            }
+
 
             @Test
             fun `200 - Words can be fetched with filtering - by bank`() {
@@ -408,6 +440,7 @@ class TestWordsController @Autowired constructor(
                 wordType: Any? = null,
                 searchingPhrase: Any? = null,
                 bookmarkedOnly: Any? = null,
+                completed: Any? = null,
                 wordExtraMark: Any? = null,
 
                 banksIds: Any? = null,
@@ -424,9 +457,10 @@ class TestWordsController @Autowired constructor(
                     perPage = perPage,
 
                     wordType = wordType,
-                    searchingPhrase = searchingPhrase,
-                    bookmarkedOnly = bookmarkedOnly,
+                    completed = completed,
                     wordExtraMark = wordExtraMark,
+                    bookmarkedOnly = bookmarkedOnly,
+                    searchingPhrase = searchingPhrase,
 
                     banksIds = banksIds,
                     bankGroupsIds = bankGroupsIds,
@@ -525,6 +559,14 @@ class TestWordsController @Autowired constructor(
             fun `400 - Words cannot be fetched with invalid param - bookmarkedOnly`(parameter: String) {
                 makeManyWordsRequestUnsafe(
                     bookmarkedOnly = parameter
+                )
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
+            fun `400 - Words cannot be fetched with invalid param - completed`(parameter: String) {
+                makeManyWordsRequestUnsafe(
+                    completed = parameter
                 )
             }
 

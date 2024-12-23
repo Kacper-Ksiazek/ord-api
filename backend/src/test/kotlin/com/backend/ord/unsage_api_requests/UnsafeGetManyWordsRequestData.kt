@@ -7,6 +7,7 @@ data class UnsafeGetManyWordsRequestData(
     val perPage: Any?,
 
     val wordType: Any?,
+    val completed: Any?,
     val wordExtraMark: Any?,
     val bookmarkedOnly: Any?,
     val searchingPhrase: Any?,
