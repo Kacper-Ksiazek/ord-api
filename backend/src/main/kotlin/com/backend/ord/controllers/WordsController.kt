@@ -47,8 +47,9 @@ class WordController(
             wordService.findManyWords(
                 language = requestBody.language,
                 wordType = requestBody.wordType,
+                completed = requestBody.completed,
                 wordExtraMark = requestBody.wordExtraMark,
-                bookmarkedOnly = requestBody.bookmarkedOnly,
+                bookmarked = requestBody.bookmarked,
                 searchingPhrase = requestBody.searchingPhrase,
 
                 banksIds = requestBody.banksIds?.convertToSetExplicitly(paramName = "banksIds"),

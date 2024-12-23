@@ -1,9 +1,5 @@
 package com.backend.ord.services
 
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.services.bases.UserResourceService
-import java.util.UUID
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
@@ -11,8 +7,12 @@ import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.entities.Word
+import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.enums.word.WordExtraMark
 import com.backend.ord.enums.word.WordType
+import com.backend.ord.services.bases.UserResourceService
+import java.util.*
 
 
 interface WordService : UserResourceService<Word> {
@@ -40,9 +40,9 @@ interface WordService : UserResourceService<Word> {
     ): Set<String>
 
     fun findManyWords(
+        completed: Boolean? = null,
         searchingPhrase: String? = null,
-        bookmarkedOnly: Boolean? = null,
-        // TODO: completedOnly: Boolean? = null,
+        bookmarked: Boolean? = null,
 
         banksIds: Set<UUID>? = null,
         bankGroupsIds: Set<UUID>? = null,

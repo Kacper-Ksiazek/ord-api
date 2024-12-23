@@ -58,7 +58,8 @@ class AIGameServiceImpl(
             language = language,
             perPage = 500,
             sortBy = GetAllWordsSortOptions.ORIGIN,
-            sortDirection = SortDirection.DESC
+            sortDirection = SortDirection.DESC,
+            completed = false
             // TODO: Add more filters
         ).data
             .shuffled()

@@ -11,17 +11,17 @@ class WordDTO(
     val id: UUID = UUID.randomUUID(),
 
     var origin: String,
-    var translation: String,
-    var definition: String,
-    var useCases: Set<String> = emptySet(),
-    var isBookmarked: Boolean = false,
-    var isCompleted: Boolean = false,
-    var type: WordType,
-    var extraMark: WordExtraMark? = null,
-    var translatedFrom: LanguageName,
-    var translatedTo: LanguageName,
-
     var points: Int = 0,
+    var definition: String,
+    var translation: String,
+    var isCompleted: Boolean = false,
+    var isBookmarked: Boolean = false,
+    var type: WordType,
+    var translatedTo: LanguageName,
+    var translatedFrom: LanguageName,
+    var extraMark: WordExtraMark? = null,
+
+    var useCases: Set<String> = emptySet(),
     var exampleSentences: Set<ExampleSentence> = emptySet(),
 
     val user: UserDTO,

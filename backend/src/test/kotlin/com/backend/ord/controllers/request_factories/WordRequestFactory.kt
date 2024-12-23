@@ -1,12 +1,8 @@
 package com.backend.ord.controllers.request_factories
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
-import com.backend.ord.api.requests.word.data.ChangeBankForMultipleWordsRequestData
-import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
-import com.backend.ord.api.requests.word.data.CreateWordRequestData
-import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.data.GetManyWordsRequestData
+import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.requests.word.data.WordBulkActionRequestData
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
@@ -50,8 +46,9 @@ class WordRequestFactory(
         perPage: Int? = null,
 
         wordType: WordType? = null,
+        completed: Boolean? = null,
         searchingPhrase: String? = null,
-        bookmarkedOnly: Boolean? = null,
+        bookmarked: Boolean? = null,
         wordExtraMark: WordExtraMark? = null,
 
         banksIds: Set<UUID>? = null,
@@ -78,8 +75,9 @@ class WordRequestFactory(
                         perPage = perPage,
 
                         wordType = wordType,
+                        completed = completed,
                         wordExtraMark = wordExtraMark,
-                        bookmarkedOnly = bookmarkedOnly,
+                        bookmarked = bookmarked,
                         searchingPhrase = searchingPhrase,
 
                         banksIds = banksIds?.toList(),
@@ -101,7 +99,8 @@ class WordRequestFactory(
 
         wordType: Any? = null,
         searchingPhrase: Any? = null,
-        bookmarkedOnly: Any? = null,
+        bookmarked: Any? = null,
+        completed: Any? = null,
         wordExtraMark: Any? = null,
 
         banksIds: Any? = null,
@@ -128,8 +127,9 @@ class WordRequestFactory(
                         perPage = perPage,
 
                         wordType = wordType,
+                        completed = completed,
                         wordExtraMark = wordExtraMark,
-                        bookmarkedOnly = bookmarkedOnly,
+                        bookmarked = bookmarked,
                         searchingPhrase = searchingPhrase,
 
                         banksIds = banksIds,

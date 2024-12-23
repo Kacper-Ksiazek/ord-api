@@ -19,8 +19,9 @@ interface WordRepositoryCustomMethods {
     ): SingleWordResponse
 
     fun findManyWords(
+        completed: Boolean?,
         searchingPhrase: String?,
-        bookmarkedOnly: Boolean?,
+        bookmarked: Boolean?,
 
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
