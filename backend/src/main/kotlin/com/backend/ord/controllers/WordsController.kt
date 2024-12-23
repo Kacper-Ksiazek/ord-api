@@ -2,6 +2,7 @@ package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.word.data.*
+import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
@@ -198,6 +199,40 @@ class WordController(
         return ResponseEntity.status(HttpStatus.OK).build()
     }
 
+    @PostMapping("/{id}/toggle-property")
+    fun togglePropertyForOneWord(
+        request: HttpServletRequest,
+        @PathVariable id: UUID,
+        @RequestParam(required = false) property: WordToggleableProperty
+    ): ResponseEntity<Unit> {
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+
+        wordService.toggleProperty(
+            wordId = id,
+            userId = user.id,
+            property = property
+        )
+
+        return ResponseEntity.status(HttpStatus.OK).build()
+    }
+
+    @PostMapping("/toggle-property-for-multiple-words")
+    fun togglePropertyForManyWords(
+        request: HttpServletRequest,
+        @RequestParam(required = false) property: WordToggleableProperty,
+        @Valid @RequestBody body: WordBulkActionRequestData
+    ): ResponseEntity<Unit> {
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+
+        wordService.togglePropertyForManyWords(
+            wordIds = body.ids.convertToSetExplicitly(paramName = "ids"),
+            userId = user.id,
+            property = property
+        )
+
+        return ResponseEntity.status(HttpStatus.OK).build()
+    }
+
     @DeleteMapping("/{id}")
     fun deleteWord(
         request: HttpServletRequest,
@@ -232,7 +267,7 @@ class WordController(
                 bankToCreate = bankToCreate,
                 user = user
             )!!
-        } catch (e: DataIntegrityViolationException) {
+        } catch (_: DataIntegrityViolationException) {
             throw BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
         }
     }

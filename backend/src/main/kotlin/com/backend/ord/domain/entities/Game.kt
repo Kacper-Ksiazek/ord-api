@@ -1,6 +1,7 @@
 package com.backend.ord.domain.entities
 
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.enums.game.GameDifficulty
 import com.backend.ord.enums.game.GameStatus
 import com.backend.ord.enums.game.GameType
 import jakarta.persistence.*
@@ -32,13 +33,23 @@ class Game(
     var type: GameType,
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "difficulty", columnDefinition = "game_difficulty(0, 0) not null", nullable = false)
+    var difficulty: GameDifficulty,
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", columnDefinition = "game_status(0, 0) not null", nullable = false)
     var status: GameStatus = GameStatus.IN_PROGRESS,
+
+    @Column(name = "instruction", nullable = false, columnDefinition = "json")
+    var instruction: String,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
     override var user: User,
+
+    @Column(name = "user_id", insertable = false, updatable = false)
+    var userId: UUID = user.id,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
@@ -47,4 +58,9 @@ class Game(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-) : IdentifiableUserResource
+) : IdentifiableUserResource {
+    @PostLoad
+    fun populateUserId() {
+        userId = user.id
+    }
+}

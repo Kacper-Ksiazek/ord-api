@@ -2,6 +2,7 @@ package com.backend.ord.services
 
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
@@ -43,23 +44,35 @@ interface WordService : UserResourceService<Word> {
         searchingPhrase: String?,
         bookmarked: Boolean?,
 
-        banksIds: Set<UUID>?,
-        bankGroupsIds: Set<UUID>?,
+        banksIds: Set<UUID>? = null,
+        bankGroupsIds: Set<UUID>? = null,
 
-        wordType: WordType?,
+        wordType: WordType? = null,
         language: LanguageName,
-        sortDirection: SortDirection?,
-        wordExtraMark: WordExtraMark?,
-        sortBy: GetAllWordsSortOptions?,
+        sortDirection: SortDirection? = null,
+        wordExtraMark: WordExtraMark? = null,
+        sortBy: GetAllWordsSortOptions? = null,
 
         user: User,
 
-        page: Int,
-        perPage: Int
+        page: Int = 0,
+        perPage: Int = 10
     ): PaginatedDataResponse<WordAsGetManyWordResponse>
 
     fun findOneWord(
         wordId: UUID,
         user: User
     ): SingleWordResponse
+
+    fun toggleProperty(
+        wordId: UUID,
+        userId: UUID,
+        property: WordToggleableProperty
+    ): Word
+
+    fun togglePropertyForManyWords(
+        wordIds: Set<UUID>,
+        userId: UUID,
+        property: WordToggleableProperty
+    ): List<Word>
 }

@@ -11,6 +11,9 @@ interface UserResourceRepository<T> : JpaRepository<T, UUID> {
     @Query("SELECT r FROM #{#entityName} r WHERE r.user.id = :userId")
     fun findAllForUser(userId: UUID): List<T>
 
+    @Query("SELECT r FROM #{#entityName} r WHERE r.user.id = :userId AND r.id IN :ids")
+    fun findAllForUser(ids: Set<UUID>, userId: UUID): List<T>
+
     @Query("SELECT r FROM #{#entityName} r WHERE r.user.id = :userId AND r.id = :id")
     fun findOneForUser(userId: UUID, id: UUID): T?
 

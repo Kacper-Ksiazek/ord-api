@@ -16,7 +16,6 @@ class WordDTO(
     var translation: String,
     var isCompleted: Boolean = false,
     var isBookmarked: Boolean = false,
-
     var type: WordType,
     var translatedTo: LanguageName,
     var translatedFrom: LanguageName,

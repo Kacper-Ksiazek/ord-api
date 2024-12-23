@@ -47,7 +47,7 @@ class OpenAIAccessController(
         @RequestParam(required = false) translateExamplesTo: LanguageName?,
         @RequestParam(defaultValue = "3") examplesCount: Int
     ): ResponseEntity<*> {
-        val user = jwtService.getAuthenticatedUser(request)!!
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         // Create the request
         val openAIRequest = openAIRequestFactory.createRequest(
@@ -122,7 +122,7 @@ class OpenAIAccessController(
                     - NON_EXISTENT_WORD if the word does not exist in the language
             """.trimIndent(), // TODO: Try removing new lines or tabulator to reduce the average amount of used tokens
             context =
-            "I want my answer to be suitable for any JSON parser such as Jackson or JSON.parse from js. Do not add any markdown formatting around the examples, just raw JSON.",
+                "I want my answer to be suitable for any JSON parser such as Jackson or JSON.parse from js. Do not add any markdown formatting around the examples, just raw JSON.",
         )
 
         // Send the request to OpenAI

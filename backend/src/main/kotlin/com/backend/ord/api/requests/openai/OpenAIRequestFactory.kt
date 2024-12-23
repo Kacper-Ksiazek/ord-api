@@ -1,13 +1,17 @@
 package com.backend.ord.api.requests.openai
 
 import com.backend.ord.config.properties.OpenAIProperties
+import com.backend.ord.prompts.Prompts
 import org.springframework.stereotype.Component
 
 @Component
 class OpenAIRequestFactory(
     private val openAIProperties: OpenAIProperties
 ) {
-    fun createRequest(prompt: String, context: String): OpenAIRequest {
+    fun createRequest(
+        prompt: String,
+        context: String = Prompts.DEFAULT_CONTEXT
+    ): OpenAIRequest {
         return OpenAIRequest(
             model = openAIProperties.gptModel,
             temperature = openAIProperties.temperature,
@@ -25,7 +29,7 @@ class OpenAIRequestFactory(
         )
     }
 
-    fun createRequest(prompt: String): OpenAIRequest {
+    fun createRequestWithoutContext(prompt: String): OpenAIRequest {
         return OpenAIRequest(
             model = openAIProperties.gptModel,
             temperature = openAIProperties.temperature,
