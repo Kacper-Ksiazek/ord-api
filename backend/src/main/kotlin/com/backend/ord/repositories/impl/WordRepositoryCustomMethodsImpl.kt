@@ -58,30 +58,31 @@ class WordRepositoryCustomMethodsImpl(
             root.get<String>("translation"),            // 3
             root.get<String>("definition"),             // 4
             root.get<Boolean>("isBookmarked"),          // 5
+            root.get<Boolean>("isCompleted"),           // 6
 
             // Enum types
-            root.get<WordType>("type"),                 // 6
-            root.get<WordExtraMark?>("extraMark"),      // 7
-            root.get<LanguageName>("translatedTo"),     // 8
-            root.get<LanguageName>("translatedFrom"),   // 9
+            root.get<WordType>("type"),                 // 7
+            root.get<WordExtraMark?>("extraMark"),      // 8
+            root.get<LanguageName>("translatedTo"),     // 9
+            root.get<LanguageName>("translatedFrom"),   // 10
 
             // Lists fields
-            root.get<String>("useCases"),               // 10
-            root.get<Int>("exampleSentences"),          // 11
+            root.get<String>("useCases"),               // 11
+            root.get<Int>("exampleSentences"),          // 12
 
             // Bank fields
-            bankJoin.get<UUID?>("id"),                  // 12
-            bankJoin.get<String?>("name"),              // 13
-            bankJoin.get<String?>("description"),       // 14
+            bankJoin.get<UUID?>("id"),                  // 13
+            bankJoin.get<String?>("name"),              // 14
+            bankJoin.get<String?>("description"),       // 15
 
             // BankGroup fields
-            bankGroupJoin.get<UUID?>("id"),             // 15
-            bankGroupJoin.get<String?>("name"),         // 16
-            bankGroupJoin.get<String?>("color"),        // 17
+            bankGroupJoin.get<UUID?>("id"),             // 16
+            bankGroupJoin.get<String?>("name"),         // 17
+            bankGroupJoin.get<String?>("color"),        // 18
 
             // Timestamps
-            root.get<Instant>("createdAt"),             // 18
-            root.get<Instant>("updatedAt")              // 19
+            root.get<Instant>("createdAt"),             // 19
+            root.get<Instant>("updatedAt")              // 20
         )
 
         criteriaQuery.where(
@@ -97,8 +98,8 @@ class WordRepositoryCustomMethodsImpl(
 
         val result: Tuple = query.singleResult!!
 
-        val bankId = result.get(12, UUID::class.java)
-        val bankGroupId = result.get(15, UUID::class.java)
+        val bankId = result.get(13, UUID::class.java)
+        val bankGroupId = result.get(16, UUID::class.java)
 
         return SingleWordResponse(
             id = result.get(0, UUID::class.java),
@@ -108,32 +109,33 @@ class WordRepositoryCustomMethodsImpl(
             translation = result.get(3, String::class.java),
             definition = result.get(4, String::class.java),
             isBookmarked = result.get(5, Boolean::class.java),
+            isCompleted = result.get(6, Boolean::class.java),
 
-            type = result.get(6, WordType::class.java),
-            extraMark = result.get(7, WordExtraMark::class.java),
-            translatedTo = result.get(8, LanguageName::class.java),
-            translatedFrom = result.get(9, LanguageName::class.java),
+            type = result.get(7, WordType::class.java),
+            extraMark = result.get(8, WordExtraMark::class.java),
+            translatedTo = result.get(9, LanguageName::class.java),
+            translatedFrom = result.get(10, LanguageName::class.java),
 
-            useCases = result.get(10, Set::class.java) as Set<String>,
-            exampleSentences = result.get(11, Set::class.java) as Set<ExampleSentence>,
+            useCases = result.get(11, Set::class.java) as Set<String>,
+            exampleSentences = result.get(12, Set::class.java) as Set<ExampleSentence>,
 
             bank = if (bankId != null) {
                 BankCompact(
                     id = bankId,
-                    name = result.get(13, String::class.java) ?: "",
-                    description = result.get(14, String::class.java) ?: "",
+                    name = result.get(14, String::class.java) ?: "",
+                    description = result.get(15, String::class.java) ?: "",
                     bankGroup = if (bankGroupId != null) {
                         BankGroupCompact(
                             id = bankGroupId,
-                            name = result.get(16, String::class.java) ?: "",
-                            color = result.get(17, String::class.java) ?: ""
+                            name = result.get(17, String::class.java) ?: "",
+                            color = result.get(18, String::class.java) ?: ""
                         )
                     } else null
                 )
             } else null,
 
-            createdAt = result.get(18, Instant::class.java),
-            updatedAt = result.get(19, Instant::class.java)
+            createdAt = result.get(19, Instant::class.java),
+            updatedAt = result.get(20, Instant::class.java)
         )
     }
 
@@ -235,22 +237,23 @@ class WordRepositoryCustomMethodsImpl(
             root.get<String>("origin"),                 // 2
             root.get<String>("translation"),            // 3
             root.get<Boolean>("isBookmarked"),          // 4
-            root.get<WordType>("type"),                 // 5
-            root.get<WordExtraMark?>("extraMark"),      // 6
-            root.get<LanguageName>("translatedFrom"),   // 7
-            root.get<LanguageName>("translatedTo"),     // 8
-            root.get<UUID?>("bankId"),                  // 9
+            root.get<Boolean>("isCompleted"),           // 5
+            root.get<WordType>("type"),                 // 6
+            root.get<WordExtraMark?>("extraMark"),      // 7
+            root.get<LanguageName>("translatedFrom"),   // 8
+            root.get<LanguageName>("translatedTo"),     // 9
+            root.get<UUID?>("bankId"),                  // 10
             // Bank fields
-            bankJoin.get<UUID?>("id"),                  // 10
-            bankJoin.get<String?>("name"),              // 11
-            bankJoin.get<String?>("description"),       // 12
+            bankJoin.get<UUID?>("id"),                  // 11
+            bankJoin.get<String?>("name"),              // 12
+            bankJoin.get<String?>("description"),       // 13
             // BankGroup fields
-            bankGroupJoin.get<UUID?>("id"),             // 13
-            bankGroupJoin.get<String?>("name"),         // 14
-            bankGroupJoin.get<String?>("color"),        // 15
+            bankGroupJoin.get<UUID?>("id"),             // 14
+            bankGroupJoin.get<String?>("name"),         // 15
+            bankGroupJoin.get<String?>("color"),        // 16
             // Timestamps
-            root.get<Instant>("createdAt"),             // 16
-            root.get<Instant>("updatedAt")              // 17
+            root.get<Instant>("createdAt"),             // 17
+            root.get<Instant>("updatedAt")              // 18
         )
 
         // 6.1 Execute query with pagination
@@ -266,22 +269,23 @@ class WordRepositoryCustomMethodsImpl(
             val origin = tuple.get(2, String::class.java)
             val translation = tuple.get(3, String::class.java)
             val isBookmarked = tuple.get(4, Boolean::class.java)
-            val type = tuple.get(5, WordType::class.java)
-            val extraMark = tuple.get(6, WordExtraMark::class.java)
-            val translatedFrom = tuple.get(7, LanguageName::class.java)
-            val translatedTo = tuple.get(8, LanguageName::class.java)
-            val bankId = tuple.get(9, UUID::class.java)
+            val isCompleted = tuple.get(5, Boolean::class.java)
+            val type = tuple.get(6, WordType::class.java)
+            val extraMark = tuple.get(7, WordExtraMark::class.java)
+            val translatedFrom = tuple.get(8, LanguageName::class.java)
+            val translatedTo = tuple.get(9, LanguageName::class.java)
+            val bankId = tuple.get(10, UUID::class.java)
             // Bank fields
-            val bankIdParam = tuple.get(10, UUID::class.java)
-            val bankName = tuple.get(11, String::class.java)
-            val bankDescription = tuple.get(12, String::class.java)
+            val bankIdParam = tuple.get(11, UUID::class.java)
+            val bankName = tuple.get(12, String::class.java)
+            val bankDescription = tuple.get(13, String::class.java)
             // BankGroup fields
-            val bankGroupId = tuple.get(13, UUID::class.java)
-            val bankGroupName = tuple.get(14, String::class.java)
-            val bankGroupColor = tuple.get(15, String::class.java)
+            val bankGroupId = tuple.get(14, UUID::class.java)
+            val bankGroupName = tuple.get(15, String::class.java)
+            val bankGroupColor = tuple.get(16, String::class.java)
             // Timestamps
-            val createdAt = tuple.get(16, Instant::class.java)
-            val updatedAt = tuple.get(17, Instant::class.java)
+            val createdAt = tuple.get(17, Instant::class.java)
+            val updatedAt = tuple.get(18, Instant::class.java)
 
             // Construct BankGroupCompact
             val bankGroupCompact = if (bankGroupId != null) {
@@ -304,16 +308,22 @@ class WordRepositoryCustomMethodsImpl(
 
             WordAsGetManyWordResponse(
                 id = id,
+
                 points = points,
                 origin = origin,
+                isCompleted = isCompleted,
                 translation = translation,
                 isBookmarked = isBookmarked,
+
                 type = type,
                 extraMark = extraMark,
-                translatedFrom = translatedFrom,
                 translatedTo = translatedTo,
-                bankId = bankId,
+                translatedFrom = translatedFrom,
+
                 bank = bankCompact,
+
+                bankId = bankId,
+
                 createdAt = createdAt,
                 updatedAt = updatedAt
             )

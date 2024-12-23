@@ -5,13 +5,14 @@ import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.enums.word.WordExtraMark
 import com.backend.ord.enums.word.WordType
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 data class WordAsGetManyWordResponse(
     val id: UUID,
     var points: Int,
     var origin: String,
     var translation: String,
+    var isCompleted: Boolean,
     var isBookmarked: Boolean,
     var type: WordType,
     var extraMark: WordExtraMark?,
