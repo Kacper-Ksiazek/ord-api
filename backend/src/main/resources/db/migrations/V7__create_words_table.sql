@@ -39,9 +39,6 @@ CREATE TABLE IF NOT EXISTS "words"
     -- If set to true, the word is not used in games, exercises, etc.
     is_completed      BOOLEAN       NOT NULL   DEFAULT FALSE,
 
-    -- If true then the word will not be included in any games and exercises
-    "is_completed"      BOOLEAN       NOT NULL   DEFAULT FALSE,
-
     -- If set to true, the word is marked as bookmarked and therefore can be access more easily
     is_bookmarked     BOOLEAN       NOT NULL   DEFAULT FALSE,
 

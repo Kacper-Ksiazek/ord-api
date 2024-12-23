@@ -4,6 +4,7 @@ package com.backend.ord.controllers
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
@@ -48,6 +49,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -58,23 +60,7 @@ import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
-import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
-import com.backend.ord.api.requests.word.enums.WordToggleableProperty
-import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.domain.mappers.UserMapper
-import com.backend.ord.seeders.entities.BankGroupSeeder
-import com.backend.ord.seeders.factories.WordMockFactory
-import io.kotest.matchers.comparables.shouldBeLessThan
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
-import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.util.LinkedMultiValueMap
-
-
 import java.util.*
 
 @SpringBootTest

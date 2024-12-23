@@ -40,9 +40,9 @@ interface WordService : UserResourceService<Word> {
     ): Set<String>
 
     fun findManyWords(
-        completed: Boolean?,
-        searchingPhrase: String?,
-        bookmarked: Boolean?,
+        completed: Boolean? = null,
+        searchingPhrase: String? = null,
+        bookmarked: Boolean? = null,
 
         banksIds: Set<UUID>? = null,
         bankGroupsIds: Set<UUID>? = null,
