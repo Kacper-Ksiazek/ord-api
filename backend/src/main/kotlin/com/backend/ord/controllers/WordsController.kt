@@ -46,6 +46,7 @@ class WordController(
             wordService.findManyWords(
                 language = requestBody.language,
                 wordType = requestBody.wordType,
+                completed = requestBody.completed,
                 wordExtraMark = requestBody.wordExtraMark,
                 bookmarkedOnly = requestBody.bookmarkedOnly,
                 searchingPhrase = requestBody.searchingPhrase,

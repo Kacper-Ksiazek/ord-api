@@ -90,6 +90,7 @@ class WordServiceImpl(
     }
 
     override fun findManyWords(
+        completed: Boolean?,
         searchingPhrase: String?,
         bookmarkedOnly: Boolean?,
 
@@ -109,6 +110,7 @@ class WordServiceImpl(
     ): PaginatedDataResponse<WordAsGetManyWordResponse> {
         return repository.findManyWords(
             language = language,
+            completed = completed,
             bookmarkedOnly = bookmarkedOnly,
 
             wordType = wordType,

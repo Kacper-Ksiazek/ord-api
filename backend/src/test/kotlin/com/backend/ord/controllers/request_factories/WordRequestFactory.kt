@@ -1,12 +1,8 @@
 package com.backend.ord.controllers.request_factories
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
-import com.backend.ord.api.requests.word.data.ChangeBankForMultipleWordsRequestData
-import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
-import com.backend.ord.api.requests.word.data.CreateWordRequestData
-import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.data.GetManyWordsRequestData
+import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.controllers.request_factories.data.CreateWordData
 import com.backend.ord.controllers.request_factories.data.UpdateWordData
@@ -48,6 +44,7 @@ class WordRequestFactory(
         perPage: Int? = null,
 
         wordType: WordType? = null,
+        completed: Boolean? = null,
         searchingPhrase: String? = null,
         bookmarkedOnly: Boolean? = null,
         wordExtraMark: WordExtraMark? = null,
@@ -76,6 +73,7 @@ class WordRequestFactory(
                         perPage = perPage,
 
                         wordType = wordType,
+                        completed = completed,
                         wordExtraMark = wordExtraMark,
                         bookmarkedOnly = bookmarkedOnly,
                         searchingPhrase = searchingPhrase,

@@ -138,6 +138,7 @@ class WordRepositoryCustomMethodsImpl(
     }
 
     override fun findManyWords(
+        completed: Boolean?,
         searchingPhrase: String?,
         bookmarkedOnly: Boolean?,
 
@@ -178,9 +179,10 @@ class WordRepositoryCustomMethodsImpl(
             language = language,
 
             wordType = wordType,
-            searchingPhrase = searchingPhrase,
-            bookmarkedOnly = bookmarkedOnly,
+            completed = completed,
             wordExtraMark = wordExtraMark,
+            bookmarkedOnly = bookmarkedOnly,
+            searchingPhrase = searchingPhrase,
 
             banksIds = banksIds,
             bankGroupsIds = bankGroupsIds
@@ -213,9 +215,10 @@ class WordRepositoryCustomMethodsImpl(
 
             wordType = wordType,
             banksIds = banksIds,
-            searchingPhrase = searchingPhrase,
-            bookmarkedOnly = bookmarkedOnly,
+            completed = completed,
             wordExtraMark = wordExtraMark,
+            bookmarkedOnly = bookmarkedOnly,
+            searchingPhrase = searchingPhrase,
 
             bankGroupsIds = bankGroupsIds
         )
@@ -335,39 +338,46 @@ class WordRepositoryCustomMethodsImpl(
         language: LanguageName,
 
         wordType: WordType?,
+        completed: Boolean?,
         searchingPhrase: String?,
-        wordExtraMark: WordExtraMark?,
         bookmarkedOnly: Boolean?,
+
+        wordExtraMark: WordExtraMark?,
 
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
     ) {
         val predicates = mutableListOf<Predicate>()
 
-        // 3.1 Mandatory predicates
+        // 1. Mandatory predicates
         predicates.add(criteriaBuilder.equal(root.get<UUID>("userId"), userId))
         predicates.add(criteriaBuilder.equal(root.get<LanguageName>("translatedFrom"), language))
 
-        // 3.2 Optional predicates
+        // 2 Optional predicates
 
-        // 3.2.1 - isBookmarked
+        // 2.1 - isBookmarked
         bookmarkedOnly?.let {
             if (bookmarkedOnly == true) {
                 predicates.add(criteriaBuilder.isTrue(root.get<Boolean>("isBookmarked")))
             }
         }
 
-        // 3.2.2 - wordType
+        // 2.2 - completed
+        completed?.let {
+            predicates.add(criteriaBuilder.equal(root.get<Boolean>("isCompleted"), completed))
+        }
+
+        // 2.3 - wordType
         wordType?.let {
             predicates.add(criteriaBuilder.equal(root.get<WordType>("type"), it))
         }
 
-        // 3.2.3 - wordExtraMark
+        // 2.4 - wordExtraMark
         wordExtraMark?.let {
             predicates.add(criteriaBuilder.equal(root.get<WordExtraMark>("extraMark"), it))
         }
 
-        // 3.2.4 - searchingPhrase
+        // 2.5 - searchingPhrase
         searchingPhrase?.let {
             predicates.add(
                 criteriaBuilder.or(
@@ -385,13 +395,13 @@ class WordRepositoryCustomMethodsImpl(
             )
         }
 
-        // 3.2.5 - banksIds
+        // 2.6 - banksIds
         banksIds?.let {
             val bankIdPath = root.get<UUID>("bankId")
             predicates.add(bankIdPath.`in`(it))
         }
 
-        // 3.2.6 - bankGroupsIds
+        // 2.7 - bankGroupsIds
         bankGroupsIds?.let {
             val bankGroupIdPath = root.get<UUID>("bankGroupId")
             predicates.add(bankGroupIdPath.`in`(it))

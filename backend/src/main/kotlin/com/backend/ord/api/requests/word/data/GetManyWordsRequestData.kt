@@ -29,6 +29,7 @@ data class GetManyWordsRequestData(
     override val wordType: WordType?,
     override val wordExtraMark: WordExtraMark?,
     override val bookmarkedOnly: Boolean?,
+    override val completed: Boolean?,
     override val banksIds: List<UUID>?,
     override val bankGroupsIds: List<UUID>?,
     override val sortDirection: SortDirection?,
