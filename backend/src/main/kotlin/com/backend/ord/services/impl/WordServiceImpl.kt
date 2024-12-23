@@ -92,7 +92,7 @@ class WordServiceImpl(
     override fun findManyWords(
         completed: Boolean?,
         searchingPhrase: String?,
-        bookmarkedOnly: Boolean?,
+        bookmarked: Boolean?,
 
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
@@ -111,7 +111,7 @@ class WordServiceImpl(
         return repository.findManyWords(
             language = language,
             completed = completed,
-            bookmarkedOnly = bookmarkedOnly,
+            bookmarked = bookmarked,
 
             wordType = wordType,
             wordExtraMark = wordExtraMark,

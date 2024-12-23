@@ -41,7 +41,7 @@ interface WordService : UserResourceService<Word> {
     fun findManyWords(
         completed: Boolean?,
         searchingPhrase: String?,
-        bookmarkedOnly: Boolean?,
+        bookmarked: Boolean?,
 
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,

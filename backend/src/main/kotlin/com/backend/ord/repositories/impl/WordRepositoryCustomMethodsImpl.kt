@@ -142,7 +142,7 @@ class WordRepositoryCustomMethodsImpl(
     override fun findManyWords(
         completed: Boolean?,
         searchingPhrase: String?,
-        bookmarkedOnly: Boolean?,
+        bookmarked: Boolean?,
 
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
@@ -183,7 +183,7 @@ class WordRepositoryCustomMethodsImpl(
             wordType = wordType,
             completed = completed,
             wordExtraMark = wordExtraMark,
-            bookmarkedOnly = bookmarkedOnly,
+            bookmarked = bookmarked,
             searchingPhrase = searchingPhrase,
 
             banksIds = banksIds,
@@ -219,7 +219,7 @@ class WordRepositoryCustomMethodsImpl(
             banksIds = banksIds,
             completed = completed,
             wordExtraMark = wordExtraMark,
-            bookmarkedOnly = bookmarkedOnly,
+            bookmarked = bookmarked,
             searchingPhrase = searchingPhrase,
 
             bankGroupsIds = bankGroupsIds
@@ -350,7 +350,7 @@ class WordRepositoryCustomMethodsImpl(
         wordType: WordType?,
         completed: Boolean?,
         searchingPhrase: String?,
-        bookmarkedOnly: Boolean?,
+        bookmarked: Boolean?,
 
         wordExtraMark: WordExtraMark?,
 
@@ -366,8 +366,8 @@ class WordRepositoryCustomMethodsImpl(
         // 2 Optional predicates
 
         // 2.1 - isBookmarked
-        bookmarkedOnly?.let {
-            predicates.add(criteriaBuilder.equal(root.get<Boolean>("isBookmarked"), bookmarkedOnly))
+        bookmarked?.let {
+            predicates.add(criteriaBuilder.equal(root.get<Boolean>("isBookmarked"), bookmarked))
         }
 
         // 2.2 - completed

@@ -122,7 +122,7 @@ class TestWordsController @Autowired constructor(
                 wordType: WordType? = null,
                 completed: Boolean? = null,
                 searchingPhrase: String? = null,
-                bookmarkedOnly: Boolean? = null,
+                bookmarked: Boolean? = null,
                 wordExtraMark: WordExtraMark? = null,
 
                 banksIds: Set<UUID>? = null,
@@ -141,7 +141,7 @@ class TestWordsController @Autowired constructor(
                     wordType = wordType,
                     completed = completed,
                     searchingPhrase = searchingPhrase,
-                    bookmarkedOnly = bookmarkedOnly,
+                    bookmarked = bookmarked,
                     wordExtraMark = wordExtraMark,
 
                     banksIds = banksIds,
@@ -327,7 +327,7 @@ class TestWordsController @Autowired constructor(
                 wordRepository.saveAll(wordsToAdd)
 
                 val body = makeManyWordsRequest(
-                    bookmarkedOnly = bookmarked,
+                    bookmarked = bookmarked,
                     perPage = 500
                 )
 
@@ -439,7 +439,7 @@ class TestWordsController @Autowired constructor(
                 language: Any? = learningLanguage,
                 wordType: Any? = null,
                 searchingPhrase: Any? = null,
-                bookmarkedOnly: Any? = null,
+                bookmarked: Any? = null,
                 completed: Any? = null,
                 wordExtraMark: Any? = null,
 
@@ -459,7 +459,7 @@ class TestWordsController @Autowired constructor(
                     wordType = wordType,
                     completed = completed,
                     wordExtraMark = wordExtraMark,
-                    bookmarkedOnly = bookmarkedOnly,
+                    bookmarked = bookmarked,
                     searchingPhrase = searchingPhrase,
 
                     banksIds = banksIds,
@@ -556,9 +556,9 @@ class TestWordsController @Autowired constructor(
 
             @ParameterizedTest
             @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
-            fun `400 - Words cannot be fetched with invalid param - bookmarkedOnly`(parameter: String) {
+            fun `400 - Words cannot be fetched with invalid param - bookmarked`(parameter: String) {
                 makeManyWordsRequestUnsafe(
-                    bookmarkedOnly = parameter
+                    bookmarked = parameter
                 )
             }
 

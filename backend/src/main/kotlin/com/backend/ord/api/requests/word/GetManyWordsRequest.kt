@@ -16,7 +16,7 @@ interface GetManyWordsRequest {
 
     val wordType: WordType?
     val completed: Boolean?
-    val bookmarkedOnly: Boolean?
+    val bookmarked: Boolean?
     val searchingPhrase: String?
     val wordExtraMark: WordExtraMark?
 

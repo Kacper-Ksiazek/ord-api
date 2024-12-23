@@ -46,7 +46,7 @@ class WordRequestFactory(
         wordType: WordType? = null,
         completed: Boolean? = null,
         searchingPhrase: String? = null,
-        bookmarkedOnly: Boolean? = null,
+        bookmarked: Boolean? = null,
         wordExtraMark: WordExtraMark? = null,
 
         banksIds: Set<UUID>? = null,
@@ -75,7 +75,7 @@ class WordRequestFactory(
                         wordType = wordType,
                         completed = completed,
                         wordExtraMark = wordExtraMark,
-                        bookmarkedOnly = bookmarkedOnly,
+                        bookmarked = bookmarked,
                         searchingPhrase = searchingPhrase,
 
                         banksIds = banksIds?.toList(),
@@ -97,7 +97,7 @@ class WordRequestFactory(
 
         wordType: Any? = null,
         searchingPhrase: Any? = null,
-        bookmarkedOnly: Any? = null,
+        bookmarked: Any? = null,
         completed: Any? = null,
         wordExtraMark: Any? = null,
 
@@ -127,7 +127,7 @@ class WordRequestFactory(
                         wordType = wordType,
                         completed = completed,
                         wordExtraMark = wordExtraMark,
-                        bookmarkedOnly = bookmarkedOnly,
+                        bookmarked = bookmarked,
                         searchingPhrase = searchingPhrase,
 
                         banksIds = banksIds,
