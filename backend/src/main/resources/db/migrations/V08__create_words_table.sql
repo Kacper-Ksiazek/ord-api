@@ -1,14 +1,4 @@
-CALL create_enum_type(
-        'word_type',
-        ARRAY ['NOUN', 'VERB', 'ADJECTIVE', 'ADVERB', 'IDIOM', 'PHRASE']
-     );
-
-CALL create_enum_type(
-        'word_extra_mark',
-        ARRAY ['OFFENSIVE', 'SLANG', 'FORMAL', 'INFORMAL', 'SCIENTIFIC', 'TECHNICAL', 'LEGAL', 'MEDICAL', 'COLLOQUIAL', 'POETIC']
-     );
-
-CREATE TABLE IF NOT EXISTS "words"
+CREATE TABLE IF NOT EXISTS words
 (
     id                UUID PRIMARY KEY,
 
@@ -27,7 +17,7 @@ CREATE TABLE IF NOT EXISTS "words"
     -- Short and concise one or two sentences long definition of the word
     definition        VARCHAR(255)  NOT NULL,
 
-    -- Set<String> of use cases of the word such as for word "dystopia" it could be "Used to describe a society characterized by human misery"
+    -- Set<String> of use cases of the word such as for word dystopia it could be Used to describe a society characterized by human misery
     use_cases         JSONB         NOT NULL,
 
     -- Describes the original language of the word | example: `ENGLISH`
