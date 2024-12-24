@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "word_tokens_usages"
+CREATE TABLE IF NOT EXISTS word_tokens_usages
 (
     id                          UUID PRIMARY KEY,
 
@@ -21,11 +21,11 @@ CREATE TABLE IF NOT EXISTS "word_tokens_usages"
     -- Total cost of the operation in USD
     cost                        DECIMAL(20, 10)                   NOT NULL,
 
-    "created_at"                TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    "updated_at"                TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS "game_tokens_usages"
+CREATE TABLE IF NOT EXISTS game_tokens_usages
 (
     id                          UUID PRIMARY KEY,
 
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS "game_tokens_usages"
     updated_at                  TIMESTAMP WITH TIME ZONE                                                   DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS "story_tokens_usages"
+CREATE TABLE IF NOT EXISTS story_tokens_usages
 (
     id               UUID PRIMARY KEY,
 
@@ -66,6 +66,6 @@ CREATE TABLE IF NOT EXISTS "story_tokens_usages"
     -- Number of Open AI tokens consumed
     number_of_tokens INTEGER                             NOT NULL CHECK (number_of_tokens >= 0),
 
-    "created_at"     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    "updated_at"     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
