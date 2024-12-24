@@ -1,15 +1,3 @@
-CALL create_enum_type(
-        'story_context_type',
-        ARRAY [
-            'EDUCATIONAL',
-            'ENTERTAINMENT',
-            'FUN_FACT',
-            'HISTORICAL',
-            'MOTIVATIONAL',
-            'DAILY_CONVERSATION'
-            ]
-     );
-
 CREATE TABLE story_contexts
 (
 

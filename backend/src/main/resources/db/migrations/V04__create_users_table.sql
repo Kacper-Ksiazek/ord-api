@@ -1,23 +1,3 @@
-CALL create_enum_type(
-        'user_role',
-        ARRAY ['ADMIN', 'USER']
-     );
-
-CALL create_enum_type(
-        'language_name',
-        ARRAY [
-            'POLISH',
-            'ENGLISH',
-            'GERMAN',
-            'FRENCH',
-            'SPANISH',
-            'ITALIAN',
-            'NORWEGIAN',
-            'RUSSIAN',
-            'SLOVENIAN'
-            ]
-     );
-
 CREATE TABLE IF NOT EXISTS "users"
 (
     "id"              UUID PRIMARY KEY,

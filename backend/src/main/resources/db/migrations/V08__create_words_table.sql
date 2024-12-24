@@ -1,13 +1,3 @@
-CALL create_enum_type(
-        'word_type',
-        ARRAY ['NOUN', 'VERB', 'ADJECTIVE', 'ADVERB', 'IDIOM', 'PHRASE']
-     );
-
-CALL create_enum_type(
-        'word_extra_mark',
-        ARRAY ['OFFENSIVE', 'SLANG', 'FORMAL', 'INFORMAL', 'SCIENTIFIC', 'TECHNICAL', 'LEGAL', 'MEDICAL', 'COLLOQUIAL', 'POETIC']
-     );
-
 CREATE TABLE IF NOT EXISTS "words"
 (
     id                UUID PRIMARY KEY,

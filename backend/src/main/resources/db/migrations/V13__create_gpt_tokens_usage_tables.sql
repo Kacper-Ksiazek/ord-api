@@ -1,27 +1,3 @@
-CALL create_enum_type(
-        'words_gpt_tokens_consumption_type',
-        ARRAY [
-            'GENERATE_SENTENCE',
-            'GENERATE_ENTIRE_MANUAL'
-            ]
-     );
-
-CALL create_enum_type(
-        'games_gpt_tokens_consumption_type',
-        ARRAY [
-            'GENERATE',
-            'REVIEW'
-            ]
-     );
-
-CALL create_enum_type(
-        'stories_gpt_tokens_consumption_type',
-        ARRAY [
-            'GENERATE_STORY_WITH_WORD_EXPLANATIONS',
-            'REGENERATE_EXPLANATION_FOR_SINGLE_WORD'
-            ]
-     );
-
 CREATE TABLE IF NOT EXISTS "word_tokens_usages"
 (
     id                          UUID PRIMARY KEY,
