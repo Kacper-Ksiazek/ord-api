@@ -60,7 +60,7 @@ class GamesController(
     // 2. @PostMapping("/start/gaps-filling")
     // 3. @PostMapping("/start/sentences-writing")
     //
-    // 4. @PostMapping("/start/immersive-story") // WARNING: IN FUTURE SPRINTS
+    // 4. @PostMapping("/start/immersive-story")
 
     // ----
     // 2. Review a game endpoints
@@ -69,8 +69,12 @@ class GamesController(
     // 6. @PostMapping("/review/words-typing")
     // 7. @PostMapping("/review/gaps-filling")
     // 8. @PostMapping("/review/sentences-writing")
+    // 5. [✅] @PostMapping("/finish/crossword")
+    // 6. @PostMapping("/finish/words-typing")
+    // 7. @PostMapping("/finish/gaps-filling")
+    // 8. @PostMapping("/finish/sentences-writing")
     //
-    // @PostMapping("/review/immersive-story") // WARNING: IN FUTURE SPRINTS
+    // @PostMapping("/finish/immersive-story")
 
     // ----
     // 3. General game endpoints ( ALL MVP )
@@ -81,6 +85,12 @@ class GamesController(
     // 13. @GetMapping("/paused") // WARNING: MVP
     // 14. @GetMapping("/games-history") // WARNING: MVP
     // 15. @GetMapping("/statistics") // WARNING: MVP
+    // 10. @PostMapping("/pause/{gameId}")
+    // 11. @PostMapping("/resume/{gameId}")
+    // 12. [MVP] @PostMapping("/cancel/{gameId}")
+    // 13. @GetMapping("/paused")
+    // 14. @GetMapping("/games-history")
+    // 15. @GetMapping("/statistics")
 
     /**
      * Start a crossword game
