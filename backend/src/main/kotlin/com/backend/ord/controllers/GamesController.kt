@@ -1,5 +1,7 @@
 package com.backend.ord.controllers
 
+import com.backend.ord.api.requests.games.data.CrosswordToFinishRequestData
+import com.backend.ord.api.responses.games.StartedCrosswordGameResponse
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.entities.Game
@@ -9,14 +11,15 @@ import com.backend.ord.enums.game.GameType
 import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.services.GameService
 import com.backend.ord.services.ai.AIGameService
-import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.backend.ord.utils.games.CrosswordUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -65,10 +68,6 @@ class GamesController(
     // ----
     // 2. Review a game endpoints
     // ----
-    // 5. @PostMapping("/review/crossword") // WARNING: MVP
-    // 6. @PostMapping("/review/words-typing")
-    // 7. @PostMapping("/review/gaps-filling")
-    // 8. @PostMapping("/review/sentences-writing")
     // 5. [✅] @PostMapping("/finish/crossword")
     // 6. @PostMapping("/finish/words-typing")
     // 7. @PostMapping("/finish/gaps-filling")
@@ -79,12 +78,6 @@ class GamesController(
     // ----
     // 3. General game endpoints ( ALL MVP )
     // ----
-    // 10. @PostMapping("/pause/{gameId}") // WARNING: MVP
-    // 11. @PostMapping("/resume/{gameId}") // WARNING: MVP
-    // 12. @PostMapping("/cancel/{gameId}") // WARNING: MVP
-    // 13. @GetMapping("/paused") // WARNING: MVP
-    // 14. @GetMapping("/games-history") // WARNING: MVP
-    // 15. @GetMapping("/statistics") // WARNING: MVP
     // 10. @PostMapping("/pause/{gameId}")
     // 11. @PostMapping("/resume/{gameId}")
     // 12. [MVP] @PostMapping("/cancel/{gameId}")
@@ -133,5 +126,18 @@ class GamesController(
                 instruction = instruction
             )
         )
+    }
+
+
+    /**
+     * Finish a crossword game
+     */
+    @PostMapping("/finish/crossword")
+    fun finishCrosswordGame(
+        request: HttpServletRequest,
+        @Valid @RequestBody crosswordToFinishRequest: CrosswordToFinishRequestData
+    ): ResponseEntity<*> {
+
+        return ResponseEntity.ok("Game finished")
     }
 }
