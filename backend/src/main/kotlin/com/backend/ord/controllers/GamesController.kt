@@ -86,9 +86,9 @@ class GamesController(
      * Start a crossword game
      */
     @PostMapping("/start/crossword")
-    fun startGame(
+    fun startCrosswordGame(
         request: HttpServletRequest
-    ): ResponseEntity<CrosswordInstruction> {
+    ): ResponseEntity<StartedCrosswordGameResponse> {
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         val (aiGeneratedCrosswordBase, gpTokensUsageLogs) = aIGameService.generateCrosswordGame(
@@ -117,6 +117,11 @@ class GamesController(
             gameToAssign = savedGame
         )
 
-        return ResponseEntity.ok(instruction)
+        return ResponseEntity.ok(
+            StartedCrosswordGameResponse(
+                gameId = savedGame.id,
+                instruction = instruction
+            )
+        )
     }
 }
