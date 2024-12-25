@@ -26,5 +26,5 @@ data class CrosswordInstruction(
     val answer: String,
     val answerExplanation: String,
     val questions: Set<CrosswordQuestion>,
-    val board: List<List<String?>>
+    val board: List<List<String?>> // TODO: Get rid of it here
 )

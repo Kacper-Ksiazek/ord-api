@@ -1,23 +1,29 @@
 package com.backend.ord.domain.mappers.impl
 
-import com.backend.ord.domain.dto.GameDTO
+import com.backend.ord.domain.dto.game.CrosswordGameDTO
+import com.backend.ord.domain.dto.game.GameDTOBase
+import com.backend.ord.domain.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.entities.Game
 import com.backend.ord.domain.mappers.GameMapper
 import com.backend.ord.domain.mappers.UserMapper
+import com.backend.ord.enums.game.GameType
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Component
 
 @Component
 class GameMapperImpl(
-    private val userMapper: UserMapper
+    private val userMapper: UserMapper,
 ) : GameMapper {
-    override fun toEntity(dto: GameDTO): Game {
+    val jsonObjectMapper = jacksonObjectMapper()
+
+    override fun toEntity(dto: GameDTOBase<*>): Game {
         return Game(
             id = dto.id,
 
             type = dto.type,
             status = dto.status,
             difficulty = dto.difficulty,
-            instruction = dto.instruction,
+            instruction = jsonObjectMapper.writeValueAsString(dto.instruction),
 
             duration = dto.duration,
             acquiredPoints = dto.acquiredPoints,
@@ -30,14 +36,21 @@ class GameMapperImpl(
         )
     }
 
-    override fun toDTO(entity: Game): GameDTO {
-        return GameDTO(
+    override fun toDTO(entity: Game): GameDTOBase<*> {
+        return when (entity.type) {
+            GameType.CROSSWORD -> toCrosswordDTO(entity)
+            else -> throw IllegalArgumentException("Invalid game type")
+        }
+    }
+
+    override fun toCrosswordDTO(entity: Game): CrosswordGameDTO {
+        return CrosswordGameDTO(
             id = entity.id,
 
             type = entity.type,
             status = entity.status,
             difficulty = entity.difficulty,
-            instruction = entity.instruction,
+            instruction = jsonObjectMapper.readValue(entity.instruction, CrosswordInstruction::class.java),
 
             duration = entity.duration,
             accuracyRate = entity.accuracyRate,

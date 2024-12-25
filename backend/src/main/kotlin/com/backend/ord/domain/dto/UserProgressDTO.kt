@@ -1,5 +1,6 @@
 package com.backend.ord.domain.dto
 
+import com.backend.ord.domain.dto.game.GameDTOBase
 import java.time.Instant
 import java.util.*
 
@@ -9,7 +10,7 @@ class UserProgressDTO(
     var pointsObtained: Int = 0,
 
     var user: UserDTO,
-    var game: GameDTO,
+    var game: GameDTOBase<*>,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),

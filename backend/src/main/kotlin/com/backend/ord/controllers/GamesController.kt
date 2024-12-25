@@ -3,9 +3,11 @@ package com.backend.ord.controllers
 import com.backend.ord.api.requests.games.data.CrosswordToFinishRequestData
 import com.backend.ord.api.responses.games.StartedCrosswordGameResponse
 import com.backend.ord.config.security.JwtService
+import com.backend.ord.domain.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.entities.Game
 import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.mappers.GameMapper
 import com.backend.ord.enums.game.GameDifficulty
 import com.backend.ord.enums.game.GameType
 import com.backend.ord.enums.language.LanguageName
@@ -47,8 +49,8 @@ class GamesController(
     private val aIGameService: AIGameService,
     private val jwtService: JwtService,
     private val gameService: GameService,
-    private val gameTokensUsageService: GameTokensUsageService
-
+    private val gameTokensUsageService: GameTokensUsageService,
+    private val gameMapper: GameMapper
 ) {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
@@ -135,8 +137,18 @@ class GamesController(
     @PostMapping("/finish/crossword")
     fun finishCrosswordGame(
         request: HttpServletRequest,
-        @Valid @RequestBody crosswordToFinishRequest: CrosswordToFinishRequestData
+        @Valid @RequestBody body: CrosswordToFinishRequestData
     ): ResponseEntity<*> {
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+
+        val game: CrosswordGameDTO = gameMapper.toCrosswordDTO(
+            entity = gameService.findByIdOrFail(id = body.gameId, userId = user.id)
+        )
+
+        println(game.instruction)
+
+        // W postmanie wyklikac i utworzyc mocka crossword game do skonczenia.
+
 
         return ResponseEntity.ok("Game finished")
     }

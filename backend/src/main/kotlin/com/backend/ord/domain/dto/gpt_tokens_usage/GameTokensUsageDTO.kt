@@ -1,7 +1,7 @@
 package com.backend.ord.domain.dto.gpt_tokens_usage
 
-import com.backend.ord.domain.dto.GameDTO
 import com.backend.ord.domain.dto.UserDTO
+import com.backend.ord.domain.dto.game.GameDTOBase
 import com.backend.ord.enums.game.GameDifficulty
 import com.backend.ord.enums.game.GameType
 import com.backend.ord.enums.language.LanguageName
@@ -26,7 +26,7 @@ data class GameTokensUsageDTO(
     val priceForMlnOutputTokens: BigDecimal,
 
     val user: UserDTO,
-    val game: GameDTO? = null,
+    val game: GameDTOBase<*>? = null,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),
