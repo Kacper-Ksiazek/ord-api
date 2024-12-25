@@ -1,4 +1,4 @@
-package com.backend.ord.domain.mappers
+package com.backend.ord.domain.mappers.bases
 
 interface MapperBase<Entity, DTO> {
     fun toDTO(entity: Entity): DTO
