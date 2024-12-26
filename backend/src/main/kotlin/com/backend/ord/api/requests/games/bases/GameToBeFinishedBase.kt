@@ -4,5 +4,9 @@ import java.util.*
 
 interface GameToBeFinishedBase<UserAnswers> {
     val gameId: UUID
+
+    /** In the format "HH:mm:ss" */
+    val duration: String
+
     val userAnswers: UserAnswers
 }

@@ -28,6 +28,8 @@ data class CrosswordUserAnswersData(
 data class CrosswordToFinishRequestData(
     override val gameId: UUID,
 
-//    @field:Valid
+    override val duration: String,
+
+    @field:Valid
     override val userAnswers: CrosswordUserAnswersData
 ) : CrosswordToFinishRequest
