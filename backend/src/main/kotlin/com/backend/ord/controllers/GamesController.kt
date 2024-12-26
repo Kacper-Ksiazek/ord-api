@@ -121,6 +121,7 @@ class GamesController(
                 user = user,
                 difficulty = GameDifficulty.HARD,
                 type = GameType.CROSSWORD,
+                language = LanguageName.ENGLISH,
                 instruction = jsonObjectMapper.writeValueAsString(instruction)
             )
         )

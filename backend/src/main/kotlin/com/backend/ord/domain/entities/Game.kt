@@ -4,6 +4,7 @@ import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.enums.game.GameDifficulty
 import com.backend.ord.enums.game.GameStatus
 import com.backend.ord.enums.game.GameType
+import com.backend.ord.enums.language.LanguageName
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
@@ -19,11 +20,8 @@ class Game(
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),
 
-    @Column(name = "accuracy_rate", nullable = false)
-    var accuracyRate: Int = 0,
-
-    @Column(name = "acquired_points", nullable = false)
-    var acquiredPoints: Int = 0,
+    @Column(name = "final_score", nullable = false)
+    var finalScore: Int = 0,
 
     @Column(name = "duration", nullable = false)
     var duration: String = "00:00:00",
@@ -39,6 +37,10 @@ class Game(
     @Enumerated(EnumType.STRING)
     @Column(name = "status", columnDefinition = "game_status(0, 0) not null", nullable = false)
     var status: GameStatus = GameStatus.IN_PROGRESS,
+
+    @Column(name = "language", columnDefinition = "language_name(0, 0) not null")
+    @Enumerated(EnumType.STRING)
+    var language: LanguageName,
 
     @Column(name = "instruction", nullable = false, columnDefinition = "json")
     var instruction: String,

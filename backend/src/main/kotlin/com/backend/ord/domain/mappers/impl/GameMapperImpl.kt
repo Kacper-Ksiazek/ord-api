@@ -22,12 +22,12 @@ class GameMapperImpl(
 
             type = dto.type,
             status = dto.status,
+            language = dto.language,
             difficulty = dto.difficulty,
             instruction = jsonObjectMapper.writeValueAsString(dto.instruction),
 
             duration = dto.duration,
-            acquiredPoints = dto.acquiredPoints,
-            accuracyRate = dto.accuracyRate,
+            finalScore = dto.finalScore,
 
             user = userMapper.toEntity(dto.user),
 
@@ -49,12 +49,12 @@ class GameMapperImpl(
 
             type = entity.type,
             status = entity.status,
+            language = entity.language,
             difficulty = entity.difficulty,
             instruction = jsonObjectMapper.readValue(entity.instruction, CrosswordInstruction::class.java),
 
             duration = entity.duration,
-            accuracyRate = entity.accuracyRate,
-            acquiredPoints = entity.acquiredPoints,
+            finalScore = entity.finalScore,
 
             user = userMapper.toDTO(entity.user),
 
