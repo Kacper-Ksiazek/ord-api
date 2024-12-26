@@ -33,13 +33,22 @@ object GameReviewingUtils {
         )
     }
 
+    /**
+     * Compute the part of the final score for one aspect of the game
+     */
     fun computeFinalScoreComponent(
-        maxPoints: Int,
-        receivedPoints: Int,
-        pointsInTotal: Int,
-        componentPointsRation: Percentage
+        /**
+         * Relative metric of points received for this component. They are not expressed in terms of percentage, are
+         * relative to the maximum points for this component, which varies based on the component and the game type.
+         */
+        receivedScoreForThisComponent: Double,
+        maxScoreForThisComponent: Double,
+        componentPointsRation: Percentage,
+        totalPointsForAllModules: Int = 100
     ): Int {
+        val componentScoring: Double = receivedScoreForThisComponent.toDouble() / maxScoreForThisComponent
+        val totalAvailablePoints: Double = componentPointsRation * totalPointsForAllModules
 
-
+        return (componentScoring * totalAvailablePoints).toInt()
     }
 }

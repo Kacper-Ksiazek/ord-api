@@ -2,6 +2,8 @@ package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.games.data.CrosswordToFinishRequestData
 import com.backend.ord.api.responses.games.StartedCrosswordGameResponse
+import com.backend.ord.config.AnswerScore
+import com.backend.ord.config.ComponentsPointsRatio
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.embedded.game_instructions.CrosswordInstruction
@@ -9,12 +11,15 @@ import com.backend.ord.domain.entities.Game
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.mappers.GameMapper
 import com.backend.ord.enums.game.GameDifficulty
+import com.backend.ord.enums.game.GameStatus
 import com.backend.ord.enums.game.GameType
 import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.GameService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.backend.ord.utils.games.CrosswordUtils
+import com.backend.ord.utils.games.GameReviewingUtils
 import com.backend.ord.utils.games.GameReviewingUtils.getPointsForUserAnswer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -108,6 +113,7 @@ class GamesController(
             aiGeneratedQuestions = aiGeneratedCrosswordBase,
         )
 
+        // TODO: Remove board from instruction saved in the database
         instruction.board.print()
 
         val savedGame: Game = gameService.save(
@@ -118,6 +124,8 @@ class GamesController(
                 instruction = jsonObjectMapper.writeValueAsString(instruction)
             )
         )
+
+        // TODO: Create pivot entities for games used in the game
 
         gameTokensUsageService.assignGameToMultiple(
             gptTokensUsageLogs = gpTokensUsageLogs,
@@ -140,15 +148,16 @@ class GamesController(
     fun finishCrosswordGame(
         request: HttpServletRequest,
         @Valid @RequestBody body: CrosswordToFinishRequestData
-    ): ResponseEntity<*> {
+    ): ResponseEntity<Unit> {
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         val game: CrosswordGameDTO = gameMapper.toCrosswordDTO(
             entity = gameService.findByIdOrFail(id = body.gameId, userId = user.id)
         )
 
-        println(game.instruction)
-        // Check all words in instruction and compare them with a submitted answer
+        if (game.status != GameStatus.IN_PROGRESS) {
+            throw BadRequestException("The game's status is not in progress")
+        }
 
         val reviewedQuestions = game.instruction.questions.map { questionFromInstruction ->
             return@map getPointsForUserAnswer(
@@ -158,13 +167,36 @@ class GamesController(
             )
         }
 
-        // TODO: Calculate points here
-        val pointsForQuestions: Double = reviewedQuestions.sumOf { it.second.value }
+        val pointsForQuestions: Int = GameReviewingUtils.computeFinalScoreComponent(
+            receivedScoreForThisComponent = reviewedQuestions.sumOf { it.second.value },
+            maxScoreForThisComponent = game.instruction.questions.size * AnswerScore.CORRECT.value,
+            componentPointsRation = ComponentsPointsRatio.Crossword.QUESTIONS
+        )
 
+        val pointsForFinalAnswer: Int = GameReviewingUtils.computeFinalScoreComponent(
+            receivedScoreForThisComponent = getPointsForUserAnswer(
+                userAnswer = body.userAnswers.answer,
+                correctAnswer = game.instruction.answer,
+                difficulty = game.difficulty
+            ).second.value,
+            maxScoreForThisComponent = AnswerScore.CORRECT.value,
+            componentPointsRation = ComponentsPointsRatio.Crossword.FINAL_WORD
+        )
 
-        // W postmanie wyklikac i utworzyc mocka crossword game do skonczenia.
+        val totalPoints: Int = pointsForQuestions + pointsForFinalAnswer
 
-        return ResponseEntity.ok("Game finished")
+        // Update game with the final score
+        game.acquiredPoints = totalPoints
+        game.accuracyRate = (totalPoints.toDouble() / 100.0).toInt()
+        game.duration = body.duration
+        game.status = GameStatus.COMPLETED
+
+        // TODO: Map points to the DB points and update all involved words
+
+        gameService.save(gameMapper.toEntity(game))
+
+        // Return HTTP 204
+        return ResponseEntity.noContent().build()
     }
 
 }
