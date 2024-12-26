@@ -14,7 +14,7 @@ enum class AnswerScore(val value: Double) {
     /**
      * Convert the answer components to the points stored in the database.
      */
-    fun convertToDBPoints(): Double {
+    fun convertToDBPoints(): Int {
         return when (this) {
             CORRECT -> DatabasePoints.CORRECT.value
             HALF_CORRECT -> DatabasePoints.HALF_CORRECT.value
@@ -28,12 +28,12 @@ enum class AnswerScore(val value: Double) {
  * The points which will be stored in the database and further reflect the progress of the user with the particular word.
  * These points can be negative and are used to determine if a word is complete or not.
  */
-enum class DatabasePoints(val value: Double) {
-    COMPLETE_WORD_THRESHOLD(7.0),
+enum class DatabasePoints(val value: Int) {
+    COMPLETE_WORD_THRESHOLD(7),
 
-    CORRECT(2.0),
-    INCORRECT(-1.0),
-    HALF_CORRECT(1.0);
+    CORRECT(2),
+    INCORRECT(-1),
+    HALF_CORRECT(1);
 
     companion object {
         /**

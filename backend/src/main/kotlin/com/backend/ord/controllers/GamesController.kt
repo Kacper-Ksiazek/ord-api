@@ -100,6 +100,7 @@ class GamesController(
     @PostMapping("/start/crossword")
     fun startCrosswordGame(
         request: HttpServletRequest
+        // TODO: Implement game start body, including difficulty and language
     ): ResponseEntity<StartedCrosswordGameResponse> {
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
@@ -150,16 +151,18 @@ class GamesController(
         request: HttpServletRequest,
         @Valid @RequestBody body: CrosswordToFinishRequestData
     ): ResponseEntity<Unit> {
+        // 1. Get authenticated user data and retrieve the game from the database
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
-
         val game: CrosswordGameDTO = gameMapper.toCrosswordDTO(
             entity = gameService.findByIdOrFail(id = body.gameId, userId = user.id)
         )
 
+        // 2. Ensure the game is in progress
         if (game.status != GameStatus.IN_PROGRESS) {
             throw BadRequestException("The game's status is not in progress")
         }
 
+        // 3. Check all words forming a crossword
         val reviewedQuestions = game.instruction.questions.map { questionFromInstruction ->
             return@map getPointsForUserAnswer(
                 userAnswer = body.userAnswers.questionsAnswers.find { it.word == questionFromInstruction.word }?.word,
@@ -168,12 +171,14 @@ class GamesController(
             )
         }
 
+        // 4. Compute points received from words forming a crossword
         val pointsForQuestions: Int = GameReviewingUtils.computeFinalScoreComponent(
             receivedScoreForThisComponent = reviewedQuestions.sumOf { it.second.value },
             maxScoreForThisComponent = game.instruction.questions.size * AnswerScore.CORRECT.value,
             componentPointsRation = ComponentsPointsRatio.Crossword.QUESTIONS
         )
 
+        // 5. Compute points received from the final word
         val pointsForFinalAnswer: Int = GameReviewingUtils.computeFinalScoreComponent(
             receivedScoreForThisComponent = getPointsForUserAnswer(
                 userAnswer = body.userAnswers.answer,
@@ -184,18 +189,20 @@ class GamesController(
             componentPointsRation = ComponentsPointsRatio.Crossword.FINAL_WORD
         )
 
+        // 6. Add points together and compute the total score
         val totalPoints: Int = pointsForQuestions + pointsForFinalAnswer
 
-        // Update game with the final score
-        game.acquiredPoints = totalPoints
-        game.accuracyRate = (totalPoints.toDouble() / 100.0).toInt()
+        // 7. Update the game in the database
+        game.finalScore = totalPoints
         game.duration = body.duration
         game.status = GameStatus.COMPLETED
 
-        // TODO: Map points to the DB points and update all involved words
-
         gameService.save(gameMapper.toEntity(game))
 
+        // 8. Update points for all involved words
+
+
+        // TODO: Map points to the DB points and update all involved words
         // Return HTTP 204
         return ResponseEntity.noContent().build()
     }

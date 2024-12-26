@@ -75,4 +75,10 @@ interface WordService : UserResourceService<Word> {
         userId: UUID,
         property: WordToggleableProperty
     ): List<Word>
+
+    fun updatePointsForManyWords(
+        userId: UUID,
+        language: LanguageName,
+        wordsAndPoints: Pair<String, Int>
+    )
 }

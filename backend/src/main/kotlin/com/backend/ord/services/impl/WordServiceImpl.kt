@@ -174,4 +174,13 @@ class WordServiceImpl(
             }
         )
     }
+
+    override fun updatePointsForManyWords(
+        userId: UUID,
+        language: LanguageName,
+        wordsAndPoints: Pair<String, Int>
+    ) {
+        TODO("Not yet implemented")
+    }
+
 }
