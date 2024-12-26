@@ -3,6 +3,7 @@ package com.backend.ord.utils.games
 import com.backend.ord.config.AnswerScore
 import com.backend.ord.enums.game.GameDifficulty
 import com.backend.ord.enums.game.getNumberOfAllowedMistakes
+import com.backend.ord.utils.data_classes.Percentage
 
 object GameReviewingUtils {
     /**
@@ -13,22 +14,32 @@ object GameReviewingUtils {
         userAnswer: String?,
         correctAnswer: String,
         difficulty: GameDifficulty
-    ): Pair<String, Double> {
+    ): Pair<String, AnswerScore> {
         if (userAnswer == null) {
             return Pair(correctAnswer, AnswerScore.INCORRECT)
         }
 
-        val incorrectLetters = (correctAnswer.lowercase() zip userAnswer.lowercase())
+        // Compare two words letter by letter and count the number of non-matching letters
+        val incorrectLettersCount = (correctAnswer.lowercase() zip userAnswer.lowercase())
             .count { (correctChar, userChar) -> correctChar != userChar }
 
         return Pair(
             correctAnswer,
             when {
-                incorrectLetters == 0 -> AnswerScore.CORRECT
-                incorrectLetters <= difficulty.getNumberOfAllowedMistakes() -> AnswerScore.HALF_CORRECT
+                incorrectLettersCount == 0 -> AnswerScore.CORRECT
+                incorrectLettersCount <= difficulty.getNumberOfAllowedMistakes() -> AnswerScore.HALF_CORRECT
                 else -> AnswerScore.INCORRECT
             }
         )
+    }
+
+    fun computeFinalScoreComponent(
+        maxPoints: Int,
+        receivedPoints: Int,
+        pointsInTotal: Int,
+        componentPointsRation: Percentage
+    ): Int {
+
 
     }
 }

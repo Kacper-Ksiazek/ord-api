@@ -15,6 +15,7 @@ import com.backend.ord.services.GameService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.backend.ord.utils.games.CrosswordUtils
+import com.backend.ord.utils.games.GameReviewingUtils.getPointsForUserAnswer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.servlet.http.HttpServletRequest
@@ -42,6 +43,7 @@ private fun List<List<String?>>.print() {
     repeat(this[0].size) { print("-") }
     println('+')
 }
+
 
 @RestController
 @RequestMapping("/api/v1/games")
@@ -146,10 +148,23 @@ class GamesController(
         )
 
         println(game.instruction)
+        // Check all words in instruction and compare them with a submitted answer
+
+        val reviewedQuestions = game.instruction.questions.map { questionFromInstruction ->
+            return@map getPointsForUserAnswer(
+                userAnswer = body.userAnswers.questionsAnswers.find { it.word == questionFromInstruction.word }?.word,
+                correctAnswer = questionFromInstruction.word,
+                difficulty = game.difficulty
+            )
+        }
+
+        // TODO: Calculate points here
+        val pointsForQuestions: Double = reviewedQuestions.sumOf { it.second.value }
+
 
         // W postmanie wyklikac i utworzyc mocka crossword game do skonczenia.
 
-
         return ResponseEntity.ok("Game finished")
     }
+
 }
