@@ -23,7 +23,7 @@ interface GameTokensUsageService : TokensUsageServiceBase<GameTokensUsage, Games
         outputTokens: Int,
     ): GameTokensUsage
 
-    fun assignGameToMultiple(
+    fun assignGameToMultipleLogs(
         gptTokensUsageLogs: Set<GameTokensUsage>,
         gameToAssign: Game,
     ): List<GameTokensUsage>

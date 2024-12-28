@@ -54,7 +54,7 @@ private fun List<List<String?>>.print() {
 @RestController
 @RequestMapping("/api/v1/games")
 class GamesController(
-    private val aIGameService: AIGameService,
+    private val aiGameService: AIGameService,
     private val jwtService: JwtService,
     private val gameService: GameService,
     private val gameTokensUsageService: GameTokensUsageService,
@@ -84,7 +84,7 @@ class GamesController(
     // 7. @PostMapping("/finish/gaps-filling")
     // 8. @PostMapping("/finish/sentences-writing")
     //
-    // @PostMapping("/finish/immersive-story")
+    // 9. @PostMapping("/finish/immersive-story")
 
     // ----
     // 3. General game endpoints ( ALL MVP )
@@ -104,21 +104,25 @@ class GamesController(
         request: HttpServletRequest
         // TODO: Implement game start body, including difficulty and language
     ): ResponseEntity<StartedCrosswordGameResponse> {
+        // 1. Assert the user is authenticated
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
-        val (aiGeneratedCrosswordBase, gpTokensUsageLogs) = aIGameService.generateCrosswordGame(
+        // 2. Generate crossword game using AI
+        val (aiGeneratedCrosswordBase, gpTokensUsageLogs) = aiGameService.generateCrosswordGame(
             user = user,
             language = LanguageName.ENGLISH,
             difficulty = GameDifficulty.HARD
         )
 
+        // 3. Parse the generated crossword game and compute its instruction
         val instruction: CrosswordInstruction = CrosswordUtils.createInstruction(
             aiGeneratedQuestions = aiGeneratedCrosswordBase,
         )
 
         // TODO: Remove board from instruction saved in the database
-        instruction.board.print()
+//        instruction.board.print()
 
+        // 4. Save the game in the database
         val savedGame: Game = gameService.save(
             Game(
                 user = user,
@@ -129,12 +133,15 @@ class GamesController(
             )
         )
 
-        // TODO: Create pivot entities for games used in the game
-
-        gameTokensUsageService.assignGameToMultiple(
+        // 5. Save all gpt tokens usage logs in the database
+        gameTokensUsageService.assignGameToMultipleLogs(
             gptTokensUsageLogs = gpTokensUsageLogs,
             gameToAssign = savedGame
         )
+
+        // 6. Save pivot entities for words used in the game
+        // TODO: Create pivot entities for games used in the game
+
 
         return ResponseEntity.ok(
             StartedCrosswordGameResponse(
@@ -167,12 +174,12 @@ class GamesController(
         // 3. Check all words forming a crossword
         val reviewedQuestions: List<Pair<String, AnswerScore>> =
             game.instruction.questions.map { questionFromInstruction ->
-            return@map getPointsForUserAnswer(
-                userAnswer = body.userAnswers.questionsAnswers.find { it.word == questionFromInstruction.word }?.word,
-                correctAnswer = questionFromInstruction.word,
-                difficulty = game.difficulty
-            )
-        }
+                return@map getPointsForUserAnswer(
+                    userAnswer = body.userAnswers.questionsAnswers.find { it.word == questionFromInstruction.word }?.word,
+                    correctAnswer = questionFromInstruction.word,
+                    difficulty = game.difficulty
+                )
+            }
 
         // 4. Compute points received from words forming a crossword
         val pointsForQuestions: Int = GameReviewingUtils.computeFinalScoreComponent(
@@ -210,6 +217,7 @@ class GamesController(
         )
 
         // Return HTTP 204
+        // TODO: Create a proper response data class
         return ResponseEntity.noContent().build()
     }
 

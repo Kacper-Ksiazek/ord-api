@@ -51,7 +51,7 @@ class GameTokensUsageServiceImpl(
         )
     }
 
-    override fun assignGameToMultiple(
+    override fun assignGameToMultipleLogs(
         gptTokensUsageLogs: Set<GameTokensUsage>,
         gameToAssign: Game
     ): List<GameTokensUsage> {
