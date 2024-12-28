@@ -2,6 +2,7 @@ package com.backend.ord.domain.entities
 
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.enums.persistance.game.GameDifficulty
+import com.backend.ord.enums.persistance.game.GameGrade
 import com.backend.ord.enums.persistance.game.GameStatus
 import com.backend.ord.enums.persistance.game.GameType
 import com.backend.ord.enums.persistance.language.LanguageName
@@ -41,6 +42,10 @@ class Game(
     @Column(name = "language", columnDefinition = "language_name(0, 0) not null")
     @Enumerated(EnumType.STRING)
     var language: LanguageName,
+
+    @Column(name = "grade", columnDefinition = "game_grade(0, 0) not null")
+    @Enumerated(EnumType.STRING)
+    var grade: GameGrade = GameGrade.NA,
 
     @Column(name = "instruction", nullable = false, columnDefinition = "json")
     var instruction: String,

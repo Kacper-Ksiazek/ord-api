@@ -2,6 +2,7 @@ package com.backend.ord.domain.dto.game
 
 import com.backend.ord.domain.dto.UserDTO
 import com.backend.ord.enums.persistance.game.GameDifficulty
+import com.backend.ord.enums.persistance.game.GameGrade
 import com.backend.ord.enums.persistance.game.GameStatus
 import com.backend.ord.enums.persistance.game.GameType
 import com.backend.ord.enums.persistance.language.LanguageName
@@ -12,14 +13,15 @@ abstract class GameDTOBase<Instructions>(
     open val id: UUID = UUID.randomUUID(),
 
     open var finalScore: Int = 0,
-    open var difficulty: GameDifficulty,
+    open var duration: String = "00:00:00",
 
     open var instruction: Instructions,
 
-    open var duration: String = "00:00:00",
 
     open var type: GameType,
+    open var grade: GameGrade = GameGrade.NA,
     open var language: LanguageName,
+    open var difficulty: GameDifficulty,
     open var status: GameStatus = GameStatus.IN_PROGRESS,
 
     open val user: UserDTO,

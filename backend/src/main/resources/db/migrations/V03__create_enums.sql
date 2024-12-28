@@ -96,6 +96,12 @@ CALL create_enum_type(
             ]
      );
 
+--- Grade
+CALL create_enum_type(
+        'game_grade',
+        ARRAY ['S', 'A', 'B', 'C', 'D', 'NA' ]
+     );
+
 --- +-------------------+
 --- |    GPT TOKENS     |
 --- +-------------------+

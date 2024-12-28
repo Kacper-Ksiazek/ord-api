@@ -3,6 +3,7 @@ package com.backend.ord.domain.dto.game
 import com.backend.ord.domain.dto.UserDTO
 import com.backend.ord.domain.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.enums.persistance.game.GameDifficulty
+import com.backend.ord.enums.persistance.game.GameGrade
 import com.backend.ord.enums.persistance.game.GameStatus
 import com.backend.ord.enums.persistance.game.GameType
 import com.backend.ord.enums.persistance.language.LanguageName
@@ -17,8 +18,9 @@ data class CrosswordGameDTO(
     override var instruction: CrosswordInstruction,
 
     override var type: GameType,
-    override var difficulty: GameDifficulty,
+    override var grade: GameGrade,
     override var language: LanguageName,
+    override var difficulty: GameDifficulty,
     override var status: GameStatus = GameStatus.IN_PROGRESS,
 
     override val user: UserDTO,
@@ -32,6 +34,7 @@ data class CrosswordGameDTO(
     instruction = instruction,
     language = language,
     duration = duration,
+    grade = grade,
     type = type,
     status = status,
     user = user,

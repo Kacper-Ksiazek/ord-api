@@ -37,6 +37,3 @@ fun GameDifficulty.getNumberOfAllowedMistakes(): Int {
         GameDifficulty.HARD -> 0
     }
 }
-
-// TODO: Add function which returns the maximum time for a game based on the difficulty and the game type
-// TODO: Additionally, extends the generated game response base to contain the maximum time for the game

@@ -21,6 +21,7 @@ class GameMapperImpl(
             id = dto.id,
 
             type = dto.type,
+            grade = dto.grade,
             status = dto.status,
             language = dto.language,
             difficulty = dto.difficulty,
@@ -48,6 +49,7 @@ class GameMapperImpl(
             id = entity.id,
 
             type = entity.type,
+            grade = entity.grade,
             status = entity.status,
             language = entity.language,
             difficulty = entity.difficulty,
@@ -62,5 +64,4 @@ class GameMapperImpl(
             updatedAt = entity.updatedAt
         )
     }
-
 }
