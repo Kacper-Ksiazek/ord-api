@@ -2,7 +2,7 @@ package com.backend.ord.domain.dto.gpt_tokens_usage
 
 import com.backend.ord.domain.dto.StoryDTO
 import com.backend.ord.domain.dto.UserDTO
-import com.backend.ord.enums.tokens_usage.StoriesGPTTokensConsumptionType
+import com.backend.ord.enums.persistance.tokens_usage.StoriesGPTTokensConsumptionType
 import java.time.Instant
 import java.util.*
 

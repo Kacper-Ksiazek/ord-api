@@ -1,8 +1,8 @@
 package com.backend.ord.domain.entities
 
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.language.LanguageProficiencyLevel
+import com.backend.ord.enums.persistance.language.LanguageName
+import com.backend.ord.enums.persistance.language.LanguageProficiencyLevel
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp

@@ -6,7 +6,7 @@ import com.backend.ord.domain.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.entities.Game
 import com.backend.ord.domain.mappers.GameMapper
 import com.backend.ord.domain.mappers.UserMapper
-import com.backend.ord.enums.game.GameType
+import com.backend.ord.enums.persistance.game.GameType
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Component
 

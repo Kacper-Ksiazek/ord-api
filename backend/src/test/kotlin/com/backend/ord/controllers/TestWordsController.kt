@@ -24,9 +24,9 @@ import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.domain.mappers.UserMapper
 import com.backend.ord.domain.mappers.WordMapper
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.enums.persistance.language.LanguageName
+import com.backend.ord.enums.persistance.word.WordExtraMark
+import com.backend.ord.enums.persistance.word.WordType
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder

@@ -1,4 +1,4 @@
-package com.backend.ord.enums
+package com.backend.ord.enums.infrastructure
 
 enum class ConsoleColor(val ansiCode: String) {
     Blue("\u001B[34m"),

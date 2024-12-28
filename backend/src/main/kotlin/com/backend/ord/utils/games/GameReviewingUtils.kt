@@ -1,8 +1,8 @@
 package com.backend.ord.utils.games
 
 import com.backend.ord.config.AnswerScore
-import com.backend.ord.enums.game.GameDifficulty
-import com.backend.ord.enums.game.getNumberOfAllowedMistakes
+import com.backend.ord.enums.persistance.game.GameDifficulty
+import com.backend.ord.enums.persistance.game.getNumberOfAllowedMistakes
 import com.backend.ord.utils.data_classes.Percentage
 
 object GameReviewingUtils {

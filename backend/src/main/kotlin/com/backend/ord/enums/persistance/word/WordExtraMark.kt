@@ -1,4 +1,4 @@
-package com.backend.ord.enums.word
+package com.backend.ord.enums.persistance.word
 
 enum class WordExtraMark {
     OFFENSIVE,

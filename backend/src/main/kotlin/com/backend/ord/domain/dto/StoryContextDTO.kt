@@ -1,6 +1,6 @@
 package com.backend.ord.domain.dto
 
-import com.backend.ord.enums.StoryContextType
+import com.backend.ord.enums.persistance.StoryContextType
 import java.time.Instant
 import java.util.*
 

@@ -7,11 +7,11 @@ import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.domain.entities.LanguageProficiency
 import com.backend.ord.domain.entities.User
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.language.LanguageProficiencyLevel
-import com.backend.ord.enums.tokens_usage.WordsGPTTokensConsumptionType
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.enums.persistance.language.LanguageName
+import com.backend.ord.enums.persistance.language.LanguageProficiencyLevel
+import com.backend.ord.enums.persistance.tokens_usage.WordsGPTTokensConsumptionType
+import com.backend.ord.enums.persistance.word.WordExtraMark
+import com.backend.ord.enums.persistance.word.WordType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService

@@ -6,7 +6,7 @@ import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageWithinTimePerio
 import com.backend.ord.api.responses.gpt_tokens_usage.toDetailedWordTokensUsage
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.entities.User
-import com.backend.ord.enums.tokens_usage.WordsGPTTokensConsumptionType
+import com.backend.ord.enums.persistance.tokens_usage.WordsGPTTokensConsumptionType
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.Calendar
+import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/gpt-tokens-consumption")

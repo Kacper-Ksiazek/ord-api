@@ -9,9 +9,9 @@ import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.config.AnswerScore
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.enums.persistance.language.LanguageName
+import com.backend.ord.enums.persistance.word.WordExtraMark
+import com.backend.ord.enums.persistance.word.WordType
 import com.backend.ord.services.bases.UserResourceService
 import java.util.*
 

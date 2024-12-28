@@ -1,4 +1,4 @@
-package com.backend.ord.enums.tokens_usage
+package com.backend.ord.enums.persistance.tokens_usage
 
 enum class StoriesGPTTokensConsumptionType {
     GENERATE_STORY_WITH_WORD_EXPLANATIONS,

@@ -10,10 +10,10 @@ import com.backend.ord.domain.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.entities.Game
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.mappers.GameMapper
-import com.backend.ord.enums.game.GameDifficulty
-import com.backend.ord.enums.game.GameStatus
-import com.backend.ord.enums.game.GameType
-import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.enums.persistance.game.GameDifficulty
+import com.backend.ord.enums.persistance.game.GameStatus
+import com.backend.ord.enums.persistance.game.GameType
+import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.GameService
 import com.backend.ord.services.WordService

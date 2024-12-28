@@ -2,10 +2,10 @@ package com.backend.ord.domain.dto.gpt_tokens_usage
 
 import com.backend.ord.domain.dto.UserDTO
 import com.backend.ord.domain.dto.game.GameDTOBase
-import com.backend.ord.enums.game.GameDifficulty
-import com.backend.ord.enums.game.GameType
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.tokens_usage.GamesGPTTokensConsumptionType
+import com.backend.ord.enums.persistance.game.GameDifficulty
+import com.backend.ord.enums.persistance.game.GameType
+import com.backend.ord.enums.persistance.language.LanguageName
+import com.backend.ord.enums.persistance.tokens_usage.GamesGPTTokensConsumptionType
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.*

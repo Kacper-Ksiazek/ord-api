@@ -1,7 +1,7 @@
 package com.backend.ord.domain.dto
 
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.UserRole
+import com.backend.ord.enums.persistance.UserRole
+import com.backend.ord.enums.persistance.language.LanguageName
 import java.time.Instant
 import java.util.*
 

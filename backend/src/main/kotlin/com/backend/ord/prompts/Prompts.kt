@@ -1,8 +1,8 @@
 package com.backend.ord.prompts
 
-import com.backend.ord.enums.game.GameDifficulty
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.language.LanguageProficiencyLevel
+import com.backend.ord.enums.persistance.game.GameDifficulty
+import com.backend.ord.enums.persistance.language.LanguageName
+import com.backend.ord.enums.persistance.language.LanguageProficiencyLevel
 
 object Prompts {
     const val DEFAULT_CONTEXT =

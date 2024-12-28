@@ -1,7 +1,7 @@
 package com.backend.ord.services.impl
 
 import com.backend.ord.domain.entities.LanguageProficiency
-import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.services.LanguageProficiencyService

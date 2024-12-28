@@ -4,10 +4,10 @@ import com.backend.ord.config.properties.OpenAIProperties
 import com.backend.ord.domain.entities.Game
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.gpt_tokens_usage.GameTokensUsage
-import com.backend.ord.enums.game.GameDifficulty
-import com.backend.ord.enums.game.GameType
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.tokens_usage.GamesGPTTokensConsumptionType
+import com.backend.ord.enums.persistance.game.GameDifficulty
+import com.backend.ord.enums.persistance.game.GameType
+import com.backend.ord.enums.persistance.language.LanguageName
+import com.backend.ord.enums.persistance.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.repositories.gpt_tokens_usage.bases.GPTTokensUsageRepository
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.backend.ord.services.gpt_tokens_usage.bases.impl.TokensUsageServiceBaseImpl

@@ -3,7 +3,6 @@ package com.backend.ord.controllers.request_factories
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.data.*
-import com.backend.ord.api.requests.word.data.WordBulkActionRequestData
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.controllers.request_factories.data.CreateWordData
@@ -11,9 +10,9 @@ import com.backend.ord.controllers.request_factories.data.UpdateWordData
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.enums.persistance.language.LanguageName
+import com.backend.ord.enums.persistance.word.WordExtraMark
+import com.backend.ord.enums.persistance.word.WordType
 import com.backend.ord.unsage_api_requests.UnsafeGetManyWordsRequestData
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType

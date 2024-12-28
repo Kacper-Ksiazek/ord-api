@@ -1,12 +1,12 @@
 package com.backend.ord.domain.entities
 
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
-import com.backend.ord.enums.StoryContextType
+import com.backend.ord.enums.persistance.StoryContextType
 import jakarta.persistence.*
-import jakarta.persistence.Table
-import jakarta.validation.constraints.Size
-import org.hibernate.annotations.*
-import org.hibernate.type.SqlTypes
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
+import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import java.util.*
 

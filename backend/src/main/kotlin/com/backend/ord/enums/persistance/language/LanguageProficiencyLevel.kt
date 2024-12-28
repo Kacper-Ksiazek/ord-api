@@ -1,4 +1,4 @@
-package com.backend.ord.enums.language
+package com.backend.ord.enums.persistance.language
 
 enum class LanguageProficiencyLevel {
     A1,

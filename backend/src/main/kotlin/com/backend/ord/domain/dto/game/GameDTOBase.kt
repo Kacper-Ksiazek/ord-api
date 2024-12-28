@@ -1,10 +1,10 @@
 package com.backend.ord.domain.dto.game
 
 import com.backend.ord.domain.dto.UserDTO
-import com.backend.ord.enums.game.GameDifficulty
-import com.backend.ord.enums.game.GameStatus
-import com.backend.ord.enums.game.GameType
-import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.enums.persistance.game.GameDifficulty
+import com.backend.ord.enums.persistance.game.GameStatus
+import com.backend.ord.enums.persistance.game.GameType
+import com.backend.ord.enums.persistance.language.LanguageName
 import java.time.Instant
 import java.util.*
 

@@ -2,8 +2,8 @@ package com.backend.ord.domain.entities.gpt_tokens_usage
 
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.tokens_usage.WordsGPTTokensConsumptionType
+import com.backend.ord.enums.persistance.language.LanguageName
+import com.backend.ord.enums.persistance.tokens_usage.WordsGPTTokensConsumptionType
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete

@@ -3,7 +3,7 @@ package com.backend.ord.controllers.request_factories
 import com.backend.ord.api.requests.LoginRequest
 import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.enums.persistance.language.LanguageName
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder

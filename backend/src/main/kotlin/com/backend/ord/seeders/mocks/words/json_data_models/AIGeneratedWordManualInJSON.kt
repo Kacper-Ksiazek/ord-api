@@ -1,8 +1,8 @@
 package com.backend.ord.seeders.mocks.words.json_data_models
 
 import com.backend.ord.domain.embedded.ExampleSentence
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.enums.persistance.word.WordExtraMark
+import com.backend.ord.enums.persistance.word.WordType
 
 data class AIGeneratedWordManualInJSON(
     val originalWord: String,

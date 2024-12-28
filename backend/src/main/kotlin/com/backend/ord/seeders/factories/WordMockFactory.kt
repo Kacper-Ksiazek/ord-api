@@ -4,14 +4,14 @@ import com.backend.ord.domain.embedded.ExampleSentence
 import com.backend.ord.domain.entities.Bank
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.enums.persistance.language.LanguageName
+import com.backend.ord.enums.persistance.word.WordExtraMark
+import com.backend.ord.enums.persistance.word.WordType
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.utils.EnumUtils.getRandomValue
 import com.backend.ord.utils.EnumUtils.getRandomValueOrNull
 import org.springframework.stereotype.Component
-import java.util.UUID
+import java.util.*
 
 @Component
 class WordMockFactory(
