@@ -175,7 +175,7 @@ class GamesController(
         val reviewedQuestions: List<Pair<String, AnswerScore>> =
             game.instruction.questions.map { questionFromInstruction ->
                 return@map getPointsForUserAnswer(
-                    userAnswer = body.userAnswers.questionsAnswers.find { it.word == questionFromInstruction.word }?.word,
+                    userAnswer = body.userAnswers.questionsAnswers.find { it.coordinates == questionFromInstruction.coordinates }?.word,
                     correctAnswer = questionFromInstruction.word,
                     difficulty = game.difficulty
                 )
@@ -203,11 +203,11 @@ class GamesController(
         val totalPoints: Int = pointsForQuestions + pointsForFinalAnswer
 
         // 7. Update the game in the database
-        game.finalScore = totalPoints
-        game.duration = body.duration
-        game.status = GameStatus.COMPLETED
-
-        gameService.save(gameMapper.toEntity(game))
+        gameService.finishGame(
+            game = gameMapper.toEntity(game),
+            finalScore = totalPoints,
+            duration = body.duration
+        )
 
         // 8. Update points for all involved words
         wordService.updatePointsForManyWords(

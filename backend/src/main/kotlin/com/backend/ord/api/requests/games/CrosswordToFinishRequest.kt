@@ -11,7 +11,15 @@ interface CrosswordUserAnswersQuestion {
     // Both of the following fields are used to identify the word in the crossword.
     val endCoordinates: Pair<Int, Int>
     val startCoordinates: Pair<Int, Int>
+
+    /**
+     * The coordinates of the word in the crossword.
+     * The format is "startX,startY,endX,endY".
+     */
+    val coordinates: String
+        get() = "${startCoordinates.first},${startCoordinates.second},${endCoordinates.first},${endCoordinates.second}"
 }
+
 
 interface CrosswordUserAnswers {
     /**

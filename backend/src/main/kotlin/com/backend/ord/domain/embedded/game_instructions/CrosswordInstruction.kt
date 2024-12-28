@@ -15,7 +15,14 @@ data class CrosswordQuestion(
     val startCoordinates: Pair<Int, Int>,
 
     val answerComponent: List<AnswerComponent>? = null
-)
+) {
+    /**
+     * The coordinates of the word in the crossword.
+     * The format is "startX,startY,endX,endY".
+     */
+    val coordinates: String
+        get() = "${startCoordinates.first},${startCoordinates.second},${endCoordinates.first},${endCoordinates.second}"
+}
 
 data class AnswerComponent(
     val indexInWord: Int,
