@@ -16,6 +16,7 @@ import com.backend.ord.enums.game.GameType
 import com.backend.ord.enums.language.LanguageName
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.GameService
+import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.backend.ord.utils.games.CrosswordUtils
@@ -57,7 +58,8 @@ class GamesController(
     private val jwtService: JwtService,
     private val gameService: GameService,
     private val gameTokensUsageService: GameTokensUsageService,
-    private val gameMapper: GameMapper
+    private val gameMapper: GameMapper,
+    private val wordService: WordService
 ) {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
@@ -163,7 +165,8 @@ class GamesController(
         }
 
         // 3. Check all words forming a crossword
-        val reviewedQuestions = game.instruction.questions.map { questionFromInstruction ->
+        val reviewedQuestions: List<Pair<String, AnswerScore>> =
+            game.instruction.questions.map { questionFromInstruction ->
             return@map getPointsForUserAnswer(
                 userAnswer = body.userAnswers.questionsAnswers.find { it.word == questionFromInstruction.word }?.word,
                 correctAnswer = questionFromInstruction.word,
@@ -200,9 +203,12 @@ class GamesController(
         gameService.save(gameMapper.toEntity(game))
 
         // 8. Update points for all involved words
+        wordService.updatePointsForManyWords(
+            userId = user.id,
+            language = game.language,
+            wordsAndPoints = reviewedQuestions
+        )
 
-
-        // TODO: Map points to the DB points and update all involved words
         // Return HTTP 204
         return ResponseEntity.noContent().build()
     }

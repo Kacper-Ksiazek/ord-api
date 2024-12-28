@@ -7,6 +7,7 @@ import com.backend.ord.api.requests.word.enums.toggleProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
+import com.backend.ord.config.AnswerScore
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.enums.language.LanguageName
@@ -178,9 +179,23 @@ class WordServiceImpl(
     override fun updatePointsForManyWords(
         userId: UUID,
         language: LanguageName,
-        wordsAndPoints: Pair<String, Int>
+        wordsAndPoints: List<Pair<String, AnswerScore>>
     ) {
-        TODO("Not yet implemented")
-    }
+        val wordsToSave: MutableSet<Word> = mutableSetOf()
 
+        repository.findAllWordByTheirOrigins(
+            origins = wordsAndPoints.map { it.first }.toSet(),
+            language = language,
+            userId = userId
+        ).forEach { word ->
+            val points = wordsAndPoints.find { it.first == word.origin }?.second
+                ?: return@forEach
+
+            word.points += points.convertToDBPoints().value
+
+            wordsToSave.add(word)
+        }
+
+        repository.saveAll(wordsToSave)
+    }
 }

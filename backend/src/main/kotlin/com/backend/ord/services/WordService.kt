@@ -6,6 +6,7 @@ import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
+import com.backend.ord.config.AnswerScore
 import com.backend.ord.domain.entities.User
 import com.backend.ord.domain.entities.Word
 import com.backend.ord.enums.language.LanguageName
@@ -79,6 +80,6 @@ interface WordService : UserResourceService<Word> {
     fun updatePointsForManyWords(
         userId: UUID,
         language: LanguageName,
-        wordsAndPoints: Pair<String, Int>
+        wordsAndPoints: List<Pair<String, AnswerScore>>
     )
 }

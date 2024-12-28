@@ -14,11 +14,11 @@ enum class AnswerScore(val value: Double) {
     /**
      * Convert the answer components to the points stored in the database.
      */
-    fun convertToDBPoints(): Int {
+    fun convertToDBPoints(): DatabasePoint {
         return when (this) {
-            CORRECT -> DatabasePoint.CORRECT.value
-            HALF_CORRECT -> DatabasePoint.HALF_CORRECT.value
-            INCORRECT -> DatabasePoint.INCORRECT.value
+            CORRECT -> DatabasePoint.CORRECT
+            HALF_CORRECT -> DatabasePoint.HALF_CORRECT
+            INCORRECT -> DatabasePoint.INCORRECT
         }
     }
 }
