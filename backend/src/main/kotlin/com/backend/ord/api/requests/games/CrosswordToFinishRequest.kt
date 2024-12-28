@@ -12,12 +12,14 @@ interface CrosswordUserAnswersQuestion {
     val endCoordinates: Pair<Int, Int>
     val startCoordinates: Pair<Int, Int>
 
+    // TODO: Create Position field with new data class and handle all coordinates there
     /**
      * The coordinates of the word in the crossword.
      * The format is "startX,startY,endX,endY".
      */
-    val coordinates: String
-        get() = "${startCoordinates.first},${startCoordinates.second},${endCoordinates.first},${endCoordinates.second}"
+    fun computeCoordinates(): String {
+        return "${startCoordinates.first},${startCoordinates.second},${endCoordinates.first},${endCoordinates.second}"
+    }
 }
 
 

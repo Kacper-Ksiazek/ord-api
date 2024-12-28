@@ -2,14 +2,23 @@ package com.backend.ord.config
 
 import com.backend.ord.utils.data_classes.Percentage
 
+enum class ScoringResult {
+    CORRECT,
+    INCORRECT,
+    HALF_CORRECT
+}
+
 /**
  * The points that can be assigned to an answer in a game.
  * These points are further used to compute the score of a game in percentage, therefore they cannot be negative.
  */
-enum class AnswerScore(val value: Double) {
-    CORRECT(1.0),
-    HALF_CORRECT(0.5),
-    INCORRECT(0.0);
+enum class AnswerScore(
+    val value: Double,
+    val resultName: ScoringResult
+) {
+    CORRECT(1.0, ScoringResult.CORRECT),
+    HALF_CORRECT(0.5, ScoringResult.HALF_CORRECT),
+    INCORRECT(0.0, ScoringResult.INCORRECT);
 
     /**
      * Convert the answer components to the points stored in the database.

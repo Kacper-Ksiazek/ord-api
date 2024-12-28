@@ -1,6 +1,7 @@
 package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.games.data.CrosswordToFinishRequestData
+import com.backend.ord.api.responses.games.FinishedGameResponse
 import com.backend.ord.api.responses.games.StartedCrosswordGameResponse
 import com.backend.ord.config.AnswerScore
 import com.backend.ord.config.ComponentsPointsRatio
@@ -159,7 +160,7 @@ class GamesController(
     fun finishCrosswordGame(
         request: HttpServletRequest,
         @Valid @RequestBody body: CrosswordToFinishRequestData
-    ): ResponseEntity<Unit> {
+    ): ResponseEntity<FinishedGameResponse> {
         // 1. Get authenticated user data and retrieve the game from the database
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
         val game: CrosswordGameDTO = gameMapper.toCrosswordDTO(
@@ -175,7 +176,7 @@ class GamesController(
         val reviewedQuestions: List<Pair<String, AnswerScore>> =
             game.instruction.questions.map { questionFromInstruction ->
                 return@map getPointsForUserAnswer(
-                    userAnswer = body.userAnswers.questionsAnswers.find { it.coordinates == questionFromInstruction.coordinates }?.word,
+                    userAnswer = body.userAnswers.questionsAnswers.find { it.computeCoordinates() == questionFromInstruction.computeCoordinates() }?.word,
                     correctAnswer = questionFromInstruction.word,
                     difficulty = game.difficulty
                 )
@@ -216,9 +217,20 @@ class GamesController(
             wordsAndPoints = reviewedQuestions
         )
 
-        // Return HTTP 204
-        // TODO: Create a proper response data class
-        return ResponseEntity.noContent().build()
-    }
+        // 9. Return the response
+        return ResponseEntity.ok(
+            FinishedGameResponse(
+                totalPoints = totalPoints,
+                properAnswers = reviewedQuestions.map { (word, score) ->
+                    val userAnswer = body.userAnswers.questionsAnswers.find { it.word == word }?.word
 
+                    FinishedGameResponse.Companion.ProperAnswers(
+                        expectedAnswer = word,
+                        userAnswer = userAnswer,
+                        result = score.resultName
+                    )
+                }
+            )
+        )
+    }
 }

@@ -20,8 +20,10 @@ data class CrosswordQuestion(
      * The coordinates of the word in the crossword.
      * The format is "startX,startY,endX,endY".
      */
-    val coordinates: String
-        get() = "${startCoordinates.first},${startCoordinates.second},${endCoordinates.first},${endCoordinates.second}"
+    // TODO: Refactor
+    fun computeCoordinates(): String {
+        return "${startCoordinates.first},${startCoordinates.second},${endCoordinates.first},${endCoordinates.second}"
+    }
 }
 
 data class AnswerComponent(

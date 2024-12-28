@@ -4,6 +4,8 @@ class Percentage(
     /** Value of the percentage. It must be between 0.0 and 100.0 */
     val value: Double
 ) {
+    constructor(value: Int) : this(value.toDouble())
+
     init {
         require(value in 0.0..100.0) { "The value of the percentage must be between 0 and 100" }
     }
