@@ -1,9 +1,9 @@
 package com.backend.ord.seeders.factories
 
-import com.backend.ord.domain.embedded.ExampleSentence
-import com.backend.ord.domain.entities.Bank
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.Word
+import com.backend.ord.domain.persistance.embedded.ExampleSentence
+import com.backend.ord.domain.persistance.entities.Bank
+import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistance.entities.Word
 import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.enums.persistance.word.WordExtraMark
 import com.backend.ord.enums.persistance.word.WordType

@@ -1,9 +1,9 @@
 package com.backend.ord.seeders.factories
 
-import com.backend.ord.domain.entities.BankGroup
-import org.springframework.stereotype.Component
+import com.backend.ord.domain.persistance.entities.BankGroup
+import com.backend.ord.domain.persistance.entities.User
 import com.backend.ord.seeders.entities.UserSeeder
-import com.backend.ord.domain.entities.User
+import org.springframework.stereotype.Component
 
 @Component
 class BankGroupFactory(

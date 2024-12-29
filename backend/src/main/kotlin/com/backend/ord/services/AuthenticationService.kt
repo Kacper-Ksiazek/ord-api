@@ -2,7 +2,7 @@ package com.backend.ord.services
 
 import com.backend.ord.api.requests.LoginRequest
 import com.backend.ord.api.requests.RegisterRequest
-import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.persistance.entities.User
 import com.backend.ord.exceptions.ForbiddenException
 import com.backend.ord.exceptions.UserNotFoundException
 import jakarta.servlet.http.HttpServletRequest

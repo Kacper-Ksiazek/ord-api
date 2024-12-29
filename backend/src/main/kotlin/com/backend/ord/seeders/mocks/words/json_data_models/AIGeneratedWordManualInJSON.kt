@@ -1,6 +1,6 @@
 package com.backend.ord.seeders.mocks.words.json_data_models
 
-import com.backend.ord.domain.embedded.ExampleSentence
+import com.backend.ord.domain.persistance.embedded.ExampleSentence
 import com.backend.ord.enums.persistance.word.WordExtraMark
 import com.backend.ord.enums.persistance.word.WordType
 

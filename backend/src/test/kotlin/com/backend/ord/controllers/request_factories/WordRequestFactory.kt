@@ -8,8 +8,8 @@ import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.controllers.request_factories.data.CreateWordData
 import com.backend.ord.controllers.request_factories.data.UpdateWordData
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.domain.embedded.ExampleSentence
-import com.backend.ord.domain.entities.Word
+import com.backend.ord.domain.persistance.embedded.ExampleSentence
+import com.backend.ord.domain.persistance.entities.Word
 import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.enums.persistance.word.WordExtraMark
 import com.backend.ord.enums.persistance.word.WordType

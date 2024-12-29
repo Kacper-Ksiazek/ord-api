@@ -3,15 +3,14 @@ package com.backend.ord.controllers
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.request_factories.AuthRequestFactory
 import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
-import com.backend.ord.domain.dto.UserDTO
-import com.backend.ord.domain.entities.UserSession
+import com.backend.ord.domain.persistance.dto.UserDTO
+import com.backend.ord.domain.persistance.entities.UserSession
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.Cookie
-import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.DisplayName

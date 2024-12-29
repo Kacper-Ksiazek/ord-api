@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.factories
 
-import com.backend.ord.domain.entities.LanguageProficiency
-import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.persistance.entities.LanguageProficiency
+import com.backend.ord.domain.persistance.entities.User
 import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.seeders.EnumValuesGenerator
 import com.backend.ord.utils.EnumUtils.getRandomValue

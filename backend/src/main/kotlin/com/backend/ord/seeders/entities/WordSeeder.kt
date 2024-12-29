@@ -1,10 +1,10 @@
 package com.backend.ord.seeders.entities
 
-import com.backend.ord.domain.dto.UserDTO
-import com.backend.ord.domain.entities.Bank
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.domain.mappers.UserMapper
+import com.backend.ord.domain.persistance.dto.UserDTO
+import com.backend.ord.domain.persistance.entities.Bank
+import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistance.entities.Word
+import com.backend.ord.domain.persistance.mappers.UserMapper
 import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.factories.WordMockFactory

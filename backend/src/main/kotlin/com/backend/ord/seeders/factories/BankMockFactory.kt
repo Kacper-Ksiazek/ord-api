@@ -1,9 +1,9 @@
 package com.backend.ord.seeders.factories
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
-import com.backend.ord.domain.entities.Bank
-import com.backend.ord.domain.entities.BankGroup
-import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.persistance.entities.Bank
+import com.backend.ord.domain.persistance.entities.BankGroup
+import com.backend.ord.domain.persistance.entities.User
 import com.backend.ord.seeders.entities.UserSeeder
 import org.springframework.stereotype.Component
 import java.util.*

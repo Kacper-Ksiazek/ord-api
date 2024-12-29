@@ -1,6 +1,6 @@
 package com.backend.ord.services
 
-import com.backend.ord.domain.entities.LanguageProficiency
+import com.backend.ord.domain.persistance.entities.LanguageProficiency
 import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.services.bases.UserResourceService
 import java.util.*

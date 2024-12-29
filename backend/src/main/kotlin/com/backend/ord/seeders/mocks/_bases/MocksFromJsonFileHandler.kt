@@ -1,11 +1,11 @@
 package com.backend.ord.seeders.mocks._bases
 
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistance.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.utils.JsonReader
 import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import java.util.*
 
 private const val ROOT = "./src/main/resources/mocks/"
 

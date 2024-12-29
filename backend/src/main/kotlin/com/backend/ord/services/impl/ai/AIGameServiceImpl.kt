@@ -6,9 +6,9 @@ import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.openai.embedded.OpenAIResponse
 import com.backend.ord.config.RestClientConfig
-import com.backend.ord.domain.entities.LanguageProficiency
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.gpt_tokens_usage.GameTokensUsage
+import com.backend.ord.domain.persistance.entities.LanguageProficiency
+import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistance.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.persistance.game.GameDifficulty
 import com.backend.ord.enums.persistance.game.GameType
 import com.backend.ord.enums.persistance.game.getNumberOfWordsForCrossword

@@ -2,7 +2,7 @@ package com.backend.ord.controllers.utils_for_testing
 
 import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
-import com.backend.ord.domain.dto.UserDTO
+import com.backend.ord.domain.persistance.dto.UserDTO
 import com.backend.ord.enums.persistance.language.LanguageName
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper

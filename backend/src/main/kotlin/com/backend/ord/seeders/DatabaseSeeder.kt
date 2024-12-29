@@ -1,6 +1,6 @@
 package com.backend.ord.seeders
 
-import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.persistance.entities.User
 import com.backend.ord.enums.persistance.UserRole
 import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.enums.persistance.language.LanguageProficiencyLevel

@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.entities
 
-import com.backend.ord.domain.entities.LanguageProficiency
-import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.persistance.entities.LanguageProficiency
+import com.backend.ord.domain.persistance.entities.User
 import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.enums.persistance.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.LanguageProficiencyRepository

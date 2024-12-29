@@ -1,6 +1,6 @@
 package com.backend.ord.seeders.factories
 
-import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.persistance.entities.User
 import com.backend.ord.enums.persistance.UserRole
 import com.backend.ord.seeders.EnumValuesGenerator
 import org.springframework.security.crypto.password.PasswordEncoder

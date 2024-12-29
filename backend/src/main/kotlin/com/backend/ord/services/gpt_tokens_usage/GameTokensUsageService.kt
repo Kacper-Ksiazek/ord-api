@@ -1,8 +1,8 @@
 package com.backend.ord.services.gpt_tokens_usage
 
-import com.backend.ord.domain.entities.Game
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.gpt_tokens_usage.GameTokensUsage
+import com.backend.ord.domain.persistance.entities.Game
+import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistance.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.persistance.game.GameDifficulty
 import com.backend.ord.enums.persistance.game.GameType
 import com.backend.ord.enums.persistance.language.LanguageName

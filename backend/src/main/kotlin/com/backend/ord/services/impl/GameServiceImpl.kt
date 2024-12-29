@@ -1,6 +1,6 @@
 package com.backend.ord.services.impl
 
-import com.backend.ord.domain.entities.Game
+import com.backend.ord.domain.persistance.entities.Game
 import com.backend.ord.enums.persistance.game.GameStatus
 import com.backend.ord.repositories.bases.UserResourceRepository
 import com.backend.ord.services.GameService

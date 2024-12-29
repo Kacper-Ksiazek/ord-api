@@ -1,6 +1,6 @@
 package com.backend.ord.repositories
 
-import com.backend.ord.domain.entities.Word
+import com.backend.ord.domain.persistance.entities.Word
 import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.repositories.bases.UserResourceRepository
 import org.springframework.data.domain.Pageable

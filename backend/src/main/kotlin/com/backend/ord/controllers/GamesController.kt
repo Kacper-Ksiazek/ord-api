@@ -6,11 +6,11 @@ import com.backend.ord.api.responses.games.StartedCrosswordGameResponse
 import com.backend.ord.config.AnswerScore
 import com.backend.ord.config.ComponentsPointsRatio
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.dto.game.CrosswordGameDTO
-import com.backend.ord.domain.embedded.game_instructions.CrosswordInstruction
-import com.backend.ord.domain.entities.Game
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.mappers.GameMapper
+import com.backend.ord.domain.persistance.dto.game.CrosswordGameDTO
+import com.backend.ord.domain.persistance.embedded.game_instructions.CrosswordInstruction
+import com.backend.ord.domain.persistance.entities.Game
+import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistance.mappers.GameMapper
 import com.backend.ord.enums.persistance.game.GameDifficulty
 import com.backend.ord.enums.persistance.game.GameStatus
 import com.backend.ord.enums.persistance.game.GameType

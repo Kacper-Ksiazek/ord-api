@@ -2,10 +2,10 @@ package com.backend.ord.services.gpt_tokens_usage.bases
 
 import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
 import com.backend.ord.config.properties.OpenAIProperties
-import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.domain.persistance.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.repositories.gpt_tokens_usage.bases.GPTTokensUsageRepository
 import java.math.BigDecimal
-import java.util.UUID
+import java.util.*
 
 interface TokensUsageServiceBase<
         RepositoryType : IdentifiableUserResource,

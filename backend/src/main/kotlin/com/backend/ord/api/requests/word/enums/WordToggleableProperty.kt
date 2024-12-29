@@ -1,6 +1,6 @@
 package com.backend.ord.api.requests.word.enums
 
-import com.backend.ord.domain.entities.Word
+import com.backend.ord.domain.persistance.entities.Word
 
 enum class WordToggleableProperty {
     IS_BOOKMARKED,

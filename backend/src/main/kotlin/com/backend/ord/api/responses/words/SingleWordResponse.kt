@@ -1,7 +1,7 @@
 package com.backend.ord.api.responses.words
 
 import com.backend.ord.api.responses.words.embedded.BankCompact
-import com.backend.ord.domain.embedded.ExampleSentence
+import com.backend.ord.domain.persistance.embedded.ExampleSentence
 import com.backend.ord.enums.persistance.language.LanguageName
 import com.backend.ord.enums.persistance.word.WordExtraMark
 import com.backend.ord.enums.persistance.word.WordType

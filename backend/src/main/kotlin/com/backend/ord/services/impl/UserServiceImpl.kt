@@ -1,6 +1,6 @@
 package com.backend.ord.services.impl
 
-import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.persistance.entities.User
 import com.backend.ord.repositories.UserRepository
 import com.backend.ord.repositories.UserSessionRepository
 import com.backend.ord.services.UserService
