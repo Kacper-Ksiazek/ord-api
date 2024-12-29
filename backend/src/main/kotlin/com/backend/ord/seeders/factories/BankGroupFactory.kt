@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.factories
 
-import com.backend.ord.domain.persistance.entities.BankGroup
-import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistence.entities.BankGroup
+import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.seeders.entities.UserSeeder
 import org.springframework.stereotype.Component
 

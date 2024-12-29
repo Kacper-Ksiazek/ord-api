@@ -2,7 +2,7 @@ package com.backend.ord.services.gpt_tokens_usage.bases.impl
 
 import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
 import com.backend.ord.config.properties.OpenAIProperties
-import com.backend.ord.domain.persistance.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.repositories.gpt_tokens_usage.bases.GPTTokensUsageRepository
 import com.backend.ord.services.gpt_tokens_usage.bases.TokensUsageServiceBase
 import java.math.BigDecimal

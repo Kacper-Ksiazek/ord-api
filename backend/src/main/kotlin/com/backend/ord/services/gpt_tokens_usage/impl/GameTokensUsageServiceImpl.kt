@@ -1,13 +1,13 @@
 package com.backend.ord.services.gpt_tokens_usage.impl
 
 import com.backend.ord.config.properties.OpenAIProperties
-import com.backend.ord.domain.persistance.entities.Game
-import com.backend.ord.domain.persistance.entities.User
-import com.backend.ord.domain.persistance.entities.gpt_tokens_usage.GameTokensUsage
-import com.backend.ord.enums.persistance.game.GameDifficulty
-import com.backend.ord.enums.persistance.game.GameType
-import com.backend.ord.enums.persistance.language.LanguageName
-import com.backend.ord.enums.persistance.tokens_usage.GamesGPTTokensConsumptionType
+import com.backend.ord.domain.persistence.entities.Game
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
+import com.backend.ord.enums.persistence.game.GameDifficulty
+import com.backend.ord.enums.persistence.game.GameType
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.repositories.gpt_tokens_usage.bases.GPTTokensUsageRepository
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.backend.ord.services.gpt_tokens_usage.bases.impl.TokensUsageServiceBaseImpl

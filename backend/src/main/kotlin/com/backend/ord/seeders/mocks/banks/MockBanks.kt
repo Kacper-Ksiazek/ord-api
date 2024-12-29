@@ -1,8 +1,8 @@
 package com.backend.ord.seeders.mocks.banks
 
-import com.backend.ord.domain.persistance.entities.Bank
-import com.backend.ord.domain.persistance.entities.BankGroup
-import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.domain.persistence.entities.BankGroup
+import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.repositories.BankRepository
 import com.backend.ord.seeders.mocks._bases.MocksFromJsonFileHandler
 import com.backend.ord.seeders.mocks.banks.json_data_models.BankInJSON

@@ -1,6 +1,6 @@
 package com.backend.ord.services
 
-import com.backend.ord.domain.persistance.entities.UserSession
+import com.backend.ord.domain.persistence.entities.UserSession
 import com.backend.ord.exceptions.UserNotFoundException
 import java.util.*
 

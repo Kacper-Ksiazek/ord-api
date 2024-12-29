@@ -1,7 +1,7 @@
 package com.backend.ord.api.responses.games
 
 import com.backend.ord.config.ScoringResult
-import com.backend.ord.enums.persistance.game.GameGrade
+import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.utils.data_classes.Percentage
 
 

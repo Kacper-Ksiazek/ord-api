@@ -5,8 +5,8 @@ import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
 import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageWithinTimePeriod
 import com.backend.ord.api.responses.gpt_tokens_usage.toDetailedWordTokensUsage
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.persistance.entities.User
-import com.backend.ord.enums.persistance.tokens_usage.WordsGPTTokensConsumptionType
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity

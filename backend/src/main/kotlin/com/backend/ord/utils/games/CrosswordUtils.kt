@@ -1,8 +1,8 @@
 package com.backend.ord.utils.games
 
-import com.backend.ord.domain.persistance.embedded.game_instructions.CrosswordInstruction
-import com.backend.ord.domain.persistance.embedded.game_instructions.CrosswordQuestion
-import com.backend.ord.domain.persistance.embedded.game_instructions.CrosswordWordDirection
+import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
+import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordQuestion
+import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.ai.dto.AIGeneratedCrosswordQuestion
 

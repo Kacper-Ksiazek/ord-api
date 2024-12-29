@@ -3,8 +3,8 @@ package com.backend.ord.controllers
 import com.backend.ord.api.requests.LoginRequest
 import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.persistance.dto.UserDTO
-import com.backend.ord.domain.persistance.mappers.UserMapper
+import com.backend.ord.domain.persistence.dto.UserDTO
+import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.exceptions.ForbiddenException
 import com.backend.ord.exceptions.UserNotFoundException
 import com.backend.ord.services.AuthenticationService

@@ -1,10 +1,10 @@
 package com.backend.ord.seeders.entities
 
-import com.backend.ord.domain.persistance.dto.UserDTO
-import com.backend.ord.domain.persistance.entities.Bank
-import com.backend.ord.domain.persistance.entities.BankGroup
-import com.backend.ord.domain.persistance.entities.User
-import com.backend.ord.domain.persistance.mappers.UserMapper
+import com.backend.ord.domain.persistence.dto.UserDTO
+import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.domain.persistence.entities.BankGroup
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.repositories.BankRepository
 import com.backend.ord.seeders.factories.BankMockFactory
 import org.springframework.stereotype.Component

@@ -2,10 +2,10 @@ package com.backend.ord.api.requests.word.data
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.word.CreateWordRequest
-import com.backend.ord.domain.persistance.embedded.ExampleSentence
-import com.backend.ord.enums.persistance.language.LanguageName
-import com.backend.ord.enums.persistance.word.WordExtraMark
-import com.backend.ord.enums.persistance.word.WordType
+import com.backend.ord.domain.persistence.embedded.ExampleSentence
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.validators.annotations.ValidStringSet
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank

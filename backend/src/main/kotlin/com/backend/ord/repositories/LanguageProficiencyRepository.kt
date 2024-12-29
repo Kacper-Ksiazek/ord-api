@@ -1,6 +1,6 @@
 package com.backend.ord.repositories
 
-import com.backend.ord.domain.persistance.entities.LanguageProficiency
+import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.repositories.bases.UserResourceRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

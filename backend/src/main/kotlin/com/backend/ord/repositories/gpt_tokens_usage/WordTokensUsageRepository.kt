@@ -1,7 +1,7 @@
 package com.backend.ord.repositories.gpt_tokens_usage
 
-import com.backend.ord.domain.persistance.entities.gpt_tokens_usage.WordTokensUsage
-import com.backend.ord.enums.persistance.tokens_usage.WordsGPTTokensConsumptionType
+import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.WordTokensUsage
+import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
 import com.backend.ord.repositories.gpt_tokens_usage.bases.GPTTokensUsageRepository
 import org.springframework.stereotype.Repository
 

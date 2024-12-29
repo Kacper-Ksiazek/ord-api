@@ -8,11 +8,11 @@ import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
 import com.backend.ord.config.AnswerScore
-import com.backend.ord.domain.persistance.entities.User
-import com.backend.ord.domain.persistance.entities.Word
-import com.backend.ord.enums.persistance.language.LanguageName
-import com.backend.ord.enums.persistance.word.WordExtraMark
-import com.backend.ord.enums.persistance.word.WordType
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.services.WordService

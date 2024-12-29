@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.mocks
 
-import com.backend.ord.domain.persistance.entities.BankGroup
-import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistence.entities.BankGroup
+import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.seeders.mocks.bank_groups.MockBankGroups
 import com.backend.ord.seeders.mocks.banks.MockBanks
 import com.backend.ord.seeders.mocks.words.MockWordsManuals

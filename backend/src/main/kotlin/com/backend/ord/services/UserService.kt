@@ -1,6 +1,6 @@
 package com.backend.ord.services
 
-import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistence.entities.User
 import java.util.*
 
 interface UserService {

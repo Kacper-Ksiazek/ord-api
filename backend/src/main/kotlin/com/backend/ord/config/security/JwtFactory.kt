@@ -1,7 +1,7 @@
 package com.backend.ord.config.security
 
 import com.backend.ord.config.properties.JwtProperties
-import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.exceptions.UserNotFoundException
 import com.backend.ord.services.UserSessionService
 import com.backend.ord.utils.CookieUtils.createCookie

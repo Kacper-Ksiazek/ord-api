@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.mocks._bases
 
-import com.backend.ord.domain.persistance.entities.User
-import com.backend.ord.domain.persistance.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.utils.JsonReader
 import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.data.jpa.repository.JpaRepository

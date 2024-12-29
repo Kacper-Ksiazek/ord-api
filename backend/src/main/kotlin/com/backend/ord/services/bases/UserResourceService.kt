@@ -1,6 +1,6 @@
 package com.backend.ord.services.bases
 
-import com.backend.ord.domain.persistance.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.bases.UserResourceRepository
 import org.springframework.data.repository.findByIdOrNull

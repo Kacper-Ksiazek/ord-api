@@ -2,9 +2,9 @@ package com.backend.ord.api.requests.word
 
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
-import com.backend.ord.enums.persistance.language.LanguageName
-import com.backend.ord.enums.persistance.word.WordExtraMark
-import com.backend.ord.enums.persistance.word.WordType
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import java.util.*
 
 

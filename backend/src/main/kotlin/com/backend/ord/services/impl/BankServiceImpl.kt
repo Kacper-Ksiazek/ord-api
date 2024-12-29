@@ -1,8 +1,8 @@
 package com.backend.ord.services.impl
 
 import com.backend.ord.api.requests.bank.CreateBankRequest
-import com.backend.ord.domain.persistance.entities.Bank
-import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.bases.UserResourceRepository

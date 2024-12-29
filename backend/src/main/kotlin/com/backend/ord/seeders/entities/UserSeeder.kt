@@ -1,6 +1,6 @@
 package com.backend.ord.seeders.entities
 
-import com.backend.ord.domain.persistance.entities.User
+import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.repositories.UserRepository
 import com.backend.ord.seeders.factories.UserMockFactory
 import org.springframework.stereotype.Component

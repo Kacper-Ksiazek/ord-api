@@ -1,12 +1,12 @@
 package com.backend.ord.seeders.factories
 
-import com.backend.ord.domain.persistance.embedded.ExampleSentence
-import com.backend.ord.domain.persistance.entities.Bank
-import com.backend.ord.domain.persistance.entities.User
-import com.backend.ord.domain.persistance.entities.Word
-import com.backend.ord.enums.persistance.language.LanguageName
-import com.backend.ord.enums.persistance.word.WordExtraMark
-import com.backend.ord.enums.persistance.word.WordType
+import com.backend.ord.domain.persistence.embedded.ExampleSentence
+import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.utils.EnumUtils.getRandomValue
 import com.backend.ord.utils.EnumUtils.getRandomValueOrNull
