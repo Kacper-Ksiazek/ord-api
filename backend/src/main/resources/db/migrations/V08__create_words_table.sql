@@ -35,9 +35,6 @@ CREATE TABLE IF NOT EXISTS words
     -- The number of points gathered by the user during participating in different exercises
     points            INTEGER       NOT NULL   DEFAULT 0,
 
-    -- The total number of tokens used to generate examples, manuals, explanations, etc.
-    used_gpt_tokens   INTEGER       NOT NULL   DEFAULT 0 CHECK ( used_gpt_tokens >= 0 ),
-
     -- Set<ExampleSentence> of example sentences which are used to explain the word in context
     example_sentences JSONB         NOT NULL,
 
