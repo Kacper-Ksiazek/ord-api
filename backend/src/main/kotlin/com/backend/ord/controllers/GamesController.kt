@@ -176,9 +176,11 @@ class GamesController(
         val reviewedQuestions: List<Pair<String, AnswerScore>> =
             game.instruction.questions.map { questionFromInstruction ->
                 return@map getPointsForUserAnswer(
-                    userAnswer = body.userAnswers.questionsAnswers.find { it.computeCoordinates() == questionFromInstruction.computeCoordinates() }?.word,
+                    difficulty = game.difficulty,
                     correctAnswer = questionFromInstruction.word,
-                    difficulty = game.difficulty
+                    userAnswer = body.userAnswers.questionsAnswers.find {
+                        it.coordinates.toString() == questionFromInstruction.coordinates.toString()
+                    }?.word,
                 )
             }
 

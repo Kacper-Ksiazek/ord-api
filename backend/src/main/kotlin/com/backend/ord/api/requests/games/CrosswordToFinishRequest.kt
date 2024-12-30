@@ -1,6 +1,7 @@
 package com.backend.ord.api.requests.games
 
 import com.backend.ord.api.requests.games.bases.GameToBeFinishedBase
+import com.backend.ord.domain.application.games.BoardCoordinates
 
 interface CrosswordUserAnswersQuestion {
     /**
@@ -8,18 +9,10 @@ interface CrosswordUserAnswersQuestion {
      */
     val word: String
 
-    // Both of the following fields are used to identify the word in the crossword.
-    val endCoordinates: Pair<Int, Int>
-    val startCoordinates: Pair<Int, Int>
-
-    // TODO: Create Position field with new data class and handle all coordinates there
     /**
-     * The coordinates of the word in the crossword.
-     * The format is "startX,startY,endX,endY".
+     * Coordinates of the word, used to identify the word in the crossword by its position.
      */
-    fun computeCoordinates(): String {
-        return "${startCoordinates.first},${startCoordinates.second},${endCoordinates.first},${endCoordinates.second}"
-    }
+    val coordinates: BoardCoordinates
 }
 
 

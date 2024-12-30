@@ -1,5 +1,6 @@
 package com.backend.ord.utils.games
 
+import com.backend.ord.domain.application.games.BoardCoordinates
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordQuestion
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
@@ -19,7 +20,7 @@ private fun CrosswordWordDirection.opposite(): CrosswordWordDirection {
 }
 
 private fun CrosswordQuestion.getCoordinatesOfLetterAtIndex(index: Int): Pair<Int, Int> {
-    val (x, y) = this.startCoordinates
+    val (x, y) = this.coordinates.start
 
     return when (this.direction) {
         CrosswordWordDirection.HORIZONTAL -> Pair(x + index, y)
@@ -132,8 +133,10 @@ private fun MutableList<MutableList<String?>>.insertWord(
         word = question.word,
         clue = question.clue,
         direction = direction,
-        endCoordinates = endCoordinates,
-        startCoordinates = startCoordinates,
+        coordinates = BoardCoordinates(
+            start = startCoordinates,
+            end = endCoordinates
+        ),
     )
 
     questionsToInstruction.add(result)
@@ -259,7 +262,7 @@ object CrosswordUtils {
                 val longestWord = remainingWords.maxByOrNull { it.word.length }!!
                 run insertSeparator@{
                     questionsToInstruction.reversed().forEach { lastInsertedWord ->
-                        val separatorCoordinates = lastInsertedWord.endCoordinates.shiftInDirection(
+                        val separatorCoordinates = lastInsertedWord.coordinates.end.shiftInDirection(
                             direction = lastInsertedWord.direction,
                             offset = 1
                         )
