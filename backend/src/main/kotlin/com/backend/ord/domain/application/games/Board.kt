@@ -112,7 +112,7 @@ class Board {
             word = aiGeneratedQuestion.word,
             clue = aiGeneratedQuestion.clue,
             direction = direction,
-            coordinates = BoardCoordinates(
+            coordinates = ExactWordAreaOnBoard(
                 start = startCoordinates,
                 end = endCoordinates
             ),

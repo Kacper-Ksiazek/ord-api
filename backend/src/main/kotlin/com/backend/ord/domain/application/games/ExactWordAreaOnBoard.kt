@@ -1,6 +1,7 @@
 package com.backend.ord.domain.application.games
 
-data class BoardCoordinates(
+// TODO: Refactor this field name and reconsider the class's name
+data class ExactWordAreaOnBoard(
     /**
      * The (X,Y) position of the beginning of the word
      */
