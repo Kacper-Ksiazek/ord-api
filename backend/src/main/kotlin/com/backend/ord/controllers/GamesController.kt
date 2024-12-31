@@ -32,24 +32,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-// An irrelevant extension function to print the board
-private fun List<List<String?>>.print() {
-    print('+')
-    repeat(this[0].size) { print("-") }
-    println('+')
-    this.forEach { row ->
-        print("|")
-        row.forEach { cell ->
-            print("${cell ?: ' '} ")
-        }
-        print("|")
-        println()
-    }
-    print('+')
-    repeat(this[0].size) { print("-") }
-    println('+')
-}
-
 
 @RestController
 @RequestMapping("/api/v1/games")
@@ -118,8 +100,6 @@ class GamesController(
         val (instruction, board) = CrosswordUtils.createInstruction(
             aiGeneratedQuestions = aiGeneratedCrosswordBase,
         )
-
-        board.print()
 
         // 4. Save the game in the database
         val savedGame: Game = gameService.save(

@@ -24,8 +24,17 @@ data class CrosswordQuestion(
 
     val coordinates: WordPlacementRange,
 
-    val answerComponent: List<AnswerComponent>? = null
-)
+    var answerComponents: MutableList<AnswerComponent>? = null
+) {
+    /**
+     * Adds a new answer component to the list of answer components.
+     */
+    fun addAnswerComponent(newAnswerComponent: AnswerComponent) {
+        if (answerComponents == null) answerComponents = mutableListOf<AnswerComponent>()
+
+        answerComponents?.add(newAnswerComponent)
+    }
+
     /**
      * Returns the coordinates of the letter at the given index in the word.
      */

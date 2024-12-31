@@ -2,6 +2,7 @@ package com.backend.ord.utils.games
 
 import com.backend.ord.domain.application.games.Board
 import com.backend.ord.domain.application.games.Coordinates
+import com.backend.ord.domain.persistence.embedded.game_instructions.AnswerComponent
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordQuestion
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
@@ -23,7 +24,7 @@ private fun MutableList<AIGeneratedCrosswordQuestion>.removeQuestion(question: A
 }
 
 object CrosswordUtils {
-    // TODO: Prepare a function to hide the answers ( make some letters empty string with the likelihood depending on the difficulty )
+    val SPECIAL_CHARS: Set<String> = setOf(" ", "'", "-", "’", "_")
 
     fun createInstruction(
         aiGeneratedQuestions: AIGeneratedCrossword,
@@ -123,13 +124,59 @@ object CrosswordUtils {
             }
         }
 
+//        board.print()
+
+        val instruction = CrosswordInstruction(
+            answer = aiGeneratedQuestions.answer,
+            answerExplanation = aiGeneratedQuestions.answerExplanation,
+            questions = questionsToInstruction
+        )
+
+        setFinalWordComponents(instruction)
+
         return Pair(
-            CrosswordInstruction(
-                answer = aiGeneratedQuestions.answer,
-                answerExplanation = aiGeneratedQuestions.answerExplanation,
-                questions = questionsToInstruction
-            ),
+            instruction,
             board.toList()
         )
+    }
+
+    // TODO: Prepare a function to hide the answers ( make some letters empty string with the likelihood depending on the difficulty )
+    fun hideAnswers(wordToHide: String) {
+        // and also the final word
+        throw NotImplementedError("Not implemented yet")
+    }
+
+    /**
+     * Go through the generated crossword questions and find locations
+     * of final word letters in words on the board
+     */
+    fun setFinalWordComponents(
+        instruction: CrosswordInstruction
+    ) {
+        // 1. Iterate through all letters of the final word
+        instruction.answer.withIndex().forEach { finalWordLetter ->
+            // Skip special characters
+            if (SPECIAL_CHARS.contains(finalWordLetter.value.toString())) return@forEach
+
+            // 2. Find all words on the board that contain the letter
+            val allWordsContainingLetter = instruction.questions.filter { it.word.contains(finalWordLetter.value) }
+
+            // 3. Draw one random word from the list
+            val randomWord: CrosswordQuestion = allWordsContainingLetter.random()
+
+            // 4. Find all locations of the letter in the word
+            val locationsOfLetter = randomWord.word.withIndex().filter { it.value == finalWordLetter.value }
+
+            // 5. Pick one random location
+            val randomLocation: IndexedValue<Char> = locationsOfLetter.random()
+
+            // 6. Insert a new answer component to that word
+            randomWord.addAnswerComponent(
+                AnswerComponent(
+                    indexInWord = randomLocation.index,
+                    indexInPassword = finalWordLetter.index
+                )
+            )
+        }
     }
 }
