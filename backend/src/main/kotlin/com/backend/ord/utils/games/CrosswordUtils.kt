@@ -148,11 +148,15 @@ object CrosswordUtils {
 
     /**
      * Go through the generated crossword questions and find locations
-     * of final word letters in words on the board
+     * of final word letters in words on the board.
+     *
+     * Return the set of indexes of unmatched letters - letters of the final word with no corresponding word on the board.
      */
     fun setFinalWordComponents(
         instruction: CrosswordInstruction
-    ) {
+    ): Set<Int> {
+        val indexesOfUnmatchedLetters = mutableListOf<Int>()
+
         // 1. Iterate through all letters of the final word
         instruction.answer.withIndex().forEach { finalWordLetter ->
             // Skip special characters
@@ -167,7 +171,13 @@ object CrosswordUtils {
             // 4. Find all locations of the letter in the word
             val locationsOfLetter = randomWord.word.withIndex().filter { it.value == finalWordLetter.value }
 
-            // 5. Pick one random location
+            // 5. If there are no locations, add the index of the letter to the list of unmatched letters
+            if (locationsOfLetter.isEmpty()) {
+                indexesOfUnmatchedLetters.add(finalWordLetter.index)
+                return@forEach
+            }
+
+            // 6. Pick one random location
             val randomLocation: IndexedValue<Char> = locationsOfLetter.random()
 
             // 6. Insert a new answer component to that word
@@ -178,5 +188,7 @@ object CrosswordUtils {
                 )
             )
         }
+
+        return indexesOfUnmatchedLetters.toSet()
     }
 }
