@@ -1,0 +1,26 @@
+AI Generated Crossword - Example 1
+
++----------------------------------------------------------+
+|          u                                               |
+|          n                                               |
+|        t h o u g h t - o u t           t                 |
+|          e                             a                 |
+|    v o c a t i o n a l   s c h o o l   k                 |
+|      t   r o                           e                 |
+|      o   d                             -                 |
+|            b                           i                 |
+|      c     e                           t                 |
+|u p w a r d   t r e n d                 -                 |
+|    e p   t o   a d d   i n s u l t   t o   i n j u r y   |
+|    l       n                           r               t |
+|    l i                 s t a t e - o f - t h e - a r t r |
+|    - t     t                           l               a |
+|    t       h                           e               n |
+|    o a     e                           a               s |
+|    - l                                 v               i |
+|    d l     u                           e               e |
+|    o       p                           -               n |
+|                                t i p p i n g   p o i n t |
+|                                        t                 |
++----------------------------------------------------------+
+
