@@ -4,7 +4,15 @@ import com.backend.ord.domain.application.games.WordPlacementRange
 
 enum class CrosswordWordDirection {
     HORIZONTAL,
-    VERTICAL
+    VERTICAL;
+
+    fun opposite(): CrosswordWordDirection {
+        return if (this == HORIZONTAL) {
+            VERTICAL
+        } else {
+            HORIZONTAL
+        }
+    }
 }
 
 data class CrosswordQuestion(

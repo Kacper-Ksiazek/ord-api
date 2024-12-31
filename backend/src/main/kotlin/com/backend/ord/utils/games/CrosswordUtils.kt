@@ -8,14 +8,6 @@ import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWo
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.ai.dto.AIGeneratedCrosswordQuestion
 
-private fun CrosswordWordDirection.opposite(): CrosswordWordDirection {
-    return if (this == CrosswordWordDirection.HORIZONTAL) {
-        CrosswordWordDirection.VERTICAL
-    } else {
-        CrosswordWordDirection.HORIZONTAL
-    }
-}
-
 private fun CrosswordQuestion.getCoordinatesOfLetterAtIndex(index: Int): Coordinates {
     val (x, y) = this.coordinates.start
 
