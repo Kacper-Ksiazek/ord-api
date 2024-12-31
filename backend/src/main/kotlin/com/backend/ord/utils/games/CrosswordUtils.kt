@@ -1,6 +1,7 @@
 package com.backend.ord.utils.games
 
 import com.backend.ord.domain.application.games.Board
+import com.backend.ord.domain.application.games.Coordinates
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordQuestion
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
@@ -15,22 +16,12 @@ private fun CrosswordWordDirection.opposite(): CrosswordWordDirection {
     }
 }
 
-private fun CrosswordQuestion.getCoordinatesOfLetterAtIndex(index: Int): Pair<Int, Int> {
+private fun CrosswordQuestion.getCoordinatesOfLetterAtIndex(index: Int): Coordinates {
     val (x, y) = this.coordinates.start
 
     return when (this.direction) {
-        CrosswordWordDirection.HORIZONTAL -> Pair(x + index, y)
-        CrosswordWordDirection.VERTICAL -> Pair(x, y + index)
-    }
-}
-
-private fun Pair<Int, Int>.shiftInDirection(
-    direction: CrosswordWordDirection,
-    offset: Int
-): Pair<Int, Int> {
-    return when (direction) {
-        CrosswordWordDirection.HORIZONTAL -> Pair(this.first + offset, this.second)
-        CrosswordWordDirection.VERTICAL -> Pair(this.first, this.second + offset)
+        CrosswordWordDirection.HORIZONTAL -> Coordinates(x + index, y)
+        CrosswordWordDirection.VERTICAL -> Coordinates(x, y + index)
     }
 }
 
@@ -53,20 +44,14 @@ object CrosswordUtils {
 
     fun createInstruction(
         aiGeneratedQuestions: AIGeneratedCrossword,
-        boardSizeX: Int = 32,
-        boardSizeY: Int = 24,
-        firstWordStartingCoordinates: Pair<Int, Int> = Pair(5, 5)
+        boardDimension: Coordinates = Coordinates(x = 32, y = 24),
+        firstWordStart: Coordinates = Coordinates(x = 5, y = 5)
     ): Pair<CrosswordInstruction, List<List<String?>>> {
         // This is a set of questions that will be returned as a final instruction's component
         val questionsToInstruction: MutableSet<CrosswordQuestion> = mutableSetOf()
 
         // Create a board with the given dimensions
-        //
-        // Board is a matrix representing a crossword gameplay area
-        // Each cell contains either a single letter or null
-        // Additionally to the above, there are also special values
-        // - "SEPARATOR" - meaning the cell is a separator between two separate questions
-        val board: Board = Board(dimensions = Pair(boardSizeX, boardSizeY))
+        val board: Board = Board(boardDimension)
 
         // Prepare a list of remaining words to be placed on the board
         var directionOfLastInsertedWord: CrosswordWordDirection = CrosswordWordDirection.HORIZONTAL
@@ -75,7 +60,7 @@ object CrosswordUtils {
         // Fill the board with the questions forming a crossword puzzle
         board.place(
             aiGeneratedQuestion = remainingWords.pickRandomQuestionAndRemove(),
-            startCoordinates = firstWordStartingCoordinates,
+            start = firstWordStart,
             direction = directionOfLastInsertedWord,
             questionsToInstruction = questionsToInstruction
         )
@@ -98,13 +83,20 @@ object CrosswordUtils {
                         if (commonLetters.isEmpty()) return@forEach // Continue to the next letter
 
                         commonLetters.forEach { commonLetter ->
-                            val startingPosition = previousQuestion
-                                .getCoordinatesOfLetterAtIndex(previousQuestionLetter.index)
-                                .shiftInDirection(directionInWhichToInsert, -commonLetter.index)
+                            val startingPosition = try {
+                                previousQuestion
+                                    .getCoordinatesOfLetterAtIndex(previousQuestionLetter.index)
+                                    .shift(
+                                        direction = directionInWhichToInsert,
+                                        offset = -commonLetter.index
+                                    )
+                            } catch (e: Exception) {
+                                return@forEach
+                            }
 
                             board.placeIfFits(
                                 aiGeneratedQuestion = drawnWord,
-                                startCoordinates = startingPosition,
+                                start = startingPosition,
                                 direction = directionInWhichToInsert,
                                 questionsToInstruction = questionsToInstruction
                             )?.let {
@@ -122,18 +114,18 @@ object CrosswordUtils {
                 val longestWord = remainingWords.maxByOrNull { it.word.length }!!
                 run insertSeparator@{
                     questionsToInstruction.reversed().forEach { lastInsertedWord ->
-                        val separatorCoordinates = lastInsertedWord.coordinates.end.shiftInDirection(
+                        val separatorCoordinates = lastInsertedWord.coordinates.end.copyAndShift(
                             direction = lastInsertedWord.direction,
                             offset = 1
                         )
-                        val coordinatesOfWordToInsert = separatorCoordinates.shiftInDirection(
+                        val coordinatesOfWordToInsert = separatorCoordinates.copyAndShift(
                             direction = lastInsertedWord.direction,
                             offset = 1
                         )
 
                         board.placeIfFits(
                             aiGeneratedQuestion = longestWord,
-                            startCoordinates = coordinatesOfWordToInsert,
+                            start = coordinatesOfWordToInsert,
                             direction = lastInsertedWord.direction.opposite(),
                             questionsToInstruction = questionsToInstruction
                         )?.let {

@@ -1,6 +1,6 @@
 package com.backend.ord.domain.persistence.embedded.game_instructions
 
-import com.backend.ord.domain.application.games.ExactWordAreaOnBoard
+import com.backend.ord.domain.application.games.WordPlacementRange
 
 enum class CrosswordWordDirection {
     HORIZONTAL,
@@ -13,7 +13,7 @@ data class CrosswordQuestion(
 
     val direction: CrosswordWordDirection,
 
-    val coordinates: ExactWordAreaOnBoard,
+    val coordinates: WordPlacementRange,
 
     val answerComponent: List<AnswerComponent>? = null
 )

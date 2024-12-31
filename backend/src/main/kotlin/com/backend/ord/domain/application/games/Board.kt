@@ -4,13 +4,21 @@ import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordQu
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.AIGeneratedCrosswordQuestion
 
+/**
+ * Represents a matrix for a crossword gameplay area.
+ *
+ * Each cell can contain one of the following:
+ * - A single letter
+ * - `null` if the cell is empty
+ * - Special values, such as:
+ *   - `"SEPARATOR"`: Indicates the cell is a separator between two separate questions.
+ */
 class Board {
-    val cells: MutableList<MutableList<String?>>
+    private val cells: MutableList<MutableList<String?>>
 
-    constructor(dimensions: Pair<Int, Int>) {
-        val (rows, cols) = dimensions
 
-        cells = MutableList(rows) { MutableList(cols) { null } }
+    constructor(dimensions: Coordinates) {
+        cells = MutableList(dimensions.y) { MutableList(dimensions.x) { null } }
     }
 
     companion object {
@@ -19,10 +27,20 @@ class Board {
         }
     }
 
-    fun insertSeparator(coordinates: Pair<Int, Int>) {
-        val (x, y) = coordinates
+    fun insertSeparator(coordinates: Coordinates) {
+        ensureCoordinatesFitsBoard(coordinates)
 
-        this.cells[x][y] = Symbols.SEPARATOR
+        this.cells[coordinates.y][coordinates.x] = Symbols.SEPARATOR
+    }
+
+    fun insertCharacter(
+        x: Int,
+        y: Int,
+        character: Char
+    ) {
+        ensureCoordinatesFitsBoard(x, y)
+
+        this.cells[y][x] = character.toString()
     }
 
     /**
@@ -30,90 +48,69 @@ class Board {
      */
     fun checkIfWordFits(
         wordToFit: String,
-        startCoordinates: Pair<Int, Int>,
+        start: Coordinates,
         direction: CrosswordWordDirection
     ): Boolean {
+        ensureCoordinatesFitsBoard(start)
+
         val wordSize: Int = wordToFit.length
+        val wordCoordinates: Coordinates = start.copy()
 
-        val x = startCoordinates.first
-        val y = startCoordinates.second
+        return (0 until wordSize).all { i ->
+            val letterFits = checkIfCharacterFits(
+                coordinates = wordCoordinates,
+                character = wordToFit[i]
+            )
 
-        if (x < 0 || y < 0) {
-            return false
+            wordCoordinates.shift(offset = 1, direction = direction)
+
+            letterFits
         }
-
-        if (direction == CrosswordWordDirection.HORIZONTAL) {
-            // Check if the word fits horizontally - meaning if it fits within the board's width
-            if (x + wordSize > this.cells[0].size) {
-                return false
-            }
-
-            // Check all the cells in the row where the word is supposed to be placed without the one cell in which the word starts
-            for (i in 0 until wordSize) {
-                val boardValueAtGivenLocation: String? = this.cells[y][x + i]
-                val questionValueAtGivenIndex: String = wordToFit[i].toString()
-
-                if (this.cells[y][x + i] != null && boardValueAtGivenLocation != questionValueAtGivenIndex) {
-                    return false
-                }
-            }
-        } else {
-            // Check if the word fits vertically - meaning if it fits within the board's height
-            if (y + wordSize > this.cells.size) {
-                return false
-            }
-
-            for (i in 0 until wordSize) {
-                val boardValueAtGivenLocation: String? = this.cells[y + i][x]
-                val questionValueAtGivenIndex: String = wordToFit[i].toString()
-
-                if (this.cells[y + i][x] != null && boardValueAtGivenLocation != questionValueAtGivenIndex) {
-                    return false
-                }
-            }
-        }
-
-        return true
     }
 
     /**
      * Place a word on the board at the given coordinates and direction and add it to the list of questions.
      */
     fun place(
-        startCoordinates: Pair<Int, Int>,
+        start: Coordinates,
         direction: CrosswordWordDirection,
         aiGeneratedQuestion: AIGeneratedCrosswordQuestion,
         questionsToInstruction: MutableSet<CrosswordQuestion>
     ): CrosswordQuestion {
+        ensureCoordinatesFitsBoard(start)
+
         val wordSize: Int = aiGeneratedQuestion.word.length
-        val endCoordinates: Pair<Int, Int>
 
         if (direction == CrosswordWordDirection.HORIZONTAL) {
-            val x = startCoordinates.first
-            val y = startCoordinates.second
-
             for (i in 0 until wordSize) {
-                this.cells[y][x + i] = aiGeneratedQuestion.word[i].toString()
+                insertCharacter(
+                    x = start.x + i,
+                    y = start.y,
+                    character = aiGeneratedQuestion.word[i]
+                )
             }
 
-            endCoordinates = Pair(x + wordSize - 1, y)
         } else {
-            val x = startCoordinates.first
-            val y = startCoordinates.second
-
             for (i in 0 until wordSize) {
-                this.cells[y + i][x] = aiGeneratedQuestion.word[i].toString()
+                insertCharacter(
+                    x = start.x,
+                    y = start.y + i,
+                    character = aiGeneratedQuestion.word[i]
+                )
             }
-
-            endCoordinates = Pair(x, y + wordSize - 1)
         }
+
+        val endCoordinates: Coordinates = start.copy().shift(
+            offset = wordSize - 1,
+            direction = direction
+        )
 
         val result = CrosswordQuestion(
             word = aiGeneratedQuestion.word,
             clue = aiGeneratedQuestion.clue,
             direction = direction,
-            coordinates = ExactWordAreaOnBoard(
-                start = startCoordinates,
+            coordinates = WordPlacementRange(
+                start = start,
                 end = endCoordinates
             ),
         )
@@ -128,23 +125,27 @@ class Board {
      */
     fun placeIfFits(
         aiGeneratedQuestion: AIGeneratedCrosswordQuestion,
-        startCoordinates: Pair<Int, Int>,
+        start: Coordinates,
         direction: CrosswordWordDirection,
         questionsToInstruction: MutableSet<CrosswordQuestion>
     ): CrosswordQuestion? {
-        return if (checkIfWordFits(
-                wordToFit = aiGeneratedQuestion.word,
-                startCoordinates = startCoordinates,
-                direction = direction
-            )
-        ) {
-            place(
-                aiGeneratedQuestion = aiGeneratedQuestion,
-                startCoordinates = startCoordinates,
-                direction = direction,
-                questionsToInstruction = questionsToInstruction
-            )
-        } else null
+        return try {
+            if (checkIfWordFits(
+                    wordToFit = aiGeneratedQuestion.word,
+                    start = start,
+                    direction = direction
+                )
+            ) {
+                place(
+                    aiGeneratedQuestion = aiGeneratedQuestion,
+                    start = start,
+                    direction = direction,
+                    questionsToInstruction = questionsToInstruction
+                )
+            } else null
+        } catch (e: Exception) {
+            null
+        }
     }
 
     /**
@@ -181,5 +182,40 @@ class Board {
         }
 
         return cellsCopy
+    }
+
+    private fun checkIfCharacterFits(
+        x: Int,
+        y: Int,
+        character: Char
+    ): Boolean {
+        // Check if the coordinates are within the board's bounds
+        if (x < 0 || y < 0 || x >= this.cells[0].size || y >= this.cells.size) {
+            return false
+        }
+
+        val cellValue: String? = this.cells[y][x]
+
+        return cellValue == null || cellValue == character.toString()
+    }
+
+    private fun checkIfCharacterFits(
+        coordinates: Coordinates,
+        character: Char
+    ): Boolean {
+        return checkIfCharacterFits(
+            x = coordinates.x,
+            y = coordinates.y,
+            character = character
+        )
+    }
+
+    private fun ensureCoordinatesFitsBoard(coordinates: Coordinates) {
+        ensureCoordinatesFitsBoard(coordinates.x, coordinates.y)
+    }
+
+    private fun ensureCoordinatesFitsBoard(x: Int, y: Int) {
+        require(x < this.cells[0].size) { "x must be less than the board's width" }
+        require(y < this.cells.size) { "y must be less than the board's height" }
     }
 }

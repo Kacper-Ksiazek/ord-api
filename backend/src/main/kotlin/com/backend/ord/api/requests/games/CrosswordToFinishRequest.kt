@@ -1,7 +1,7 @@
 package com.backend.ord.api.requests.games
 
 import com.backend.ord.api.requests.games.bases.GameToBeFinishedBase
-import com.backend.ord.domain.application.games.ExactWordAreaOnBoard
+import com.backend.ord.domain.application.games.WordPlacementRange
 
 interface CrosswordUserAnswersQuestion {
     /**
@@ -12,7 +12,7 @@ interface CrosswordUserAnswersQuestion {
     /**
      * Coordinates of the word, used to identify the word in the crossword by its position.
      */
-    val coordinates: ExactWordAreaOnBoard
+    val coordinates: WordPlacementRange
 }
 
 
