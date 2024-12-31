@@ -37,3 +37,50 @@ fun GameDifficulty.getNumberOfAllowedMistakes(): Int {
         GameDifficulty.HARD -> 0
     }
 }
+
+
+fun GameDifficulty.getNumberOfLettersToReveal(): Int {
+    return when (this) {
+        /**
+         * [EASY] Probability:
+         * - 0: 30%
+         * - 1: 40%
+         * - 2: 20%
+         * - 3: 10%
+         */
+        GameDifficulty.EASY -> listOf(
+            *List(3) { 0 }.toTypedArray(),
+            *List(4) { 1 }.toTypedArray(),
+            *List(2) { 2 }.toTypedArray(),
+            *List(1) { 3 }.toTypedArray(),
+        ).random()
+
+        /**
+         * [MEDIUM] Probability:
+         * - 0: 30%
+         * - 1: 40%
+         * - 2: 20%
+         * - 3: 10%
+         */
+        GameDifficulty.MEDIUM -> listOf(
+            *List(3) { 0 }.toTypedArray(),
+            *List(4) { 1 }.toTypedArray(),
+            *List(2) { 2 }.toTypedArray(),
+            *List(1) { 3 }.toTypedArray(),
+        ).random()
+
+        /**
+         * [HARD] Probability:
+         * - 0: 50%
+         * - 1: 30%
+         * - 2: 10%
+         * - 3: 10%
+         */
+        GameDifficulty.HARD -> listOf(
+            *List(5) { 0 }.toTypedArray(),
+            *List(3) { 1 }.toTypedArray(),
+            *List(1) { 2 }.toTypedArray(),
+            *List(1) { 3 }.toTypedArray(),
+        ).random()
+    }
+}
