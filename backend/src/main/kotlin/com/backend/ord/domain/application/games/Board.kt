@@ -163,7 +163,7 @@ class Board {
 
         // Trim null-filled rows from the top
         while (cellsCopy.isNotEmpty() && cellsCopy.first().all { it == null }) {
-            this.cells.removeAt(0)
+            cellsCopy.removeAt(0)
         }
 
         // Trim null-filled rows from the bottom
@@ -217,5 +217,22 @@ class Board {
     private fun ensureCoordinatesFitsBoard(x: Int, y: Int) {
         require(x < this.cells[0].size) { "x must be less than the board's width" }
         require(y < this.cells.size) { "y must be less than the board's height" }
+    }
+
+    fun print() {
+        print('+')
+        repeat(this.cells[0].size) { print("-") }
+        println('+')
+        this.cells.forEach { row ->
+            print("|")
+            row.forEach { cell ->
+                print("${cell ?: ' '} ")
+            }
+            print("|")
+            println()
+        }
+        print('+')
+        repeat(this.cells[0].size) { print("-") }
+        println('+')
     }
 }
