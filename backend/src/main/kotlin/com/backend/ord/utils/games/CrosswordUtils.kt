@@ -8,15 +8,6 @@ import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWo
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.ai.dto.AIGeneratedCrosswordQuestion
 
-private fun CrosswordQuestion.getCoordinatesOfLetterAtIndex(index: Int): Coordinates {
-    val (x, y) = this.coordinates.start
-
-    return when (this.direction) {
-        CrosswordWordDirection.HORIZONTAL -> Coordinates(x + index, y)
-        CrosswordWordDirection.VERTICAL -> Coordinates(x, y + index)
-    }
-}
-
 private fun MutableList<AIGeneratedCrosswordQuestion>.pickRandomQuestion(): AIGeneratedCrosswordQuestion {
     val randomIndex = (0 until this.size).random()
     return this[randomIndex]

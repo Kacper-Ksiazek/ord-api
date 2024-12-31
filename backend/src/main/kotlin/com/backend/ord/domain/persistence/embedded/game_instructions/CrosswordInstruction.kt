@@ -1,5 +1,6 @@
 package com.backend.ord.domain.persistence.embedded.game_instructions
 
+import com.backend.ord.domain.application.games.Coordinates
 import com.backend.ord.domain.application.games.WordPlacementRange
 
 enum class CrosswordWordDirection {
@@ -25,6 +26,18 @@ data class CrosswordQuestion(
 
     val answerComponent: List<AnswerComponent>? = null
 )
+    /**
+     * Returns the coordinates of the letter at the given index in the word.
+     */
+    fun getCoordinatesOfLetterAtIndex(index: Int): Coordinates {
+        val (x, y) = this.coordinates.start
+
+        return when (this.direction) {
+            CrosswordWordDirection.HORIZONTAL -> Coordinates(x + index, y)
+            CrosswordWordDirection.VERTICAL -> Coordinates(x, y + index)
+        }
+    }
+}
 
 data class AnswerComponent(
     val indexInWord: Int,
