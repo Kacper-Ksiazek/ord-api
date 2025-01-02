@@ -56,7 +56,7 @@ class GameMapperImpl(
             language = entity.language,
             difficulty = entity.difficulty,
             instruction = jsonObjectMapper.readValue(entity.instruction, CrosswordInstruction::class.java),
-            properAnswers = jsonObjectMapper.readValue(entity.instruction, CrosswordGameProperAnswers::class.java),
+            properAnswers = jsonObjectMapper.readValue(entity.properAnswers, CrosswordGameProperAnswers::class.java),
 
             duration = entity.duration,
             finalScore = entity.finalScore,

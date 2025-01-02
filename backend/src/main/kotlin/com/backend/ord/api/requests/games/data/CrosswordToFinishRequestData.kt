@@ -3,16 +3,15 @@ package com.backend.ord.api.requests.games.data
 import com.backend.ord.api.requests.games.CrosswordToFinishRequest
 import com.backend.ord.api.requests.games.CrosswordUserAnswers
 import com.backend.ord.api.requests.games.CrosswordUserAnswersQuestion
-import com.backend.ord.domain.application.games.WordPlacementRange
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
 import java.util.*
 
 data class CrosswordUserAnswersQuestionData(
+    override val id: UUID,
+
     @field:Size(min = 1, max = 255, message = "Word must be between 1 and 255 characters")
     override val word: String,
-
-    override val coordinates: WordPlacementRange
 ) : CrosswordUserAnswersQuestion
 
 

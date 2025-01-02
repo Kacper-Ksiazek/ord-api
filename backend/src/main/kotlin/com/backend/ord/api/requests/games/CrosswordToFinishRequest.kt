@@ -1,18 +1,18 @@
 package com.backend.ord.api.requests.games
 
 import com.backend.ord.api.requests.games.bases.GameToBeFinishedBase
-import com.backend.ord.domain.application.games.WordPlacementRange
+import java.util.*
 
 interface CrosswordUserAnswersQuestion {
+    /**
+     * The crossword question's ID.
+     */
+    val id: UUID
+
     /**
      * The answer to the clue at the given coordinates.
      */
     val word: String
-
-    /**
-     * Coordinates of the word, used to identify the word in the crossword by its position.
-     */
-    val coordinates: WordPlacementRange
 }
 
 

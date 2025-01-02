@@ -167,12 +167,12 @@ class GamesController(
 
         // 3. Check all words forming a crossword
         val reviewedQuestions: List<Pair<String, AnswerScore>> =
-            game.instruction.questions.map { questionFromInstruction ->
+            game.properAnswers.questions.entries.map { properAnswer ->
                 return@map getPointsForUserAnswer(
                     difficulty = game.difficulty,
-                    correctAnswer = questionFromInstruction.word,
+                    correctAnswer = properAnswer.value,
                     userAnswer = body.userAnswers.questionsAnswers.find {
-                        it.coordinates.toString() == questionFromInstruction.coordinates.toString()
+                        it.id == properAnswer.key
                     }?.word,
                 )
             }
@@ -188,7 +188,7 @@ class GamesController(
         val pointsForFinalAnswer: Int = GameReviewingUtils.computeFinalScoreComponent(
             receivedScoreForThisComponent = getPointsForUserAnswer(
                 userAnswer = body.userAnswers.answer,
-                correctAnswer = game.instruction.answer,
+                correctAnswer = game.properAnswers.finalWord,
                 difficulty = game.difficulty
             ).second.value,
             maxScoreForThisComponent = AnswerScore.CORRECT.value,
