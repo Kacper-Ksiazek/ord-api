@@ -106,6 +106,7 @@ class Board {
         )
 
         val result = CrosswordQuestion(
+            id = aiGeneratedQuestion.id,
             word = aiGeneratedQuestion.word,
             clue = aiGeneratedQuestion.clue,
             direction = direction,

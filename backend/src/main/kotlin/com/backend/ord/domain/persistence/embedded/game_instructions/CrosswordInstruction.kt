@@ -2,6 +2,7 @@ package com.backend.ord.domain.persistence.embedded.game_instructions
 
 import com.backend.ord.domain.application.games.Coordinates
 import com.backend.ord.domain.application.games.WordPlacementRange
+import java.util.*
 
 enum class CrosswordWordDirection {
     HORIZONTAL,
@@ -17,6 +18,8 @@ enum class CrosswordWordDirection {
 }
 
 data class CrosswordQuestion(
+    val id: UUID,
+
     var word: String, // Prepare a private setter for this property
     val clue: String,
 
