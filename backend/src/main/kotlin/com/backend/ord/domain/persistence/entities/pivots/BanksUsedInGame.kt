@@ -1,5 +1,7 @@
-package com.backend.ord.domain.persistence.entities
+package com.backend.ord.domain.persistence.entities.pivots
 
+import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.domain.persistence.entities.Game
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction

@@ -7,6 +7,7 @@ import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordIn
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordQuestion
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
 import com.backend.ord.enums.persistence.game.GameDifficulty
+import com.backend.ord.enums.persistence.game.getNumberOfLettersToReveal
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.ai.dto.AIGeneratedCrosswordQuestion
 
@@ -143,10 +144,20 @@ object CrosswordUtils {
         )
     }
 
-    // TODO: Prepare a function to hide the answers ( make some letters empty string with the likelihood depending on the difficulty )
-    fun hideAnswers(wordToHide: String) {
-        // and also the final word
-        throw NotImplementedError("Not implemented yet")
+    /**
+     *
+     */
+    fun hideLettersInProperAnswer(
+        wordToHide: String,
+        difficulty: GameDifficulty
+    ): String {
+        val numberOfLettersToReveal = difficulty.getNumberOfLettersToReveal()
+        val indexesOfLettersToReveal = wordToHide.indices.shuffled().take(numberOfLettersToReveal)
+
+        return wordToHide.withIndex().map { (index, currentChar) ->
+            if (SPECIAL_CHARS.contains(currentChar) || indexesOfLettersToReveal.contains(index)) currentChar
+            HIDDEN_CHARACTER
+        }.joinToString()
     }
 
     /**

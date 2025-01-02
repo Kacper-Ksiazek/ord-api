@@ -1,16 +1,20 @@
 package com.backend.ord.services.impl
 
 import com.backend.ord.domain.persistence.entities.Game
+import com.backend.ord.domain.persistence.entities.pivots.WordUsedInGame
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameStatus
 import com.backend.ord.repositories.bases.UserResourceRepository
+import com.backend.ord.repositories.pivots.WordsUsedInGamesRepository
 import com.backend.ord.services.GameService
 import com.backend.ord.utils.data_classes.Percentage
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class GameServiceImpl(
-    override val repository: UserResourceRepository<Game>
+    override val repository: UserResourceRepository<Game>,
+    val wordsUsedInGamesRepository: WordsUsedInGamesRepository
 ) : GameService {
     override fun finishGame(
         game: Game,
@@ -24,5 +28,19 @@ class GameServiceImpl(
         game.grade = GameGrade.fromPercentage(Percentage(finalScore))
 
         return repository.save(game)
+    }
+
+    override fun saveAllWordsUsedInAGame(
+        wordsIds: Set<UUID>,
+        gameId: UUID
+    ) {
+        wordsUsedInGamesRepository.saveAll(
+            wordsIds.map {
+                WordUsedInGame(
+                    gameId = gameId,
+                    wordId = it
+                )
+            }
+        )
     }
 }

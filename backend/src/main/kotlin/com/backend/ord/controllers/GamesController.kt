@@ -120,13 +120,24 @@ class GamesController(
 
         // 6. Save pivot entities for words used in the game
         // TODO: Create pivot entities for games used in the game
+        gameService.saveAllWordsUsedInAGame(
+            wordsIds = words.map { it.id },
+            gameId = savedGame.id
+        )
 
+        // 7. Hide letters of proper answers based on the game difficulty
+        instruction.questions.forEach { question ->
+            question.word = CrosswordUtils.hideLettersInProperAnswer(
+                wordToHide = question.word,
+                difficulty = GameDifficulty.HARD
+            )
+        }
 
         return ResponseEntity.ok(
             StartedCrosswordGameResponse(
                 gameId = savedGame.id,
+                board = board,
                 instruction = instruction,
-                board = board
             )
         )
     }

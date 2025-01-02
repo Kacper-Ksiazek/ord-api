@@ -29,9 +29,11 @@ import org.springframework.stereotype.Service
 class AIGameServiceImpl(
     private val restClientConfig: RestClientConfig,
     private val openAIRequestFactory: OpenAIRequestFactory,
+
+    // Services:
     private val wordService: WordService,
-    private val languageProficiencyService: LanguageProficiencyService,
-    private val gameTokensUsageService: GameTokensUsageService
+    private val gameTokensUsageService: GameTokensUsageService,
+    private val languageProficiencyService: LanguageProficiencyService
 ) : AIGameService {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
@@ -64,12 +66,11 @@ class AIGameServiceImpl(
         ).data
             .shuffled()
             .take(questionsAmountBasedOnDifficulty)
-            .map { it.origin }
 
         // Prepare an API request
         val openAIRequest: OpenAIRequest = openAIRequestFactory.createRequest(
             prompt = Prompts.generateCrosswordQuestionsPrompt(
-                wordsToUse = words,
+                wordsToUse = words.map { it.origin },
                 language = language,
                 difficulty = difficulty,
                 amountOfQuestions = questionsAmountBasedOnDifficulty,

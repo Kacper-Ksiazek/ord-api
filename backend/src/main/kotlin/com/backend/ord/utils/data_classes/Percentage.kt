@@ -47,5 +47,11 @@ class Percentage(
     operator fun times(other: Long): Double {
         return (value / 100) * other
     }
+
+    companion object {
+        fun random(): Percentage {
+            return Percentage((0..100).random())
+        }
+    }
 }
 

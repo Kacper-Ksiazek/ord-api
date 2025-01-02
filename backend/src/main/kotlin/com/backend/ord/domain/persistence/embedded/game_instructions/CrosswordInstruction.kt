@@ -17,7 +17,7 @@ enum class CrosswordWordDirection {
 }
 
 data class CrosswordQuestion(
-    val word: String,
+    var word: String, // Prepare a private setter for this property
     val clue: String,
 
     val direction: CrosswordWordDirection,
@@ -54,7 +54,7 @@ data class AnswerComponent(
 )
 
 data class CrosswordInstruction(
-    val answer: String,
     val answerExplanation: String,
+    val answer: String,
     val questions: Set<CrosswordQuestion>,
 )
