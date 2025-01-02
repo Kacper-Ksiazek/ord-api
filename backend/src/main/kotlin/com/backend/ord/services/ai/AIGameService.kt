@@ -1,5 +1,6 @@
 package com.backend.ord.services.ai
 
+import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordGameProperAnswers
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.persistence.game.GameDifficulty
@@ -24,18 +25,28 @@ interface AIGameService {
         user: User,
         language: LanguageName,
         difficulty: GameDifficulty
-    ): Triple<
+    ): GeneratedCrossWordGame
+
+    companion object {
+        data class GeneratedCrossWordGame(
             /**
              * The parsed crossword game received from calling an OpenAI endpoint
              */
-            AIGeneratedCrossword,
+            val aiGeneratedCrossword: AIGeneratedCrossword,
             /**
              * A set of logs representing a usage of games token
              */
-            Set<GameTokensUsage>,
+            val gameTokensUsageLogs: Set<GameTokensUsage>,
+
             /**
              * A set of all ids of the words used in the game
              */
-            Set<UUID>
-            >
+            val wordsUsedIds: Set<UUID>,
+
+            /**
+             * All expected answers to the crossword game
+             */
+            val properAnswers: CrosswordGameProperAnswers
+        )
+    }
 }

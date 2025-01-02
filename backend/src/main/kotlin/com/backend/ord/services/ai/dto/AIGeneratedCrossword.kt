@@ -5,12 +5,12 @@ import java.util.*
 data class AIGeneratedCrosswordQuestion(
     val id: UUID = UUID.randomUUID(),
 
-    val word: String,
+    var word: String,
     val clue: String,
 )
 
 data class AIGeneratedCrossword(
-    val answer: String,
+    var answer: String,
     val answerExplanation: String,
     val questions: List<AIGeneratedCrosswordQuestion>
 )

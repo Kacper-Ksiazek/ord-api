@@ -21,11 +21,11 @@ import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
+import com.backend.ord.utils.games.CrosswordUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class AIGameServiceImpl(
@@ -46,7 +46,7 @@ class AIGameServiceImpl(
         user: User,
         language: LanguageName,
         difficulty: GameDifficulty
-    ): Triple<AIGeneratedCrossword, Set<GameTokensUsage>, Set<UUID>> {
+    ): AIGameService.Companion.GeneratedCrossWordGame {
         // Store all token usage logs for the game
         val gameTokensUsageLogs: MutableSet<GameTokensUsage> = mutableSetOf()
 
@@ -124,16 +124,31 @@ class AIGameServiceImpl(
             // Retry if the response doesn't have the expected number of questions
         } while (parsedResponseBody?.questions?.size != questionsAmountBasedOnDifficulty)
 
-        val properAnswers: CrosswordGameProperAnswers = CrosswordGameProperAnswers(
+        // Save all proper answers
+        val properAnswers = CrosswordGameProperAnswers(
             finalWord = parsedResponseBody.answer,
             questions = parsedResponseBody.questions.associate { it.id to it.word }
         )
 
+        // Hide letters in data for user
+        parsedResponseBody.answer = CrosswordUtils.hideLettersInProperAnswer(
+            wordToHide = parsedResponseBody.answer,
+            difficulty = difficulty
+        )
+
+        parsedResponseBody.questions.forEach { question ->
+            question.word = CrosswordUtils.hideLettersInProperAnswer(
+                wordToHide = question.word,
+                difficulty = difficulty
+            )
+        }
+
         // Return the validated crossword response
-        return Triple(
-            parsedResponseBody,
-            gameTokensUsageLogs,
-            words.map { it.id }.toSet()
+        return AIGameService.Companion.GeneratedCrossWordGame(
+            aiGeneratedCrossword = parsedResponseBody,
+            gameTokensUsageLogs = gameTokensUsageLogs,
+            wordsUsedIds = words.map { it.id }.toSet(),
+            properAnswers = properAnswers
         )
     }
 }

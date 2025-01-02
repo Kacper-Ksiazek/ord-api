@@ -61,3 +61,8 @@ data class CrosswordInstruction(
     val answer: String,
     val questions: Set<CrosswordQuestion>,
 )
+
+data class CrosswordGameProperAnswers(
+    val finalWord: String,
+    val questions: Map<UUID, String>
+)
