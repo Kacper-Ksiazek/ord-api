@@ -25,8 +25,9 @@ private fun MutableList<AIGeneratedCrosswordQuestion>.removeQuestion(question: A
 }
 
 object CrosswordUtils {
-    val SPECIAL_CHARS: Set<String> = setOf(" ", "'", "-", "’", "_")
+    const val HIDDEN_CHARACTER: Char = '*'
     val SPECIAL_CHARS: Set<Char> = setOf(' ', '\'', '-', '’', '_')
+
 
     fun createInstruction(
         aiGeneratedQuestions: AIGeneratedCrossword,
