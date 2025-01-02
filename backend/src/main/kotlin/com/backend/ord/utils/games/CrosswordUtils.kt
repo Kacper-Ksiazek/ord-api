@@ -6,6 +6,7 @@ import com.backend.ord.domain.persistence.embedded.game_instructions.AnswerCompo
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordQuestion
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
+import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.ai.dto.AIGeneratedCrosswordQuestion
 
@@ -25,6 +26,7 @@ private fun MutableList<AIGeneratedCrosswordQuestion>.removeQuestion(question: A
 
 object CrosswordUtils {
     val SPECIAL_CHARS: Set<String> = setOf(" ", "'", "-", "’", "_")
+    val SPECIAL_CHARS: Set<Char> = setOf(' ', '\'', '-', '’', '_')
 
     fun createInstruction(
         aiGeneratedQuestions: AIGeneratedCrossword,
@@ -160,7 +162,7 @@ object CrosswordUtils {
         // 1. Iterate through all letters of the final word
         instruction.answer.withIndex().forEach { finalWordLetter ->
             // Skip special characters
-            if (SPECIAL_CHARS.contains(finalWordLetter.value.toString())) return@forEach
+            if (SPECIAL_CHARS.contains(finalWordLetter.value)) return@forEach
 
             // 2. Find all words on the board that contain the letter
             val allWordsContainingLetter = instruction.questions.filter { it.word.contains(finalWordLetter.value) }
