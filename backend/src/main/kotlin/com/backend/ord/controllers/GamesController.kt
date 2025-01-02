@@ -90,7 +90,7 @@ class GamesController(
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         // 2. Generate crossword game using AI
-        val (aiGeneratedCrosswordBase, gpTokensUsageLogs) = aiGameService.generateCrosswordGame(
+        val (aiGeneratedCrosswordBase, gpTokensUsageLogs, usedWordsIds) = aiGameService.generateCrosswordGame(
             user = user,
             language = LanguageName.ENGLISH,
             difficulty = GameDifficulty.HARD
@@ -121,7 +121,7 @@ class GamesController(
         // 6. Save pivot entities for words used in the game
         // TODO: Create pivot entities for games used in the game
         gameService.saveAllWordsUsedInAGame(
-            wordsIds = words.map { it.id },
+            wordsIds = usedWordsIds,
             gameId = savedGame.id
         )
 

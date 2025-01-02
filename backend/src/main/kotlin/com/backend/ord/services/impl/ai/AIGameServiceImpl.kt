@@ -6,6 +6,7 @@ import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.openai.embedded.OpenAIResponse
 import com.backend.ord.config.RestClientConfig
+import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordGameProperAnswers
 import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class AIGameServiceImpl(
@@ -44,7 +46,7 @@ class AIGameServiceImpl(
         user: User,
         language: LanguageName,
         difficulty: GameDifficulty
-    ): Pair<AIGeneratedCrossword, Set<GameTokensUsage>> {
+    ): Triple<AIGeneratedCrossword, Set<GameTokensUsage>, Set<UUID>> {
         // Store all token usage logs for the game
         val gameTokensUsageLogs: MutableSet<GameTokensUsage> = mutableSetOf()
 
@@ -122,10 +124,16 @@ class AIGameServiceImpl(
             // Retry if the response doesn't have the expected number of questions
         } while (parsedResponseBody?.questions?.size != questionsAmountBasedOnDifficulty)
 
+        val properAnswers: CrosswordGameProperAnswers = CrosswordGameProperAnswers(
+            finalWord = parsedResponseBody.answer,
+            questions = parsedResponseBody.questions.associate { it.id to it.word }
+        )
+
         // Return the validated crossword response
-        return Pair(
+        return Triple(
             parsedResponseBody,
-            gameTokensUsageLogs
+            gameTokensUsageLogs,
+            words.map { it.id }.toSet()
         )
     }
 }
