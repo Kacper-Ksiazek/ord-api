@@ -151,13 +151,16 @@ object CrosswordUtils {
         wordToHide: String,
         difficulty: GameDifficulty
     ): String {
-        val numberOfLettersToReveal = difficulty.getNumberOfLettersToReveal()
+        val numberOfLettersToReveal: Int = difficulty.getNumberOfLettersToReveal()
         val indexesOfLettersToReveal = wordToHide.indices.shuffled().take(numberOfLettersToReveal)
 
-        return wordToHide.withIndex().map { (index, currentChar) ->
-            if (SPECIAL_CHARS.contains(currentChar) || indexesOfLettersToReveal.contains(index)) currentChar
-            HIDDEN_CHARACTER
-        }.joinToString()
+        return wordToHide.mapIndexed { index, currentChar ->
+            if (SPECIAL_CHARS.contains(currentChar) || indexesOfLettersToReveal.contains(index)) {
+                currentChar
+            } else {
+                HIDDEN_CHARACTER
+            }
+        }.joinToString("")
     }
 
     /**
