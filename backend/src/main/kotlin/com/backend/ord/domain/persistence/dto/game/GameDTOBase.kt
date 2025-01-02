@@ -9,14 +9,14 @@ import com.backend.ord.enums.persistence.language.LanguageName
 import java.time.Instant
 import java.util.*
 
-abstract class GameDTOBase<Instructions>(
+abstract class GameDTOBase<Instructions, ProperAnswers>(
     open val id: UUID = UUID.randomUUID(),
 
     open var finalScore: Int = 0,
     open var duration: String = "00:00:00",
 
     open var instruction: Instructions,
-
+    open var properAnswers: ProperAnswers,
 
     open var type: GameType,
     open var grade: GameGrade = GameGrade.NA,
@@ -29,5 +29,3 @@ abstract class GameDTOBase<Instructions>(
     open val createdAt: Instant = Instant.now(),
     open var updatedAt: Instant = Instant.now()
 )
-
-

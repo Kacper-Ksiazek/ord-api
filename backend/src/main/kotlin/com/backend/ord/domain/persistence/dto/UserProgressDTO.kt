@@ -10,7 +10,7 @@ class UserProgressDTO(
     var pointsObtained: Int = 0,
 
     var user: UserDTO,
-    var game: GameDTOBase<*>,
+    var game: GameDTOBase<*, *>,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),

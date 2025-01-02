@@ -50,6 +50,9 @@ class Game(
     @Column(name = "instruction", nullable = false, columnDefinition = "json")
     var instruction: String,
 
+    @Column(name = "proper_answers", columnDefinition = "json")
+    var properAnswers: String?,
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)

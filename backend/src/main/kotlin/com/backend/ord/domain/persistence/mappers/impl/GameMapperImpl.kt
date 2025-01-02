@@ -2,6 +2,7 @@ package com.backend.ord.domain.persistence.mappers.impl
 
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.dto.game.GameDTOBase
+import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordGameProperAnswers
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.entities.Game
 import com.backend.ord.domain.persistence.mappers.GameMapper
@@ -16,7 +17,7 @@ class GameMapperImpl(
 ) : GameMapper {
     val jsonObjectMapper = jacksonObjectMapper()
 
-    override fun toEntity(dto: GameDTOBase<*>): Game {
+    override fun toEntity(dto: GameDTOBase<*, *>): Game {
         return Game(
             id = dto.id,
 
@@ -26,6 +27,7 @@ class GameMapperImpl(
             language = dto.language,
             difficulty = dto.difficulty,
             instruction = jsonObjectMapper.writeValueAsString(dto.instruction),
+            properAnswers = jsonObjectMapper.writeValueAsString(dto.properAnswers),
 
             duration = dto.duration,
             finalScore = dto.finalScore,
@@ -37,7 +39,7 @@ class GameMapperImpl(
         )
     }
 
-    override fun toDTO(entity: Game): GameDTOBase<*> {
+    override fun toDTO(entity: Game): GameDTOBase<*, *> {
         return when (entity.type) {
             GameType.CROSSWORD -> toCrosswordDTO(entity)
             else -> throw IllegalArgumentException("Invalid game type")
@@ -54,6 +56,7 @@ class GameMapperImpl(
             language = entity.language,
             difficulty = entity.difficulty,
             instruction = jsonObjectMapper.readValue(entity.instruction, CrosswordInstruction::class.java),
+            properAnswers = jsonObjectMapper.readValue(entity.instruction, CrosswordGameProperAnswers::class.java),
 
             duration = entity.duration,
             finalScore = entity.finalScore,
