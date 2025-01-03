@@ -79,7 +79,12 @@ WORDS = [
     "thwarted",
     "diverted",
     "visceral",
-    "grinding"
+    "grinding",
+    "inhibitory",
+    "attuned",
+    "interconnectedness",
+    "underpinning",
+    "bolster"
 ]
 
 
