@@ -6,17 +6,20 @@ import com.backend.ord.utils.data_classes.Percentage
 
 
 data class FinishedGameResponse(
-    val finalScore: Percentage,
+    val finalScore: Double,
     val properAnswers: Set<ProperAnswers>,
 ) {
+    private val _finalScore: Percentage
+        get() = Percentage(finalScore)
+
     val grade: GameGrade
-        get() = GameGrade.fromPercentage(finalScore)
+        get() = GameGrade.fromPercentage(_finalScore)
 
     constructor(
         totalPoints: Int,
         properAnswers: List<ProperAnswers>
     ) : this(
-        finalScore = Percentage(totalPoints),
+        finalScore = Percentage(totalPoints).value,
         properAnswers = properAnswers.toSet()
     )
 
