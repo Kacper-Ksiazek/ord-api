@@ -1,4 +1,4 @@
-package com.backend.ord.controllers
+package com.backend.ord.controllers.games
 
 import com.backend.ord.api.requests.games.data.CrosswordToFinishRequestData
 import com.backend.ord.api.responses.games.FinishedGameResponse
@@ -21,7 +21,6 @@ import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.backend.ord.utils.games.CrosswordUtils
 import com.backend.ord.utils.games.GameReviewingUtils
-import com.backend.ord.utils.games.GameReviewingUtils.getPointsForUserAnswer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.servlet.http.HttpServletRequest
@@ -32,10 +31,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-
 @RestController
-@RequestMapping("/api/v1/games")
-class GamesController(
+@RequestMapping("/api/v1/games/crossword")
+class CrosswordGameController(
     private val aiGameService: AIGameService,
     private val jwtService: JwtService,
     private val gameService: GameService,
@@ -45,46 +43,12 @@ class GamesController(
 ) {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
-    // +-----------------------------+
-    // |    GAMES ENDPOINTS PLAN:    |
-    // +-----------------------------+
-
-    // ----
-    // 1. Start a game endpoints
-    //
-    // 1. @PostMapping("/start/words-typing")
-    // 2. @PostMapping("/start/gaps-filling")
-    // 3. @PostMapping("/start/sentences-writing")
-    //
-    // 4. @PostMapping("/start/immersive-story")
-
-    // ----
-    // 2. Review a game endpoints
-    // ----
-    // 5. [✅] @PostMapping("/finish/crossword")
-    // 6. @PostMapping("/finish/words-typing")
-    // 7. @PostMapping("/finish/gaps-filling")
-    // 8. @PostMapping("/finish/sentences-writing")
-    //
-    // 9. @PostMapping("/finish/immersive-story")
-
-    // ----
-    // 3. General game endpoints ( ALL MVP )
-    // ----
-    // 10. @PostMapping("/pause/{gameId}")
-    // 11. @PostMapping("/resume/{gameId}")
-    // 12. [MVP] @PostMapping("/cancel/{gameId}")
-    // 13. @GetMapping("/paused")
-    // 14. @GetMapping("/games-history")
-    // 15. @GetMapping("/statistics")
-
     /**
-     * Start a crossword game
+     * Start a new crossword game
      */
-    @PostMapping("/start/crossword")
+    @PostMapping("/start")
     fun startCrosswordGame(
         request: HttpServletRequest
-        // TODO: Implement game start body, including difficulty and language
     ): ResponseEntity<StartedCrosswordGameResponse> {
         // 1. Assert the user is authenticated
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
@@ -145,11 +109,10 @@ class GamesController(
         )
     }
 
-
     /**
      * Finish a crossword game
      */
-    @PostMapping("/finish/crossword")
+    @PostMapping("/finish")
     fun finishCrosswordGame(
         request: HttpServletRequest,
         @Valid @RequestBody body: CrosswordToFinishRequestData
@@ -168,7 +131,7 @@ class GamesController(
         // 3. Check all words forming a crossword
         val reviewedQuestions: List<Pair<String, AnswerScore>> =
             game.properAnswers.questions.entries.map { properAnswer ->
-                return@map getPointsForUserAnswer(
+                return@map GameReviewingUtils.getPointsForUserAnswer(
                     difficulty = game.difficulty,
                     correctAnswer = properAnswer.value,
                     userAnswer = body.userAnswers.questionsAnswers.find {
@@ -186,7 +149,7 @@ class GamesController(
 
         // 5. Compute points received from the final word
         val pointsForFinalAnswer: Int = GameReviewingUtils.computeFinalScoreComponent(
-            receivedScoreForThisComponent = getPointsForUserAnswer(
+            receivedScoreForThisComponent = GameReviewingUtils.getPointsForUserAnswer(
                 userAnswer = body.userAnswers.answer,
                 correctAnswer = game.properAnswers.finalWord,
                 difficulty = game.difficulty
