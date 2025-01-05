@@ -1,6 +1,7 @@
 package com.backend.ord.controllers.games
 
 import com.backend.ord.api.requests.games.data.CrosswordToFinishRequestData
+import com.backend.ord.api.requests.games.data.StartGameRequestData
 import com.backend.ord.api.responses.games.FinishedGameResponse
 import com.backend.ord.api.responses.games.StartedCrosswordGameResponse
 import com.backend.ord.config.AnswerScore
@@ -10,10 +11,8 @@ import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.entities.Game
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.mappers.GameMapper
-import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameStatus
 import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.GameService
 import com.backend.ord.services.WordService
@@ -48,7 +47,8 @@ class CrosswordGameController(
      */
     @PostMapping("/start")
     fun startCrosswordGame(
-        request: HttpServletRequest
+        request: HttpServletRequest,
+        @Valid @RequestBody body: StartGameRequestData
     ): ResponseEntity<StartedCrosswordGameResponse> {
         // 1. Assert the user is authenticated
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
@@ -56,8 +56,8 @@ class CrosswordGameController(
         // 2. Generate crossword game using AI
         val (aiGeneratedCrosswordBase, gpTokensUsageLogs, usedWordsIds, properAnswers) = aiGameService.generateCrosswordGame(
             user = user,
-            language = LanguageName.ENGLISH,
-            difficulty = GameDifficulty.HARD
+            language = body.language,
+            difficulty = body.difficulty
         )
 
         // 3. Parse the generated crossword game and compute its instruction
@@ -69,9 +69,9 @@ class CrosswordGameController(
         val savedGame: Game = gameService.save(
             Game(
                 user = user,
-                difficulty = GameDifficulty.HARD,
+                difficulty = body.difficulty,
                 type = GameType.CROSSWORD,
-                language = LanguageName.ENGLISH,
+                language = body.language,
                 instruction = jsonObjectMapper.writeValueAsString(instruction),
                 properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
             )
@@ -93,7 +93,7 @@ class CrosswordGameController(
         instruction.questions.forEach { question ->
             question.word = CrosswordUtils.hideLettersInProperAnswer(
                 wordToHide = question.word,
-                difficulty = GameDifficulty.HARD
+                difficulty = body.difficulty
             )
         }
 
