@@ -182,6 +182,11 @@ object CrosswordUtils {
             // 2. Find all words on the board that contain the letter
             val allWordsContainingLetter = instruction.questions.filter { it.word.contains(finalWordLetter.value) }
 
+            if (allWordsContainingLetter.isEmpty()) {
+                indexesOfUnmatchedLetters.add(finalWordLetter.index)
+                return@forEach
+            }
+
             // 3. Draw one random word from the list
             val randomWord: CrosswordQuestion = allWordsContainingLetter.random()
 
