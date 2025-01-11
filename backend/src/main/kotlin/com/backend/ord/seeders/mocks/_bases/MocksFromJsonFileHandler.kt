@@ -46,17 +46,10 @@ interface MocksFromJsonFileHandler<
      * Reads data from a JSON file and returns a list of JSON data models
      */
     fun readFromJSONFile(): FileContent {
-        try {
-            return JsonReader.readJsonFile(
-                pathToJSONFile = getAbsolutePath(pathToJSONFile),
-                typeReference = typeReference()
-            )
-
-        } catch (e: java.io.FileNotFoundException) {
-            throw Exception("The JSON file was not found: $pathToJSONFile", e)
-        } catch (e: Exception) {
-            throw Exception("An error occurred while reading the JSON file: $pathToJSONFile", e)
-        }
+        return JsonReader.readJsonFile(
+            pathToJSONFile = getAbsolutePath(pathToJSONFile),
+            typeReference = typeReference()
+        )
     }
 
     fun parseFileContent(fileContent: FileContent): List<JSONDataModelType> {
