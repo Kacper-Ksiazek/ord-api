@@ -21,9 +21,10 @@ abstract class ControllerTestBase(
     val objectMapper: ObjectMapper,
     private val jwtProperties: JwtProperties
 ) {
+    // TODO: Add a way of passing a predefined native language here, e.g. Polish
     fun mockAuthenticatedUser(): MockedAuthenticatedUser {
         val authUserEmailAddress = "random.authenticated.email@gmail.com"
-        return mockAuthenticatedUser(authUserEmailAddress)
+        return mockAuthenticatedUser(email = authUserEmailAddress)
     }
 
     fun mockAuthenticatedUser(email: String): MockedAuthenticatedUser {
