@@ -10,6 +10,7 @@ import com.backend.ord.domain.persistence.mappers.GameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.repositories.GameRepository
+import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -36,8 +37,16 @@ class TestCrosswordGameController @Autowired constructor(
     private val wordRepository: WordRepository,
     private val userMapper: UserMapper,
     private val gameMapper: GameMapper,
-    private val gameRepository: GameRepository
-) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
+    private val gameRepository: GameRepository,
+    private val languageProficiencyRepository: LanguageProficiencyRepository
+) : ControllerTestBase(
+    mockMvc = mockMvc!!,
+    objectMapper = objectMapper,
+
+    userMapper = userMapper,
+    jwtProperties = jwtProperties,
+    languageProficiencyRepository = languageProficiencyRepository,
+) {
     private val gameRequestFactory = GameRequestFactory(objectMapper)
 
     @Nested

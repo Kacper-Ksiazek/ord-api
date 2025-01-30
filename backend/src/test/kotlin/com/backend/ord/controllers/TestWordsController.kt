@@ -27,6 +27,7 @@ import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
@@ -80,11 +81,18 @@ class TestWordsController @Autowired constructor(
     private val userSeeder: UserSeeder,
     private val wordSeeder: WordSeeder,
     private val wordMapper: WordMapper,
-    private val bankGroupSeeder: BankGroupSeeder
-) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
-    @Autowired
-    private lateinit var userMapper: UserMapper
+    private val bankGroupSeeder: BankGroupSeeder,
+    private val languageProficiencyRepository: LanguageProficiencyRepository,
+    private val userMapper: UserMapper
 
+) : ControllerTestBase(
+    mockMvc = mockMvc!!,
+    objectMapper = objectMapper,
+
+    userMapper = userMapper,
+    jwtProperties = jwtProperties,
+    languageProficiencyRepository = languageProficiencyRepository,
+) {
     @Autowired
     private lateinit var wordMockFactory: WordMockFactory
 

@@ -31,7 +31,14 @@ class TestLanguageProficiencyService @Autowired constructor(
     private val languageProficiencySeeder: LanguageProficiencySeeder,
     private val userMapper: UserMapper,
     private val languageProficiencyRepository: LanguageProficiencyRepository
-) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
+) : ControllerTestBase(
+    mockMvc = mockMvc!!,
+    objectMapper = objectMapper,
+
+    userMapper = userMapper,
+    jwtProperties = jwtProperties,
+    languageProficiencyRepository = languageProficiencyRepository,
+) {
     private val PASSWORD = "123456"
     private val EMAIL = "test@test.com"
     private val BASE_URL = "/api/v1/auth"
