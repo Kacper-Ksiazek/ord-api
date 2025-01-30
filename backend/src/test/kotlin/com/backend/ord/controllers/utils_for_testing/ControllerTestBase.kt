@@ -3,7 +3,11 @@ package com.backend.ord.controllers.utils_for_testing
 import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.domain.persistence.dto.UserDTO
+import com.backend.ord.domain.persistence.entities.LanguageProficiency
+import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
+import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -17,17 +21,18 @@ import kotlin.test.assertNotNull
 
 @AutoConfigureMockMvc
 abstract class ControllerTestBase(
-    protected val mockMvc: MockMvc,
     val objectMapper: ObjectMapper,
-    private val jwtProperties: JwtProperties
-) {
-    // TODO: Add a way of passing a predefined native language here, e.g. Polish
-    fun mockAuthenticatedUser(): MockedAuthenticatedUser {
-        val authUserEmailAddress = "random.authenticated.email@gmail.com"
-        return mockAuthenticatedUser(email = authUserEmailAddress)
-    }
+    protected val mockMvc: MockMvc,
 
-    fun mockAuthenticatedUser(email: String): MockedAuthenticatedUser {
+    private val jwtProperties: JwtProperties,
+    private val userMapper: UserMapper,
+    private val languageProficiencyRepository: LanguageProficiencyRepository
+) {
+    fun mockAuthenticatedUser(
+        email: String = "random.authenticated.email@gmail.com",
+        nativeLanguage: LanguageName = LanguageName.ENGLISH,
+        languages: Set<Pair<LanguageName, LanguageProficiencyLevel>> = setOf()
+    ): MockedAuthenticatedUser {
         // Create a request
         val request = MockMvcRequestBuilders.post("/api/v1/auth/register")
             .contentType(MediaType.APPLICATION_JSON)
@@ -38,7 +43,7 @@ abstract class ControllerTestBase(
                         name = "Test User",
                         email = email,
                         password = "qwerty123",
-                        nativeLanguage = LanguageName.ENGLISH
+                        nativeLanguage = nativeLanguage
                     )
                 )
             )
@@ -54,6 +59,18 @@ abstract class ControllerTestBase(
         }!!
 
         val userInfo: UserDTO = getResponseBody(response)
+
+        // Integrate over the languages and save them as language proficiencies associated with the user
+        languageProficiencyRepository.saveAll(
+            languages.map { (language, proficiency) ->
+                LanguageProficiency(
+                    language = language,
+                    proficiency = proficiency,
+                    generativeContentLanguage = language,
+                    user = userMapper.toEntity(userInfo),
+                )
+            }
+        )
 
         return MockedAuthenticatedUser(
             token = authCookie.value,
