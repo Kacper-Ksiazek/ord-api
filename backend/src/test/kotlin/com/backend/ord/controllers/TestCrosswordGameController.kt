@@ -67,7 +67,6 @@ class TestCrosswordGameController @Autowired constructor(
 
             @BeforeAll
             fun beforeAll() {
-                // Initial preparation:
                 // 1. Create a user
                 authenticatedUser = mockAuthenticatedUser(
                     languages = setOf(
@@ -100,36 +99,48 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             @Test
-            fun placeholder() {
+            fun `Game can be successfully started`() {
                 true shouldBe true
 
-                println(crosswordSavedInDb)
-
-                println(crosswordSentToUser)
+                crosswordSavedInDb.id shouldBe crosswordSavedInDb.id
             }
 
             @Nested
-            @DisplayName("Negative")
-            inner class Negative {
-                //
+            @DisplayName("All words should be properly placed on the board")
+            inner class AllWordsShouldBeProperlyPlacedOnTheBoard {
+                @Test
+                fun `First letter of each word should be revealed`() {
+                    val board = crosswordSentToUser.board
+
+                    crosswordSentToUser.instruction.questions.forEach {
+                        board[it.coordinates.start.x][it.coordinates.start.y] shouldBe it.word[0]
+                    }
+                }
             }
+
         }
 
         @Nested
-        @DisplayName("[POST] /api/v1/games/crossword/start - start a new crossword game")
-        inner class FinishCrosswordGame {
+        @DisplayName("Negative")
+        inner class Negative {
+            //
+        }
+    }
 
-            @Nested
-            @DisplayName("Positive")
-            inner class Positive {
-                //
-            }
+    @Nested
+    @DisplayName("[POST] /api/v1/games/crossword/start - start a new crossword game")
+    inner class FinishCrosswordGame {
 
-            @Nested
-            @DisplayName("Negative")
-            inner class Negative {
-                //
-            }
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            //
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            //
         }
     }
 }
