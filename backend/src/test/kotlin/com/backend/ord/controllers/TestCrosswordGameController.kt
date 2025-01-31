@@ -9,6 +9,8 @@ import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.mappers.GameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.game.GameType
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.GameRepository
 import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.WordRepository
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
@@ -34,11 +37,11 @@ class TestCrosswordGameController @Autowired constructor(
     mockMvc: MockMvc?,
     objectMapper: ObjectMapper,
     jwtProperties: JwtProperties,
+    languageProficiencyRepository: LanguageProficiencyRepository,
     private val wordRepository: WordRepository,
     private val userMapper: UserMapper,
     private val gameMapper: GameMapper,
     private val gameRepository: GameRepository,
-    private val languageProficiencyRepository: LanguageProficiencyRepository
 ) : ControllerTestBase(
     mockMvc = mockMvc!!,
     objectMapper = objectMapper,
@@ -66,8 +69,12 @@ class TestCrosswordGameController @Autowired constructor(
             fun beforeAll() {
                 // Initial preparation:
                 // 1. Create a user
-                // TODO: Add some user proficiency in ENGLISH language and s
-                authenticatedUser = mockAuthenticatedUser()
+                authenticatedUser = mockAuthenticatedUser(
+                    languages = setOf(
+                        Pair(LanguageName.ENGLISH, LanguageProficiencyLevel.C1)
+                    )
+
+                )
                 // 2. Assign exactly 12 words to the user (to be used in the crossword game on Hard difficulty)
                 loadWordsFromResourceFile(
                     user = userMapper.toEntity(authenticatedUser.userInfo),
