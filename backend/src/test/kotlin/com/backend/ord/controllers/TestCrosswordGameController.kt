@@ -85,7 +85,10 @@ class TestCrosswordGameController @Autowired constructor(
                     gameType = GameType.CROSSWORD,
                     authenticatedUser = authenticatedUser
                 )
-                val response = mockMvc.perform(request).andReturn()
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
 
                 // 4. Retrieve the response body
                 crosswordSentToUser = getResponseBody<StartedCrosswordGameResponse>(response)
