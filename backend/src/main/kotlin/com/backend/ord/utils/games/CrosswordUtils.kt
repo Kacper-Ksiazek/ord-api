@@ -39,7 +39,7 @@ object CrosswordUtils {
         val questionsToInstruction: MutableSet<CrosswordQuestion> = mutableSetOf()
 
         // Create a board with the given dimensions
-        val board: Board = Board(boardDimension)
+        val board = Board(boardDimension)
 
         // Prepare a list of remaining words to be placed on the board
         var directionOfLastInsertedWord: CrosswordWordDirection = CrosswordWordDirection.HORIZONTAL
@@ -128,7 +128,7 @@ object CrosswordUtils {
             }
         }
 
-//        board.print()
+        board.print()
 
         val instruction = CrosswordInstruction(
             answer = aiGeneratedQuestions.answer,
@@ -140,7 +140,7 @@ object CrosswordUtils {
 
         return Pair(
             instruction,
-            board.toList()
+            board.trim(instruction)
         )
     }
 

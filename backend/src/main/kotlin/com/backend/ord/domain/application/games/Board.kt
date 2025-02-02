@@ -1,5 +1,6 @@
 package com.backend.ord.domain.application.games
 
+import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordQuestion
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.AIGeneratedCrosswordQuestion
@@ -150,21 +151,18 @@ class Board {
     }
 
     /**
-     * Convert board from mutable list to an immutable list.
-     */
-    fun toList(): List<List<String?>> {
-        return trim().map { it.toList() }
-    }
-
-    /**
      * Trim the board by removing leading empty rows and columns from top, bottom, left, and right.
      */
-    private fun trim(): MutableList<MutableList<String?>> {
+    fun trim(instruction: CrosswordInstruction): List<List<String?>> {
         val cellsCopy = this.cells.toMutableList()
+
+        var amountOfCellsRemovedFromTop: Int = 0
+        var amountOfCellsRemovedFromLeft: Int = 0
 
         // Trim null-filled rows from the top
         while (cellsCopy.isNotEmpty() && cellsCopy.first().all { it == null }) {
             cellsCopy.removeAt(0)
+            amountOfCellsRemovedFromTop++
         }
 
         // Trim null-filled rows from the bottom
@@ -175,14 +173,26 @@ class Board {
         // Trim null-filled columns from the left
         while (cellsCopy.isNotEmpty() && cellsCopy.all { it.first() == null }) {
             cellsCopy.forEach { it.removeAt(0) }
+            amountOfCellsRemovedFromLeft++
         }
 
         // Trim null-filled columns from the right
         while (cellsCopy.isNotEmpty() && cellsCopy.all { it.last() == null }) {
             cellsCopy.forEach { it.removeAt(it.size - 1) }
         }
+        a
+        println("About to make an attempt of shifting 2d")
+        // Shift the questions' coordinates to match the trimmed board
+        if (amountOfCellsRemovedFromTop > 0 || amountOfCellsRemovedFromLeft > 0) {
+            instruction.questions.forEach {
+                it.coordinates.shift2D(
+                    verticalOffset = -amountOfCellsRemovedFromTop,
+                    horizontalOffset = -amountOfCellsRemovedFromLeft
+                )
+            }
+        }
 
-        return cellsCopy
+        return cellsCopy.map { it.toList() }
     }
 
     private fun checkIfCharacterFits(

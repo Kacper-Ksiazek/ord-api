@@ -16,6 +16,7 @@ import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
@@ -105,9 +106,24 @@ class TestCrosswordGameController @Autowired constructor(
                 crosswordSavedInDb.id shouldBe crosswordSavedInDb.id
             }
 
+            @Test
+            fun `All rows should have identical sizes`() {
+                crosswordSentToUser.board.map { it.size }.distinct().size shouldBe 1
+            }
+
             @Nested
             @DisplayName("All words should be properly placed on the board")
             inner class AllWordsShouldBeProperlyPlacedOnTheBoard {
+                @Test
+                fun `All words should fit on the board`() {
+                    val board = crosswordSentToUser.board
+
+                    crosswordSentToUser.instruction.questions.forEach {
+                        it.coordinates.end.x shouldBeLessThan board.size
+                        it.coordinates.end.y shouldBeLessThan board[0].size
+                    }
+                }
+
                 @Test
                 fun `First letter of each word should be revealed`() {
                     val board = crosswordSentToUser.board
