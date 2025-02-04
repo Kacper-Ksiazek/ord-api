@@ -62,29 +62,4 @@ class TestLanguageProficiencyService @Autowired constructor(
 
         assertNotNull(proficiency)
     }
-
-    @Test
-    fun `Test test chuj`() {
-        val authenticatedUser = this.mockAuthenticatedUser()
-
-        val languageProficiency = languageProficiencySeeder.seedOneEntity(
-            user = userMapper.toEntity(authenticatedUser.userInfo),
-            languageName = LanguageName.ENGLISH,
-        )
-
-        val result: List<Map<String, Any>> = languageProficiencyRepository.testQuery(
-            userId = authenticatedUser.userInfo.id,
-            languageName = LanguageName.ENGLISH.name
-        )
-
-        // print the result
-        for (row in result) {
-            println("Row")
-            for ((key, value) in row) {
-                println("$key = $value")
-            }
-        }
-
-        assert(true)
-    }
 }
