@@ -138,6 +138,10 @@ object CrosswordUtils {
 
         setFinalWordComponents(instruction)
 
+        // There is a global problem here caused by setting final word components of hidden letters.
+        // The order of operation here should be reversed.
+        // First, set the final word components, then hide the letters in the proper answer.
+
         return Pair(
             instruction,
             board.trim(instruction)

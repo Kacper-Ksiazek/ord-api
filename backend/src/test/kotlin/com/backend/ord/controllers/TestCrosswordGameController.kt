@@ -163,7 +163,7 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             @Test
-            fun `The entire final word can be resolved`() {
+            fun `The entire final word can be split into components`() {
                 crosswordSentToUser.instruction.answer.forEachIndexed { index, letter ->
                     if (letter != '*') return@forEachIndexed
 
@@ -172,6 +172,43 @@ class TestCrosswordGameController @Autowired constructor(
                             answerComponent.indexInPassword == index
                         } != null
                     } shouldNotBe null
+                }
+            }
+
+            @Test
+            fun `Every hidden letter on final word should have a corresponding component`() {
+                val numberOfHiddenLettersInFinalWord: Int = crosswordSentToUser.instruction.answer.count { it == '*' }
+
+                val numberOfFinalWordComponents: Int =
+                    crosswordSentToUser.instruction.questions.sumOf { it.answerComponents?.size ?: 0 }
+
+                numberOfHiddenLettersInFinalWord shouldBe numberOfFinalWordComponents
+
+                crosswordSentToUser.instruction.answer.forEachIndexed { index, letter ->
+                    if (letter != '*') return@forEachIndexed
+
+                    crosswordSentToUser.instruction.questions.find { question ->
+                        question.answerComponents?.find { answerComponent ->
+                            answerComponent.indexInPassword == index
+                        } != null
+                    } shouldNotBe null
+                }
+            }
+
+            @Test
+            fun `The final word's components should form a valid final word`() {
+                val allFinalWordComponents =
+                    crosswordSentToUser.instruction.questions.flatMap { it.answerComponents ?: emptyList() }
+
+                crosswordSentToUser.instruction.questions.forEach { question ->
+                    val expectedFinalWord = crosswordSentToUser.properAnswers.finalWord
+
+                    val currentQuestionWithoutLettersHidden: String =
+                        crosswordSentToUser.properAnswers.questions[question.id]!!
+
+                    question.answerComponents?.forEach { answerComponent ->
+                        expectedFinalWord[answerComponent.indexInPassword] shouldBe currentQuestionWithoutLettersHidden[answerComponent.indexInWord]
+                    }
                 }
             }
 
