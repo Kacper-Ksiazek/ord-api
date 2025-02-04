@@ -181,7 +181,6 @@ class Board {
             cellsCopy.forEach { it.removeAt(it.size - 1) }
         }
 
-        println("About to make an attempt of shifting 2d")
         // Shift the questions' coordinates to match the trimmed board
         if (amountOfCellsRemovedFromTop > 0 || amountOfCellsRemovedFromLeft > 0) {
             instruction.questions.forEach {
