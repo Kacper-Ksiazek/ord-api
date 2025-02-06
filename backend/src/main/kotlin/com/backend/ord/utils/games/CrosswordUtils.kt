@@ -128,8 +128,6 @@ object CrosswordUtils {
             }
         }
 
-        board.print()
-
         val instruction = CrosswordInstruction(
             answer = aiGeneratedQuestions.answer,
             answerExplanation = aiGeneratedQuestions.answerExplanation,
