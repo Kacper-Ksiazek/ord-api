@@ -63,6 +63,9 @@ data class CrosswordInstruction(
 )
 
 data class CrosswordGameProperAnswers(
+    // Rename:
+    // - finalWord -> answer
+    // - properAnswers -> solution
     val finalWord: String,
     val questions: Map<UUID, String>
 )
