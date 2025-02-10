@@ -2,40 +2,39 @@ package com.backend.ord.utils.games
 
 import com.backend.ord.domain.application.games.Board
 import com.backend.ord.domain.application.games.Coordinates
-import com.backend.ord.domain.persistence.embedded.game_instructions.AnswerComponent
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordQuestion
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.getNumberOfLettersToReveal
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
-import com.backend.ord.services.ai.dto.AIGeneratedCrosswordQuestion
+import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
+import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
+import com.backend.ord.services.ai.dto.crossword.addAnswerComponent
+import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
 
-private fun MutableList<AIGeneratedCrosswordQuestion>.pickRandomQuestion(): AIGeneratedCrosswordQuestion {
+private fun MutableList<CrosswordQuestion>.pickRandomQuestion(): CrosswordQuestion {
     val randomIndex = (0 until this.size).random()
     return this[randomIndex]
 }
 
-private fun MutableList<AIGeneratedCrosswordQuestion>.pickRandomQuestionAndRemove(): AIGeneratedCrosswordQuestion {
+private fun MutableList<CrosswordQuestion>.pickRandomQuestionAndRemove(): CrosswordQuestion {
     val randomIndex = (0 until this.size).random()
     return this.removeAt(randomIndex)
 }
 
-private fun MutableList<AIGeneratedCrosswordQuestion>.removeQuestion(question: AIGeneratedCrosswordQuestion) {
+private fun MutableList<CrosswordQuestion>.removeQuestion(question: CrosswordQuestion) {
     this.remove(question)
 }
 
 private fun Board.placeAllQuestions(
-    questions: List<AIGeneratedCrosswordQuestion>,
-    boardDimension: Coordinates,
+    questions: List<CrosswordQuestion>,
     firstWordStart: Coordinates
-) {
+): Set<CrosswordQuestion> {
     // This is a set of questions that will be returned as a final instruction's component
     val questionsToInstruction: MutableSet<CrosswordQuestion> = mutableSetOf()
 
     // Prepare a list of remaining words to be placed on the board
     var directionOfLastInsertedWord: CrosswordWordDirection = CrosswordWordDirection.HORIZONTAL
-    val remainingWords: MutableList<AIGeneratedCrosswordQuestion> = questions.toMutableList()
+    val remainingWords: MutableList<CrosswordQuestion> = questions.toMutableList()
 
     // Fill the board with the questions forming a crossword puzzle
     place(
@@ -52,7 +51,7 @@ private fun Board.placeAllQuestions(
         val wordHasBeenPlaced: Boolean = run placeWord@{
             questionsToInstruction.reversed().forEach { previousQuestion ->
                 val wordLetters = previousQuestion.word.withIndex().toList().shuffled()
-                val directionInWhichToInsert = previousQuestion.direction.opposite()
+                val directionInWhichToInsert = previousQuestion.position!!.direction.opposite()
 
                 wordLetters.forEach { previousQuestionLetter ->
                     val commonLetters = drawnWord.word
@@ -94,19 +93,21 @@ private fun Board.placeAllQuestions(
             val longestWord = remainingWords.maxByOrNull { it.word.length }!!
             run insertSeparator@{
                 questionsToInstruction.reversed().forEach { lastInsertedWord ->
-                    val separatorCoordinates = lastInsertedWord.coordinates.end.copyAndShift(
-                        direction = lastInsertedWord.direction,
+                    val direction = lastInsertedWord.position!!.direction
+
+                    val separatorCoordinates = lastInsertedWord.position!!.coordinates.end.copyAndShift(
+                        direction = direction,
                         offset = 1
                     )
                     val coordinatesOfWordToInsert = separatorCoordinates.copyAndShift(
-                        direction = lastInsertedWord.direction,
+                        direction = direction,
                         offset = 1
                     )
 
                     placeIfFits(
                         aiGeneratedQuestion = longestWord,
                         start = coordinatesOfWordToInsert,
-                        direction = lastInsertedWord.direction.opposite(),
+                        direction = direction.opposite(),
                         questionsToInstruction = questionsToInstruction
                     )?.let {
                         remainingWords.removeQuestion(longestWord)
@@ -119,6 +120,8 @@ private fun Board.placeAllQuestions(
             }
         }
     }
+
+    return questionsToInstruction
 }
 
 object CrosswordUtils {
@@ -134,6 +137,10 @@ object CrosswordUtils {
         // Create a board with the given dimensions
         val board = Board(boardDimension)
 
+        val questionsToInstruction = board.placeAllQuestions(
+            questions = aiGeneratedQuestions.questions,
+            firstWordStart = firstWordStart
+        )
 
         val instruction = CrosswordInstruction(
             answer = aiGeneratedQuestions.answer,
@@ -213,10 +220,8 @@ object CrosswordUtils {
 
             // 6. Insert a new answer component to that word
             randomWord.addAnswerComponent(
-                AnswerComponent(
-                    indexInWord = randomLocation.index,
-                    indexInPassword = finalWordLetter.index
-                )
+                indexInWord = randomLocation.index,
+                indexInPassword = finalWordLetter.index
             )
         }
 

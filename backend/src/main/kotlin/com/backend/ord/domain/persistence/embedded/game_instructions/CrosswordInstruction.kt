@@ -1,6 +1,6 @@
 package com.backend.ord.domain.persistence.embedded.game_instructions
 
-import com.backend.ord.services.ai.dto.CrosswordQuestion
+import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
 import java.util.*
 
 

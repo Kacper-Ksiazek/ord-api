@@ -1,9 +1,9 @@
 package com.backend.ord.domain.application.games
 
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordQuestion
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
-import com.backend.ord.services.ai.dto.AIGeneratedCrosswordQuestion
+import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
+import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
+import com.backend.ord.services.ai.dto.crossword.QuestionBoardPosition
 
 /**
  * Represents a matrix for a crossword gameplay area.
@@ -75,7 +75,7 @@ class Board {
     fun place(
         start: Coordinates,
         direction: CrosswordWordDirection,
-        aiGeneratedQuestion: AIGeneratedCrosswordQuestion,
+        aiGeneratedQuestion: CrosswordQuestion,
         questionsToInstruction: MutableSet<CrosswordQuestion>
     ): CrosswordQuestion {
         ensureCoordinatesFitsBoard(start)
@@ -110,11 +110,14 @@ class Board {
             id = aiGeneratedQuestion.id,
             word = aiGeneratedQuestion.word,
             clue = aiGeneratedQuestion.clue,
-            direction = direction,
-            coordinates = WordPlacementRange(
-                start = start,
-                end = endCoordinates
-            ),
+            position = QuestionBoardPosition(
+                direction = direction,
+                coordinates = WordPlacementRange(
+                    start = start,
+                    end = endCoordinates
+                ),
+            )
+
         )
 
         questionsToInstruction.add(result)
@@ -126,7 +129,7 @@ class Board {
      * Place a word on the board at the given coordinates and direction if it fits, otherwise return null.
      */
     fun placeIfFits(
-        aiGeneratedQuestion: AIGeneratedCrosswordQuestion,
+        aiGeneratedQuestion: CrosswordQuestion,
         start: Coordinates,
         direction: CrosswordWordDirection,
         questionsToInstruction: MutableSet<CrosswordQuestion>
@@ -184,7 +187,7 @@ class Board {
         // Shift the questions' coordinates to match the trimmed board
         if (amountOfCellsRemovedFromTop > 0 || amountOfCellsRemovedFromLeft > 0) {
             instruction.questions.forEach {
-                it.coordinates.shift2D(
+                it.position!!.coordinates.shift2D(
                     verticalOffset = -amountOfCellsRemovedFromTop,
                     horizontalOffset = -amountOfCellsRemovedFromLeft
                 )
