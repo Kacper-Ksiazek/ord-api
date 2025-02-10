@@ -28,25 +28,20 @@ interface AIGameService {
     ): GeneratedCrossWordGame
 
     companion object {
+        /**
+         * Represents an AI generated crossword game with information about the involved words, tokens usage and proper answers.
+         *
+         * @property aiGeneratedCrossword The parsed crossword game received from calling an OpenAI endpoint
+         * @property gameTokensUsageLogs A set of logs representing a usage of games token. The set consists of only one log when the proper response has been received in the first attempt.
+         * @property wordsUsedIds A set of all ids of the words used in the game
+         * @property properAnswers The solution to the crossword game
+         */
         data class GeneratedCrossWordGame(
-            /**
-             * The parsed crossword game received from calling an OpenAI endpoint
-             */
+            val properAnswers: CrosswordGameProperAnswers,
             val aiGeneratedCrossword: AIGeneratedCrossword,
-            /**
-             * A set of logs representing a usage of games token
-             */
-            val gameTokensUsageLogs: Set<GameTokensUsage>,
 
-            /**
-             * A set of all ids of the words used in the game
-             */
             val wordsUsedIds: Set<UUID>,
-
-            /**
-             * All expected answers to the crossword game
-             */
-            val properAnswers: CrosswordGameProperAnswers
+            val gameTokensUsageLogs: Set<GameTokensUsage>
         )
     }
 }

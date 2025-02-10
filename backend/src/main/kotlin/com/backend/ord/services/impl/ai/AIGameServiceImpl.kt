@@ -80,6 +80,8 @@ class AIGameServiceImpl(
             )
         )
 
+        // TODO: Refactor this into a separate method - it's too long
+
         var response: OpenAIResponse
         var parsedResponseBody: AIGeneratedCrossword?
 
@@ -123,6 +125,8 @@ class AIGameServiceImpl(
 
             // Retry if the response doesn't have the expected number of questions
         } while (parsedResponseBody?.questions?.size != questionsAmountBasedOnDifficulty)
+
+        // ------- END OF LONG METHOD -------
 
         // Save all proper answers
         val properAnswers = CrosswordGameProperAnswers(

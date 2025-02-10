@@ -1,6 +1,6 @@
 package com.backend.ord.domain.application.games
 
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
+import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 
 // TODO: Refactor this field name and reconsider the class's name
 data class WordPlacementRange(
