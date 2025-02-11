@@ -54,7 +54,7 @@ class CrosswordGameController(
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         // 2. Generate crossword game using AI
-        val (aiGeneratedCrosswordBase, gpTokensUsageLogs, usedWordsIds, properAnswers) = aiGameService.generateCrosswordGame(
+        val (properAnswers, aiGeneratedCrosswordBase, usedWordsIds, gpTokensUsageLogs) = aiGameService.generateCrosswordGame(
             user = user,
             language = body.language,
             difficulty = body.difficulty

@@ -7,7 +7,6 @@ import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.application.games.Coordinates
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
 import com.backend.ord.domain.persistence.mappers.GameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.game.GameType
@@ -16,6 +15,8 @@ import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.GameRepository
 import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.WordRepository
+import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
+import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.comparables.shouldBeLessThan
@@ -124,8 +125,8 @@ class TestCrosswordGameController @Autowired constructor(
                 val board = crosswordSentToUser.board
 
                 val extremeCoordinates = Coordinates(
-                    x = crosswordSentToUser.instruction.questions.maxOf { it.coordinates.end.x },
-                    y = crosswordSentToUser.instruction.questions.maxOf { it.coordinates.end.y }
+                    x = crosswordSentToUser.instruction.questions.maxOf { it.position!!.coordinates.end.x },
+                    y = crosswordSentToUser.instruction.questions.maxOf { it.position!!.coordinates.end.y }
                 )
 
                 extremeCoordinates.x shouldBeLessThan board[0].size
@@ -139,13 +140,15 @@ class TestCrosswordGameController @Autowired constructor(
                 crosswordSentToUser.instruction.questions.forEach { question ->
                     val wordSize = question.word.length
 
-                    if (question.direction === CrosswordWordDirection.HORIZONTAL) {
+                    val coordinates = question.position!!.coordinates
+
+                    if (question.position!!.direction === CrosswordWordDirection.HORIZONTAL) {
                         for (i in 0 until wordSize) {
-                            board[question.coordinates.start.y][question.coordinates.start.x + i] shouldNotBe null
+                            board[coordinates.start.y][coordinates.start.x + i] shouldNotBe null
                         }
                     } else {
                         for (i in 0 until wordSize) {
-                            board[question.coordinates.start.y + i][question.coordinates.start.x] shouldNotBe null
+                            board[coordinates.start.y + i][coordinates.start.x] shouldNotBe null
                         }
                     }
                 }
@@ -154,7 +157,7 @@ class TestCrosswordGameController @Autowired constructor(
             @Test
             fun `All final word components should point to words on the board`() {
                 crosswordSentToUser.instruction.questions.forEach { question ->
-                    question.answerComponents?.forEach { answerComponent ->
+                    question.lettersInAnswer?.forEach { answerComponent ->
                         val coordinates = question.getCoordinatesOfLetterAtIndex(answerComponent.indexInWord)
 
                         crosswordSentToUser.board[coordinates.y][coordinates.x] shouldNotBe null
@@ -168,7 +171,7 @@ class TestCrosswordGameController @Autowired constructor(
                     if (letter != '*') return@forEachIndexed
 
                     crosswordSentToUser.instruction.questions.find { question ->
-                        question.answerComponents?.find { answerComponent ->
+                        question.lettersInAnswer?.find { answerComponent ->
                             answerComponent.indexInPassword == index
                         } != null
                     } shouldNotBe null
@@ -180,7 +183,7 @@ class TestCrosswordGameController @Autowired constructor(
                 val numberOfHiddenLettersInFinalWord: Int = crosswordSentToUser.instruction.answer.count { it == '*' }
 
                 val numberOfFinalWordComponents: Int =
-                    crosswordSentToUser.instruction.questions.sumOf { it.answerComponents?.size ?: 0 }
+                    crosswordSentToUser.instruction.questions.sumOf { it.lettersInAnswer?.size ?: 0 }
 
                 numberOfHiddenLettersInFinalWord shouldBe numberOfFinalWordComponents
 
@@ -188,7 +191,7 @@ class TestCrosswordGameController @Autowired constructor(
                     if (letter != '*') return@forEachIndexed
 
                     crosswordSentToUser.instruction.questions.find { question ->
-                        question.answerComponents?.find { answerComponent ->
+                        question.lettersInAnswer?.find { answerComponent ->
                             answerComponent.indexInPassword == index
                         } != null
                     } shouldNotBe null
@@ -198,7 +201,7 @@ class TestCrosswordGameController @Autowired constructor(
             @Test
             fun `The final word's components should form a valid final word`() {
                 val allFinalWordComponents =
-                    crosswordSentToUser.instruction.questions.flatMap { it.answerComponents ?: emptyList() }
+                    crosswordSentToUser.instruction.questions.flatMap { it.lettersInAnswer ?: emptyList() }
 
                 crosswordSentToUser.instruction.questions.forEach { question ->
                     val expectedFinalWord = crosswordSentToUser.properAnswers.finalWord
@@ -206,7 +209,7 @@ class TestCrosswordGameController @Autowired constructor(
                     val currentQuestionWithoutLettersHidden: String =
                         crosswordSentToUser.properAnswers.questions[question.id]!!
 
-                    question.answerComponents?.forEach { answerComponent ->
+                    question.lettersInAnswer?.forEach { answerComponent ->
                         expectedFinalWord[answerComponent.indexInPassword] shouldBe currentQuestionWithoutLettersHidden[answerComponent.indexInWord]
                     }
                 }

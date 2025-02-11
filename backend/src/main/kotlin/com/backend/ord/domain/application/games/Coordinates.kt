@@ -1,6 +1,6 @@
 package com.backend.ord.domain.application.games
 
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordWordDirection
+import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 
 data class Coordinates(
     var x: Int,
