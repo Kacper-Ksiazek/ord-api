@@ -5,15 +5,16 @@ import com.backend.ord.api.requests.openai.OpenAIRequest
 import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.openai.embedded.OpenAIResponse
+import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordGameProperAnswers
-import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.prompts.Prompts
 import com.backend.ord.services.LanguageProficiencyService
@@ -39,6 +40,12 @@ class AIGameServiceImpl(
 ) : AIGameService {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
+    private fun User.getProficiencyInLanguage(language: LanguageName): LanguageProficiencyLevel {
+        return languageProficiencyService
+            .findUserProficiencyInLanguageOrThrow(this.id, language)
+            .proficiency
+    }
+
     /**
      * The process of generating a crossword can be demonstrated as a list of steps:
      *
@@ -56,15 +63,6 @@ class AIGameServiceImpl(
         language: LanguageName,
         difficulty: GameDifficulty
     ): AIGameService.Companion.GeneratedCrossWordGame {
-        // Store all token usage logs for the game
-        val gameTokensUsageLogs: MutableSet<GameTokensUsage> = mutableSetOf()
-
-        // Get user proficiency in the requested language
-        val userProficiencyInRequestedLanguage: LanguageProficiency =
-            languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, language)
-
-        val questionsAmountBasedOnDifficulty: Int = difficulty.getNumberOfWordsForCrossword()
-
         // Get words for the game
         val words = wordService.findManyWords(
             user = user,
@@ -76,23 +74,66 @@ class AIGameServiceImpl(
             // TODO: Add more filters
         ).data
             .shuffled()
-            .take(questionsAmountBasedOnDifficulty)
+            .take(difficulty.getNumberOfWordsForCrossword())
 
-        // Prepare an API request
+        val (aiGeneratedCrossword, gameTokensUsageLogs) = makeOpenAIRequestToGenerateCrossword(
+            user = user,
+            language = language,
+            difficulty = difficulty,
+            words = words
+        )
+
+        // Save all proper answers
+        val properAnswers = CrosswordGameProperAnswers(
+            finalWord = aiGeneratedCrossword.answer,
+            questions = aiGeneratedCrossword.questions.associate { it.id to it.word }
+        )
+
+        // ------------------ Block: 1 - Start
+        // TODO: DO WYJEBANIA
+        // Hide letters in data for user
+        aiGeneratedCrossword.answer = CrosswordUtils.hideLettersInProperAnswer(
+            wordToHide = aiGeneratedCrossword.answer,
+            difficulty = difficulty
+        )
+
+        aiGeneratedCrossword.questions.forEach { question ->
+            question.word = CrosswordUtils.hideLettersInProperAnswer(
+                wordToHide = question.word,
+                difficulty = difficulty
+            )
+        }
+        // ------------------ Block: 1 - End
+
+        return AIGameService.Companion.GeneratedCrossWordGame(
+            aiGeneratedCrossword = aiGeneratedCrossword,
+            gameTokensUsageLogs = gameTokensUsageLogs,
+            wordsUsedIds = words.map { it.id }.toSet(),
+            properAnswers = properAnswers
+        )
+    }
+
+    private fun makeOpenAIRequestToGenerateCrossword(
+        user: User,
+        language: LanguageName,
+        difficulty: GameDifficulty,
+        words: List<WordListItem>
+    ): Pair<AIGeneratedCrossword, Set<GameTokensUsage>> {
+        val amountOfQuestions = difficulty.getNumberOfWordsForCrossword()
+
         val openAIRequest: OpenAIRequest = openAIRequestFactory.createRequest(
             prompt = Prompts.generateCrosswordQuestionsPrompt(
                 wordsToUse = words.map { it.origin },
                 language = language,
                 difficulty = difficulty,
-                amountOfQuestions = questionsAmountBasedOnDifficulty,
-                languageProficiency = userProficiencyInRequestedLanguage.proficiency
+                amountOfQuestions = amountOfQuestions,
+                languageProficiency = user.getProficiencyInLanguage(language),
             )
         )
 
-        // TODO: Refactor this into a separate method - it's too long
-
         var response: OpenAIResponse
         var parsedResponseBody: AIGeneratedCrossword?
+        val gameTokensUsageLogs: MutableSet<GameTokensUsage> = mutableSetOf()
 
         do {
             // Send the request to the OpenAI API
@@ -121,47 +162,20 @@ class AIGameServiceImpl(
 
                 readValue.copy(
                     questions = with(readValue.questions) {
-                        if (size > questionsAmountBasedOnDifficulty) {
-                            shuffled().take(questionsAmountBasedOnDifficulty)
+                        if (size > amountOfQuestions) {
+                            shuffled().take(amountOfQuestions)
                         } else {
                             this
                         }
                     }
                 )
             } catch (_: Exception) {
-                null // Handle parsing failure by returning null
+                null
             }
 
             // Retry if the response doesn't have the expected number of questions
-        } while (parsedResponseBody?.questions?.size != questionsAmountBasedOnDifficulty)
+        } while (parsedResponseBody?.questions?.size != amountOfQuestions)
 
-        // ------- END OF LONG METHOD -------
-
-        // Save all proper answers
-        val properAnswers = CrosswordGameProperAnswers(
-            finalWord = parsedResponseBody.answer,
-            questions = parsedResponseBody.questions.associate { it.id to it.word }
-        )
-
-        // Hide letters in data for user
-        parsedResponseBody.answer = CrosswordUtils.hideLettersInProperAnswer(
-            wordToHide = parsedResponseBody.answer,
-            difficulty = difficulty
-        )
-
-        parsedResponseBody.questions.forEach { question ->
-            question.word = CrosswordUtils.hideLettersInProperAnswer(
-                wordToHide = question.word,
-                difficulty = difficulty
-            )
-        }
-
-        // Return the validated crossword response
-        return AIGameService.Companion.GeneratedCrossWordGame(
-            aiGeneratedCrossword = parsedResponseBody,
-            gameTokensUsageLogs = gameTokensUsageLogs,
-            wordsUsedIds = words.map { it.id }.toSet(),
-            properAnswers = properAnswers
-        )
+        return Pair(parsedResponseBody, gameTokensUsageLogs)
     }
 }
