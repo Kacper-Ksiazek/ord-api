@@ -136,7 +136,7 @@ class AIGameServiceImpl(
         val gameTokensUsageLogs: MutableSet<GameTokensUsage> = mutableSetOf()
 
         do {
-            // Send the request to the OpenAI API
+            // Send the request to the OpenAI APIdd
             response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
                 // Log the token usage for the request
                 gameTokensUsageLogs.add(
