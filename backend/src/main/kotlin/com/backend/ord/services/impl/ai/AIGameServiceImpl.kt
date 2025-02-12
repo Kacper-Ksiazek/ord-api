@@ -40,7 +40,16 @@ class AIGameServiceImpl(
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
     /**
-     * Generates a crossword game.
+     * The process of generating a crossword can be demonstrated as a list of steps:
+     *
+     * 1. Retrieving words saved by the user
+     * 2. Based on the selected difficulty, it is randomly selecting an appropriate number of words
+     * 3. Making a request to the OpenAI API to generates:
+     *    3.1 `questions`- which are clues for the words, such as: For the word "dog" the question could be: "A pet that barks"
+     *    3.2 `answer` - which is the final word that the user needs to guess by solving the crossword. It is designed to show a user a new word or phrase
+     *    3.3 `answer explanation` - which is the explanation of the answer
+     * 4. Logs the token usage for the request
+     * 5. Parses the response into the expected `AIGeneratedCrossword` object
      */
     override fun generateCrosswordGame(
         user: User,
