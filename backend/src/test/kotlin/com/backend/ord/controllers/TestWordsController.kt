@@ -7,7 +7,7 @@ import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
+import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.extensions.compareWith
 import com.backend.ord.controllers.extensions.detectChanges
@@ -140,7 +140,7 @@ class TestWordsController @Autowired constructor(
 
                 sortDirection: SortDirection? = null,
                 sortBy: GetAllWordsSortOptions? = null,
-            ): PaginatedDataResponse<WordAsGetManyWordResponse> {
+            ): PaginatedDataResponse<WordListItem> {
                 val request = wordRequestFactory.getManyWordsRequest(
                     authenticatedUser = authenticatedUser,
                     language = learningLanguage,
@@ -166,7 +166,7 @@ class TestWordsController @Autowired constructor(
                     it.response
                 }
 
-                return getResponseBody<PaginatedDataResponse<WordAsGetManyWordResponse>>(response)
+                return getResponseBody<PaginatedDataResponse<WordListItem>>(response)
             }
 
 
@@ -357,7 +357,7 @@ class TestWordsController @Autowired constructor(
 
                 wordRepository.saveAll(wordsToAdd)
 
-                val body: PaginatedDataResponse<WordAsGetManyWordResponse> = makeManyWordsRequest(
+                val body: PaginatedDataResponse<WordListItem> = makeManyWordsRequest(
                     completed = completed,
                     perPage = 500
                 )

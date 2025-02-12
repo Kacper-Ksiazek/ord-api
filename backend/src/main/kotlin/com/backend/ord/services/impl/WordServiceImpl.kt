@@ -6,7 +6,7 @@ import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.requests.word.enums.toggleProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
+import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.AnswerScore
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
@@ -111,7 +111,7 @@ class WordServiceImpl(
 
         page: Int,
         perPage: Int
-    ): PaginatedDataResponse<WordAsGetManyWordResponse> {
+    ): PaginatedDataResponse<WordListItem> {
         return repository.findManyWords(
             language = language,
             completed = completed,

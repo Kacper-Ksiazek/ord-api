@@ -7,7 +7,10 @@ import com.backend.ord.enums.persistence.word.WordType
 import java.time.Instant
 import java.util.*
 
-data class WordAsGetManyWordResponse(
+/**
+ * Represents a single word entry in the list returned by the GET /api/vn/words endpoint.
+ */
+data class WordListItem(
     val id: UUID,
     var points: Int,
     var origin: String,
@@ -23,4 +26,3 @@ data class WordAsGetManyWordResponse(
     val createdAt: Instant,
     var updatedAt: Instant
 )
-

@@ -9,7 +9,7 @@ import com.backend.ord.api.requests.word.enums.toSQLColumnName
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.PaginationData
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
+import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.api.responses.words.embedded.BankCompact
 import com.backend.ord.api.responses.words.embedded.BankGroupCompact
 import com.backend.ord.domain.persistence.embedded.ExampleSentence
@@ -157,7 +157,7 @@ class WordRepositoryCustomMethodsImpl(
 
         page: Int,
         perPage: Int
-    ): PaginatedDataResponse<WordAsGetManyWordResponse> {
+    ): PaginatedDataResponse<WordListItem> {
         // ---
         // 1. Create and CriteriaQuery
         // ---
@@ -306,7 +306,7 @@ class WordRepositoryCustomMethodsImpl(
                 )
             } else null
 
-            WordAsGetManyWordResponse(
+            WordListItem(
                 id = id,
 
                 points = points,

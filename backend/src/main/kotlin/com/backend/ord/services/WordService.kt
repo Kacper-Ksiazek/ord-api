@@ -5,7 +5,7 @@ import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
+import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.AnswerScore
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
@@ -58,7 +58,7 @@ interface WordService : UserResourceService<Word> {
 
         page: Int = 0,
         perPage: Int = 10
-    ): PaginatedDataResponse<WordAsGetManyWordResponse>
+    ): PaginatedDataResponse<WordListItem>
 
     fun findOneWord(
         wordId: UUID,

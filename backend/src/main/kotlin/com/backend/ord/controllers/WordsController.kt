@@ -5,7 +5,7 @@ import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
+import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.Bank
@@ -40,7 +40,7 @@ class WordController(
     fun getAllWords(
         request: HttpServletRequest,
         @RequestBody @Valid requestBody: GetManyWordsRequestData,
-    ): ResponseEntity<PaginatedDataResponse<WordAsGetManyWordResponse>> {
+    ): ResponseEntity<PaginatedDataResponse<WordListItem>> {
         val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         return ResponseEntity.status(HttpStatus.OK).body(
