@@ -19,10 +19,14 @@ class CrosswordInstruction {
     ) {
         val board = Board(boardDimension)
 
-        this.answerExplanation = answerExplanation
-        this.answer = answer
-        this.questions = questions
-        this.board = listOf()
+        this.answerExplanation = aiGeneratedQuestions.answerExplanation
+        this.answer = aiGeneratedQuestions.answer
+        this.questions = board.placeAllQuestions(
+            questions = aiGeneratedQuestions.questions,
+            firstWordStart = firstWordStart
+        )
+
+        this.board = board.trim(this)
     }
 }
 
