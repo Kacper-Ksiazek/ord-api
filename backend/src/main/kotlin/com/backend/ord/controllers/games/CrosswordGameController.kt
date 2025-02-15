@@ -8,6 +8,7 @@ import com.backend.ord.config.AnswerScore
 import com.backend.ord.config.ComponentsPointsRatio
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
+import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.entities.Game
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.mappers.GameMapper
@@ -61,7 +62,7 @@ class CrosswordGameController(
         )
 
         // 3. Parse the generated crossword game and compute its instruction
-        val (instruction, board) = CrosswordUtils.createInstruction(
+        val instruction = CrosswordInstruction.construct(
             aiGeneratedQuestions = aiGeneratedCrosswordBase,
         )
 
@@ -100,7 +101,6 @@ class CrosswordGameController(
         return ResponseEntity.ok(
             StartedCrosswordGameResponse(
                 gameId = savedGame.id,
-                board = board,
                 instruction = instruction,
 
                 // TODO: Remove this

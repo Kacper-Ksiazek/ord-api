@@ -112,7 +112,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `All rows should have identical sizes`() {
-                crosswordSentToUser.board.map { it.size }.distinct().size shouldBe 1
+                crosswordSentToUser.instruction.board.map { it.size }.distinct().size shouldBe 1
             }
 
             @Test
@@ -122,7 +122,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `Coordinates should not exceed the board's dimensions`() {
-                val board = crosswordSentToUser.board
+                val board = crosswordSentToUser.instruction.board
 
                 val extremeCoordinates = Coordinates(
                     x = crosswordSentToUser.instruction.questions.maxOf { it.position!!.coordinates.end.x },
@@ -135,7 +135,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `All words should be properly placed on the board`() {
-                val board = crosswordSentToUser.board
+                val board = crosswordSentToUser.instruction.board
 
                 crosswordSentToUser.instruction.questions.forEach { question ->
                     val wordSize = question.word.length
@@ -160,7 +160,7 @@ class TestCrosswordGameController @Autowired constructor(
                     question.lettersInAnswer?.forEach { answerComponent ->
                         val coordinates = question.getCoordinatesOfLetterAtIndex(answerComponent.indexInWord)
 
-                        crosswordSentToUser.board[coordinates.y][coordinates.x] shouldNotBe null
+                        crosswordSentToUser.instruction.board[coordinates.y][coordinates.x] shouldNotBe null
                     }
                 }
             }

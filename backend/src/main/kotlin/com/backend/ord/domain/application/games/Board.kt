@@ -1,6 +1,5 @@
 package com.backend.ord.domain.application.games
 
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.crossword.QuestionBoardPosition
@@ -259,7 +258,7 @@ class Board {
     /**
      * Trim the board by removing leading empty rows and columns from top, bottom, left, and right.
      */
-    fun trim(instruction: CrosswordInstruction): List<List<String?>> {
+    fun trim(questions: Set<CrosswordQuestion>): List<List<String?>> {
         val cellsCopy = this.cells.toMutableList()
 
         var amountOfCellsRemovedFromTop: Int = 0
@@ -289,7 +288,7 @@ class Board {
 
         // Shift the questions' coordinates to match the trimmed board
         if (amountOfCellsRemovedFromTop > 0 || amountOfCellsRemovedFromLeft > 0) {
-            instruction.questions.forEach {
+            questions.forEach {
                 it.position!!.coordinates.shift2D(
                     verticalOffset = -amountOfCellsRemovedFromTop,
                     horizontalOffset = -amountOfCellsRemovedFromLeft

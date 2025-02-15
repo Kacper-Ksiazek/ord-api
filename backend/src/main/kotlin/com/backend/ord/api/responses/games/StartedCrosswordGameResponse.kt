@@ -8,8 +8,6 @@ import java.util.*
 data class StartedCrosswordGameResponse(
     override val gameId: UUID,
     override val instruction: CrosswordInstruction,
-    val board: List<List<String?>>,
-
 
     // TODO: Remove this
     val properAnswers: CrosswordGameProperAnswers
