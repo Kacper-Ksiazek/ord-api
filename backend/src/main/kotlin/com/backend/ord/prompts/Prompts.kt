@@ -35,4 +35,6 @@ object Prompts {
                Words: [ ${wordsToUse.joinToString(", ") { it }} ]
             """.trimIndent()
     }
+
+    // TODO: Gather all prompts here
 }

@@ -348,6 +348,7 @@ class Board {
         this.remove(question)
     }
 
+    // For debugging purposes only
     fun print() {
         print('+')
         repeat(this.cells[0].size) { print("-") }
