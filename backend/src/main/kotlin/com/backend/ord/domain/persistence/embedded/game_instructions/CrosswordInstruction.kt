@@ -6,7 +6,6 @@ import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
 import com.backend.ord.services.ai.dto.crossword.addAnswerComponent
 import com.backend.ord.utils.games.CrosswordUtils.SPECIAL_CHARS
-import java.util.*
 
 class CrosswordInstruction(
     val answerExplanation: String,
@@ -91,15 +90,5 @@ class CrosswordInstruction(
 
             return indexesOfUnmatchedLetters.toSet()
         }
-
     }
 }
-
-// TODO: Move it somewhere
-data class CrosswordGameProperAnswers(
-    // Rename:
-    // - finalWord -> answer
-    // - properAnswers -> solution
-    val finalWord: String,
-    val questions: Map<UUID, String>
-)

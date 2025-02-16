@@ -1,6 +1,6 @@
 package com.backend.ord.services.ai
 
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordGameProperAnswers
+import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.persistence.game.GameDifficulty
@@ -37,7 +37,7 @@ interface AIGameService {
          * @property properAnswers The solution to the crossword game
          */
         data class GeneratedCrossWordGame(
-            val properAnswers: CrosswordGameProperAnswers,
+            val properAnswers: CrosswordProperAnswers,
             val aiGeneratedCrossword: AIGeneratedCrossword,
 
             val wordsUsedIds: Set<UUID>,

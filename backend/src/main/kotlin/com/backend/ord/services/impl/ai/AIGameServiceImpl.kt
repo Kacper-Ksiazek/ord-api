@@ -7,7 +7,7 @@ import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.openai.embedded.OpenAIResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.RestClientConfig
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordGameProperAnswers
+import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.persistence.game.GameDifficulty
@@ -84,14 +84,15 @@ class AIGameServiceImpl(
         )
 
         // Save all proper answers
-        val properAnswers = CrosswordGameProperAnswers(
+        val properAnswers = CrosswordProperAnswers(
             finalWord = aiGeneratedCrossword.answer,
             questions = aiGeneratedCrossword.questions.associate { it.id to it.word }
         )
 
         // ------------------ Block: 1 - Start
-        // TODO: DO WYJEBANIA
-        // Hide letters in data for user
+        // TODO: Move this logic to a separate method and call it !!!IN A DIFFERENT PLACE!!!!!
+        // Right know it is called before final word components being
+        // established resulting in operating on hidden letters, which makes no sense at all
         aiGeneratedCrossword.answer = CrosswordUtils.hideLettersInProperAnswer(
             wordToHide = aiGeneratedCrossword.answer,
             difficulty = difficulty

@@ -27,6 +27,7 @@ object CrosswordUtils {
     }
 
 
+    // TODO: Implement and use this one function
     /**
      * Iterates over all words placed on the board and hides some of the
      * letters in them, according to the game difficulty.

@@ -2,8 +2,8 @@ package com.backend.ord.domain.persistence.mappers.impl
 
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.dto.game.GameDTOBase
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordGameProperAnswers
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
+import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.domain.persistence.entities.Game
 import com.backend.ord.domain.persistence.mappers.GameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
@@ -56,7 +56,7 @@ class GameMapperImpl(
             language = entity.language,
             difficulty = entity.difficulty,
             instruction = jsonObjectMapper.readValue(entity.instruction, CrosswordInstruction::class.java),
-            properAnswers = jsonObjectMapper.readValue(entity.properAnswers, CrosswordGameProperAnswers::class.java),
+            properAnswers = jsonObjectMapper.readValue(entity.properAnswers, CrosswordProperAnswers::class.java),
 
             duration = entity.duration,
             finalScore = entity.finalScore,

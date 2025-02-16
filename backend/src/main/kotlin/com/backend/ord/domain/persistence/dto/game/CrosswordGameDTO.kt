@@ -1,8 +1,8 @@
 package com.backend.ord.domain.persistence.dto.game
 
 import com.backend.ord.domain.persistence.dto.UserDTO
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordGameProperAnswers
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
+import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameStatus
@@ -17,7 +17,7 @@ data class CrosswordGameDTO(
     override var duration: String = "00:00:00",
 
     override var instruction: CrosswordInstruction,
-    override var properAnswers: CrosswordGameProperAnswers,
+    override var properAnswers: CrosswordProperAnswers,
 
     override var type: GameType,
     override var grade: GameGrade,
@@ -29,7 +29,7 @@ data class CrosswordGameDTO(
 
     override val createdAt: Instant = Instant.now(),
     override var updatedAt: Instant = Instant.now()
-) : GameDTOBase<CrosswordInstruction, CrosswordGameProperAnswers>(
+) : GameDTOBase<CrosswordInstruction, CrosswordProperAnswers>(
     id = id,
     finalScore = finalScore,
     difficulty = difficulty,

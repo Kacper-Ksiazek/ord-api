@@ -1,6 +1,7 @@
 package com.backend.ord.domain.persistence.dto.game
 
 import com.backend.ord.domain.persistence.dto.UserDTO
+import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameStatus
@@ -16,7 +17,7 @@ abstract class GameDTOBase<Instructions, ProperAnswers>(
     open var duration: String = "00:00:00",
 
     open var instruction: Instructions,
-    open var properAnswers: ProperAnswers,
+    open var properAnswers: CrosswordProperAnswers,
 
     open var type: GameType,
     open var grade: GameGrade = GameGrade.NA,
