@@ -17,7 +17,6 @@ import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
 class Board {
     private val cells: MutableList<MutableList<String?>>
 
-
     constructor(dimensions: Coordinates) {
         cells = MutableList(dimensions.y) { MutableList(dimensions.x) { null } }
     }
@@ -258,7 +257,7 @@ class Board {
     /**
      * Trim the board by removing leading empty rows and columns from top, bottom, left, and right.
      */
-    fun trim(questions: Set<CrosswordQuestion>): List<List<String?>> {
+    fun trim(questions: Set<CrosswordQuestion>): MutableList<MutableList<String?>> {
         val cellsCopy = this.cells.toMutableList()
 
         var amountOfCellsRemovedFromTop: Int = 0
@@ -296,7 +295,7 @@ class Board {
             }
         }
 
-        return cellsCopy.map { it.toList() }
+        return cellsCopy
     }
 
     private fun checkIfCharacterFits(

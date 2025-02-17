@@ -22,7 +22,6 @@ import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
-import com.backend.ord.utils.games.CrosswordUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -83,34 +82,14 @@ class AIGameServiceImpl(
             words = words
         )
 
-        // Save all proper answers
-        val properAnswers = CrosswordProperAnswers(
-            finalWord = aiGeneratedCrossword.answer,
-            questions = aiGeneratedCrossword.questions.associate { it.id to it.word }
-        )
-
-        // ------------------ Block: 1 - Start
-        // TODO: Move this logic to a separate method and call it !!!IN A DIFFERENT PLACE!!!!!
-        // Right know it is called before final word components being
-        // established resulting in operating on hidden letters, which makes no sense at all
-        aiGeneratedCrossword.answer = CrosswordUtils.hideLettersInProperAnswer(
-            wordToHide = aiGeneratedCrossword.answer,
-            difficulty = difficulty
-        )
-
-        aiGeneratedCrossword.questions.forEach { question ->
-            question.word = CrosswordUtils.hideLettersInProperAnswer(
-                wordToHide = question.word,
-                difficulty = difficulty
-            )
-        }
-        // ------------------ Block: 1 - End
-
         return AIGameService.Companion.GeneratedCrossWordGame(
             aiGeneratedCrossword = aiGeneratedCrossword,
             gameTokensUsageLogs = gameTokensUsageLogs,
             wordsUsedIds = words.map { it.id }.toSet(),
-            properAnswers = properAnswers
+            properAnswers = CrosswordProperAnswers(
+                finalWord = aiGeneratedCrossword.answer,
+                questions = aiGeneratedCrossword.questions.associate { it.id to it.word }
+            )
         )
     }
 
@@ -136,6 +115,7 @@ class AIGameServiceImpl(
         var parsedResponseBody: AIGeneratedCrossword?
         val gameTokensUsageLogs: MutableSet<GameTokensUsage> = mutableSetOf()
 
+        // TODO: Implement the retries limit mechanism
         do {
             // Send the request to the OpenAI APIdd
             response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {

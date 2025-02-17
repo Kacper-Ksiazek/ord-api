@@ -2,17 +2,24 @@ package com.backend.ord.domain.persistence.embedded.game_instructions
 
 import com.backend.ord.domain.application.games.Board
 import com.backend.ord.domain.application.games.Coordinates
+import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
 import com.backend.ord.services.ai.dto.crossword.addAnswerComponent
-import com.backend.ord.utils.games.CrosswordUtils.SPECIAL_CHARS
+import com.backend.ord.utils.games.hideLettersInWord
+import com.backend.ord.utils.games.isSpecialChar
+import com.backend.ord.utils.games.updateWord
 
-class CrosswordInstruction(
+data class CrosswordInstruction(
     val answerExplanation: String,
     val answer: String,
     val questions: Set<CrosswordQuestion>,
-    val board: List<List<String?>>
+    val board: MutableList<MutableList<String?>>,
+
+    val lettersAreHidden: Boolean = false
 ) {
+    private lateinit var finalWordUnmatchedIndexes: Set<Int>;
+
     companion object {
         /**
          * A factory method to construct a crossword instruction from AI-generated questions.
@@ -20,7 +27,8 @@ class CrosswordInstruction(
         fun construct(
             aiGeneratedQuestions: AIGeneratedCrossword,
             boardDimension: Coordinates = Coordinates(x = 32, y = 24),
-            firstWordStart: Coordinates = Coordinates(x = 5, y = 5)
+            firstWordStart: Coordinates = Coordinates(x = 5, y = 5),
+            difficulty: GameDifficulty? = null
         ): CrosswordInstruction {
             val board = Board(boardDimension)
 
@@ -29,7 +37,6 @@ class CrosswordInstruction(
                 firstWordStart = firstWordStart
             )
 
-
             val result = CrosswordInstruction(
                 answerExplanation = aiGeneratedQuestions.answerExplanation,
                 answer = aiGeneratedQuestions.answer,
@@ -37,9 +44,9 @@ class CrosswordInstruction(
                 board = board.trim(questions)
             )
 
-            setFinalWordComponents(result)
+            result.finalWordUnmatchedIndexes = setFinalWordComponents(result)
 
-            return result
+            return difficulty?.let { result.hideLetters(it) } ?: result
         }
 
         /**
@@ -56,7 +63,7 @@ class CrosswordInstruction(
             // 1. Iterate through all letters of the final word
             instruction.answer.withIndex().forEach { finalWordLetter ->
                 // Skip special characters
-                if (SPECIAL_CHARS.contains(finalWordLetter.value)) return@forEach
+                if (isSpecialChar(finalWordLetter.value)) return@forEach
 
                 // 2. Find all words on the board that contain the letter
                 val allWordsContainingLetter = instruction.questions.filter { it.word.contains(finalWordLetter.value) }
@@ -90,5 +97,33 @@ class CrosswordInstruction(
 
             return indexesOfUnmatchedLetters.toSet()
         }
+    }
+
+    fun hideLetters(difficulty: GameDifficulty): CrosswordInstruction {
+        if (this.lettersAreHidden) {
+            throw IllegalAccessException("Letters are already hidden.")
+        }
+
+        val instructionCopy = this.copy(
+            lettersAreHidden = true,
+            answer = hideLettersInWord(
+                wordToHide = this.answer,
+                difficulty = difficulty,
+                lettersToReveal = this.finalWordUnmatchedIndexes
+            )
+        )
+
+        // Iterate over all words placed on the board
+        instructionCopy.questions.map { question ->
+            question.word = hideLettersInWord(
+                wordToHide = question.word,
+                difficulty = difficulty
+            )
+
+            this.board.updateWord(question)
+        }
+
+
+        return instructionCopy
     }
 }

@@ -19,7 +19,6 @@ import com.backend.ord.services.GameService
 import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
-import com.backend.ord.utils.games.CrosswordUtils
 import com.backend.ord.utils.games.GameReviewingUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -64,6 +63,7 @@ class CrosswordGameController(
         // 3. Parse the generated crossword game and compute its instruction
         val instruction = CrosswordInstruction.construct(
             aiGeneratedQuestions = aiGeneratedCrosswordBase,
+            difficulty = body.difficulty
         )
 
         // 4. Save the game in the database
@@ -89,14 +89,6 @@ class CrosswordGameController(
             wordsIds = usedWordsIds,
             gameId = savedGame.id
         )
-
-        // 7. Hide letters of proper answers based on the game difficulty
-        instruction.questions.forEach { question ->
-            question.word = CrosswordUtils.hideLettersInProperAnswer(
-                wordToHide = question.word,
-                difficulty = body.difficulty
-            )
-        }
 
         return ResponseEntity.ok(
             StartedCrosswordGameResponse(
