@@ -2,7 +2,6 @@ package com.backend.ord.domain.application.games
 
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 
-// TODO: Refactor this field name and reconsider the class's name
 data class WordPlacementRange(
     /**
      * The (X,Y) position of the beginning of the word
