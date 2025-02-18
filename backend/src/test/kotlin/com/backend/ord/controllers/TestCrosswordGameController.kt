@@ -99,15 +99,15 @@ class TestCrosswordGameController @Autowired constructor(
 
                 // 5. Retrieve the crossword game from the database
                 crosswordSavedInDb = gameMapper.toCrosswordDTO(
-                    gameRepository.findAllForUser(authenticatedUser.userInfo.id).first()
+                    gameRepository
+                        .findAllForUser(authenticatedUser.userInfo.id)
+                        .first()
                 )
             }
 
             @Test
-            fun `Game can be successfully started`() {
-                true shouldBe true
-
-                crosswordSavedInDb.id shouldBe crosswordSavedInDb.id
+            fun `Game returned in response is the game saved in the DB`() {
+                crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
             }
 
             @Test
