@@ -9,16 +9,21 @@ import com.backend.ord.domain.application.games.Coordinates
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.mappers.GameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.backend.ord.enums.persistence.game.GameDifficulty
+import com.backend.ord.enums.persistence.game.GameGrade
+import com.backend.ord.enums.persistence.game.GameStatus
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.GameRepository
 import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.WordRepository
+import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -47,6 +52,7 @@ class TestCrosswordGameController @Autowired constructor(
     private val userMapper: UserMapper,
     private val gameMapper: GameMapper,
     private val gameRepository: GameRepository,
+    private val gameTokensUsageRepository: GameTokensUsageRepository
 ) : ControllerTestBase(
     mockMvc = mockMvc!!,
     objectMapper = objectMapper,
@@ -70,12 +76,15 @@ class TestCrosswordGameController @Autowired constructor(
             lateinit var crosswordSentToUser: StartedCrosswordGameResponse
             lateinit var crosswordSavedInDb: CrosswordGameDTO
 
+            val crosswordLanguage = LanguageName.ENGLISH
+            val crosswordDifficulty = GameDifficulty.HARD
+
             @BeforeAll
             fun beforeAll() {
                 // 1. Create a user
                 authenticatedUser = mockAuthenticatedUser(
                     languages = setOf(
-                        Pair(LanguageName.ENGLISH, LanguageProficiencyLevel.C1)
+                        Pair(crosswordLanguage, LanguageProficiencyLevel.C1)
                     )
 
                 )
@@ -87,7 +96,9 @@ class TestCrosswordGameController @Autowired constructor(
                 // 3. Make a request to start a new crossword game
                 val request = gameRequestFactory.startGameRequest(
                     gameType = GameType.CROSSWORD,
-                    authenticatedUser = authenticatedUser
+                    language = crosswordLanguage,
+                    difficulty = crosswordDifficulty,
+                    authenticatedUser = authenticatedUser,
                 )
                 val response = mockMvc.perform(request).andReturn().let {
                     it.response.status shouldBe HttpStatus.OK.value()
@@ -108,6 +119,40 @@ class TestCrosswordGameController @Autowired constructor(
             @Test
             fun `Game returned in response is the game saved in the DB`() {
                 crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
+            }
+
+            @Test
+            fun `Game is properly saved in the DB`() {
+                crosswordSavedInDb.grade shouldBe GameGrade.NA
+                crosswordSavedInDb.type shouldBe GameType.CROSSWORD
+                crosswordSavedInDb.status shouldBe GameStatus.IN_PROGRESS
+                crosswordSavedInDb.language shouldBe crosswordLanguage
+                crosswordSavedInDb.difficulty shouldBe crosswordDifficulty
+
+                crosswordSavedInDb.user.id shouldBe authenticatedUser.userInfo.id
+            }
+
+            @Test
+            fun `Proper answers are properly saved in the DB`() {
+                crosswordSavedInDb.properAnswers.questions.size shouldBe crosswordSentToUser.instruction.questions.size
+                crosswordSavedInDb.properAnswers.finalWord.length shouldBe crosswordSentToUser.instruction.answer.length
+
+                crosswordSavedInDb.properAnswers.questions.entries.forEach { (questionId, answer) ->
+                    crosswordSentToUser.instruction.questions.find { it.id == questionId }.let {
+                        it shouldNotBe null
+                        it!!.word.length shouldBe answer.length
+                    }
+                }
+            }
+
+            @Test
+            fun `GPT use logs are properly saved in the DB`() {
+                gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id).size shouldBeGreaterThanOrEqualTo 1
+            }
+
+            @Test
+            fun `All words used in the crossword game are saved in the DB`() {
+                // TODO
             }
 
             @Test
