@@ -15,10 +15,14 @@ import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
  *   - `"SEPARATOR"`: Indicates the cell is a separator between two separate questions.
  */
 class Board {
-    private val cells: MutableList<MutableList<String?>>
+    private val numberOfRetries = 10
+    private var cells: MutableList<MutableList<String?>>
+
+    private val dimensions: Coordinates
 
     constructor(dimensions: Coordinates) {
-        cells = MutableList(dimensions.y) { MutableList(dimensions.x) { null } }
+        this.dimensions = dimensions
+        this.cells = MutableList(dimensions.y) { MutableList(dimensions.x) { null } }
     }
 
     companion object {
@@ -51,7 +55,11 @@ class Board {
         start: Coordinates,
         direction: CrosswordWordDirection
     ): Boolean {
-        ensureCoordinatesFitsBoard(start)
+        try {
+            ensureCoordinatesFitsBoard(start)
+        } catch (e: Exception) {
+            return false
+        }
 
         val wordSize: Int = wordToFit.length
         val wordCoordinates: Coordinates = start.copy()
@@ -157,7 +165,8 @@ class Board {
      */
     fun placeAllQuestions(
         questions: List<CrosswordQuestion>,
-        firstWordStart: Coordinates
+        firstWordStart: Coordinates,
+        attempt: Int = 1
     ): Set<CrosswordQuestion> {
         // This is a set of questions that will be returned as a final instruction's component
         val questionsToInstruction: MutableSet<CrosswordQuestion> = mutableSetOf()
@@ -216,36 +225,62 @@ class Board {
                     }
                 }
 
-                return@placeWord false// No place found for the word
+                return@placeWord false // No place found for the word
             }
 
             if (!wordHasBeenPlaced) {
-                val longestWord = remainingWords.maxByOrNull { it.word.length }!!
-                run insertSeparator@{
-                    questionsToInstruction.reversed().forEach { lastInsertedWord ->
-                        val direction = lastInsertedWord.position!!.direction
+                val longestWords = remainingWords.sortedBy { it.word.length }.reversed()
 
-                        val separatorCoordinates = lastInsertedWord.position!!.coordinates.end.copyAndShift(
-                            direction = direction,
-                            offset = 1
-                        )
-                        val coordinatesOfWordToInsert = separatorCoordinates.copyAndShift(
-                            direction = direction,
-                            offset = 1
-                        )
+                val wordHasBeenPlacedAfterInsertingSeparator: Boolean = run insertSeparator@{
+                    longestWords.forEach { longestWord ->
+                        questionsToInstruction.reversed().forEach { lastInsertedWord ->
+                            try {
+                                val direction = lastInsertedWord.position!!.direction
 
-                        placeIfFits(
-                            aiGeneratedQuestion = longestWord,
-                            start = coordinatesOfWordToInsert,
-                            direction = direction.opposite(),
-                            questionsToInstruction = questionsToInstruction
-                        )?.let {
-                            remainingWords.removeQuestion(longestWord)
+                                val separatorCoordinates = lastInsertedWord.position!!.coordinates.end.copyAndShift(
+                                    direction = direction,
+                                    offset = 1
+                                )
+                                val coordinatesOfWordToInsert = separatorCoordinates.copyAndShift(
+                                    direction = direction,
+                                    offset = 1
+                                )
 
-                            insertSeparator(separatorCoordinates)
+                                placeIfFits(
+                                    aiGeneratedQuestion = longestWord,
+                                    start = coordinatesOfWordToInsert,
+                                    direction = direction.opposite(),
+                                    questionsToInstruction = questionsToInstruction
+                                )?.let {
+                                    remainingWords.removeQuestion(longestWord)
 
-                            return@insertSeparator
+                                    insertSeparator(separatorCoordinates)
+
+                                    return@insertSeparator true
+                                }
+                            } catch (e: Exception) {
+                            }
                         }
+                    }
+
+                    return@insertSeparator false
+                }
+
+                if (!wordHasBeenPlacedAfterInsertingSeparator) {
+                    if (attempt < numberOfRetries) {
+                        //TODO: Remove this
+                        println("Retrying...")
+
+                        cells = MutableList(dimensions.y) { MutableList(dimensions.x) { null } }
+
+                        return placeAllQuestions(
+                            questions = questions,
+                            firstWordStart = firstWordStart,
+                            attempt = attempt + 1
+                        )
+                    } else {
+                        // TODO: Throw 502 error
+                        throw Exception("502")
                     }
                 }
             }
