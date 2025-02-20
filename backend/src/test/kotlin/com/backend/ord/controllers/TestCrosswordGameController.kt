@@ -19,6 +19,7 @@ import com.backend.ord.repositories.GameRepository
 import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
+import com.backend.ord.repositories.pivots.WordsUsedInGamesRepository
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
@@ -39,7 +40,7 @@ import org.springframework.test.web.servlet.MockMvc
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @AutoConfigureMockMvc
 @DisplayName("- CrosswordGameController")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -52,7 +53,8 @@ class TestCrosswordGameController @Autowired constructor(
     private val userMapper: UserMapper,
     private val gameMapper: GameMapper,
     private val gameRepository: GameRepository,
-    private val gameTokensUsageRepository: GameTokensUsageRepository
+    private val gameTokensUsageRepository: GameTokensUsageRepository,
+    private val wordsUsedInGamesRepository: WordsUsedInGamesRepository
 ) : ControllerTestBase(
     mockMvc = mockMvc!!,
     objectMapper = objectMapper,
@@ -71,6 +73,7 @@ class TestCrosswordGameController @Autowired constructor(
         @Nested
         @DisplayName("Positive")
         @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+        @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Positive {
             lateinit var authenticatedUser: MockedAuthenticatedUser
             lateinit var crosswordSentToUser: StartedCrosswordGameResponse
@@ -152,7 +155,11 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `All words used in the crossword game are saved in the DB`() {
-                // TODO
+                val numberOfWordsSavedAsPivotEntities =
+                    wordsUsedInGamesRepository.findAllByGameId(gameId = crosswordSavedInDb.id).size
+                val numberOfWordsUsedInCrosswordGame = crosswordSentToUser.instruction.questions.size
+
+                numberOfWordsSavedAsPivotEntities shouldBe numberOfWordsUsedInCrosswordGame
             }
 
             @Test

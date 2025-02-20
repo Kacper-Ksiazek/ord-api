@@ -4,10 +4,19 @@ import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.NoRepositoryBean
-import java.util.UUID
+import java.util.*
 
 @NoRepositoryBean
 interface GPTTokensUsageRepository<RepositoryType, ConsumptionType> : JpaRepository<RepositoryType, UUID> {
+    @Query(
+        """
+        SELECT r FROM #{#entityName} r 
+        WHERE 
+            r.user.id = :userId
+        """
+    )
+    fun findAllForUser(userId: UUID): List<RepositoryType>
+
     @Query(
         """
         SELECT r FROM #{#entityName} r 
