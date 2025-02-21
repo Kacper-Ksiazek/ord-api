@@ -1,5 +1,6 @@
 package com.backend.ord.domain.application.games
 
+import com.backend.ord.exceptions.REST.BadGatewayException
 import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.crossword.QuestionBoardPosition
@@ -279,8 +280,7 @@ class Board {
                             attempt = attempt + 1
                         )
                     } else {
-                        // TODO: Throw 502 error
-                        throw Exception("502")
+                        throw BadGatewayException("Failed to generate a crossword puzzle")
                     }
                 }
             }
