@@ -4,7 +4,7 @@ import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.getNumberOfLettersToReveal
 import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
-import kotlin.math.min
+import kotlin.math.max
 
 private const val HIDDEN_CHARACTER: Char = '*'
 private val SPECIAL_CHARS: Set<Char> = setOf(' ', '\'', '-', '’', '_')
@@ -21,7 +21,7 @@ fun hideLettersInWord(
     difficulty: GameDifficulty,
     lettersToReveal: Set<Int> = emptySet()
 ): String {
-    val numberOfLettersToReveal: Int = min(difficulty.getNumberOfLettersToReveal() - lettersToReveal.size, 0)
+    val numberOfLettersToReveal: Int = max(difficulty.getNumberOfLettersToReveal() - lettersToReveal.size, 0)
     val indexesOfLettersToReveal: List<Int> = wordToHide
         .indices
         .filter { !lettersToReveal.contains(it) }
