@@ -51,24 +51,3 @@ fun MutableList<MutableList<String?>>.updateWord(question: CrosswordQuestion) {
         }
     }
 }
-
-// TODO: Implement and use this one function
-/**
- * Iterates over all words placed on the board and hides some of the
- * letters in them, according to the game difficulty.
- */
-//    private fun hideLettersAcrossCrossword(
-//        instruction: CrosswordInstruction,
-//        board: List<List<String?>>,
-//    ): String {
-//        val numberOfLettersToReveal: Int = difficulty.getNumberOfLettersToReveal()
-//        val indexesOfLettersToReveal = wordToHide.indices.shuffled().take(numberOfLettersToReveal)
-//
-//        return wordToHide.mapIndexed { index, currentChar ->
-//            if (SPECIAL_CHARS.contains(currentChar) || indexesOfLettersToReveal.contains(index)) {
-//                currentChar
-//            } else {
-//                HIDDEN_CHARACTER
-//            }
-//        }.joinToString("")
-//    }
