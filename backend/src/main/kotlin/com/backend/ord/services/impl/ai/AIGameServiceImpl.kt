@@ -115,8 +115,11 @@ class AIGameServiceImpl(
         var parsedResponseBody: AIGeneratedCrossword?
         val gameTokensUsageLogs: MutableSet<GameTokensUsage> = mutableSetOf()
 
-        // TODO: Implement the retries limit mechanism
+        var openAIAPIRequestAttempt: Int = 0;
+
         do {
+            openAIRequestFactory.trackOpenAIAPIRequestAttempt(openAIAPIRequestAttempt++)
+
             // Send the request to the OpenAI APIdd
             response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
                 // Log the token usage for the request
