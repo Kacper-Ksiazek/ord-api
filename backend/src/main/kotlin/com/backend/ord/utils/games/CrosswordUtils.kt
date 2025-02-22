@@ -6,8 +6,12 @@ import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 import kotlin.math.max
 
-private const val HIDDEN_CHARACTER: Char = '*'
+const val HIDDEN_CHARACTER: Char = '*'
 private val SPECIAL_CHARS: Set<Char> = setOf(' ', '\'', '-', '’', '_')
+
+fun isHiddenChar(char: Char): Boolean {
+    return char == HIDDEN_CHARACTER
+}
 
 fun isSpecialChar(char: Char): Boolean {
     return SPECIAL_CHARS.contains(char)
