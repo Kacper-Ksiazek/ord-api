@@ -6,7 +6,9 @@ import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
 import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
 import com.backend.ord.services.ai.dto.crossword.addAnswerComponent
+import com.backend.ord.services.ai.dto.crossword.removeAnswerComponents
 import com.backend.ord.utils.games.hideLettersInWord
+import com.backend.ord.utils.games.isHiddenChar
 import com.backend.ord.utils.games.isSpecialChar
 import com.backend.ord.utils.games.updateWord
 
@@ -113,12 +115,19 @@ data class CrosswordInstruction(
             )
         )
 
+        val revealedLettersInAnswer =
+            instructionCopy.answer.withIndex().filter { !isHiddenChar(it.value) }.map { it.index }.toSet()
+
         // Iterate over all words placed on the board
         instructionCopy.questions.map { question ->
+            // Hide letters in the word
             question.word = hideLettersInWord(
                 wordToHide = question.word,
                 difficulty = difficulty
             )
+
+            // Remove final word components corresponding to revealed letters
+            question.removeAnswerComponents(revealedLettersInAnswer)
 
             this.board.updateWord(question)
         }
