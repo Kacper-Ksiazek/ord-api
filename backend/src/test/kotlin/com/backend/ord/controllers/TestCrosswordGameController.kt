@@ -22,6 +22,7 @@ import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.repositories.pivots.WordsUsedInGamesRepository
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
+import com.backend.ord.utils.games.HIDDEN_CHARACTER
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
@@ -79,8 +80,8 @@ class TestCrosswordGameController @Autowired constructor(
 
             // 1. Create a user
             authenticatedUser = mockAuthenticatedUser(
-                languages = setOf(
-                    Pair(crosswordLanguage, LanguageProficiencyLevel.C1)
+                languages = mapOf(
+                    crosswordLanguage to LanguageProficiencyLevel.C1
                 )
 
             )
@@ -244,8 +245,8 @@ class TestCrosswordGameController @Autowired constructor(
             fun beforeAll() {
                 // 1. Create a user
                 authenticatedUser = mockAuthenticatedUser(
-                    languages = setOf(
-                        Pair(crosswordLanguage, LanguageProficiencyLevel.C1)
+                    languages = mapOf(
+                        crosswordLanguage to LanguageProficiencyLevel.C1
                     )
 
                 )
