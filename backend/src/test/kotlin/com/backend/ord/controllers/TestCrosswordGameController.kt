@@ -232,7 +232,8 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `Every hidden letter on final word should have a corresponding component`() {
-                val numberOfHiddenLettersInFinalWord: Int = crosswordSentToUser.instruction.answer.count { it == '*' }
+                val numberOfHiddenLettersInFinalWord: Int =
+                    crosswordSentToUser.instruction.answer.count { it == '*' }
 
                 val numberOfFinalWordComponents: Int =
                     crosswordSentToUser.instruction.questions.sumOf { it.lettersInAnswer?.size ?: 0 }
@@ -252,9 +253,6 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `The final word's components should form a valid final word`() {
-                val allFinalWordComponents =
-                    crosswordSentToUser.instruction.questions.flatMap { it.lettersInAnswer ?: emptyList() }
-
                 crosswordSentToUser.instruction.questions.forEach { question ->
                     val expectedFinalWord = crosswordSentToUser.properAnswers.finalWord
 
@@ -267,6 +265,20 @@ class TestCrosswordGameController @Autowired constructor(
                 }
             }
 
+            @Test
+            fun `Revealed letters in final answer should not have corresponding components`() {
+                val revealedLetters = crosswordSentToUser.instruction.answer.mapIndexedNotNull { index, letter ->
+                    if (letter != HIDDEN_CHARACTER) index else null
+                }.toSet()
+
+                revealedLetters.forEach { revealedLetterIndex ->
+                    crosswordSentToUser.instruction.questions.find { question ->
+                        question.lettersInAnswer?.find { answerComponent ->
+                            answerComponent.indexInPassword == revealedLetterIndex
+                        } != null
+                    } shouldBe null
+                }
+            }
         }
 
         @Nested
