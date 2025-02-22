@@ -154,8 +154,11 @@ class AIGameServiceImpl(
                 null
             }
 
-            // Retry if the response doesn't have the expected number of questions
-        } while (parsedResponseBody?.questions?.size != amountOfQuestions)
+            // Retry if the response doesn't have the expected number of questions or some words are repeated
+        } while (
+            parsedResponseBody?.questions?.size != amountOfQuestions ||
+            parsedResponseBody.questions.map { it.word }.distinct().size != amountOfQuestions
+        )
 
         return Pair(parsedResponseBody, gameTokensUsageLogs)
     }
