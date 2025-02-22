@@ -7,12 +7,14 @@ import com.backend.ord.domain.persistence.dto.UserDTO
 import com.backend.ord.domain.persistence.entities.UserSession
 import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.repositories.LanguageProficiencyRepository
+import com.backend.ord.repositories.UserRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.Cookie
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.DisplayName
@@ -24,14 +26,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @DisplayName("- AuthenticationController")
 class TestAuthController @Autowired constructor(
@@ -43,6 +43,7 @@ class TestAuthController @Autowired constructor(
     private val userSessionService: UserSessionService,
     private val userService: UserService,
     private val userSeeder: UserSeeder,
+    private val userRepository: UserRepository
 ) : ControllerTestBase(
     mockMvc = mockMvc!!,
     objectMapper = objectMapper,
@@ -56,6 +57,11 @@ class TestAuthController @Autowired constructor(
     private val BASE_URL = "/api/v1/auth"
 
     private val authRequestFactory = AuthRequestFactory(PASSWORD, EMAIL, BASE_URL, objectMapper)
+
+    @AfterEach
+    fun cleanup() {
+        userRepository.deleteByEmail(EMAIL)
+    }
 
     @Nested
     @DisplayName("General")
