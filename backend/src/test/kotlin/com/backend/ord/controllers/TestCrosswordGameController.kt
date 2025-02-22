@@ -67,8 +67,166 @@ class TestCrosswordGameController @Autowired constructor(
 
     @Nested
     @DisplayName("[POST] /api/v1/games/crossword/start - start a new crossword game")
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class StartCrosswordGame {
+        @RepeatedTest(100)
+        @Disabled("This test is disabled for automatic execution. Run manually when needed.")
+        fun `Crossword can be properly stared - function encapsulates the entire process`() {
+            lateinit var authenticatedUser: MockedAuthenticatedUser
+            lateinit var crosswordSentToUser: StartedCrosswordGameResponse
+
+            val crosswordLanguage = LanguageName.ENGLISH
+            val crosswordDifficulty = GameDifficulty.HARD
+
+            // 1. Create a user
+            authenticatedUser = mockAuthenticatedUser(
+                languages = setOf(
+                    Pair(crosswordLanguage, LanguageProficiencyLevel.C1)
+                )
+
+            )
+            // 2. Assign exactly 12 words to the user (to be used in the crossword game on Hard difficulty)
+            loadWordsFromResourceFile(
+                user = userMapper.toEntity(authenticatedUser.userInfo),
+                wordsRepository = wordRepository
+            )
+            // 3. Make a request to start a new crossword game
+            val request = gameRequestFactory.startGameRequest(
+                gameType = GameType.CROSSWORD,
+                language = crosswordLanguage,
+                difficulty = crosswordDifficulty,
+                authenticatedUser = authenticatedUser,
+            )
+            val response = mockMvc.perform(request).andReturn().let {
+                it.response.status shouldBe HttpStatus.OK.value()
+                it.response
+            }
+
+            // 4. Retrieve the response body
+            crosswordSentToUser = getResponseBody<StartedCrosswordGameResponse>(response)
+
+            // 5. Retrieve the crossword game from the database
+            var crosswordSavedInDb: CrosswordGameDTO = gameMapper.toCrosswordDTO(
+                gameRepository
+                    .findAllForUser(authenticatedUser.userInfo.id)
+                    .first()
+            )
+
+            crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
+
+            crosswordSavedInDb.grade shouldBe GameGrade.NA
+            crosswordSavedInDb.type shouldBe GameType.CROSSWORD
+            crosswordSavedInDb.status shouldBe GameStatus.IN_PROGRESS
+            crosswordSavedInDb.language shouldBe crosswordLanguage
+            crosswordSavedInDb.difficulty shouldBe crosswordDifficulty
+
+            crosswordSavedInDb.user.id shouldBe authenticatedUser.userInfo.id
+
+            crosswordSavedInDb.properAnswers.questions.size shouldBe crosswordSentToUser.instruction.questions.size
+            crosswordSavedInDb.properAnswers.finalWord.length shouldBe crosswordSentToUser.instruction.answer.length
+
+            crosswordSavedInDb.properAnswers.questions.entries.forEach { (questionId, answer) ->
+                crosswordSentToUser.instruction.questions.find { it.id == questionId }.let {
+                    it shouldNotBe null
+                    it!!.word.length shouldBe answer.length
+                }
+            }
+
+            gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id).size shouldBeGreaterThanOrEqualTo 1
+
+            val numberOfWordsSavedAsPivotEntities =
+                wordsUsedInGamesRepository.findAllByGameId(gameId = crosswordSavedInDb.id).size
+            val numberOfWordsUsedInCrosswordGame = crosswordSentToUser.instruction.questions.size
+
+            numberOfWordsSavedAsPivotEntities shouldBe numberOfWordsUsedInCrosswordGame
+
+            crosswordSentToUser.instruction.board.map { it.size }.distinct().size shouldBe 1
+
+            crosswordSavedInDb.properAnswers.questions.values.distinct().size shouldBe crosswordSentToUser.instruction.questions.size
+
+            val board = crosswordSentToUser.instruction.board
+
+            val extremeCoordinates = Coordinates(
+                x = crosswordSentToUser.instruction.questions.maxOf { it.position!!.coordinates.end.x },
+                y = crosswordSentToUser.instruction.questions.maxOf { it.position!!.coordinates.end.y }
+            )
+
+            extremeCoordinates.x shouldBeLessThan board[0].size
+            extremeCoordinates.y shouldBeLessThan board.size
+
+            crosswordSentToUser.instruction.questions.forEach { question ->
+                val wordSize = question.word.length
+
+                val coordinates = question.position!!.coordinates
+
+                if (question.position!!.direction === CrosswordWordDirection.HORIZONTAL) {
+                    for (i in 0 until wordSize) {
+                        board[coordinates.start.y][coordinates.start.x + i] shouldNotBe null
+                    }
+                } else {
+                    for (i in 0 until wordSize) {
+                        board[coordinates.start.y + i][coordinates.start.x] shouldNotBe null
+                    }
+                }
+            }
+
+            crosswordSentToUser.instruction.questions.forEach { question ->
+                question.lettersInAnswer?.forEach { answerComponent ->
+                    val coordinates = question.getCoordinatesOfLetterAtIndex(answerComponent.indexInWord)
+
+                    crosswordSentToUser.instruction.board[coordinates.y][coordinates.x] shouldNotBe null
+                }
+            }
+
+            crosswordSentToUser.instruction.answer.forEachIndexed { index, letter ->
+                if (letter != '*') return@forEachIndexed
+
+                crosswordSentToUser.instruction.questions.find { question ->
+                    question.lettersInAnswer?.find { answerComponent ->
+                        answerComponent.indexInPassword == index
+                    } != null
+                } shouldNotBe null
+            }
+
+            val numberOfHiddenLettersInFinalWord: Int = crosswordSentToUser.instruction.answer.count { it == '*' }
+
+            val numberOfFinalWordComponents: Int =
+                crosswordSentToUser.instruction.questions.sumOf { it.lettersInAnswer?.size ?: 0 }
+
+            numberOfHiddenLettersInFinalWord shouldBe numberOfFinalWordComponents
+
+            crosswordSentToUser.instruction.answer.forEachIndexed { index, letter ->
+                if (letter != '*') return@forEachIndexed
+
+                crosswordSentToUser.instruction.questions.find { question ->
+                    question.lettersInAnswer?.find { answerComponent ->
+                        answerComponent.indexInPassword == index
+                    } != null
+                } shouldNotBe null
+            }
+
+            crosswordSentToUser.instruction.questions.forEach { question ->
+                val expectedFinalWord = crosswordSentToUser.properAnswers.finalWord
+
+                val currentQuestionWithoutLettersHidden: String =
+                    crosswordSentToUser.properAnswers.questions[question.id]!!
+
+                question.lettersInAnswer?.forEach { answerComponent ->
+                    expectedFinalWord[answerComponent.indexInPassword] shouldBe currentQuestionWithoutLettersHidden[answerComponent.indexInWord]
+                }
+            }
+
+            val revealedLetters = crosswordSentToUser.instruction.answer.mapIndexedNotNull { index, letter ->
+                if (letter != HIDDEN_CHARACTER) index else null
+            }.toSet()
+
+            revealedLetters.forEach { revealedLetterIndex ->
+                crosswordSentToUser.instruction.questions.find { question ->
+                    question.lettersInAnswer?.find { answerComponent ->
+                        answerComponent.indexInPassword == revealedLetterIndex
+                    } != null
+                } shouldBe null
+            }
+        }
 
         @Nested
         @DisplayName("Positive")
