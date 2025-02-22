@@ -10,6 +10,7 @@ import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.javafaker.Faker
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockHttpServletResponse
@@ -28,10 +29,12 @@ abstract class ControllerTestBase(
     private val userMapper: UserMapper,
     private val languageProficiencyRepository: LanguageProficiencyRepository
 ) {
+    val faker = Faker()
+
     fun mockAuthenticatedUser(
-        email: String = "random.authenticated.email@gmail.com",
+        email: String = faker.internet().emailAddress(),
         nativeLanguage: LanguageName = LanguageName.ENGLISH,
-        languages: Set<Pair<LanguageName, LanguageProficiencyLevel>> = setOf()
+        languages: Set<Pair<LanguageName, LanguageProficiencyLevel>> = setOf(),
     ): MockedAuthenticatedUser {
         // Create a request
         val request = MockMvcRequestBuilders.post("/api/v1/auth/register")
