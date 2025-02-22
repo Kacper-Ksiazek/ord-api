@@ -16,6 +16,7 @@ import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
+import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.prompts.Prompts
 import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.WordService
@@ -62,6 +63,8 @@ class AIGameServiceImpl(
         language: LanguageName,
         difficulty: GameDifficulty
     ): AIGameService.Companion.GeneratedCrossWordGame {
+        val requiredNumberOfWords = difficulty.getNumberOfWordsForCrossword()
+
         // Get words for the game
         val words = wordService.findManyWords(
             user = user,
@@ -73,7 +76,13 @@ class AIGameServiceImpl(
             // TODO: Add more filters
         ).data
             .shuffled()
-            .take(difficulty.getNumberOfWordsForCrossword())
+            .take(requiredNumberOfWords)
+            .apply {
+                if (size < requiredNumberOfWords) {
+                    throw BadRequestException("Not enough words to generate a crossword game")
+                }
+            }
+
 
         val (aiGeneratedCrossword, gameTokensUsageLogs) = makeOpenAIRequestToGenerateCrossword(
             user = user,
