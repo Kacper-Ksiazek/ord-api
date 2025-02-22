@@ -27,6 +27,9 @@ class GamesController(
     // |    GAMES ENDPOINTS PLAN:    |
     // +-----------------------------+
 
+    // Endpoint to return all available games with their difficulties for the user in a given language. It should retrieve the number of words they have in the DB and then
+    // return the information which games can be played with the number of words they have.
+
     // ----
     // 1. Start a game endpoints
     //
