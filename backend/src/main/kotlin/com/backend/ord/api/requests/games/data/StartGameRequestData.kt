@@ -8,3 +8,8 @@ data class StartGameRequestData(
     override val difficulty: GameDifficulty,
     override val language: LanguageName
 ) : StartGameRequest
+
+data class UnsafeStartGameRequestData(
+    val difficulty: GameDifficulty?,
+    val language: LanguageName?
+)

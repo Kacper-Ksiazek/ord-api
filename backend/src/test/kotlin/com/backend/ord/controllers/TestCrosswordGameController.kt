@@ -41,10 +41,8 @@ import org.springframework.test.web.servlet.MockMvc
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @AutoConfigureMockMvc
 @DisplayName("- CrosswordGameController")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestCrosswordGameController @Autowired constructor(
     mockMvc: MockMvc?,
     objectMapper: ObjectMapper,
@@ -443,7 +441,151 @@ class TestCrosswordGameController @Autowired constructor(
         @Nested
         @DisplayName("Negative")
         inner class Negative {
-            //
+            @Test
+            fun `403 - Anonymous user cannot start a crossword game`() {
+                val request = gameRequestFactory.startGameRequest(
+                    gameType = GameType.CROSSWORD,
+                    language = LanguageName.ENGLISH,
+                    difficulty = GameDifficulty.HARD,
+                    authenticatedUser = null,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - User with no words assigned cannot start a crossword game`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(
+                        LanguageName.ENGLISH to LanguageProficiencyLevel.C1
+                    )
+                )
+
+                val request = gameRequestFactory.startGameRequest(
+                    gameType = GameType.CROSSWORD,
+                    language = LanguageName.ENGLISH,
+                    difficulty = GameDifficulty.HARD,
+                    authenticatedUser = authenticatedUser,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - User with insufficient number of words assigned cannot start a crossword game`() {
+                val requiredNumberOfWords = 12
+
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(
+                        LanguageName.ENGLISH to LanguageProficiencyLevel.C1
+                    )
+                )
+
+                loadWordsFromResourceFile(
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    wordsRepository = wordRepository,
+                    numberOfWordsToLoad = requiredNumberOfWords - 1
+                )
+
+                val request = gameRequestFactory.startGameRequest(
+                    gameType = GameType.CROSSWORD,
+                    language = LanguageName.ENGLISH,
+                    difficulty = GameDifficulty.HARD,
+                    authenticatedUser = authenticatedUser,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - User with no proficiency in the language cannot start a crossword game`() {
+                val unknownForUserLanguage = LanguageName.ITALIAN
+
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(
+                        LanguageName.ENGLISH to LanguageProficiencyLevel.A1
+                    )
+                )
+
+                loadWordsFromResourceFile(
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    wordsRepository = wordRepository
+                )
+
+                val request = gameRequestFactory.startGameRequest(
+                    gameType = GameType.CROSSWORD,
+                    language = unknownForUserLanguage,
+                    difficulty = GameDifficulty.HARD,
+                    authenticatedUser = authenticatedUser,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - Cannot start a game without providing difficulty`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(
+                        LanguageName.ENGLISH to LanguageProficiencyLevel.C1
+                    )
+                )
+
+                loadWordsFromResourceFile(
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    wordsRepository = wordRepository
+                )
+
+                val request = gameRequestFactory.startGameRequest(
+                    gameType = GameType.CROSSWORD,
+                    language = LanguageName.ENGLISH,
+                    difficulty = null,
+                    authenticatedUser = authenticatedUser,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - Cannot start a game without providing language`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(
+                        LanguageName.ENGLISH to LanguageProficiencyLevel.C1
+                    )
+                )
+
+                loadWordsFromResourceFile(
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    wordsRepository = wordRepository
+                )
+
+                val request = gameRequestFactory.startGameRequest(
+                    gameType = GameType.CROSSWORD,
+                    language = null,
+                    difficulty = GameDifficulty.HARD,
+                    authenticatedUser = authenticatedUser,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
         }
     }
 

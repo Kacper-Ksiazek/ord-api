@@ -1,6 +1,6 @@
 package com.backend.ord.controllers.request_factories
 
-import com.backend.ord.api.requests.games.data.StartGameRequestData
+import com.backend.ord.api.requests.games.data.UnsafeStartGameRequestData
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
@@ -20,8 +20,8 @@ class GameRequestFactory(
 
     fun startGameRequest(
         gameType: GameType,
-        difficulty: GameDifficulty = GameDifficulty.HARD,
-        language: LanguageName = LanguageName.ENGLISH,
+        difficulty: GameDifficulty? = GameDifficulty.HARD,
+        language: LanguageName? = LanguageName.ENGLISH,
         authenticatedUser: MockedAuthenticatedUser? = null,
     ): MockHttpServletRequestBuilder {
         return MockMvcRequestBuilders
@@ -33,7 +33,7 @@ class GameRequestFactory(
             .contentType(MediaType.APPLICATION_JSON)
             .content(
                 objectMapper.writeValueAsString(
-                    StartGameRequestData(
+                    UnsafeStartGameRequestData(
                         difficulty = difficulty,
                         language = language
                     )

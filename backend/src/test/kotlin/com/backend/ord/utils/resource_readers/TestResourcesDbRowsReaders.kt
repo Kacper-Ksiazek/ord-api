@@ -23,7 +23,9 @@ private fun getAbsolutePath(path: String): String {
  */
 fun loadWordsFromResourceFile(
     user: User,
-    wordsRepository: WordRepository? = null
+    wordsRepository: WordRepository? = null,
+    /** If null, all words will be loaded */
+    numberOfWordsToLoad: Int? = null
 ): List<Word> {
     val path = getAbsolutePath("/words_12_rows.json")
     val typeReference = object : TypeReference<List<WordDBExportedRow>>() {}
@@ -33,6 +35,12 @@ fun loadWordsFromResourceFile(
         typeReference = typeReference
     ).map {
         it.convertIntoWordEntity(user)
+    }.let {
+        if (numberOfWordsToLoad != null) {
+            it.take(numberOfWordsToLoad)
+        } else {
+            it
+        }
     }
 
     wordsRepository?.saveAll(result)
