@@ -40,6 +40,10 @@ fun CrosswordQuestion.addAnswerComponent(
     )
 }
 
+fun CrosswordQuestion.removeAnswerComponents(passwordIndexes: Set<Int>) {
+    lettersInAnswer = lettersInAnswer?.filter { it.indexInPassword !in passwordIndexes }?.toMutableList()
+}
+
 /**
  * Returns the coordinates of the letter at the given index in the word.
  */
