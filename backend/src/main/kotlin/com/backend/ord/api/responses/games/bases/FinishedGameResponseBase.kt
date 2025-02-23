@@ -3,7 +3,7 @@ package com.backend.ord.api.responses.games.bases
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.utils.data_classes.Percentage
 
-open class FinishedGameResponseBase(
+abstract class FinishedGameResponseBase(
     val finalScore: Double,
 ) {
     private val _finalScore: Percentage
