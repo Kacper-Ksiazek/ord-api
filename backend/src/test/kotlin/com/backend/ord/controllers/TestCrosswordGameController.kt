@@ -556,21 +556,32 @@ class TestCrosswordGameController @Autowired constructor(
                 userRepository.deleteById(authenticatedUser.userInfo.id)
             }
 
+            private fun getPerfectAnswersForQuestions(
+                numberOfProperAnswers: Int? = null
+            ): Set<CrosswordUserAnswersQuestionData> {
+                val limit = numberOfProperAnswers ?: crosswordSavedInDb.properAnswers.questions.size
+
+                return crosswordSavedInDb.properAnswers.questions.entries.mapIndexed { index, (questionId, answer) ->
+                    CrosswordUserAnswersQuestionData(
+                        id = questionId,
+                        word = if (index < limit) answer else "__invalid__"
+                    )
+                }.toSet()
+            }
+
             private fun finishCrosswordGame(
+                numberOfProperAnswers: Int? = null,
                 finalWord: String = crosswordSavedInDb.properAnswers.finalWord,
-                numberOfProperAnswers: Int = crosswordSavedInDb.properAnswers.questions.size
+                questionsAnswers: Set<CrosswordUserAnswersQuestionData> = getPerfectAnswersForQuestions(
+                    numberOfProperAnswers
+                )
             ): FinishedGameResponse {
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
                     userAnswers = CrosswordUserAnswersData(
                         answer = finalWord,
-                        questionsAnswers = crosswordSavedInDb.properAnswers.questions.entries.mapIndexed { index, (questionId, answer) ->
-                            CrosswordUserAnswersQuestionData(
-                                id = questionId,
-                                word = if (index < numberOfProperAnswers) answer else "__invalid__"
-                            )
-                        }.toSet()
+                        questionsAnswers = questionsAnswers
                     )
                 )
 
