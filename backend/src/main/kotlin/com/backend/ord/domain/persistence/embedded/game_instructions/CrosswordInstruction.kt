@@ -11,6 +11,7 @@ import com.backend.ord.utils.games.hideLettersInWord
 import com.backend.ord.utils.games.isHiddenChar
 import com.backend.ord.utils.games.isSpecialChar
 import com.backend.ord.utils.games.updateWord
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 data class CrosswordInstruction(
     val answerExplanation: String,
@@ -18,6 +19,7 @@ data class CrosswordInstruction(
     val questions: Set<CrosswordQuestion>,
     val board: MutableList<MutableList<String?>>,
 
+    @JsonIgnore
     val lettersAreHidden: Boolean = false
 ) {
     private lateinit var finalWordUnmatchedIndexes: Set<Int>;
