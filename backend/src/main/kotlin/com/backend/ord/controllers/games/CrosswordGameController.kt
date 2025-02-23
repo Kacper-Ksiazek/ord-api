@@ -2,10 +2,12 @@ package com.backend.ord.controllers.games
 
 import com.backend.ord.api.requests.games.data.CrosswordToFinishRequestData
 import com.backend.ord.api.requests.games.data.StartGameRequestData
-import com.backend.ord.api.responses.games.FinishedGameResponse
-import com.backend.ord.api.responses.games.StartedCrosswordGameResponse
+import com.backend.ord.api.responses.games.ProperAnswer
+import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
+import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
 import com.backend.ord.config.AnswerScore
 import com.backend.ord.config.ComponentsPointsRatio
+import com.backend.ord.config.ScoringResult
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
@@ -108,7 +110,7 @@ class CrosswordGameController(
     fun finishCrosswordGame(
         request: HttpServletRequest,
         @Valid @RequestBody body: CrosswordToFinishRequestData
-    ): ResponseEntity<FinishedGameResponse> {
+    ): ResponseEntity<FinishedCrosswordGameResponse> {
         // 1. Get authenticated user data and retrieve the game from the database
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
         val game: CrosswordGameDTO = gameMapper.toCrosswordDTO(
@@ -169,12 +171,17 @@ class CrosswordGameController(
 
         // 9. Return the response
         return ResponseEntity.ok(
-            FinishedGameResponse(
+            FinishedCrosswordGameResponse(
                 totalPoints = totalPoints,
-                properAnswers = reviewedQuestions.map { (word, score) ->
+                properFinalWord = ProperAnswer(
+                    expectedAnswer = "TODO",
+                    userAnswer = "TODO",
+                    result = ScoringResult.INCORRECT
+                ),
+                properQuestionsAnswers = reviewedQuestions.map { (word, score) ->
                     val userAnswer = body.userAnswers.questionsAnswers.find { it.word == word }?.word
 
-                    FinishedGameResponse.Companion.ProperAnswers(
+                    ProperAnswer(
                         expectedAnswer = word,
                         userAnswer = userAnswer,
                         result = score.resultName
