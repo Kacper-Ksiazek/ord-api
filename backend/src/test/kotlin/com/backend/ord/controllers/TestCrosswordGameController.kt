@@ -2,8 +2,8 @@ package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.games.data.CrosswordUserAnswersData
 import com.backend.ord.api.requests.games.data.CrosswordUserAnswersQuestionData
-import com.backend.ord.api.responses.games.FinishedGameResponse
-import com.backend.ord.api.responses.games.StartedCrosswordGameResponse
+import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
+import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.request_factories.GameRequestFactory
 import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
@@ -43,6 +43,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
+import java.util.*
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -575,7 +576,7 @@ class TestCrosswordGameController @Autowired constructor(
                 questionsAnswers: Set<CrosswordUserAnswersQuestionData> = getPerfectAnswersForQuestions(
                     numberOfProperAnswers
                 )
-            ): FinishedGameResponse {
+            ): FinishedCrosswordGameResponse {
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
@@ -590,7 +591,7 @@ class TestCrosswordGameController @Autowired constructor(
                     it.response
                 }
 
-                return getResponseBody<FinishedGameResponse>(response)
+                return getResponseBody<FinishedCrosswordGameResponse>(response)
             }
 
             @Test
@@ -644,6 +645,34 @@ class TestCrosswordGameController @Autowired constructor(
                 )
 
                 response.grade shouldBe GameGrade.D
+            }
+
+            @Test
+            fun `200 - Mistakes in user's answer should be corrected properly`() {
+                var perfectAnswers = getPerfectAnswersForQuestions()
+                val alteredAnswers: MutableSet<Triple<UUID, String, String>> = mutableSetOf()
+
+                perfectAnswers.shuffled().take(3).forEachIndexed { index, it ->
+                    alteredAnswers.add(
+                        Triple(
+                            it.id,
+                            it.word,
+                            "altered_answer_${index}"
+                        )
+                    )
+                }
+
+                val alteredAnswersForRequest = perfectAnswers.toMutableSet().map { answer ->
+                    val correspondingAlteredAnswer = alteredAnswers.find { it.first == answer.id }
+
+                    if (correspondingAlteredAnswer == null) return@map answer
+
+                    return@map answer.copy(word = correspondingAlteredAnswer.third)
+                }.toSet()
+
+                val response = finishCrosswordGame(
+                    questionsAnswers = alteredAnswersForRequest
+                )
             }
         }
 
