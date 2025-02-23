@@ -19,8 +19,8 @@ data class CrosswordGameDTO(
     override var instruction: CrosswordInstruction,
     override var properAnswers: CrosswordProperAnswers,
 
-    override var type: GameType,
-    override var grade: GameGrade,
+    override var type: GameType = GameType.CROSSWORD,
+    override var grade: GameGrade = GameGrade.NA,
     override var language: LanguageName,
     override var difficulty: GameDifficulty,
     override var status: GameStatus = GameStatus.IN_PROGRESS,

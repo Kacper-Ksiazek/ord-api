@@ -1,5 +1,8 @@
 package com.backend.ord.controllers
 
+import com.backend.ord.api.requests.games.data.CrosswordUserAnswersData
+import com.backend.ord.api.requests.games.data.CrosswordUserAnswersQuestionData
+import com.backend.ord.api.responses.games.FinishedGameResponse
 import com.backend.ord.api.responses.games.StartedCrosswordGameResponse
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.request_factories.GameRequestFactory
@@ -17,9 +20,11 @@ import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.GameRepository
 import com.backend.ord.repositories.LanguageProficiencyRepository
+import com.backend.ord.repositories.UserRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.repositories.pivots.WordsUsedInGamesRepository
+import com.backend.ord.seeders.mocks.games.MockCrosswordGames
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
 import com.backend.ord.utils.games.HIDDEN_CHARACTER
@@ -54,7 +59,8 @@ class TestCrosswordGameController @Autowired constructor(
     private val gameMapper: GameMapper,
     private val gameRepository: GameRepository,
     private val gameTokensUsageRepository: GameTokensUsageRepository,
-    private val wordsUsedInGamesRepository: WordsUsedInGamesRepository
+    private val wordsUsedInGamesRepository: WordsUsedInGamesRepository,
+    private val mockCrosswordGames: MockCrosswordGames
 ) : ControllerTestBase(
     mockMvc = mockMvc!!,
     objectMapper = objectMapper,
@@ -63,6 +69,8 @@ class TestCrosswordGameController @Autowired constructor(
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
 ) {
+    @Autowired
+    private lateinit var userRepository: UserRepository
     private val gameRequestFactory = GameRequestFactory(objectMapper)
 
     @Nested
@@ -527,8 +535,105 @@ class TestCrosswordGameController @Autowired constructor(
 
         @Nested
         @DisplayName("Positive")
+        @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+        @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Positive {
-            //
+            lateinit var authenticatedUser: MockedAuthenticatedUser
+            lateinit var crosswordSavedInDb: CrosswordGameDTO
+
+            @BeforeEach
+            fun beforeEach() {
+                authenticatedUser = mockAuthenticatedUser()
+                crosswordSavedInDb = gameMapper.toCrosswordDTO(
+                    mockCrosswordGames.seedFromJSONFile(
+                        user = userMapper.toEntity(authenticatedUser.userInfo)
+                    )[0]
+                )
+            }
+
+            @AfterEach
+            fun afterEach() {
+                userRepository.deleteById(authenticatedUser.userInfo.id)
+            }
+
+            private fun finishCrosswordGame(
+                finalWord: String = crosswordSavedInDb.properAnswers.finalWord,
+                numberOfProperAnswers: Int = crosswordSavedInDb.properAnswers.questions.size
+            ): FinishedGameResponse {
+                val request = gameRequestFactory.finishCrosswordGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = crosswordSavedInDb.id,
+                    userAnswers = CrosswordUserAnswersData(
+                        answer = finalWord,
+                        questionsAnswers = crosswordSavedInDb.properAnswers.questions.entries.mapIndexed { index, (questionId, answer) ->
+                            CrosswordUserAnswersQuestionData(
+                                id = questionId,
+                                word = if (index < numberOfProperAnswers) answer else "__invalid__"
+                            )
+                        }.toSet()
+                    )
+                )
+
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
+
+                return getResponseBody<FinishedGameResponse>(response)
+            }
+
+            @Test
+            fun `200 - Game should be marked as COMPLETED`() {
+                val response = finishCrosswordGame(
+                    numberOfProperAnswers = 11
+                )
+
+                response.grade shouldBe GameGrade.A
+            }
+
+            @Test
+            fun `200 - Grade can be achieved - S`() {
+                val response = finishCrosswordGame()
+
+                response.finalScore shouldBe 100.0
+                response.grade shouldBe GameGrade.S
+            }
+
+            @Test
+            fun `200 - Grade can be achieved - A`() {
+                val response = finishCrosswordGame(
+                    numberOfProperAnswers = 11
+                )
+
+                response.grade shouldBe GameGrade.A
+            }
+
+            @Test
+            fun `200 - Grade can be achieved - B`() {
+                val response = finishCrosswordGame(
+                    numberOfProperAnswers = 9
+                )
+
+                response.grade shouldBe GameGrade.B
+            }
+
+            @Test
+            fun `200 - Grade can be achieved - C`() {
+                val response = finishCrosswordGame(
+                    numberOfProperAnswers = 7
+                )
+
+                response.grade shouldBe GameGrade.C
+            }
+
+            @Test
+            fun `200 - Grade can be achieved - D`() {
+                val response = finishCrosswordGame(
+                    numberOfProperAnswers = 0
+                )
+
+                response.grade shouldBe GameGrade.D
+            }
         }
 
         @Nested
@@ -543,18 +648,22 @@ class TestCrosswordGameController @Autowired constructor(
         val difficulty = GameDifficulty.HARD
     }
 
+    private fun mockAuthenticatedUser(): MockedAuthenticatedUser {
+        return mockAuthenticatedUser(
+            languages = mapOf(
+                CrosswordDefaultValues.language to LanguageProficiencyLevel.C1
+            )
+        )
+    }
+
     private fun mockStartedCrosswordGame(): Triple<
             MockedAuthenticatedUser,
             StartedCrosswordGameResponse,
             CrosswordGameDTO
             > {
         // 1. Create a user
-        val authenticatedUser = mockAuthenticatedUser(
-            languages = mapOf(
-                CrosswordDefaultValues.language to LanguageProficiencyLevel.C1
-            )
+        val authenticatedUser = mockAuthenticatedUser()
 
-        )
         // 2. Assign exactly 12 words to the user (to be used in the crossword game on Hard difficulty)
         loadWordsFromResourceFile(
             user = userMapper.toEntity(authenticatedUser.userInfo),
