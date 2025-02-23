@@ -48,6 +48,7 @@ class TestCrosswordGameController @Autowired constructor(
     objectMapper: ObjectMapper,
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
+
     private val wordRepository: WordRepository,
     private val userMapper: UserMapper,
     private val gameMapper: GameMapper,
@@ -70,53 +71,15 @@ class TestCrosswordGameController @Autowired constructor(
         @RepeatedTest(100)
         @Disabled("This test is disabled for automatic execution. Run manually when needed.")
         fun `Crossword can be properly stared - function encapsulates the entire process`() {
-            lateinit var authenticatedUser: MockedAuthenticatedUser
-            lateinit var crosswordSentToUser: StartedCrosswordGameResponse
-
-            val crosswordLanguage = LanguageName.ENGLISH
-            val crosswordDifficulty = GameDifficulty.HARD
-
-            // 1. Create a user
-            authenticatedUser = mockAuthenticatedUser(
-                languages = mapOf(
-                    crosswordLanguage to LanguageProficiencyLevel.C1
-                )
-
-            )
-            // 2. Assign exactly 12 words to the user (to be used in the crossword game on Hard difficulty)
-            loadWordsFromResourceFile(
-                user = userMapper.toEntity(authenticatedUser.userInfo),
-                wordsRepository = wordRepository
-            )
-            // 3. Make a request to start a new crossword game
-            val request = gameRequestFactory.startGameRequest(
-                gameType = GameType.CROSSWORD,
-                language = crosswordLanguage,
-                difficulty = crosswordDifficulty,
-                authenticatedUser = authenticatedUser,
-            )
-            val response = mockMvc.perform(request).andReturn().let {
-                it.response.status shouldBe HttpStatus.OK.value()
-                it.response
-            }
-
-            // 4. Retrieve the response body
-            crosswordSentToUser = getResponseBody<StartedCrosswordGameResponse>(response)
-
-            // 5. Retrieve the crossword game from the database
-            var crosswordSavedInDb: CrosswordGameDTO = gameMapper.toCrosswordDTO(
-                gameRepository
-                    .findAllForUser(authenticatedUser.userInfo.id)
-                    .first()
-            )
+            val (authenticatedUser, crosswordSentToUser, crosswordSavedInDb) = mockStartedCrosswordGame()
 
             crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
 
             crosswordSavedInDb.grade shouldBe GameGrade.NA
             crosswordSavedInDb.type shouldBe GameType.CROSSWORD
             crosswordSavedInDb.status shouldBe GameStatus.IN_PROGRESS
-            crosswordSavedInDb.language shouldBe crosswordLanguage
-            crosswordSavedInDb.difficulty shouldBe crosswordDifficulty
+            crosswordSavedInDb.language shouldBe CrosswordDefaultValues.language
+            crosswordSavedInDb.difficulty shouldBe CrosswordDefaultValues.difficulty
 
             crosswordSavedInDb.user.id shouldBe authenticatedUser.userInfo.id
 
@@ -236,44 +199,13 @@ class TestCrosswordGameController @Autowired constructor(
             lateinit var crosswordSentToUser: StartedCrosswordGameResponse
             lateinit var crosswordSavedInDb: CrosswordGameDTO
 
-            val crosswordLanguage = LanguageName.ENGLISH
-            val crosswordDifficulty = GameDifficulty.HARD
-
             @BeforeAll
             fun beforeAll() {
-                // 1. Create a user
-                authenticatedUser = mockAuthenticatedUser(
-                    languages = mapOf(
-                        crosswordLanguage to LanguageProficiencyLevel.C1
-                    )
-
-                )
-                // 2. Assign exactly 12 words to the user (to be used in the crossword game on Hard difficulty)
-                loadWordsFromResourceFile(
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
-                    wordsRepository = wordRepository
-                )
-                // 3. Make a request to start a new crossword game
-                val request = gameRequestFactory.startGameRequest(
-                    gameType = GameType.CROSSWORD,
-                    language = crosswordLanguage,
-                    difficulty = crosswordDifficulty,
-                    authenticatedUser = authenticatedUser,
-                )
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                    it.response
+                with(mockStartedCrosswordGame()) {
+                    authenticatedUser = first
+                    crosswordSentToUser = second
+                    crosswordSavedInDb = third
                 }
-
-                // 4. Retrieve the response body
-                crosswordSentToUser = getResponseBody<StartedCrosswordGameResponse>(response)
-
-                // 5. Retrieve the crossword game from the database
-                crosswordSavedInDb = gameMapper.toCrosswordDTO(
-                    gameRepository
-                        .findAllForUser(authenticatedUser.userInfo.id)
-                        .first()
-                )
             }
 
             @Test
@@ -286,8 +218,8 @@ class TestCrosswordGameController @Autowired constructor(
                 crosswordSavedInDb.grade shouldBe GameGrade.NA
                 crosswordSavedInDb.type shouldBe GameType.CROSSWORD
                 crosswordSavedInDb.status shouldBe GameStatus.IN_PROGRESS
-                crosswordSavedInDb.language shouldBe crosswordLanguage
-                crosswordSavedInDb.difficulty shouldBe crosswordDifficulty
+                crosswordSavedInDb.language shouldBe CrosswordDefaultValues.language
+                crosswordSavedInDb.difficulty shouldBe CrosswordDefaultValues.difficulty
 
                 crosswordSavedInDb.user.id shouldBe authenticatedUser.userInfo.id
             }
@@ -590,7 +522,7 @@ class TestCrosswordGameController @Autowired constructor(
     }
 
     @Nested
-    @DisplayName("[POST] /api/v1/games/crossword/start - start a new crossword game")
+    @DisplayName("[POST] /api/v1/games/crossword/finish - start a new crossword game")
     inner class FinishCrosswordGame {
 
         @Nested
@@ -604,5 +536,56 @@ class TestCrosswordGameController @Autowired constructor(
         inner class Negative {
             //
         }
+    }
+
+    private object CrosswordDefaultValues {
+        val language = LanguageName.ENGLISH
+        val difficulty = GameDifficulty.HARD
+    }
+
+    private fun mockStartedCrosswordGame(): Triple<
+            MockedAuthenticatedUser,
+            StartedCrosswordGameResponse,
+            CrosswordGameDTO
+            > {
+        // 1. Create a user
+        val authenticatedUser = mockAuthenticatedUser(
+            languages = mapOf(
+                CrosswordDefaultValues.language to LanguageProficiencyLevel.C1
+            )
+
+        )
+        // 2. Assign exactly 12 words to the user (to be used in the crossword game on Hard difficulty)
+        loadWordsFromResourceFile(
+            user = userMapper.toEntity(authenticatedUser.userInfo),
+            wordsRepository = wordRepository
+        )
+        // 3. Make a request to start a new crossword game
+        val request = gameRequestFactory.startGameRequest(
+            gameType = GameType.CROSSWORD,
+            language = CrosswordDefaultValues.language,
+            difficulty = CrosswordDefaultValues.difficulty,
+            authenticatedUser = authenticatedUser,
+        )
+        val response = mockMvc.perform(request).andReturn().let {
+            it.response.status shouldBe HttpStatus.OK.value()
+            it.response
+        }
+
+        // 4. Retrieve the response body
+        val crosswordSentToUser = getResponseBody<StartedCrosswordGameResponse>(response)
+
+        // 5. Retrieve the crossword game from the database
+        val crosswordSavedInDb = gameMapper.toCrosswordDTO(
+            gameRepository
+                .findAllForUser(authenticatedUser.userInfo.id)
+                .first()
+        )
+
+        return Triple(
+            authenticatedUser,
+            crosswordSentToUser,
+            crosswordSavedInDb
+        )
     }
 }
