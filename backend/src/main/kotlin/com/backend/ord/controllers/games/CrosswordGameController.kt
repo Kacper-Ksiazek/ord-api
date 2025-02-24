@@ -7,7 +7,6 @@ import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameRespon
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
 import com.backend.ord.config.AnswerScore
 import com.backend.ord.config.ComponentsPointsRatio
-import com.backend.ord.config.ScoringResult
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
@@ -142,12 +141,14 @@ class CrosswordGameController(
         )
 
         // 5. Compute points received from the final word
+        val reviewedFinalAnswer: Pair<String, AnswerScore> = GameReviewingUtils.getPointsForUserAnswer(
+            userAnswer = body.userAnswers.answer,
+            correctAnswer = game.properAnswers.finalWord,
+            difficulty = game.difficulty
+        )
+
         val pointsForFinalAnswer: Int = GameReviewingUtils.computeFinalScoreComponent(
-            receivedScoreForThisComponent = GameReviewingUtils.getPointsForUserAnswer(
-                userAnswer = body.userAnswers.answer,
-                correctAnswer = game.properAnswers.finalWord,
-                difficulty = game.difficulty
-            ).second.value,
+            receivedScoreForThisComponent = reviewedFinalAnswer.second.value,
             maxScoreForThisComponent = AnswerScore.CORRECT.value,
             componentPointsRation = ComponentsPointsRatio.Crossword.FINAL_WORD
         )
@@ -174,9 +175,9 @@ class CrosswordGameController(
             FinishedCrosswordGameResponse(
                 totalPoints = totalPoints,
                 properFinalWord = ProperAnswer(
-                    expectedAnswer = "TODO",
-                    userAnswer = "TODO",
-                    result = ScoringResult.INCORRECT
+                    expectedAnswer = game.properAnswers.finalWord,
+                    userAnswer = body.userAnswers.answer,
+                    result = reviewedFinalAnswer.second.resultName
                 ),
                 properQuestionsAnswers = reviewedQuestions.map { (word, score) ->
                     val userAnswer = body.userAnswers.questionsAnswers.find { it.word == word }?.word

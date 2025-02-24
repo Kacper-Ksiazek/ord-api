@@ -20,5 +20,4 @@ class FinishedCrosswordGameResponse(
         properFinalWord = properFinalWord,
         properQuestionsAnswers = properQuestionsAnswers.toSet()
     )
-
 }
