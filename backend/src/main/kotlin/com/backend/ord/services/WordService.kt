@@ -80,6 +80,6 @@ interface WordService : UserResourceService<Word> {
     fun updatePointsForManyWords(
         userId: UUID,
         language: LanguageName,
-        wordsAndPoints: List<Pair<String, AnswerScore>>
+        wordsAndPoints: List<Triple<UUID, String, AnswerScore>>
     )
 }

@@ -2,6 +2,7 @@ package com.backend.ord.controllers.games
 
 import com.backend.ord.api.requests.games.data.CrosswordToFinishRequestData
 import com.backend.ord.api.requests.games.data.StartGameRequestData
+import com.backend.ord.api.responses.games.IdentifiableProperAnswer
 import com.backend.ord.api.responses.games.ProperAnswer
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/games/crossword")
@@ -122,33 +124,35 @@ class CrosswordGameController(
         }
 
         // 3. Check all words forming a crossword
-        val reviewedQuestions: List<Pair<String, AnswerScore>> =
+        val reviewedQuestions: List<Triple<UUID, String, AnswerScore>> =
             game.properAnswers.questions.entries.map { properAnswer ->
-                return@map GameReviewingUtils.getPointsForUserAnswer(
+                val score = GameReviewingUtils.getPointsForUserAnswer(
                     difficulty = game.difficulty,
                     correctAnswer = properAnswer.value,
                     userAnswer = body.userAnswers.questionsAnswers.find {
                         it.id == properAnswer.key
                     }?.word,
                 )
+
+                return@map Triple(properAnswer.key, properAnswer.value, score)
             }
 
         // 4. Compute points received from words forming a crossword
         val pointsForQuestions: Int = GameReviewingUtils.computeFinalScoreComponent(
-            receivedScoreForThisComponent = reviewedQuestions.sumOf { it.second.value },
+            receivedScoreForThisComponent = reviewedQuestions.sumOf { it.third.value },
             maxScoreForThisComponent = game.instruction.questions.size * AnswerScore.CORRECT.value,
             componentPointsRation = ComponentsPointsRatio.Crossword.QUESTIONS
         )
 
         // 5. Compute points received from the final word
-        val reviewedFinalAnswer: Pair<String, AnswerScore> = GameReviewingUtils.getPointsForUserAnswer(
+        val reviewedFinalAnswer: AnswerScore = GameReviewingUtils.getPointsForUserAnswer(
             userAnswer = body.userAnswers.answer,
             correctAnswer = game.properAnswers.finalWord,
             difficulty = game.difficulty
         )
 
         val pointsForFinalAnswer: Int = GameReviewingUtils.computeFinalScoreComponent(
-            receivedScoreForThisComponent = reviewedFinalAnswer.second.value,
+            receivedScoreForThisComponent = reviewedFinalAnswer.value,
             maxScoreForThisComponent = AnswerScore.CORRECT.value,
             componentPointsRation = ComponentsPointsRatio.Crossword.FINAL_WORD
         )
@@ -177,12 +181,13 @@ class CrosswordGameController(
                 properFinalWord = ProperAnswer(
                     expectedAnswer = game.properAnswers.finalWord,
                     userAnswer = body.userAnswers.answer,
-                    result = reviewedFinalAnswer.second.resultName
+                    result = reviewedFinalAnswer.resultName
                 ),
-                properQuestionsAnswers = reviewedQuestions.map { (word, score) ->
+                properQuestionsAnswers = reviewedQuestions.map { (id, word, score) ->
                     val userAnswer = body.userAnswers.questionsAnswers.find { it.word == word }?.word
 
-                    ProperAnswer(
+                    IdentifiableProperAnswer(
+                        id = id,
                         expectedAnswer = word,
                         userAnswer = userAnswer,
                         result = score.resultName

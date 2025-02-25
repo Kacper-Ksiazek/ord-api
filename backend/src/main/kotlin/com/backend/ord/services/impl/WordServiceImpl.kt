@@ -179,16 +179,16 @@ class WordServiceImpl(
     override fun updatePointsForManyWords(
         userId: UUID,
         language: LanguageName,
-        wordsAndPoints: List<Pair<String, AnswerScore>>
+        wordsAndPoints: List<Triple<UUID, String, AnswerScore>>
     ) {
         val wordsToSave: MutableSet<Word> = mutableSetOf()
 
         repository.findAllWordByTheirOrigins(
-            origins = wordsAndPoints.map { it.first }.toSet(),
+            origins = wordsAndPoints.map { it.second }.toSet(),
             language = language,
             userId = userId
         ).forEach { word ->
-            val points = wordsAndPoints.find { it.first == word.origin }?.second
+            val points = wordsAndPoints.find { it.second == word.origin }?.third
                 ?: return@forEach
 
             word.points += points.convertToDBPoints().value

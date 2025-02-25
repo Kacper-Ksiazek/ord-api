@@ -14,23 +14,20 @@ object GameReviewingUtils {
         userAnswer: String?,
         correctAnswer: String,
         difficulty: GameDifficulty
-    ): Pair<String, AnswerScore> {
+    ): AnswerScore {
         if (userAnswer == null) {
-            return Pair(correctAnswer, AnswerScore.INCORRECT)
+            return AnswerScore.INCORRECT
         }
 
         // Compare two words letter by letter and count the number of non-matching letters
         val incorrectLettersCount = (correctAnswer.lowercase() zip userAnswer.lowercase())
             .count { (correctChar, userChar) -> correctChar != userChar }
 
-        return Pair(
-            correctAnswer,
-            when {
-                incorrectLettersCount == 0 -> AnswerScore.CORRECT
-                incorrectLettersCount <= difficulty.getNumberOfAllowedMistakes() -> AnswerScore.HALF_CORRECT
-                else -> AnswerScore.INCORRECT
-            }
-        )
+        return when {
+            incorrectLettersCount == 0 -> AnswerScore.CORRECT
+            incorrectLettersCount <= difficulty.getNumberOfAllowedMistakes() -> AnswerScore.HALF_CORRECT
+            else -> AnswerScore.INCORRECT
+        }
     }
 
     /**
