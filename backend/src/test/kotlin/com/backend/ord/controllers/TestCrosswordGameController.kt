@@ -691,6 +691,19 @@ class TestCrosswordGameController @Autowired constructor(
                 }
             }
 
+            @Test
+            fun `200 - Mistakes in the final answer should be corrected properly`() {
+                val alteredFinalAnswer = "altered_final_answer"
+
+                val response = finishCrosswordGame(
+                    finalWord = alteredFinalAnswer
+                )
+
+                response.properFinalWord.expectedAnswer shouldBe crosswordSavedInDb.properAnswers.finalWord
+                response.properFinalWord.userAnswer shouldBe alteredFinalAnswer
+                response.properFinalWord.result shouldBe ScoringResult.INCORRECT
+            }
+
             // Prepare test for points calculation
         }
 
