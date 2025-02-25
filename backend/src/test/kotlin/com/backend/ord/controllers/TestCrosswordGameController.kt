@@ -4,6 +4,7 @@ import com.backend.ord.api.requests.games.data.CrosswordUserAnswersData
 import com.backend.ord.api.requests.games.data.CrosswordUserAnswersQuestionData
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
+import com.backend.ord.config.ScoringResult
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.request_factories.GameRequestFactory
 import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
@@ -650,6 +651,13 @@ class TestCrosswordGameController @Autowired constructor(
             @Test
             fun `200 - Mistakes in user's answer should be corrected properly`() {
                 var perfectAnswers = getPerfectAnswersForQuestions()
+
+                /**
+                 * Triple of:
+                 * 1. Question ID
+                 * 2. Proper answer
+                 * 3. Altered answer
+                 */
                 val alteredAnswers: MutableSet<Triple<UUID, String, String>> = mutableSetOf()
 
                 perfectAnswers.shuffled().take(3).forEachIndexed { index, it ->
@@ -673,7 +681,17 @@ class TestCrosswordGameController @Autowired constructor(
                 val response = finishCrosswordGame(
                     questionsAnswers = alteredAnswersForRequest
                 )
+
+                response.properQuestionsAnswers.forEach { properAnswer ->
+                    val alteredAnswer = alteredAnswers.find { it.first == properAnswer.id }
+                    if (alteredAnswer == null) return@forEach
+
+                    properAnswer.expectedAnswer shouldBe alteredAnswer.second
+                    properAnswer.result shouldBe ScoringResult.INCORRECT
+                }
             }
+
+            // Prepare test for points calculation
         }
 
         @Nested
