@@ -4,7 +4,6 @@ import com.backend.ord.api.requests.games.data.CrosswordUserAnswersData
 import com.backend.ord.api.requests.games.data.CrosswordUserAnswersQuestionData
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
-import com.backend.ord.config.ScoringResult
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.request_factories.GameRequestFactory
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
@@ -13,6 +12,7 @@ import com.backend.ord.domain.application.games.Coordinates
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.mappers.GameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.backend.ord.enums.application.game.ScoringResult
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameStatus
@@ -650,7 +650,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Mistakes in user's answer should be corrected properly`() {
-                var perfectAnswers = getPerfectAnswersForQuestions()
+                var perfectAnswers: Set<CrosswordUserAnswersQuestionData> = getPerfectAnswersForQuestions()
 
                 /**
                  * Triple of:
