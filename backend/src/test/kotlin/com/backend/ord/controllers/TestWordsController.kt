@@ -15,8 +15,8 @@ import com.backend.ord.controllers.request_factories.WordRequestFactory
 import com.backend.ord.controllers.request_factories.data.WordDataChanges
 import com.backend.ord.controllers.request_factories.data.compareWithDefaultCreateWordData
 import com.backend.ord.controllers.request_factories.data.compareWithDefaultUpdateWordData
-import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
+import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
 import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.embedded.ExampleSentence
 import com.backend.ord.domain.persistence.entities.Bank

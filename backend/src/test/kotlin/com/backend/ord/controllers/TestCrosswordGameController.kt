@@ -7,8 +7,8 @@ import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameRespons
 import com.backend.ord.config.ScoringResult
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.request_factories.GameRequestFactory
-import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
+import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
 import com.backend.ord.domain.application.games.Coordinates
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.mappers.GameMapper
