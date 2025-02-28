@@ -705,6 +705,20 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             // Prepare test for points calculation
+            @Test
+            fun `200 - Points should be properly assigned - CORRECT`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - Points should be properly assigned - HALF_CORRECT`() {
+                // TODO
+            }
+
+            @Test
+            fun `200 - Points should be properly assigned - INCORRECT`() {
+                // TODO
+            }
         }
 
         @Nested
