@@ -1,6 +1,6 @@
 package com.backend.ord.api.responses.games
 
-import com.backend.ord.config.ScoringResult
+import com.backend.ord.enums.application.game.ScoringResult
 
 data class ProperAnswer(
     val expectedAnswer: String,

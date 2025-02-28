@@ -6,7 +6,6 @@ import com.backend.ord.api.responses.games.IdentifiableProperAnswer
 import com.backend.ord.api.responses.games.ProperAnswer
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
-import com.backend.ord.config.AnswerScore
 import com.backend.ord.config.ComponentsPointsRatio
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
@@ -14,6 +13,7 @@ import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordIn
 import com.backend.ord.domain.persistence.entities.Game
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.mappers.GameMapper
+import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.game.GameStatus
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.exceptions.REST.BadRequestException
