@@ -1,18 +1,21 @@
 package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.games.data.CrosswordUserAnswersData
-import com.backend.ord.api.requests.games.data.CrosswordUserAnswersQuestionData
+import com.backend.ord.api.requests.games.data.WordUserAnswer
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.request_factories.GameRequestFactory
+import com.backend.ord.controllers.utils_for_testing.AlteredProperAnswer
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.controllers.utils_for_testing.mockAnswersWithMistakes
+import com.backend.ord.controllers.utils_for_testing.toRequestBody
 import com.backend.ord.domain.application.games.Coordinates
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.mappers.GameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
-import com.backend.ord.enums.application.game.ScoringResult
+import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameStatus
@@ -44,7 +47,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import java.util.*
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -560,11 +562,11 @@ class TestCrosswordGameController @Autowired constructor(
 
             private fun getPerfectAnswersForQuestions(
                 numberOfProperAnswers: Int? = null
-            ): Set<CrosswordUserAnswersQuestionData> {
+            ): Set<WordUserAnswer> {
                 val limit = numberOfProperAnswers ?: crosswordSavedInDb.properAnswers.questions.size
 
                 return crosswordSavedInDb.properAnswers.questions.entries.mapIndexed { index, (questionId, answer) ->
-                    CrosswordUserAnswersQuestionData(
+                    WordUserAnswer(
                         id = questionId,
                         word = if (index < limit) answer else "__invalid__"
                     )
@@ -574,7 +576,7 @@ class TestCrosswordGameController @Autowired constructor(
             private fun finishCrosswordGame(
                 numberOfProperAnswers: Int? = null,
                 finalWord: String = crosswordSavedInDb.properAnswers.finalWord,
-                questionsAnswers: Set<CrosswordUserAnswersQuestionData> = getPerfectAnswersForQuestions(
+                questionsAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions(
                     numberOfProperAnswers
                 )
             ): FinishedCrosswordGameResponse {
@@ -650,45 +652,20 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Mistakes in user's answer should be corrected properly`() {
-                var perfectAnswers: Set<CrosswordUserAnswersQuestionData> = getPerfectAnswersForQuestions()
+                var perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
-                /**
-                 * Triple of:
-                 * 1. Question ID
-                 * 2. Proper answer
-                 * 3. Altered answer
-                 */
-                val alteredAnswers: MutableSet<Triple<UUID, String, String>> = mutableSetOf()
-
-                perfectAnswers.shuffled().take(3).forEachIndexed { index, it ->
-                    alteredAnswers.add(
-                        Triple(
-                            it.id,
-                            it.word,
-                            "altered_answer_${index}"
-                        )
+                val alteredAnswers: Set<AlteredProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
+                    mistakes = mapOf(
+                        AnswerScore.INCORRECT to 3,
                     )
-                }
-
-                val alteredAnswersForRequest = perfectAnswers.toMutableSet().map { answer ->
-                    val correspondingAlteredAnswer = alteredAnswers.find { it.first == answer.id }
-
-                    if (correspondingAlteredAnswer == null) return@map answer
-
-                    return@map answer.copy(word = correspondingAlteredAnswer.third)
-                }.toSet()
-
-                val response = finishCrosswordGame(
-                    questionsAnswers = alteredAnswersForRequest
                 )
 
-                response.properQuestionsAnswers.forEach { properAnswer ->
-                    val alteredAnswer = alteredAnswers.find { it.first == properAnswer.id }
-                    if (alteredAnswer == null) return@forEach
+                val response = finishCrosswordGame(
+                    questionsAnswers = alteredAnswers.toRequestBody(perfectAnswers)
+                )
 
-                    properAnswer.expectedAnswer shouldBe alteredAnswer.second
-                    properAnswer.result shouldBe ScoringResult.INCORRECT
-                }
+                assertPointsForMistakesWereAssignedProperly(response, alteredAnswers)
+
             }
 
             @Test
@@ -701,7 +678,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 response.properFinalWord.expectedAnswer shouldBe crosswordSavedInDb.properAnswers.finalWord
                 response.properFinalWord.userAnswer shouldBe alteredFinalAnswer
-                response.properFinalWord.result shouldBe ScoringResult.INCORRECT
+                response.properFinalWord.score shouldBe AnswerScore.INCORRECT
             }
 
             // Prepare test for points calculation
@@ -718,6 +695,19 @@ class TestCrosswordGameController @Autowired constructor(
             @Test
             fun `200 - Points should be properly assigned - INCORRECT`() {
                 // TODO
+            }
+
+            private fun assertPointsForMistakesWereAssignedProperly(
+                response: FinishedCrosswordGameResponse,
+                alteredAnswers: Set<AlteredProperAnswer>
+            ) {
+                response.properQuestionsAnswers.forEach { properAnswer ->
+                    val alteredAnswer = alteredAnswers.find { it.questionId == properAnswer.id }
+                    if (alteredAnswer == null) return@forEach
+
+                    properAnswer.expectedAnswer shouldBe alteredAnswer.originalAnswer
+                    properAnswer.score shouldBe alteredAnswer.desiredScore
+                }
             }
         }
 

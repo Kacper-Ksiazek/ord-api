@@ -1,7 +1,7 @@
 package com.backend.ord.controllers.utils_for_testing
 
-import com.backend.ord.api.requests.games.data.CrosswordUserAnswersQuestionData
-import com.backend.ord.enums.application.game.ScoringResult
+import com.backend.ord.api.requests.games.data.WordUserAnswer
+import com.backend.ord.enums.application.game.AnswerScore
 import jakarta.validation.constraints.Min
 import java.util.*
 
@@ -10,13 +10,13 @@ data class AlteredProperAnswer(
     val originalAnswer: String,
     val alteredAnswer: String,
 
-    val desiredResult: ScoringResult
+    val desiredScore: AnswerScore
 )
 
-private fun CrosswordUserAnswersQuestionData.makeArtificialMistake(desiredResult: ScoringResult): AlteredProperAnswer {
+private fun WordUserAnswer.makeArtificialMistake(desiredResult: AnswerScore): AlteredProperAnswer {
     val alteredAnswer = when (desiredResult) {
-        ScoringResult.INCORRECT -> "x".repeat(word.length)
-        ScoringResult.HALF_CORRECT -> "x${word.slice(1 until word.length)}"
+        AnswerScore.INCORRECT -> "x".repeat(word.length)
+        AnswerScore.HALF_CORRECT -> "x${word.slice(1 until word.length)}"
         else -> {
             throw IllegalArgumentException("desiredResult must to be either INCORRECT or HALF_CORRECT")
         }
@@ -26,12 +26,12 @@ private fun CrosswordUserAnswersQuestionData.makeArtificialMistake(desiredResult
         questionId = id,
         originalAnswer = word,
         alteredAnswer = alteredAnswer,
-        desiredResult = desiredResult
+        desiredScore = desiredResult
     )
 }
 
-fun Set<CrosswordUserAnswersQuestionData>.mockAnswersWithMistakes(
-    mistakes: Map<ScoringResult, @Min(0) Int>
+fun Set<WordUserAnswer>.mockAnswersWithMistakes(
+    mistakes: Map<AnswerScore, @Min(0) Int>
 ): Set<AlteredProperAnswer> {
     if (mistakes.isEmpty()) {
         throw IllegalArgumentException("Mistakes set cannot be empty")
@@ -46,21 +46,24 @@ fun Set<CrosswordUserAnswersQuestionData>.mockAnswersWithMistakes(
 
     for ((scoringResult, mistakesCount) in mistakes) {
         for (i in 0 until mistakesCount) {
-            val question: CrosswordUserAnswersQuestionData = remainingQuestions.random()
-            val alteredAnswer = question.properAnswer.alterAnswer(scoringResult)
+            val question: WordUserAnswer = remainingQuestions.random()
 
             result.add(
-                AlteredProperAnswer(
-                    questionId = question.id,
-                    originalAnswer = question.word,
-                    alteredAnswer = alteredAnswer
-                )
+                question.makeArtificialMistake(scoringResult)
             )
 
             remainingQuestions.remove(question)
         }
     }
 
-
     return result.toSet()
+}
+
+fun Set<AlteredProperAnswer>.toRequestBody(perfectAnswers: Set<WordUserAnswer>): Set<WordUserAnswer> {
+    return perfectAnswers.toMutableSet().map { answer ->
+        val correspondingAlteredAnswer = find { it.questionId == answer.id }
+
+        if (correspondingAlteredAnswer == null) answer
+        else answer.copy(word = correspondingAlteredAnswer.alteredAnswer)
+    }.toSet()
 }
