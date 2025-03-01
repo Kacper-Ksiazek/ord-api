@@ -1,6 +1,5 @@
 package com.backend.ord.utils.games
 
-import com.backend.ord.config.GamesConfig
 import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.getNumberOfAllowedMistakes
@@ -35,18 +34,13 @@ object GameReviewingUtils {
      * Compute the part of the final score for one aspect of the game
      */
     fun computeFinalScoreComponent(
-        /**
-         * Relative metric of points received for this component. They are not expressed in terms of percentage, are
-         * relative to the maximum points for this component, which varies based on the component and the game type.
-         */
-        receivedScoreForThisComponent: Double,
-        maxScoreForThisComponent: Double,
-        componentPointsRation: Percentage = GamesConfig.Points.ScoreFactorsRatio.Crossword.FINAL_WORD,
+        receivedPoints: Double,
+        maxPoints: Double,
+        moduleRatio: Percentage = Percentage(100),
         totalPointsForAllModules: Int = 100
     ): Int {
-        val componentScoring: Double = receivedScoreForThisComponent.toDouble() / maxScoreForThisComponent
-        val totalAvailablePoints: Double = componentPointsRation * totalPointsForAllModules
+        val points: Double = (receivedPoints / maxPoints) * totalPointsForAllModules
 
-        return (componentScoring * totalAvailablePoints).toInt()
+        return (moduleRatio * points).toInt()
     }
 }

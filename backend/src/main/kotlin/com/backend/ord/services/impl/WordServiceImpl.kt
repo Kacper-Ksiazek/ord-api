@@ -7,6 +7,7 @@ import com.backend.ord.api.requests.word.enums.toggleProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.config.GamesConfig
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.enums.application.game.AnswerScore
@@ -192,6 +193,7 @@ class WordServiceImpl(
                 ?: return@forEach
 
             word.points += points.dbPoints
+            word.isCompleted = word.points >= GamesConfig.Points.COMPLETE_WORD_THRESHOLD
 
             wordsToSave.add(word)
         }

@@ -6,6 +6,7 @@ import com.backend.ord.api.responses.games.IdentifiableProperAnswer
 import com.backend.ord.api.responses.games.ProperAnswer
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
+import com.backend.ord.config.GamesConfig
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
@@ -138,8 +139,9 @@ class CrosswordGameController(
 
         // 4. Compute points received from words forming a crossword
         val pointsForQuestions: Int = GameReviewingUtils.computeFinalScoreComponent(
-            receivedScoreForThisComponent = reviewedQuestions.sumOf { it.third.wage },
-            maxScoreForThisComponent = game.instruction.questions.size * AnswerScore.CORRECT.wage,
+            receivedPoints = reviewedQuestions.sumOf { it.third.wage },
+            maxPoints = game.instruction.questions.size * AnswerScore.CORRECT.wage,
+            moduleRatio = GamesConfig.Points.ScoreFactorsRatio.Crossword.QUESTIONS
         )
 
         // 5. Compute points received from the final word
@@ -149,13 +151,14 @@ class CrosswordGameController(
             difficulty = game.difficulty
         )
 
-        val pointsForFinalAnswer: Int = GameReviewingUtils.computeFinalScoreComponent(
-            receivedScoreForThisComponent = reviewedFinalAnswer.wage,
-            maxScoreForThisComponent = AnswerScore.CORRECT.wage,
+        val pointsForFinalWord: Int = GameReviewingUtils.computeFinalScoreComponent(
+            receivedPoints = reviewedFinalAnswer.wage,
+            maxPoints = AnswerScore.CORRECT.wage,
+            moduleRatio = GamesConfig.Points.ScoreFactorsRatio.Crossword.FINAL_WORD
         )
 
         // 6. Add points together and compute the total score
-        val totalPoints: Int = pointsForQuestions + pointsForFinalAnswer
+        val totalPoints: Int = pointsForQuestions + pointsForFinalWord
 
         // 7. Update the game in the database
         gameService.finishGame(
