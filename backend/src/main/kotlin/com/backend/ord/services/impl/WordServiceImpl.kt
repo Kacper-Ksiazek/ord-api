@@ -188,10 +188,10 @@ class WordServiceImpl(
             language = language,
             userId = userId
         ).forEach { word ->
-            val points = wordsAndPoints.find { it.second == word.origin }?.third
+            val points: AnswerScore = wordsAndPoints.find { it.second == word.origin }?.third
                 ?: return@forEach
 
-            word.points += points.convertToDBPoints().value
+            word.points += points.dbPoints
 
             wordsToSave.add(word)
         }

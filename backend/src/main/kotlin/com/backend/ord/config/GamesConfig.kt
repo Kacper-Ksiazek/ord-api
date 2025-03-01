@@ -9,7 +9,7 @@ object GamesConfig {
     object Points {
         const val COMPLETE_WORD_THRESHOLD = 7
 
-        object Wages {
+        object DatabaseValues {
             const val CORRECT_ANSWER = 2
             const val INCORRECT_ANSWER = -1
             const val HALF_CORRECT_ANSWER = 1
@@ -24,6 +24,4 @@ object GamesConfig {
 
         }
     }
-
-
 }

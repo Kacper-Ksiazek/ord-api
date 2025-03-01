@@ -1,5 +1,6 @@
 package com.backend.ord.utils.games
 
+import com.backend.ord.config.GamesConfig
 import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.getNumberOfAllowedMistakes
@@ -40,7 +41,7 @@ object GameReviewingUtils {
          */
         receivedScoreForThisComponent: Double,
         maxScoreForThisComponent: Double,
-        componentPointsRation: Percentage,
+        componentPointsRation: Percentage = GamesConfig.Points.ScoreFactorsRatio.Crossword.FINAL_WORD,
         totalPointsForAllModules: Int = 100
     ): Int {
         val componentScoring: Double = receivedScoreForThisComponent.toDouble() / maxScoreForThisComponent

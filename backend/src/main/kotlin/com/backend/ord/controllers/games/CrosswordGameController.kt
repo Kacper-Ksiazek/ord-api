@@ -6,7 +6,6 @@ import com.backend.ord.api.responses.games.IdentifiableProperAnswer
 import com.backend.ord.api.responses.games.ProperAnswer
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
-import com.backend.ord.config.ComponentsPointsRatio
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
@@ -139,9 +138,8 @@ class CrosswordGameController(
 
         // 4. Compute points received from words forming a crossword
         val pointsForQuestions: Int = GameReviewingUtils.computeFinalScoreComponent(
-            receivedScoreForThisComponent = reviewedQuestions.sumOf { it.third.value },
-            maxScoreForThisComponent = game.instruction.questions.size * AnswerScore.CORRECT.value,
-            componentPointsRation = ComponentsPointsRatio.Crossword.QUESTIONS
+            receivedScoreForThisComponent = reviewedQuestions.sumOf { it.third.wage },
+            maxScoreForThisComponent = game.instruction.questions.size * AnswerScore.CORRECT.wage,
         )
 
         // 5. Compute points received from the final word
@@ -152,9 +150,8 @@ class CrosswordGameController(
         )
 
         val pointsForFinalAnswer: Int = GameReviewingUtils.computeFinalScoreComponent(
-            receivedScoreForThisComponent = reviewedFinalAnswer.value,
-            maxScoreForThisComponent = AnswerScore.CORRECT.value,
-            componentPointsRation = ComponentsPointsRatio.Crossword.FINAL_WORD
+            receivedScoreForThisComponent = reviewedFinalAnswer.wage,
+            maxScoreForThisComponent = AnswerScore.CORRECT.wage,
         )
 
         // 6. Add points together and compute the total score
@@ -181,7 +178,7 @@ class CrosswordGameController(
                 properFinalWord = ProperAnswer(
                     expectedAnswer = game.properAnswers.finalWord,
                     userAnswer = body.userAnswers.answer,
-                    result = reviewedFinalAnswer.resultName
+                    score = reviewedFinalAnswer
                 ),
                 properQuestionsAnswers = reviewedQuestions.map { (id, word, score) ->
                     val userAnswer = body.userAnswers.questionsAnswers.find { it.word == word }?.word
@@ -190,7 +187,7 @@ class CrosswordGameController(
                         id = id,
                         expectedAnswer = word,
                         userAnswer = userAnswer,
-                        result = score.resultName
+                        score = score
                     )
                 }
             )
