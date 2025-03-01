@@ -1,6 +1,8 @@
 package com.backend.ord.enums.application.game
 
 import com.backend.ord.config.GamesConfig
+import com.backend.ord.enums.persistence.game.GameDifficulty
+import com.backend.ord.enums.persistence.game.getNumberOfAllowedMistakes
 
 /**
  * The points that can be assigned to an answer in a game.
@@ -12,5 +14,32 @@ enum class AnswerScore(
 ) {
     CORRECT(wage = 1.0, dbPoints = GamesConfig.Points.DatabaseValues.CORRECT_ANSWER),
     HALF_CORRECT(wage = 0.5, dbPoints = GamesConfig.Points.DatabaseValues.HALF_CORRECT_ANSWER),
-    INCORRECT(wage = 0.0, dbPoints = GamesConfig.Points.DatabaseValues.INCORRECT_ANSWER)
+    INCORRECT(wage = 0.0, dbPoints = GamesConfig.Points.DatabaseValues.INCORRECT_ANSWER);
+
+    companion object {
+        /**
+         * Returns the points for the user answer based on the correctness of the answer and the difficulty of the game.
+         * The points are returned as a pair of the correct word and received points.
+         */
+        fun reviewUserAnswer(
+            userAnswer: String?,
+            expectedAnswer: String,
+            difficulty: GameDifficulty
+        ): AnswerScore {
+            if (userAnswer == null) {
+                return AnswerScore.INCORRECT
+            }
+
+            // Compare two words letter by letter and count the number of non-matching letters
+            val incorrectLettersCount = (expectedAnswer.lowercase() zip userAnswer.lowercase())
+                .count { (correctChar, userChar) -> correctChar != userChar }
+
+            return when {
+                incorrectLettersCount == 0 -> AnswerScore.CORRECT
+                incorrectLettersCount <= difficulty.getNumberOfAllowedMistakes() -> AnswerScore.HALF_CORRECT
+                else -> AnswerScore.INCORRECT
+            }
+        }
+
+    }
 }

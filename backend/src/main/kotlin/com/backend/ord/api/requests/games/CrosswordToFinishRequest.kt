@@ -1,19 +1,7 @@
 package com.backend.ord.api.requests.games
 
 import com.backend.ord.api.requests.games.bases.GameToBeFinishedBase
-import java.util.*
-
-interface CrosswordUserAnswersQuestion {
-    /**
-     * The crossword question's ID.
-     */
-    val id: UUID
-
-    /**
-     * The answer to the clue at the given coordinates.
-     */
-    val word: String
-}
+import com.backend.ord.api.requests.games.data.WordUserAnswer
 
 
 interface CrosswordUserAnswers {
@@ -25,7 +13,7 @@ interface CrosswordUserAnswers {
     /**
      * The user's answers to the questions.
      */
-    val questionsAnswers: Set<CrosswordUserAnswersQuestion>
+    val questionsAnswers: Set<WordUserAnswer>
 }
 
 interface CrosswordToFinishRequest : GameToBeFinishedBase<CrosswordUserAnswers>

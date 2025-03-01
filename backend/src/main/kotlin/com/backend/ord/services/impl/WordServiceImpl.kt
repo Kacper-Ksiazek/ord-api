@@ -7,10 +7,8 @@ import com.backend.ord.api.requests.word.enums.toggleProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
-import com.backend.ord.config.GamesConfig
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
@@ -50,8 +48,6 @@ class WordServiceImpl(
         bankId: UUID?,
         userId: UUID
     ): Int {
-        val words = repository.findAll()
-
         return repository.changeBankForMultipleWords(
             bankId = bankId,
             wordIds = wordIds,
@@ -177,27 +173,4 @@ class WordServiceImpl(
         )
     }
 
-    override fun updatePointsForManyWords(
-        userId: UUID,
-        language: LanguageName,
-        wordsAndPoints: List<Triple<UUID, String, AnswerScore>>
-    ) {
-        val wordsToSave: MutableSet<Word> = mutableSetOf()
-
-        repository.findAllWordByTheirOrigins(
-            origins = wordsAndPoints.map { it.second }.toSet(),
-            language = language,
-            userId = userId
-        ).forEach { word ->
-            val points: AnswerScore = wordsAndPoints.find { it.second == word.origin }?.third
-                ?: return@forEach
-
-            word.points += points.dbPoints
-            word.isCompleted = word.points >= GamesConfig.Points.COMPLETE_WORD_THRESHOLD
-
-            wordsToSave.add(word)
-        }
-
-        repository.saveAll(wordsToSave)
-    }
 }

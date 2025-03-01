@@ -17,11 +17,11 @@ import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.game.GameStatus
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.exceptions.REST.BadRequestException
+import com.backend.ord.services.GameReviewService
 import com.backend.ord.services.GameService
 import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
-import com.backend.ord.utils.games.GameReviewingUtils
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.servlet.http.HttpServletRequest
@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/games/crossword")
@@ -41,7 +40,9 @@ class CrosswordGameController(
     private val gameService: GameService,
     private val gameTokensUsageService: GameTokensUsageService,
     private val gameMapper: GameMapper,
-    private val wordService: WordService
+    private val wordService: WordService,
+    private val gameReviewService: GameReviewService
+
 ) {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
@@ -124,34 +125,29 @@ class CrosswordGameController(
         }
 
         // 3. Check all words forming a crossword
-        val reviewedQuestions: List<Triple<UUID, String, AnswerScore>> =
-            game.properAnswers.questions.entries.map { properAnswer ->
-                val score = GameReviewingUtils.getPointsForUserAnswer(
-                    difficulty = game.difficulty,
-                    correctAnswer = properAnswer.value,
-                    userAnswer = body.userAnswers.questionsAnswers.find {
-                        it.id == properAnswer.key
-                    }?.word,
-                )
-
-                return@map Triple(properAnswer.key, properAnswer.value, score)
-            }
+        val reviewedQuestions = gameReviewService.reviewUserAnswersAndUpdateDBPoints(
+            userId = user.id,
+            language = game.language,
+            difficulty = game.difficulty,
+            expectedAnswers = game.properAnswers.questions,
+            userAnswers = body.userAnswers.questionsAnswers,
+        )
 
         // 4. Compute points received from words forming a crossword
-        val pointsForQuestions: Int = GameReviewingUtils.computeFinalScoreComponent(
-            receivedPoints = reviewedQuestions.sumOf { it.third.wage },
+        val pointsForQuestions: Int = GameReviewService.Companion.computeFinalScoreComponent(
+            receivedPoints = reviewedQuestions.sumOf { it.userAnswerScore.wage },
             maxPoints = game.instruction.questions.size * AnswerScore.CORRECT.wage,
             moduleRatio = GamesConfig.Points.ScoreFactorsRatio.Crossword.QUESTIONS
         )
 
         // 5. Compute points received from the final word
-        val reviewedFinalAnswer: AnswerScore = GameReviewingUtils.getPointsForUserAnswer(
+        val reviewedFinalAnswer: AnswerScore = AnswerScore.Companion.reviewUserAnswer(
             userAnswer = body.userAnswers.answer,
-            correctAnswer = game.properAnswers.finalWord,
+            expectedAnswer = game.properAnswers.finalWord,
             difficulty = game.difficulty
         )
 
-        val pointsForFinalWord: Int = GameReviewingUtils.computeFinalScoreComponent(
+        val pointsForFinalWord: Int = GameReviewService.Companion.computeFinalScoreComponent(
             receivedPoints = reviewedFinalAnswer.wage,
             maxPoints = AnswerScore.CORRECT.wage,
             moduleRatio = GamesConfig.Points.ScoreFactorsRatio.Crossword.FINAL_WORD
@@ -167,14 +163,7 @@ class CrosswordGameController(
             duration = body.duration
         )
 
-        // 8. Update points for all involved words
-        wordService.updatePointsForManyWords(
-            userId = user.id,
-            language = game.language,
-            wordsAndPoints = reviewedQuestions
-        )
-
-        // 9. Return the response
+        // 8. Return the response
         return ResponseEntity.ok(
             FinishedCrosswordGameResponse(
                 totalPoints = totalPoints,
