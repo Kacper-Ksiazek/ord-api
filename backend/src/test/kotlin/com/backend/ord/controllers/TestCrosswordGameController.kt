@@ -4,6 +4,7 @@ import com.backend.ord.api.requests.games.data.CrosswordUserAnswersData
 import com.backend.ord.api.requests.games.data.WordUserAnswer
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
+import com.backend.ord.config.GamesConfig
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.request_factories.GameRequestFactory
 import com.backend.ord.controllers.utils_for_testing.AlteredProperAnswer
@@ -35,8 +36,10 @@ import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
 import com.backend.ord.utils.games.HIDDEN_CHARACTER
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.comparables.shouldBeLessThan
+import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
@@ -706,6 +709,8 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Points should be properly assigned - HALF_CORRECT`() {
+                prepareCrosswordGame(difficulty = GameDifficulty.MEDIUM)
+
                 var perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
                 val alteredAnswers: Set<AlteredProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
@@ -714,8 +719,10 @@ class TestCrosswordGameController @Autowired constructor(
                     )
                 )
 
+                val body = alteredAnswers.toRequestBody(perfectAnswers)
+
                 val response = finishCrosswordGame(
-                    questionsAnswers = alteredAnswers.toRequestBody(perfectAnswers)
+                    questionsAnswers = body
                 )
 
                 assertDBPointsWereUpdatedProperly(response)
@@ -740,12 +747,14 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Points should be properly assigned - both HALF_CORRECT and INCORRECT`() {
+                prepareCrosswordGame(difficulty = GameDifficulty.MEDIUM)
+
                 var perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
                 val alteredAnswers: Set<AlteredProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.HALF_CORRECT to 2,
-                        AnswerScore.INCORRECT to 5,
+                        AnswerScore.HALF_CORRECT to 3,
+                        AnswerScore.INCORRECT to 3,
                     )
                 )
 
@@ -754,6 +763,36 @@ class TestCrosswordGameController @Autowired constructor(
                 )
 
                 assertDBPointsWereUpdatedProperly(response)
+            }
+
+            @Test
+            fun `200 - Words can be marked as completed`() {
+                prepareCrosswordGame(difficulty = GameDifficulty.MEDIUM)
+
+                wordRepository.saveAll(
+                    wordRepository.findAllForUser(authenticatedUser.userInfo.id).map {
+                        it.copy(
+                            points = GamesConfig.Points.COMPLETE_WORD_THRESHOLD - 1
+                        )
+                    }
+                )
+
+                var perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+
+                val alteredAnswers: Set<AlteredProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
+                    mistakes = mapOf(
+                        AnswerScore.HALF_CORRECT to 3,
+                    )
+                )
+
+                finishCrosswordGame(
+                    questionsAnswers = alteredAnswers.toRequestBody(perfectAnswers)
+                )
+
+                wordRepository.findAllForUser(authenticatedUser.userInfo.id).forEach {
+                    it.points shouldBeGreaterThanOrEqual GamesConfig.Points.COMPLETE_WORD_THRESHOLD
+                    it.isCompleted shouldBe true
+                }
             }
 
             private fun assertPointsForMistakesWereAssignedProperly(
@@ -770,20 +809,30 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             private fun assertDBPointsWereUpdatedProperly(
-                response: FinishedCrosswordGameResponse
+                response: FinishedCrosswordGameResponse,
+                alteredAnswers: Set<AlteredProperAnswer> = emptySet()
             ) {
-                val allWords = wordRepository.findAllForUser(authenticatedUser.userInfo.id)
-
                 val wordsUsedInGame = wordRepository.findAllWordByTheirOrigins(
                     origins = crosswordSavedInDb.properAnswers.questions.values.toSet(),
                     language = crosswordSavedInDb.language,
                     userId = authenticatedUser.userInfo.id
                 )
 
+                wordsUsedInGame shouldHaveSize crosswordSavedInDb.properAnswers.questions.size
+
                 response.properQuestionsAnswers.forEach {
                     val correspondingWordEntity =
                         wordsUsedInGame.find { word -> word.origin.lowercase() == it.expectedAnswer.lowercase() }
+
+                    val correspondingAlteredAnswer: AlteredProperAnswer? = alteredAnswers.find { alteredAnswer ->
+                        alteredAnswer.questionId == it.id
+                    }
+
                     correspondingWordEntity!!.points shouldBe it.score.dbPoints
+
+                    if (correspondingAlteredAnswer != null) {
+                        correspondingAlteredAnswer.desiredScore shouldBe it.score
+                    }
                 }
             }
         }
