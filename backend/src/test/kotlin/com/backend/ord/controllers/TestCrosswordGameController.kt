@@ -29,6 +29,8 @@ import com.backend.ord.repositories.UserRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.repositories.pivots.WordsUsedInGamesRepository
+import com.backend.ord.seeders.entities.UserSeeder
+import com.backend.ord.seeders.factories.UserMockFactory
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.seeders.mocks.games.MockCrosswordGames
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
@@ -44,6 +46,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -52,6 +56,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
+import java.util.*
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -79,6 +84,12 @@ class TestCrosswordGameController @Autowired constructor(
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
 ) {
+    @Autowired
+    private lateinit var userSeeder: UserSeeder
+
+    @Autowired
+    private lateinit var userMockFactory: UserMockFactory
+
     @Autowired
     private lateinit var userRepository: UserRepository
     private val gameRequestFactory = GameRequestFactory(objectMapper)
@@ -840,7 +851,117 @@ class TestCrosswordGameController @Autowired constructor(
         @Nested
         @DisplayName("Negative")
         inner class Negative {
-            //
+
+            @Test
+            fun `403 - Anonymous user cannot finish a crossword game`() {
+                val request = gameRequestFactory.finishCrosswordGameRequest(
+                    authenticatedUser = null,
+                    gameId = UUID.randomUUID(),
+                    userAnswers = CrosswordUserAnswersData(
+                        answer = "answer",
+                        questionsAnswers = emptySet()
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `403 - User cannot finish a game that does not belong to them`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val crosswordSavedInDb = gameMapper.toCrosswordDTO(
+                    mockCrosswordGames.seedFromJSONFile(
+                        user = userSeeder.seedOneEntity()
+                    ).random()
+                )
+
+                val request = gameRequestFactory.finishCrosswordGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = crosswordSavedInDb.id,
+                    userAnswers = CrosswordUserAnswersData(
+                        answer = "answer",
+                        questionsAnswers = emptySet()
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                    it.response
+                }
+            }
+
+
+            @ParameterizedTest
+            @EnumSource(
+                value = GameStatus::class,
+                names = [
+                    "COMPLETED",
+                    "CANCELED",
+                    "PAUSED"
+                ]
+            )
+            fun `400 - User cannot finish a crossword of given type`(blockedType: GameStatus) {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val crosswordSavedInDb = gameMapper.toCrosswordDTO(
+                    mockCrosswordGames.seedFromJSONFile(
+                        user = userMapper.toEntity(authenticatedUser.userInfo)
+                    ).random()
+                )
+
+                gameRepository.save(
+                    gameRepository.findByIdOrNull(crosswordSavedInDb.id)!!.copy(
+                        status = blockedType
+                    )
+                )
+
+                val request = gameRequestFactory.finishCrosswordGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = crosswordSavedInDb.id,
+                    userAnswers = CrosswordUserAnswersData(
+                        answer = "answer",
+                        questionsAnswers = emptySet()
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - Crossword cannot be finished with user answer to single word over 255 characters long`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val crosswordSavedInDb = gameMapper.toCrosswordDTO(
+                    mockCrosswordGames.seedFromJSONFile(
+                        user = userMapper.toEntity(authenticatedUser.userInfo)
+                    ).random()
+                )
+
+                val request = gameRequestFactory.finishCrosswordGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = crosswordSavedInDb.id,
+                    userAnswers = CrosswordUserAnswersData(
+                        answer = "answer",
+                        questionsAnswers = setOf(
+                            WordUserAnswer(
+                                id = UUID.randomUUID(),
+                                word = "x".repeat(256)
+                            )
+                        )
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
         }
     }
 
