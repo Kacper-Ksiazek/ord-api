@@ -21,12 +21,14 @@ class GameReviewServiceImpl(
         difficulty: GameDifficulty
     ): Set<GameReviewService.Companion.ReviewedQuestion> {
         return expectedAnswers.entries.map { (questionId, expectedAnswer) ->
+            val userAnswer: WordUserAnswer? = userAnswers.find {
+                it.id == questionId
+            }
+
             val score = AnswerScore.Companion.reviewUserAnswer(
                 difficulty = difficulty,
                 expectedAnswer = expectedAnswer,
-                userAnswer = userAnswers.find {
-                    it.id == questionId
-                }?.word,
+                userAnswer = userAnswer?.word
             )
 
             return@map GameReviewService.Companion.ReviewedQuestion(
