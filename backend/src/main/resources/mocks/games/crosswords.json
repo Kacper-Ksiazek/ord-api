@@ -941,5 +941,1563 @@
         "62a5776d-e12c-4b2c-81cc-80869c6d436a": "palpable"
       }
     }
+  },
+  {
+    "difficulty": "MEDIUM",
+    "language": "ENGLISH",
+    "type": "CROSSWORD",
+    "instruction": {
+      "answerExplanation": "This phrase relates to the process of developing capabilities or talents, particularly in an educational or training context. It emphasizes nurturing and enhancing one's abilities over time.",
+      "answer": "********g * *k***",
+      "questions": [
+        {
+          "id": "c3e25319-f23d-4596-89d5-9efdd3e18b1a",
+          "word": "*****d *****",
+          "clue": "A change over time indicating growth or increase in a specific area, often used in economics.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 8,
+              "indexInPassword": 5
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 0,
+                "y": 4
+              },
+              "end": {
+                "x": 11,
+                "y": 4
+              }
+            },
+            "direction": "HORIZONTAL"
+          }
+        },
+        {
+          "id": "38e176f7-1d01-4093-a2a9-a3571424ddc1",
+          "word": "********** ******",
+          "clue": "An educational institution that provides practical training for a specific career.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 11,
+              "indexInPassword": 2
+            },
+            {
+              "indexInWord": 7,
+              "indexInPassword": 7
+            },
+            {
+              "indexInWord": 11,
+              "indexInPassword": 12
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 7,
+                "y": 0
+              },
+              "end": {
+                "x": 7,
+                "y": 16
+              }
+            },
+            "direction": "VERTICAL"
+          }
+        },
+        {
+          "id": "6d735189-a9f2-4388-9b13-e58ea9fa8aa7",
+          "word": "**l**b**",
+          "clue": "Something that is tangible or easily perceived, often used to describe intense emotions.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 1,
+              "indexInPassword": 10
+            },
+            {
+              "indexInWord": 2,
+              "indexInPassword": 15
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 5,
+                "y": 9
+              },
+              "end": {
+                "x": 12,
+                "y": 9
+              }
+            },
+            "direction": "HORIZONTAL"
+          }
+        },
+        {
+          "id": "173966e0-fc6e-4375-9762-94fe13a86c9d",
+          "word": "b**hi**",
+          "clue": "A structure where bees are kept, often in a hexagonal shape.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 4,
+              "indexInPassword": 14
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 10,
+                "y": 9
+              },
+              "end": {
+                "x": 10,
+                "y": 15
+              }
+            },
+            "direction": "VERTICAL"
+          }
+        },
+        {
+          "id": "deb29247-ab84-490d-bb4d-e5ad2e825c8a",
+          "word": "w***-**-**",
+          "clue": "A phrase describing individuals who are wealthy or financially comfortable.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 3,
+              "indexInPassword": 16
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 9,
+                "y": 10
+              },
+              "end": {
+                "x": 18,
+                "y": 10
+              }
+            },
+            "direction": "HORIZONTAL"
+          }
+        },
+        {
+          "id": "2fde623b-fdea-4869-95cd-344f4eb8c848",
+          "word": "c*a******",
+          "clue": "A herbal plant commonly used to make tea, known for its calming properties.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 4,
+              "indexInPassword": 1
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 15,
+                "y": 6
+              },
+              "end": {
+                "x": 15,
+                "y": 14
+              }
+            },
+            "direction": "VERTICAL"
+          }
+        },
+        {
+          "id": "933e8038-372a-49b3-aadd-b429b5ddfa4c",
+          "word": "*****t",
+          "clue": "A conjunction used to introduce a concession, often translated as 'although'.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 3,
+              "indexInPassword": 4
+            },
+            {
+              "indexInWord": 4,
+              "indexInPassword": 6
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 15,
+                "y": 8
+              },
+              "end": {
+                "x": 20,
+                "y": 8
+              }
+            },
+            "direction": "HORIZONTAL"
+          }
+        },
+        {
+          "id": "0c48b5a0-deeb-462c-94de-b23365b68f0e",
+          "word": "********",
+          "clue": "To reduce a supply or resources gradually.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 5,
+              "indexInPassword": 3
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 18,
+                "y": 2
+              },
+              "end": {
+                "x": 18,
+                "y": 9
+              }
+            },
+            "direction": "VERTICAL"
+          }
+        },
+        {
+          "id": "d8be2f32-74b9-4d90-918b-ae7d16e822d2",
+          "word": "***-***-**f*",
+          "clue": "Describes something done spontaneously, without prior preparation.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 11,
+              "indexInPassword": 0
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 12,
+                "y": 3
+              },
+              "end": {
+                "x": 23,
+                "y": 3
+              }
+            },
+            "direction": "HORIZONTAL"
+          }
+        }
+      ],
+      "board": [
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          "*",
+          "*",
+          "*",
+          "-",
+          "*",
+          "*",
+          "*",
+          "-",
+          "*",
+          "*",
+          "f",
+          "*"
+        ],
+        [
+          "*",
+          "*",
+          "*",
+          "*",
+          "*",
+          "d",
+          " ",
+          "*",
+          "*",
+          "*",
+          "*",
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "c",
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          "*",
+          "*",
+          "*",
+          "*",
+          "t",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          "*",
+          "l",
+          "*",
+          "*",
+          "b",
+          "*",
+          "*",
+          null,
+          null,
+          "*",
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          " ",
+          null,
+          "w",
+          "*",
+          "*",
+          "*",
+          "-",
+          "*",
+          "*",
+          "-",
+          "*",
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          "h",
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          "i",
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ]
+    },
+    "properAnswers": {
+      "finalWord": "fostering a skill",
+      "questions": {
+        "173966e0-fc6e-4375-9762-94fe13a86c9d": "beehive",
+        "933e8038-372a-49b3-aadd-b429b5ddfa4c": "albeit",
+        "0c48b5a0-deeb-462c-94de-b23365b68f0e": "depletes",
+        "c3e25319-f23d-4596-89d5-9efdd3e18b1a": "upward trend",
+        "38e176f7-1d01-4093-a2a9-a3571424ddc1": "vocational school",
+        "2fde623b-fdea-4869-95cd-344f4eb8c848": "chamomile",
+        "d8be2f32-74b9-4d90-918b-ae7d16e822d2": "off-the-cuff",
+        "6d735189-a9f2-4388-9b13-e58ea9fa8aa7": "palpable",
+        "deb29247-ab84-490d-bb4d-e5ad2e825c8a": "well-to-do"
+      }
+    }
+  },
+  {
+    "difficulty": "EASY",
+    "language": "ENGLISH",
+    "type": "CROSSWORD",
+    "instruction": {
+      "answerExplanation": "This phrase refers to a situation or development that occurs suddenly and without warning, often catching people by surprise.",
+      "answer": "***x*****d **** ** *v****",
+      "questions": [
+        {
+          "id": "ae0a46bf-3e1a-4f6d-be34-04f8bde4305c",
+          "word": "******",
+          "clue": "To socialize and interact with others at an event.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 2,
+              "indexInPassword": 14
+            },
+            {
+              "indexInWord": 5,
+              "indexInPassword": 21
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 0,
+                "y": 3
+              },
+              "end": {
+                "x": 5,
+                "y": 3
+              }
+            },
+            "direction": "HORIZONTAL"
+          }
+        },
+        {
+          "id": "c2071bf5-1ca3-4620-ade3-340b3dc92879",
+          "word": "blu**",
+          "clue": "To be straightforward and direct in communication.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 3,
+              "indexInPassword": 22
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 2,
+                "y": 0
+              },
+              "end": {
+                "x": 2,
+                "y": 4
+              }
+            },
+            "direction": "VERTICAL"
+          }
+        },
+        {
+          "id": "11e1f227-7761-4bae-8261-cb4193551bbf",
+          "word": "**t ** *** ****",
+          "clue": "Something that happens suddenly and unexpectedly.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 1,
+              "indexInPassword": 0
+            },
+            {
+              "indexInWord": 9,
+              "indexInPassword": 2
+            },
+            {
+              "indexInWord": 7,
+              "indexInPassword": 7
+            },
+            {
+              "indexInWord": 9,
+              "indexInPassword": 8
+            },
+            {
+              "indexInWord": 7,
+              "indexInPassword": 11
+            },
+            {
+              "indexInWord": 4,
+              "indexInPassword": 16
+            },
+            {
+              "indexInWord": 5,
+              "indexInPassword": 17
+            },
+            {
+              "indexInWord": 14,
+              "indexInPassword": 19
+            },
+            {
+              "indexInWord": 2,
+              "indexInPassword": 23
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 0,
+                "y": 4
+              },
+              "end": {
+                "x": 14,
+                "y": 4
+              }
+            },
+            "direction": "HORIZONTAL"
+          }
+        },
+        {
+          "id": "36674ce0-f3db-44b1-9d70-d601aa90ecef",
+          "word": "****g*s*",
+          "clue": "Describes someone or something that is slow or lacking energy.",
+          "lettersInAnswer": null,
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 13,
+                "y": 2
+              },
+              "end": {
+                "x": 13,
+                "y": 9
+              }
+            },
+            "direction": "VERTICAL"
+          }
+        },
+        {
+          "id": "cdb114e7-5031-4dce-819f-acf11fe1d197",
+          "word": "**s*****-*s-*****",
+          "clue": "An approach where things proceed as they normally do, despite changes.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 14,
+              "indexInPassword": 12
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 10,
+                "y": 7
+              },
+              "end": {
+                "x": 26,
+                "y": 7
+              }
+            },
+            "direction": "HORIZONTAL"
+          }
+        },
+        {
+          "id": "6df57c24-231e-4e4f-a3db-8d988c681494",
+          "word": "**** *******'* *****",
+          "clue": "To seek advice or knowledge from someone.",
+          "lettersInAnswer": [
+            {
+              "indexInWord": 10,
+              "indexInPassword": 1
+            },
+            {
+              "indexInWord": 0,
+              "indexInPassword": 4
+            },
+            {
+              "indexInWord": 11,
+              "indexInPassword": 5
+            },
+            {
+              "indexInWord": 2,
+              "indexInPassword": 6
+            },
+            {
+              "indexInWord": 16,
+              "indexInPassword": 13
+            },
+            {
+              "indexInWord": 13,
+              "indexInPassword": 24
+            }
+          ],
+          "position": {
+            "coordinates": {
+              "start": {
+                "x": 23,
+                "y": 2
+              },
+              "end": {
+                "x": 23,
+                "y": 21
+              }
+            },
+            "direction": "VERTICAL"
+          }
+        }
+      ],
+      "board": [
+        [
+          null,
+          null,
+          "b",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          "l",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          "u",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          "*",
+          "*",
+          "*",
+          "*",
+          "*",
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          "*",
+          "*",
+          "t",
+          " ",
+          "*",
+          "*",
+          " ",
+          "*",
+          "*",
+          "*",
+          " ",
+          "*",
+          "*",
+          "*",
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "g",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          " ",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          "*",
+          "s",
+          "*",
+          "*",
+          "*",
+          "*",
+          "*",
+          "-",
+          "*",
+          "s",
+          "-",
+          "*",
+          "*",
+          "*",
+          "*",
+          "*"
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "s",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "'",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          " ",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "*",
+          null,
+          null,
+          null
+        ]
+      ]
+    },
+    "properAnswers": {
+      "finalWord": "unexpected turn of events",
+      "questions": {
+        "11e1f227-7761-4bae-8261-cb4193551bbf": "out of the blue",
+        "ae0a46bf-3e1a-4f6d-be34-04f8bde4305c": "mingle",
+        "6df57c24-231e-4e4f-a3db-8d988c681494": "pick someone's brain",
+        "cdb114e7-5031-4dce-819f-acf11fe1d197": "business-as-usual",
+        "c2071bf5-1ca3-4620-ade3-340b3dc92879": "blunt",
+        "36674ce0-f3db-44b1-9d70-d601aa90ecef": "sluggish"
+      }
+    }
   }
 ]

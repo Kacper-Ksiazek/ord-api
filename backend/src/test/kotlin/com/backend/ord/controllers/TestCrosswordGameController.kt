@@ -548,13 +548,12 @@ class TestCrosswordGameController @Autowired constructor(
             lateinit var authenticatedUser: MockedAuthenticatedUser
             lateinit var crosswordSavedInDb: CrosswordGameDTO
 
-            @BeforeEach
-            fun beforeEach() {
+            private fun prepareCrosswordGame(difficulty: GameDifficulty = GameDifficulty.HARD) {
                 authenticatedUser = mockAuthenticatedUser()
                 crosswordSavedInDb = gameMapper.toCrosswordDTO(
                     mockCrosswordGames.seedFromJSONFile(
                         user = userMapper.toEntity(authenticatedUser.userInfo)
-                    )[0]
+                    ).filter { it.difficulty == difficulty }.random()
                 )
 
                 val userEntity = userMapper.toEntity(authenticatedUser.userInfo)
@@ -567,6 +566,11 @@ class TestCrosswordGameController @Autowired constructor(
                         )
                     }
                 )
+            }
+
+            @BeforeEach
+            fun beforeEach() {
+                prepareCrosswordGame()
             }
 
             @AfterEach
