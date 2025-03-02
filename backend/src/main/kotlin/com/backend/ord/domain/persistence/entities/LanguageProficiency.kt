@@ -11,7 +11,7 @@ import java.util.*
 
 @Entity
 @Table(name = "language_proficiencies")
-class LanguageProficiency(
+data class LanguageProficiency(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

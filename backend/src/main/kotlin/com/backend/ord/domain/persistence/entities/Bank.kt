@@ -12,7 +12,7 @@ import java.util.*
 
 @Entity
 @Table(name = "banks")
-class Bank(
+data class Bank(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

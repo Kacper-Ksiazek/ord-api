@@ -13,7 +13,7 @@ import java.util.*
 
 @Entity
 @Table(name = "users")
-class User(
+data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID = UUID.randomUUID(),

@@ -12,7 +12,7 @@ import java.util.*
 
 @Entity
 @Table(name = "user_progress")
-class UserProgress(
+data class UserProgress(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

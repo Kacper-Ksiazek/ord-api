@@ -14,7 +14,7 @@ import java.util.*
 
 @Entity
 @Table(name = "story_tokens_usages")
-class StoryTokensUsage(
+data class StoryTokensUsage(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

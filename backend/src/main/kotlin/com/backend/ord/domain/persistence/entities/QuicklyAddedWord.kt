@@ -10,7 +10,7 @@ import java.util.*
 
 @Entity
 @Table(name = "quickly_added_words")
-class QuicklyAddedWord(
+data class QuicklyAddedWord(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

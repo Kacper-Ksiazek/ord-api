@@ -12,7 +12,7 @@ import java.util.*
 
 @Entity
 @Table(name = "story_contexts")
-class StoryContext(
+data class StoryContext(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override val id: UUID = UUID.randomUUID(),

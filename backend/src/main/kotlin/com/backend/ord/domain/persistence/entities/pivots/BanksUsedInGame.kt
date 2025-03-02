@@ -9,7 +9,7 @@ import java.util.*
 
 @Entity
 @Table(name = "banks_used_in_games")
-class BanksUsedInGame(
+data class BanksUsedInGame(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)

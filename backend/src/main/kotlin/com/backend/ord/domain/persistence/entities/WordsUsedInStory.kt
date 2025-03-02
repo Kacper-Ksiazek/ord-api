@@ -7,7 +7,7 @@ import java.util.*
 
 @Entity
 @Table(name = "words_used_in_stories")
-class WordsUsedInStory(
+data class WordsUsedInStory(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
