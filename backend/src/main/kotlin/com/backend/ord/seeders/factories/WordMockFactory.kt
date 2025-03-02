@@ -27,7 +27,7 @@ class WordMockFactory(
             }
         },
         isBookmarked: Boolean = faker.bool().bool(),
-        points: Int = faker.number().numberBetween(1, 100),
+        points: Int = 0,
         type: WordType = WordType::class.getRandomValue(),
         extraMark: WordExtraMark? = WordExtraMark::class.getRandomValueOrNull(changesForNull = 75),
         translatedFrom: LanguageName = LanguageName::class.getRandomValue(),
