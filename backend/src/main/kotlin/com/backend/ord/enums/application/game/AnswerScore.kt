@@ -27,7 +27,7 @@ enum class AnswerScore(
             difficulty: GameDifficulty
         ): AnswerScore {
             if (userAnswer == null) {
-                return AnswerScore.INCORRECT
+                return INCORRECT
             }
 
             // Compare two words letter by letter and count the number of non-matching letters
@@ -35,9 +35,9 @@ enum class AnswerScore(
                 .count { (correctChar, userChar) -> correctChar != userChar }
 
             return when {
-                incorrectLettersCount == 0 -> AnswerScore.CORRECT
-                incorrectLettersCount <= difficulty.getNumberOfAllowedMistakes() -> AnswerScore.HALF_CORRECT
-                else -> AnswerScore.INCORRECT
+                incorrectLettersCount == 0 -> CORRECT
+                incorrectLettersCount <= difficulty.getNumberOfAllowedMistakes() -> HALF_CORRECT
+                else -> INCORRECT
             }
         }
 
