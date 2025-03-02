@@ -30,6 +30,23 @@ CALL create_enum_type(
         ARRAY ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
      );
 
+---  UserActivityType
+CALL create_enum_type(
+        'user_activity_type',
+        ARRAY [
+            'CROSSWORD_GAME_COMPLETED_FLAWLESSLY',
+            'CROSSWORD_GAME_COMPLETED_WITH_MISTAKES',
+            'GAME_QUIT',
+            'WORDS_ADDED_IN_ONE_DAY_10',
+            'WORDS_ADDED_IN_ONE_DAY_25',
+            'WORDS_COMPLETED_IN_ONE_WEEK_10',
+            'WORDS_COMPLETED_IN_ONE_WEEK_25'
+
+
+            -- TODO: Add more options in the future
+            ]
+     );
+
 --- +-------------------+
 --- |       WORDS       |
 --- +-------------------+

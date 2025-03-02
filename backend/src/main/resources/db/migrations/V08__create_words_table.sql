@@ -44,8 +44,10 @@ CREATE TABLE IF NOT EXISTS words
     -- This property is not a FK, because it is only used to streamline the process of fetching words from the same bank group
     bank_group_id     UUID                     DEFAULT NULL,
 
+    completed_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+
     created_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT each_user_can_have_only_one_word_with_same_word UNIQUE (user_id, origin)
+    CONSTRAINT each_user_can_have_only_one_word_with_same_word UNIQUE (user_id, translated_from, origin)
 )
