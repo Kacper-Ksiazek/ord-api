@@ -16,7 +16,7 @@ data class AlteredProperAnswer(
 private fun WordUserAnswer.makeArtificialMistake(desiredResult: AnswerScore): AlteredProperAnswer {
     val alteredAnswer = when (desiredResult) {
         AnswerScore.INCORRECT -> "x".repeat(word.length)
-        AnswerScore.HALF_CORRECT -> "x${word.slice(1 until word.length)}"
+        AnswerScore.HALF_CORRECT -> "x${word.drop(1)}"
         else -> {
             throw IllegalArgumentException("desiredResult must to be either INCORRECT or HALF_CORRECT")
         }
@@ -63,7 +63,7 @@ fun Set<AlteredProperAnswer>.toRequestBody(perfectAnswers: Set<WordUserAnswer>):
     return perfectAnswers.toMutableSet().map { answer ->
         val correspondingAlteredAnswer = find { it.questionId == answer.id }
 
-        if (correspondingAlteredAnswer == null) answer
+        return@map if (correspondingAlteredAnswer == null) answer
         else answer.copy(word = correspondingAlteredAnswer.alteredAnswer)
     }.toSet()
 }
