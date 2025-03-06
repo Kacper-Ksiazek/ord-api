@@ -13,6 +13,10 @@ import java.util.*
 interface WordRepository :
     UserResourceRepository<Word>,
     WordRepositoryCustomMethods {
+    // ------
+    // READ
+    // ------
+
     @Query("SELECT w.origin FROM Word w WHERE w.translatedFrom = :language ORDER BY w.createdAt DESC")
     fun findNOfLatestWords(language: LanguageName, pageable: Pageable): List<String>
 
@@ -24,6 +28,36 @@ interface WordRepository :
 
     @Query("SELECT w FROM Word w WHERE w.translatedFrom = :language AND w.origin IN :origins AND w.user.id = :userId")
     fun findAllWordByTheirOrigins(origins: Set<String>, language: LanguageName, userId: UUID): List<Word>
+
+    // ------
+    // AGGREGATE
+    // ------
+
+    @Query(
+        """
+        SELECT COUNT(w) FROM Word w 
+        WHERE 
+            w.translatedFrom = :language 
+            AND w.user.id = :userId
+        """
+    )
+    fun countWordsCreatedToday(language: LanguageName, userId: UUID): Int
+
+    @Query(
+        """
+        SELECT COUNT(w) FROM Word w 
+        WHERE 
+            w.translatedFrom = :language 
+            AND w.user.id = :userId 
+            AND MONTH(w.createdAt) = MONTH(CURRENT_DATE) 
+            AND YEAR(w.createdAt) = YEAR(CURRENT_DATE)
+        """
+    )
+    fun countWordsCreatedInThisMonth(language: LanguageName, userId: UUID): Int
+
+    // ------
+    // UPDATE
+    // ------
 
     @Modifying
     @Query("UPDATE Word w SET w.bank.id = :bankId WHERE w.id = :wordId AND w.user.id = :userId")
