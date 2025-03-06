@@ -16,7 +16,7 @@ class UserActivityLogMapperImpl(
 
             type = dto.type,
             language = dto.language,
-            difficulty = dto.difficulty,
+            gameDifficulty = dto.gameDifficulty,
             points = dto.points,
 
             user = userMapper.toEntity(dto.user),
@@ -32,11 +32,10 @@ class UserActivityLogMapperImpl(
 
             type = entity.type,
             language = entity.language,
-            difficulty = entity.difficulty,
+            gameDifficulty = entity.gameDifficulty,
             points = entity.points,
 
             user = userMapper.toDTO(entity.user),
-
 
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt

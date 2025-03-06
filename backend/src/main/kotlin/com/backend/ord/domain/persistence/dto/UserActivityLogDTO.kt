@@ -12,7 +12,7 @@ class UserActivityLogDTO(
     val points: Int = 0,
     val type: UserActivityType,
     val language: LanguageName,
-    val difficulty: GameDifficulty? = null,
+    val gameDifficulty: GameDifficulty? = null,
 
     var user: UserDTO,
     var userId: UUID = user.id,

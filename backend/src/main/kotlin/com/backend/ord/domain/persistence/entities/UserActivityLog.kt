@@ -24,15 +24,15 @@ data class UserActivityLog(
     @Enumerated(EnumType.STRING)
     var type: UserActivityType,
 
-    @Column(name = "translated_from", nullable = false)
+    @Column(name = "language", nullable = false)
     @Enumerated(EnumType.STRING)
     var language: LanguageName,
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "difficulty", nullable = true)
-    var difficulty: GameDifficulty? = null,
+    @Column(name = "game_difficulty", nullable = true)
+    var gameDifficulty: GameDifficulty? = null,
 
-    @Column(name = "points_obtained", nullable = false)
+    @Column(name = "points", nullable = false)
     @field:Size(min = 0)
     var points: Int = 0,
 

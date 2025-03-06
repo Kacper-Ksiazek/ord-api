@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS user_activity_logs
 
     game_difficulty game_difficulty             DEFAULT NULL,
 
-    points          INTEGER            NOT NULL DEFAULT 0 CHECK ( points_obtained >= 0 ),
+    points INTEGER NOT NULL DEFAULT 0 CHECK ( points >= 0 ),
 
     created_at      TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE    DEFAULT CURRENT_TIMESTAMP

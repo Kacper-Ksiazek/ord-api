@@ -5,4 +5,7 @@ import com.backend.ord.repositories.bases.UserResourceRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface UserActivityLogRepository : UserResourceRepository<UserActivityLog>
+interface UserActivityLogRepository : UserResourceRepository<UserActivityLog> {
+
+
+}
