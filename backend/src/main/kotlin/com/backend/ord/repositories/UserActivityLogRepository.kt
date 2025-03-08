@@ -1,7 +1,6 @@
 package com.backend.ord.repositories
 
 import com.backend.ord.domain.persistence.entities.UserActivityLog
-import com.backend.ord.enums.application.UserActivityFrequency
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.repositories.bases.UserResourceRepository
@@ -46,13 +45,4 @@ interface UserActivityLogRepository : UserResourceRepository<UserActivityLog> {
     """
     )
     fun countMonthlyLog(userId: UUID, type: UserActivityType, language: LanguageName): Int
-
-    fun checkIfLogCanBeAdded(userId: UUID, type: UserActivityType, language: LanguageName): Boolean {
-        return when (type.frequency) {
-            UserActivityFrequency.DAILY -> countDailyLog(userId, type, language) == 0
-            UserActivityFrequency.WEEKLY -> countWeeklyLog(userId, type, language) == 0
-            UserActivityFrequency.MONTHLY -> countMonthlyLog(userId, type, language) == 0
-            UserActivityFrequency.NON_PERIODIC -> true
-        }
-    }
 }
