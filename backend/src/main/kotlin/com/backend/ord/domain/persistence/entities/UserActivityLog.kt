@@ -5,7 +5,7 @@ import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.language.LanguageName
 import jakarta.persistence.*
-import jakarta.validation.constraints.Size
+import jakarta.validation.constraints.Min
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
@@ -33,7 +33,7 @@ data class UserActivityLog(
     var gameDifficulty: GameDifficulty? = null,
 
     @Column(name = "points", nullable = false)
-    @field:Size(min = 0)
+    @field:Min(0)
     var points: Int = 0,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
