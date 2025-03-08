@@ -19,4 +19,9 @@ interface GameService : UserResourceService<Game> {
         wordsIds: Set<UUID>,
         gameId: UUID
     )
+
+    /**
+     * Cancels a game with a given ID
+     */
+    fun cancelGame(gameId: UUID, userId: UUID)
 }

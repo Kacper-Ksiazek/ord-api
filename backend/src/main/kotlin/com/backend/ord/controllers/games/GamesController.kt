@@ -8,8 +8,13 @@ import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/games")
@@ -19,7 +24,7 @@ class GamesController(
     private val gameService: GameService,
     private val gameTokensUsageService: GameTokensUsageService,
     private val gameMapper: GameMapper,
-    private val wordService: WordService
+    private val wordService: WordService,
 ) {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
@@ -58,4 +63,21 @@ class GamesController(
     // 13. @GetMapping("/paused")
     // 14. @GetMapping("/games-history")
     // 15. @GetMapping("/statistics")
+
+    @DeleteMapping("/cancel/{gameId}")
+    fun cancelGame(
+        request: HttpServletRequest,
+        @PathVariable gameId: UUID
+    ): ResponseEntity<Unit> {
+        val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+
+        gameService.cancelGame(
+            gameId = gameId,
+            userId = user.id
+        )
+
+        return ResponseEntity.noContent().build()
+    }
+
+
 }
