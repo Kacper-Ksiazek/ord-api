@@ -34,7 +34,7 @@ data class UserActivityLog(
 
     @Column(name = "points", nullable = false)
     @field:Min(0)
-    var points: Int = 0,
+    var points: Int = type.points,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
