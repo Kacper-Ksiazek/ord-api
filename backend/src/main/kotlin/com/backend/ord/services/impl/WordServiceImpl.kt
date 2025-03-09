@@ -7,13 +7,17 @@ import com.backend.ord.api.requests.word.enums.toggleProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.domain.persistence.mappers.WordMapper
+import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.WordRepository
+import com.backend.ord.services.UserActivityLogService
 import com.backend.ord.services.WordService
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest
@@ -22,7 +26,10 @@ import java.util.*
 
 @Service
 class WordServiceImpl(
-    override val repository: WordRepository
+    override val repository: WordRepository,
+
+    val wordMapper: WordMapper,
+    val userActivityLogService: UserActivityLogService
 ) : WordService {
     @Transactional
     override fun changeBankForSingleWord(
@@ -173,4 +180,39 @@ class WordServiceImpl(
         )
     }
 
+    override fun saveNewWord(
+        word: WordDTO,
+        user: User
+    ): WordDTO {
+        val result = repository.save(wordMapper.toEntity(word))
+        val language = word.translatedFrom
+
+        repository.countWordsCreatedToday(
+            language = language,
+            userId = user.id
+        ).let {
+            if (it >= 10) {
+                userActivityLogService.log(
+                    user = user,
+                    type = UserActivityType.WORDS_ADDED_IN_ONE_DAY_10,
+                    language = language,
+                )
+            }
+        }
+
+        repository.countWordsCreatedInThisWeek(
+            language = language,
+            userId = user.id
+        ).let {
+            if (it >= 50) {
+                userActivityLogService.log(
+                    user = user,
+                    type = UserActivityType.WORDS_ADDED_IN_ONE_WEEK_50,
+                    language = language,
+                )
+            }
+        }
+
+        return wordMapper.toDTO(result)
+    }
 }
