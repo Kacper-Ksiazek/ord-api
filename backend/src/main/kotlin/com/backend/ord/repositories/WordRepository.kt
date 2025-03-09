@@ -1,5 +1,6 @@
 package com.backend.ord.repositories
 
+import com.backend.ord.domain.infrastructure.CountingSummary
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.repositories.bases.UserResourceRepository
@@ -66,7 +67,6 @@ interface WordRepository :
             AND date_trunc('day', w.completedAt) = date_trunc('day', CURRENT_DATE)
         """
     )
-    fun countWordsCreatedInThisMonth(language: LanguageName, userId: UUID): Int
     fun countWordsCompletedToday(language: LanguageName, userId: UUID): Int
 
     @Query
@@ -81,6 +81,12 @@ interface WordRepository :
         """
     )
     fun countWordsCompletedInThisWeek(language: LanguageName, userId: UUID): Int
+
+    @Query(
+        value = "SELECT * FROM count_words_by_field('created_at', :language, :userId) cs",
+        nativeQuery = true
+    )
+    fun countCreated(language: LanguageName, userId: UUID): CountingSummary
 
     // ------
     // UPDATE

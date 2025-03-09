@@ -6,6 +6,7 @@ import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.enums.persistence.language.LanguageName
@@ -75,4 +76,9 @@ interface WordService : UserResourceService<Word> {
         userId: UUID,
         property: WordToggleableProperty
     ): List<Word>
+
+    fun saveNewWord(
+        word: WordDTO,
+        user: User
+    ): WordDTO
 }
