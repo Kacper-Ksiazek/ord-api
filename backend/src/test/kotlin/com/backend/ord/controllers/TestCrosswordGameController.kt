@@ -870,7 +870,7 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             @Test
-            fun `403 - User cannot finish a game that does not belong to them`() {
+            fun `404 - User cannot finish a game that does not belong to them`() {
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
                 val crosswordSavedInDb = gameMapper.toCrosswordDTO(
                     mockCrosswordGames.seedFromJSONFile(
@@ -888,7 +888,7 @@ class TestCrosswordGameController @Autowired constructor(
                 )
 
                 mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
                     it.response
                 }
             }
