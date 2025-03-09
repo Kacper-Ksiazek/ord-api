@@ -39,6 +39,7 @@ interface WordRepository :
         WHERE 
             w.translatedFrom = :language 
             AND w.user.id = :userId
+            AND date_trunc('day', w.createdAt) = date_trunc('day', CURRENT_DATE)
         """
     )
     fun countWordsCreatedToday(language: LanguageName, userId: UUID): Int
@@ -49,11 +50,37 @@ interface WordRepository :
         WHERE 
             w.translatedFrom = :language 
             AND w.user.id = :userId 
-            AND MONTH(w.createdAt) = MONTH(CURRENT_DATE) 
-            AND YEAR(w.createdAt) = YEAR(CURRENT_DATE)
+            AND date_trunc('week', w.createdAt) = date_trunc('week', CURRENT_DATE)
+        """
+    )
+    fun countWordsCreatedInThisWeek(language: LanguageName, userId: UUID): Int
+
+    @Query
+        (
+        """
+        SELECT COUNT(w) FROM Word w 
+        WHERE 
+            w.translatedFrom = :language 
+            AND w.user.id = :userId 
+            AND w.isCompleted = true
+            AND date_trunc('day', w.completedAt) = date_trunc('day', CURRENT_DATE)
         """
     )
     fun countWordsCreatedInThisMonth(language: LanguageName, userId: UUID): Int
+    fun countWordsCompletedToday(language: LanguageName, userId: UUID): Int
+
+    @Query
+        (
+        """
+        SELECT COUNT(w) FROM Word w 
+        WHERE
+            w.translatedFrom = :language 
+            AND w.user.id = :userId 
+            AND w.isCompleted = true
+            AND date_trunc('week', w.completedAt) = date_trunc('week', CURRENT_DATE)
+        """
+    )
+    fun countWordsCompletedInThisWeek(language: LanguageName, userId: UUID): Int
 
     // ------
     // UPDATE
