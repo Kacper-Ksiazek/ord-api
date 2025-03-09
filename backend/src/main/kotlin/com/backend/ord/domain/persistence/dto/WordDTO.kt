@@ -32,6 +32,7 @@ class WordDTO(
 
     var bankGroupId: UUID? = bank?.bankGroupId,
 
+    var completedAt: Instant? = null,
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),
 )

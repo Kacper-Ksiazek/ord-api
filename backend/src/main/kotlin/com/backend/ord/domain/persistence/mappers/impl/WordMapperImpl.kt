@@ -36,7 +36,8 @@ class WordMapperImpl(
             bank = bankMapper.toEntityOrNull(dto.bank),
 
             createdAt = dto.createdAt,
-            updatedAt = dto.updatedAt
+            updatedAt = dto.updatedAt,
+            completedAt = dto.completedAt
         )
     }
 
@@ -66,7 +67,8 @@ class WordMapperImpl(
             bankGroupId = entity.bank?.bankGroupId,
 
             createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt
+            updatedAt = entity.updatedAt,
+            completedAt = entity.completedAt
         )
     }
 }

@@ -80,6 +80,9 @@ data class Word(
     @Column(name = "bank_group_id", nullable = true, updatable = false)
     var bankGroupId: UUID? = bank?.bankGroupId,
 
+    @Column(name = "completed_at", nullable = true)
+    var completedAt: Instant? = null,
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     var createdAt: Instant = Instant.now(),
