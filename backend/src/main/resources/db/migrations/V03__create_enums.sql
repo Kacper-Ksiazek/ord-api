@@ -37,10 +37,13 @@ CALL create_enum_type(
             'CROSSWORD_GAME_COMPLETED_FLAWLESSLY',
             'CROSSWORD_GAME_COMPLETED_WITH_MISTAKES',
             'GAME_QUIT',
+
             'WORDS_ADDED_IN_ONE_DAY_10',
-            'WORDS_ADDED_IN_ONE_DAY_25',
-            'WORDS_COMPLETED_IN_ONE_WEEK_10',
-            'WORDS_COMPLETED_IN_ONE_WEEK_25'
+            'WORDS_ADDED_IN_ONE_WEEK_50',
+
+            'WORD_COMPLETED',
+            'WORDS_COMPLETED_IN_ONE_DAY_10',
+            'WORDS_COMPLETED_IN_ONE_WEEK_30'
 
 
             -- TODO: Add more options in the future
