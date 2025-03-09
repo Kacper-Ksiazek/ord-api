@@ -126,7 +126,7 @@ class CrosswordGameController(
 
         // 3. Check all words forming a crossword
         val reviewedQuestions = gameReviewService.reviewUserAnswersAndUpdateDBPoints(
-            userId = user.id,
+            user = user,
             language = game.language,
             difficulty = game.difficulty,
             expectedAnswers = game.properAnswers.questions,

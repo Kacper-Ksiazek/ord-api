@@ -1,6 +1,7 @@
 package com.backend.ord.services
 
 import com.backend.ord.api.requests.games.data.WordUserAnswer
+import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.language.LanguageName
@@ -12,7 +13,7 @@ interface GameReviewService {
         expectedAnswers: Map<UUID, String>,
         userAnswers: Set<WordUserAnswer>,
         difficulty: GameDifficulty,
-        userId: UUID,
+        user: User,
         language: LanguageName
     ): Set<ReviewedQuestion> {
         val reviewedQuestions = reviewUserAnswers(
@@ -22,7 +23,7 @@ interface GameReviewService {
         )
 
         updateDBPointsForManyWords(
-            userId = userId,
+            user = user,
             language = language,
             reviewedQuestions = reviewedQuestions
         )
@@ -37,7 +38,7 @@ interface GameReviewService {
     ): Set<ReviewedQuestion>
 
     fun updateDBPointsForManyWords(
-        userId: UUID,
+        user: User,
         language: LanguageName,
         reviewedQuestions: Set<ReviewedQuestion>
     )
