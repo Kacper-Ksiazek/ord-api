@@ -6,6 +6,7 @@ import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.domain.infrastructure.CountingSummary
 import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
@@ -81,4 +82,8 @@ interface WordService : UserResourceService<Word> {
         word: WordDTO,
         user: User
     ): WordDTO
+
+    fun countCreated(language: LanguageName, userId: UUID): CountingSummary
+
+    fun countCompleted(language: LanguageName, userId: UUID): CountingSummary
 }

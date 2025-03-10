@@ -215,4 +215,22 @@ class WordServiceImpl(
 
         return wordMapper.toDTO(result)
     }
+
+    override fun countCreated(
+        language: LanguageName,
+        userId: UUID
+    ): CountingSummary {
+        return CountingSummary(
+            repository.countCreated(language = language, userId = userId)
+        )
+    }
+
+    override fun countCompleted(
+        language: LanguageName,
+        userId: UUID
+    ): CountingSummary {
+        return CountingSummary(
+            repository.countCompleted(language = language, userId = userId)
+        )
+    }
 }

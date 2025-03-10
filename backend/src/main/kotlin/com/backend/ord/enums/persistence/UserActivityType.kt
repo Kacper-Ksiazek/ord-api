@@ -13,7 +13,6 @@ enum class UserActivityType(
     WORDS_ADDED_IN_ONE_DAY_10(points = 30, frequency = UserActivityFrequency.DAILY),
     WORDS_ADDED_IN_ONE_WEEK_50(points = 50, frequency = UserActivityFrequency.DAILY),
 
-    // TODO: Implement these 2 user activities on game gameReviewService
     WORD_COMPLETED(points = 10),
     WORDS_COMPLETED_IN_ONE_DAY_10(points = 50, frequency = UserActivityFrequency.WEEKLY),
     WORDS_COMPLETED_IN_ONE_WEEK_30(points = 100, frequency = UserActivityFrequency.WEEKLY)

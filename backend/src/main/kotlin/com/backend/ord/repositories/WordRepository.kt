@@ -1,6 +1,6 @@
 package com.backend.ord.repositories
 
-import com.backend.ord.domain.infrastructure.CountingSummary
+import com.backend.ord.domain.infrastructure.CountingSummaryProjection
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.repositories.bases.UserResourceRepository
@@ -35,58 +35,28 @@ interface WordRepository :
     // ------
 
     @Query(
-        """
-        SELECT COUNT(w) FROM Word w 
-        WHERE 
-            w.translatedFrom = :language 
-            AND w.user.id = :userId
-            AND date_trunc('day', w.createdAt) = date_trunc('day', CURRENT_DATE)
-        """
-    )
-    fun countWordsCreatedToday(language: LanguageName, userId: UUID): Int
-
-    @Query(
-        """
-        SELECT COUNT(w) FROM Word w 
-        WHERE 
-            w.translatedFrom = :language 
-            AND w.user.id = :userId 
-            AND date_trunc('week', w.createdAt) = date_trunc('week', CURRENT_DATE)
-        """
-    )
-    fun countWordsCreatedInThisWeek(language: LanguageName, userId: UUID): Int
-
-    @Query
-        (
-        """
-        SELECT COUNT(w) FROM Word w 
-        WHERE 
-            w.translatedFrom = :language 
-            AND w.user.id = :userId 
-            AND w.isCompleted = true
-            AND date_trunc('day', w.completedAt) = date_trunc('day', CURRENT_DATE)
-        """
-    )
-    fun countWordsCompletedToday(language: LanguageName, userId: UUID): Int
-
-    @Query
-        (
-        """
-        SELECT COUNT(w) FROM Word w 
-        WHERE
-            w.translatedFrom = :language 
-            AND w.user.id = :userId 
-            AND w.isCompleted = true
-            AND date_trunc('week', w.completedAt) = date_trunc('week', CURRENT_DATE)
-        """
-    )
-    fun countWordsCompletedInThisWeek(language: LanguageName, userId: UUID): Int
-
-    @Query(
-        value = "SELECT * FROM count_words_by_field('created_at', :language, :userId) cs",
+        value = """
+            SELECT * FROM count_words_by_field(
+                'created_at', 
+                cast(:language as text), 
+                :userId
+            )
+        """,
         nativeQuery = true
     )
-    fun countCreated(language: LanguageName, userId: UUID): CountingSummary
+    fun countCreated(language: LanguageName, userId: UUID): CountingSummaryProjection
+
+    @Query(
+        value = """
+            SELECT * FROM count_words_by_field(
+                'completed_at', 
+                cast(:language as text), 
+                :userId
+            )
+        """,
+        nativeQuery = true
+    )
+    fun countCompleted(language: LanguageName, userId: UUID): CountingSummaryProjection
 
     // ------
     // UPDATE
