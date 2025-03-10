@@ -7,8 +7,10 @@ import com.backend.ord.api.requests.word.enums.toggleProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.domain.infrastructure.CountingSummary
 import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.enums.persistence.UserActivityType
@@ -187,28 +189,26 @@ class WordServiceImpl(
         val result = repository.save(wordMapper.toEntity(word))
         val language = word.translatedFrom
 
-        repository.countWordsCreatedToday(
-            language = language,
-            userId = user.id
-        ).let {
-            if (it >= 10) {
-                userActivityLogService.log(
-                    user = user,
-                    type = UserActivityType.WORDS_ADDED_IN_ONE_DAY_10,
-                    language = language,
+        val userActivityLogsToSave: MutableSet<UserActivityLog> = mutableSetOf()
+
+        countCreated(language = language, userId = user.id).let {
+            if (it.today >= 10) {
+                userActivityLogsToSave.add(
+                    UserActivityLog(
+                        user = user,
+                        type = UserActivityType.WORDS_ADDED_IN_ONE_DAY_10,
+                        language = language,
+                    )
                 )
             }
-        }
 
-        repository.countWordsCreatedInThisWeek(
-            language = language,
-            userId = user.id
-        ).let {
-            if (it >= 50) {
-                userActivityLogService.log(
-                    user = user,
-                    type = UserActivityType.WORDS_ADDED_IN_ONE_WEEK_50,
-                    language = language,
+            if (it.week >= 50) {
+                userActivityLogsToSave.add(
+                    UserActivityLog(
+                        user = user,
+                        type = UserActivityType.WORDS_ADDED_IN_ONE_WEEK_50,
+                        language = language,
+                    )
                 )
             }
         }

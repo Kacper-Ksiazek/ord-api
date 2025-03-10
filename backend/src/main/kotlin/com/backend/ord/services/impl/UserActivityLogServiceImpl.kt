@@ -70,4 +70,16 @@ class UserActivityLogServiceImpl(
             difficulty = difficulty
         )
     }
+
+    override fun logMany(userActivityLogs: Set<UserActivityLog>): Set<UserActivityLog> {
+        return repository.saveAll(
+            userActivityLogs.filter {
+                checkIfLogCanBeAdded(
+                    userId = it.user.id,
+                    type = it.type,
+                    language = it.language
+                )
+            }
+        ).toSet()
+    }
 }

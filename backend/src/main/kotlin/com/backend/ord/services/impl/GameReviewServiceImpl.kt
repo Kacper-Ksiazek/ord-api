@@ -9,9 +9,10 @@ import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.repositories.UserActivityLogRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.services.GameReviewService
+import com.backend.ord.services.UserActivityLogService
+import com.backend.ord.services.WordService
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.*
@@ -19,7 +20,8 @@ import java.util.*
 @Service
 class GameReviewServiceImpl(
     val wordRepository: WordRepository,
-    val userActivityLogRepository: UserActivityLogRepository
+    val userActivityLogService: UserActivityLogService,
+    val wordService: WordService
 ) : GameReviewService {
     override fun reviewUserAnswers(
         expectedAnswers: Map<UUID, String>,
@@ -82,11 +84,10 @@ class GameReviewServiceImpl(
         }
 
         wordRepository.saveAll(wordsToSave)
-        userActivityLogRepository.saveAll(userActivityLogsToSave)
 
-        wordRepository.countWordsCompletedToday(language = language, userId = user.id).let {
-            if (it >= 10) {
-                userActivityLogRepository.save(
+        wordService.countCompleted(language = language, userId = user.id).let {
+            if (it.today >= 10) {
+                userActivityLogsToSave.add(
                     UserActivityLog(
                         user = user,
                         type = UserActivityType.WORDS_COMPLETED_IN_ONE_DAY_10,
@@ -94,11 +95,9 @@ class GameReviewServiceImpl(
                     )
                 )
             }
-        }
 
-        wordRepository.countWordsCompletedInThisWeek(language = language, userId = user.id).let {
-            if (it >= 30) {
-                userActivityLogRepository.save(
+            if (it.week >= 30) {
+                userActivityLogsToSave.add(
                     UserActivityLog(
                         user = user,
                         type = UserActivityType.WORDS_COMPLETED_IN_ONE_WEEK_30,
@@ -107,6 +106,8 @@ class GameReviewServiceImpl(
                 )
             }
         }
+
+        userActivityLogService.logMany(userActivityLogsToSave)
     }
 
 }

@@ -1,6 +1,7 @@
 package com.backend.ord.services
 
 import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.language.LanguageName
@@ -24,4 +25,6 @@ interface UserActivityLogService {
         language: LanguageName,
         difficulty: GameDifficulty? = null
     ): Boolean
+
+    fun logMany(userActivityLogs: Set<UserActivityLog>): Set<UserActivityLog>
 }
