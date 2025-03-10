@@ -19,7 +19,6 @@ import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.GameReviewService
 import com.backend.ord.services.GameService
-import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -40,7 +39,6 @@ class CrosswordGameController(
     private val gameService: GameService,
     private val gameTokensUsageService: GameTokensUsageService,
     private val gameMapper: GameMapper,
-    private val wordService: WordService,
     private val gameReviewService: GameReviewService
 
 ) {

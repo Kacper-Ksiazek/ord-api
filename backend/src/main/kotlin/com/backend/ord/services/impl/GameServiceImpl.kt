@@ -5,6 +5,7 @@ import com.backend.ord.domain.persistence.entities.pivots.WordUsedInGame
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameStatus
+import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.GameRepository
@@ -15,6 +16,17 @@ import com.backend.ord.utils.data_classes.Percentage
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+
+private fun Game.getUserActivityType(): UserActivityType {
+    return when (type) {
+        GameType.CROSSWORD -> when (grade) {
+            GameGrade.S -> UserActivityType.CROSSWORD_GAME_COMPLETED_FLAWLESSLY
+            else -> UserActivityType.CROSSWORD_GAME_COMPLETED_WITH_MISTAKES
+        }
+
+        else -> throw IllegalArgumentException("User activity type not defined for game type $this")
+    }
+}
 
 @Service
 class GameServiceImpl(
@@ -32,6 +44,14 @@ class GameServiceImpl(
 
         game.status = GameStatus.COMPLETED
         game.grade = GameGrade.fromPercentage(Percentage(finalScore))
+
+        // TODO: Test this & adjust existing tests
+        userActivityLogService.log(
+            userId = game.user.id,
+            type = game.getUserActivityType(),
+            language = game.language,
+            difficulty = game.difficulty
+        )
 
         return repository.save(game)
     }
