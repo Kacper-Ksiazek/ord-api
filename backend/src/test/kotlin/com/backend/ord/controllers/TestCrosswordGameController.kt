@@ -17,16 +17,14 @@ import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
 import com.backend.ord.domain.persistence.mappers.GameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.application.game.AnswerScore
+import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameStatus
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
-import com.backend.ord.repositories.GameRepository
-import com.backend.ord.repositories.LanguageProficiencyRepository
-import com.backend.ord.repositories.UserRepository
-import com.backend.ord.repositories.WordRepository
+import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.repositories.pivots.WordsUsedInGamesRepository
 import com.backend.ord.seeders.entities.UserSeeder
@@ -75,7 +73,8 @@ class TestCrosswordGameController @Autowired constructor(
     private val gameTokensUsageRepository: GameTokensUsageRepository,
     private val wordsUsedInGamesRepository: WordsUsedInGamesRepository,
     private val mockCrosswordGames: MockCrosswordGames,
-    private val wordMockFactory: WordMockFactory
+    private val wordMockFactory: WordMockFactory,
+    private val userActivityLogRepository: UserActivityLogRepository
 ) : ControllerTestBase(
     mockMvc = mockMvc!!,
     objectMapper = objectMapper,
@@ -641,6 +640,17 @@ class TestCrosswordGameController @Autowired constructor(
 
                 response.finalScore shouldBe 100.0
                 response.grade shouldBe GameGrade.S
+
+
+                val logs = userActivityLogRepository.findAllForUser(authenticatedUser.userInfo.id)
+                logs shouldHaveSize 1
+
+                logs.first().let {
+                    it.type shouldBe UserActivityType.CROSSWORD_GAME_COMPLETED_FLAWLESSLY
+                    it.language shouldBe crosswordSavedInDb.language
+                    it.points shouldBe UserActivityType.CROSSWORD_GAME_COMPLETED_FLAWLESSLY.points
+                    it.gameDifficulty shouldBe crosswordSavedInDb.difficulty
+                }
             }
 
             @Test
