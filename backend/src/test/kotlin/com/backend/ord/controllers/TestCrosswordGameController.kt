@@ -628,10 +628,38 @@ class TestCrosswordGameController @Autowired constructor(
                 return getResponseBody<FinishedCrosswordGameResponse>(response)
             }
 
+            private fun assertUserActivityLogForCompletingCrossword(expectedType: UserActivityType) {
+                val logs = userActivityLogRepository.findAllForUser(authenticatedUser.userInfo.id)
+                logs shouldHaveSize 1
+
+                logs.first().let {
+                    it.type shouldBe expectedType
+                    it.language shouldBe crosswordSavedInDb.language
+                    it.points shouldBe expectedType.points
+                    it.gameDifficulty shouldBe crosswordSavedInDb.difficulty
+                }
+            }
+
             @Test
             fun `200 - Game should be marked as COMPLETED`() {
                 finishCrosswordGame()
                 gameRepository.findByIdOrNull(crosswordSavedInDb.id)?.status shouldBe GameStatus.COMPLETED
+            }
+
+            @Test
+            fun `200 - Proper user activity log should be assigned after completing the game flawlessly`() {
+                finishCrosswordGame()
+
+                assertUserActivityLogForCompletingCrossword(UserActivityType.CROSSWORD_GAME_COMPLETED_FLAWLESSLY)
+            }
+
+            @Test
+            fun `200 - Proper user activity log should be assigned after completing the game with mistakes`() {
+                finishCrosswordGame(
+                    numberOfProperAnswers = 9
+                )
+
+                assertUserActivityLogForCompletingCrossword(UserActivityType.CROSSWORD_GAME_COMPLETED_WITH_MISTAKES)
             }
 
             @Test
@@ -640,17 +668,6 @@ class TestCrosswordGameController @Autowired constructor(
 
                 response.finalScore shouldBe 100.0
                 response.grade shouldBe GameGrade.S
-
-
-                val logs = userActivityLogRepository.findAllForUser(authenticatedUser.userInfo.id)
-                logs shouldHaveSize 1
-
-                logs.first().let {
-                    it.type shouldBe UserActivityType.CROSSWORD_GAME_COMPLETED_FLAWLESSLY
-                    it.language shouldBe crosswordSavedInDb.language
-                    it.points shouldBe UserActivityType.CROSSWORD_GAME_COMPLETED_FLAWLESSLY.points
-                    it.gameDifficulty shouldBe crosswordSavedInDb.difficulty
-                }
             }
 
             @Test
@@ -704,7 +721,6 @@ class TestCrosswordGameController @Autowired constructor(
                 )
 
                 assertPointsForMistakesWereAssignedProperly(response, alteredAnswers)
-
             }
 
             @Test
