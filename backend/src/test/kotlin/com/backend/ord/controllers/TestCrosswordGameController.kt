@@ -827,6 +827,10 @@ class TestCrosswordGameController @Autowired constructor(
                 )
 
                 wordRepository.findAllForUser(authenticatedUser.userInfo.id).forEach {
+                    if (alteredAnswers.find { alteredAnswer -> alteredAnswer.originalAnswer == it.origin } != null) {
+                        return@forEach
+                    }
+
                     it.points shouldBeGreaterThanOrEqual GamesConfig.Points.COMPLETE_WORD_THRESHOLD
                     it.isCompleted shouldBe true
                 }
