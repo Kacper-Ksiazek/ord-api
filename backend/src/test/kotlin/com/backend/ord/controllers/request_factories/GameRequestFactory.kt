@@ -68,4 +68,16 @@ class GameRequestFactory(
             )
     }
 
+    fun cancelGameRequest(
+        authenticatedUser: MockedAuthenticatedUser? = null,
+        gameId: UUID? = null,
+    ): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders
+            .delete("/api/v1/games/cancel/$gameId")
+            .apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+            }
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+    }
 }

@@ -561,29 +561,13 @@ class TestCrosswordGameController @Autowired constructor(
             lateinit var authenticatedUser: MockedAuthenticatedUser
             lateinit var crosswordSavedInDb: CrosswordGameDTO
 
-            private fun prepareCrosswordGame(difficulty: GameDifficulty = GameDifficulty.HARD) {
-                authenticatedUser = mockAuthenticatedUser()
-                crosswordSavedInDb = gameMapper.toCrosswordDTO(
-                    mockCrosswordGames.seedFromJSONFile(
-                        user = userMapper.toEntity(authenticatedUser.userInfo)
-                    ).filter { it.difficulty == difficulty }.random()
-                )
-
-                val userEntity = userMapper.toEntity(authenticatedUser.userInfo)
-                wordRepository.saveAll(
-                    crosswordSavedInDb.properAnswers.questions.values.map {
-                        wordMockFactory.mockEntity(
-                            origin = it,
-                            translatedFrom = crosswordSavedInDb.language,
-                            user = userEntity
-                        )
-                    }
-                )
-            }
 
             @BeforeEach
             fun beforeEach() {
-                prepareCrosswordGame()
+                prepareCrosswordGame().let {
+                    authenticatedUser = it.first
+                    crosswordSavedInDb = it.second
+                }
             }
 
             @AfterEach
@@ -864,7 +848,6 @@ class TestCrosswordGameController @Autowired constructor(
                 response.properQuestionsAnswers.forEach {
                     val correspondingWordEntity =
                         wordsUsedInGame.find { word -> word.origin.lowercase() == it.expectedAnswer.lowercase() }
-
                     val correspondingAlteredAnswer: AlteredProperAnswer? = alteredAnswers.find { alteredAnswer ->
                         alteredAnswer.questionId == it.id
                     }
@@ -995,6 +978,67 @@ class TestCrosswordGameController @Autowired constructor(
         }
     }
 
+    @Nested
+    @DisplayName("[DELETE] /api/v1/games/cancel/{gameId} - cancel a crossword game")
+    inner class CancelCrosswordGame {
+        @Nested
+        @DisplayName("Positive")
+        @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+        @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+        inner class Positive {
+            lateinit var authenticatedUser: MockedAuthenticatedUser
+            lateinit var crosswordSavedInDb: CrosswordGameDTO
+
+            @BeforeEach
+            fun beforeEach() {
+                prepareCrosswordGame().let {
+                    authenticatedUser = it.first
+                    crosswordSavedInDb = it.second
+                }
+            }
+
+            @AfterEach
+            fun afterEach() {
+                userRepository.deleteById(authenticatedUser.userInfo.id)
+            }
+
+            private fun cancelGame() {
+                mockMvc.perform(
+                    gameRequestFactory.cancelGameRequest(
+                        authenticatedUser = authenticatedUser,
+                        gameId = crosswordSavedInDb.id
+                    )
+                ).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NO_CONTENT.value()
+                }
+            }
+
+            @Test
+            fun `200 - Crossword game can be canceled`() {
+                cancelGame()
+
+                gameRepository.findByIdOrNull(crosswordSavedInDb.id)?.status shouldBe GameStatus.CANCELED
+            }
+
+            @Test
+            fun `200 - User activity log should be assigned after canceling the game`() {
+                cancelGame()
+
+                val logs = userActivityLogRepository.findAllForUser(authenticatedUser.userInfo.id)
+                logs shouldHaveSize 1
+
+                logs.first().let {
+                    it.type shouldBe UserActivityType.GAME_QUIT
+                    it.language shouldBe crosswordSavedInDb.language
+                    it.points shouldBe UserActivityType.GAME_QUIT.points
+                    it.gameDifficulty shouldBe crosswordSavedInDb.difficulty
+                }
+            }
+        }
+
+
+    }
+
     private object CrosswordDefaultValues {
         val language = LanguageName.ENGLISH
         val difficulty = GameDifficulty.HARD
@@ -1049,4 +1093,27 @@ class TestCrosswordGameController @Autowired constructor(
             crosswordSavedInDb
         )
     }
+
+    private fun prepareCrosswordGame(difficulty: GameDifficulty = GameDifficulty.HARD): Pair<MockedAuthenticatedUser, CrosswordGameDTO> {
+        val authenticatedUser = mockAuthenticatedUser()
+        val crosswordSavedInDb = gameMapper.toCrosswordDTO(
+            mockCrosswordGames.seedFromJSONFile(
+                user = userMapper.toEntity(authenticatedUser.userInfo)
+            ).filter { it.difficulty == difficulty }.random()
+        )
+
+        val userEntity = userMapper.toEntity(authenticatedUser.userInfo)
+        wordRepository.saveAll(
+            crosswordSavedInDb.properAnswers.questions.values.map {
+                wordMockFactory.mockEntity(
+                    origin = it,
+                    translatedFrom = crosswordSavedInDb.language,
+                    user = userEntity
+                )
+            }
+        )
+
+        return Pair(authenticatedUser, crosswordSavedInDb)
+    }
+
 }
