@@ -1013,33 +1013,6 @@ class TestCrosswordGameController @Autowired constructor(
         @TestInstance(TestInstance.Lifecycle.PER_CLASS)
         @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Positive {
-            lateinit var authenticatedUser: MockedAuthenticatedUser
-            lateinit var crosswordSavedInDb: CrosswordGameDTO
-
-            @BeforeEach
-            fun beforeEach() {
-                prepareCrosswordGame().let {
-                    authenticatedUser = it.first
-                    crosswordSavedInDb = it.second
-                }
-            }
-
-            @AfterEach
-            fun afterEach() {
-                userRepository.deleteById(authenticatedUser.userInfo.id)
-            }
-
-            private fun cancelGame() {
-                mockMvc.perform(
-                    gameRequestFactory.cancelGameRequest(
-                        authenticatedUser = authenticatedUser,
-                        gameId = crosswordSavedInDb.id
-                    )
-                ).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NO_CONTENT.value()
-                }
-            }
-
             @Test
             fun `200 - Crossword game can be canceled`() {
                 cancelGame()
@@ -1061,6 +1034,42 @@ class TestCrosswordGameController @Autowired constructor(
                     it.gameDifficulty shouldBe crosswordSavedInDb.difficulty
                 }
             }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+        @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+        inner class Negative {
+            @Test
+            fun `400 - Game cannot be cancelled twice`() {
+                cancelGame()
+
+                cancelGame(
+                    expectedStatus = HttpStatus.BAD_REQUEST.value()
+                )
+            }
+
+            @Test
+            fun `403 - Unauthorized user cannot cancel a crossword game`() {
+                cancelGame(
+                    authenticatedUser = null,
+                    expectedStatus = HttpStatus.FORBIDDEN.value()
+                )
+
+                gameRepository.findByIdOrNull(crosswordSavedInDb.id)?.status shouldBe crosswordSavedInDb.status
+            }
+
+            @Test
+            fun `404 - User cannot cancel somebody else game`() {
+                cancelGame(
+                    authenticatedUser = mockAuthenticatedUser(),
+                    expectedStatus = HttpStatus.NOT_FOUND.value()
+                )
+
+                gameRepository.findByIdOrNull(crosswordSavedInDb.id)?.status shouldBe crosswordSavedInDb.status
+            }
+
         }
 
 
