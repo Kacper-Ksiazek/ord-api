@@ -28,7 +28,6 @@ import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.repositories.pivots.WordsUsedInGamesRepository
 import com.backend.ord.seeders.entities.UserSeeder
-import com.backend.ord.seeders.factories.UserMockFactory
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.seeders.mocks.games.MockCrosswordGames
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
@@ -85,9 +84,6 @@ class TestCrosswordGameController @Autowired constructor(
 ) {
     @Autowired
     private lateinit var userSeeder: UserSeeder
-
-    @Autowired
-    private lateinit var userMockFactory: UserMockFactory
 
     @Autowired
     private lateinit var userRepository: UserRepository
