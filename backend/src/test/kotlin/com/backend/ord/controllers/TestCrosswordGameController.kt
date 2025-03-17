@@ -981,6 +981,37 @@ class TestCrosswordGameController @Autowired constructor(
     @Nested
     @DisplayName("[DELETE] /api/v1/games/cancel/{gameId} - cancel a crossword game")
     inner class CancelCrosswordGame {
+        lateinit var authenticatedUser: MockedAuthenticatedUser
+        lateinit var crosswordSavedInDb: CrosswordGameDTO
+
+        @BeforeEach
+        fun beforeEach() {
+            prepareCrosswordGame().let {
+                authenticatedUser = it.first
+                crosswordSavedInDb = it.second
+            }
+        }
+
+        @AfterEach
+        fun afterEach() {
+            userRepository.deleteById(authenticatedUser.userInfo.id)
+        }
+
+        private fun cancelGame(
+            authenticatedUser: MockedAuthenticatedUser? = this.authenticatedUser,
+            expectedStatus: Int = HttpStatus.NO_CONTENT.value()
+        ) {
+            mockMvc.perform(
+                gameRequestFactory.cancelGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = crosswordSavedInDb.id
+                )
+            ).andReturn().let {
+                it.response.status shouldBe expectedStatus
+            }
+        }
+
+
         @Nested
         @DisplayName("Positive")
         @TestInstance(TestInstance.Lifecycle.PER_CLASS)
