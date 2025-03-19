@@ -8,7 +8,6 @@ import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
-import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.extensions.compareWith
 import com.backend.ord.controllers.extensions.detectChanges
 import com.backend.ord.controllers.request_factories.WordRequestFactory
@@ -22,12 +21,10 @@ import com.backend.ord.domain.persistence.embedded.ExampleSentence
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
-import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
@@ -59,7 +56,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import java.util.*
 
@@ -68,9 +64,7 @@ import java.util.*
 @AutoConfigureMockMvc
 @DisplayName("- WordsController")
 class TestWordsController @Autowired constructor(
-    mockMvc: MockMvc?,
     objectMapper: ObjectMapper,
-    jwtProperties: JwtProperties,
     private val wordService: WordService,
     private val wordRepository: WordRepository,
     private val bankSeeder: BankSeeder,
@@ -80,17 +74,7 @@ class TestWordsController @Autowired constructor(
     private val wordSeeder: WordSeeder,
     private val wordMapper: WordMapper,
     private val bankGroupSeeder: BankGroupSeeder,
-    private val languageProficiencyRepository: LanguageProficiencyRepository,
-    private val userMapper: UserMapper
-
-) : ControllerTestBase(
-    mockMvc = mockMvc!!,
-    objectMapper = objectMapper,
-
-    userMapper = userMapper,
-    jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository,
-) {
+) : ControllerTestBase(objectMapper) {
     @Autowired
     private lateinit var wordMockFactory: WordMockFactory
 

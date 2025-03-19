@@ -9,6 +9,7 @@ import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.LanguageProficiencyRepository
+import com.backend.ord.repositories.UserRepository
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.javafaker.Faker
@@ -23,15 +24,25 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import kotlin.test.assertNotNull
 
 @AutoConfigureMockMvc
-abstract class ControllerTestBase @Autowired constructor(
-    val objectMapper: ObjectMapper,
-    protected val mockMvc: MockMvc,
-
-    private val jwtProperties: JwtProperties,
-    private val userMapper: UserMapper,
-    private val languageProficiencyRepository: LanguageProficiencyRepository
+abstract class ControllerTestBase(
+    val objectMapper: ObjectMapper
 ) {
     val faker = Faker()
+
+    @Autowired
+    lateinit var mockMvc: MockMvc
+
+    @Autowired
+    lateinit var jwtProperties: JwtProperties
+
+    @Autowired
+    lateinit var userMapper: UserMapper
+
+    @Autowired
+    lateinit var languageProficiencyRepository: LanguageProficiencyRepository
+
+    @Autowired
+    lateinit var userRepository: UserRepository
 
     fun mockAuthenticatedUser(
         email: String = faker.internet().emailAddress(),

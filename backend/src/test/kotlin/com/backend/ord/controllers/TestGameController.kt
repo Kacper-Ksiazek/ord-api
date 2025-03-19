@@ -1,37 +1,32 @@
 package com.backend.ord.controllers
 
-import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.controllers.utils_for_testing.bases.GameControllerTestBase
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
-import com.backend.ord.repositories.LanguageProficiencyRepository
+import com.backend.ord.enums.persistence.UserActivityType
+import com.backend.ord.enums.persistence.game.GameStatus
+import com.backend.ord.repositories.UserActivityLogRepository
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @AutoConfigureMockMvc
 @DisplayName("- CrosswordGameController")
-class TestGameController(
-    mockMvc: MockMvc?,
+class TestGameController @Autowired constructor(
     objectMapper: ObjectMapper,
-    jwtProperties: JwtProperties,
-    languageProficiencyRepository: LanguageProficiencyRepository,
-) : GameControllerTestBase(
-    mockMvc = mockMvc!!,
-    objectMapper = objectMapper,
-
-    jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository,
-) {
+    private val userActivityLogRepository: UserActivityLogRepository,
+) : GameControllerTestBase(objectMapper) {
     @Nested
     @DisplayName("[DELETE] /api/v1/games/cancel/{gameId} - cancel a crossword game")
     inner class CancelCrosswordGame {
@@ -131,27 +126,5 @@ class TestGameController(
         }
 
 
-    }
-
-    private fun prepareCrosswordGame(difficulty: GameDifficulty = GameDifficulty.HARD): Pair<MockedAuthenticatedUser, CrosswordGameDTO> {
-        val authenticatedUser = mockAuthenticatedUser()
-        val crosswordSavedInDb = gameMapper.toCrosswordDTO(
-            mockCrosswordGames.seedFromJSONFile(
-                user = userMapper.toEntity(authenticatedUser.userInfo)
-            ).filter { it.difficulty == difficulty }.random()
-        )
-
-        val userEntity = userMapper.toEntity(authenticatedUser.userInfo)
-        wordRepository.saveAll(
-            crosswordSavedInDb.properAnswers.questions.values.map {
-                wordMockFactory.mockEntity(
-                    origin = it,
-                    translatedFrom = crosswordSavedInDb.language,
-                    user = userEntity
-                )
-            }
-        )
-
-        return Pair(authenticatedUser, crosswordSavedInDb)
     }
 }

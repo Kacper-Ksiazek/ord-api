@@ -5,17 +5,13 @@ import com.backend.ord.api.requests.games.data.WordUserAnswer
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
-import com.backend.ord.config.properties.JwtProperties
-import com.backend.ord.controllers.request_factories.GameRequestFactory
 import com.backend.ord.controllers.utils_for_testing.AlteredProperAnswer
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.controllers.utils_for_testing.bases.GameControllerTestBase
 import com.backend.ord.controllers.utils_for_testing.mockAnswersWithMistakes
 import com.backend.ord.controllers.utils_for_testing.toRequestBody
 import com.backend.ord.domain.application.games.Coordinates
 import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
-import com.backend.ord.domain.persistence.mappers.GameMapper
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
@@ -24,12 +20,10 @@ import com.backend.ord.enums.persistence.game.GameStatus
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
-import com.backend.ord.repositories.*
+import com.backend.ord.repositories.UserActivityLogRepository
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.repositories.pivots.WordsUsedInGamesRepository
 import com.backend.ord.seeders.entities.UserSeeder
-import com.backend.ord.seeders.factories.WordMockFactory
-import com.backend.ord.seeders.mocks.games.MockCrosswordGames
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
 import com.backend.ord.utils.games.HIDDEN_CHARACTER
@@ -52,7 +46,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
 import java.util.*
 
 @SpringBootTest
@@ -60,35 +53,12 @@ import java.util.*
 @AutoConfigureMockMvc
 @DisplayName("- CrosswordGameController")
 class TestCrosswordGameController @Autowired constructor(
-    mockMvc: MockMvc?,
     objectMapper: ObjectMapper,
-    jwtProperties: JwtProperties,
-    languageProficiencyRepository: LanguageProficiencyRepository,
-
-    private val wordRepository: WordRepository,
-    private val userMapper: UserMapper,
-    private val gameMapper: GameMapper,
-    private val gameRepository: GameRepository,
     private val gameTokensUsageRepository: GameTokensUsageRepository,
     private val wordsUsedInGamesRepository: WordsUsedInGamesRepository,
-    private val mockCrosswordGames: MockCrosswordGames,
-    private val wordMockFactory: WordMockFactory,
-    private val userActivityLogRepository: UserActivityLogRepository
-) : ControllerTestBase(
-    mockMvc = mockMvc!!,
-    objectMapper = objectMapper,
-
-    userMapper = userMapper,
-    jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository,
-) {
-    @Autowired
-    private lateinit var userSeeder: UserSeeder
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-    private val gameRequestFactory = GameRequestFactory(objectMapper)
-
+    private val userActivityLogRepository: UserActivityLogRepository,
+    private val userSeeder: UserSeeder,
+) : GameControllerTestBase(objectMapper) {
     @Nested
     @DisplayName("[POST] /api/v1/games/crossword/start - start a new crossword game")
     inner class StartCrosswordGame {
