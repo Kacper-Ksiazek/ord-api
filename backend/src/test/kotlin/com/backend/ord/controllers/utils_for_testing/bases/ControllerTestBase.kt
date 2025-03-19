@@ -12,6 +12,7 @@ import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.javafaker.Faker
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockHttpServletResponse
@@ -22,7 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import kotlin.test.assertNotNull
 
 @AutoConfigureMockMvc
-abstract class ControllerTestBase(
+abstract class ControllerTestBase @Autowired constructor(
     val objectMapper: ObjectMapper,
     protected val mockMvc: MockMvc,
 
