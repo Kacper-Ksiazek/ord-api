@@ -30,7 +30,6 @@ CREATE TABLE IF NOT EXISTS game_tokens_usages
     id                          UUID PRIMARY KEY,
 
     user_id                     UUID                              REFERENCES users (id) ON DELETE SET NULL,
-    game_id                     UUID                              REFERENCES games (id) ON DELETE SET NULL DEFAULT NULL,
 
     game_type                   game_type                         NOT NULL,
     game_difficulty             game_difficulty                   NOT NULL,
