@@ -92,14 +92,12 @@ CALL create_enum_type(
             ]
      );
 
----  GameStatus
+---  GameResult
 CALL create_enum_type(
-        'game_status',
+        'game_result',
         ARRAY [
-            'IN_PROGRESS',
             'COMPLETED',
-            'CANCELED',
-            'PAUSED'
+            'CANCELLED'
             ]
      );
 
@@ -119,7 +117,7 @@ CALL create_enum_type(
 --- Grade
 CALL create_enum_type(
         'game_grade',
-        ARRAY ['S', 'A', 'B', 'C', 'D', 'NA' ]
+        ARRAY ['S', 'A', 'B', 'C', 'D' ]
      );
 
 --- +-------------------+
