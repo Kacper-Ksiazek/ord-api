@@ -1,8 +1,6 @@
 package com.backend.ord.enums.persistence.game
 
-enum class GameStatus {
-    IN_PROGRESS,
+enum class GameResult {
     COMPLETED,
     CANCELED,
-    PAUSED;
 }
