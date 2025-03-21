@@ -3,33 +3,36 @@ package com.backend.ord.domain.persistence.entities
 import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
-import com.backend.ord.enums.persistence.game.GameStatus
+import com.backend.ord.enums.persistence.game.GameResult
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import java.util.*
 
 @Entity
-@Table(name = "games")
-data class Game(
+@Table(name = "completed_games")
+data class CompletedGame(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),
 
-    @Column(name = "final_score", nullable = false)
-    var finalScore: Int = 0,
-
     @Column(name = "duration", nullable = false)
-    var duration: String = "00:00:00",
+    var duration: String,
+
+    @Column(name = "final_score", nullable = false)
+    var finalScore: Int,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", columnDefinition = "game_type(0, 0) not null", nullable = false)
     var type: GameType,
+
+    @Column(name = "language", columnDefinition = "language_name(0, 0) not null")
+    @Enumerated(EnumType.STRING)
+    var language: LanguageName,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "difficulty", columnDefinition = "game_difficulty(0, 0) not null", nullable = false)
@@ -37,21 +40,11 @@ data class Game(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", columnDefinition = "game_status(0, 0) not null", nullable = false)
-    var status: GameStatus = GameStatus.IN_PROGRESS,
-
-    @Column(name = "language", columnDefinition = "language_name(0, 0) not null")
-    @Enumerated(EnumType.STRING)
-    var language: LanguageName,
+    var result: GameResult,
 
     @Column(name = "grade", columnDefinition = "game_grade(0, 0) not null")
     @Enumerated(EnumType.STRING)
     var grade: GameGrade = GameGrade.NA,
-
-    @Column(name = "instruction", nullable = false, columnDefinition = "json")
-    var instruction: String,
-
-    @Column(name = "proper_answers", columnDefinition = "json")
-    var properAnswers: String?,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -64,10 +57,6 @@ data class Game(
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     var createdAt: Instant = Instant.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    @UpdateTimestamp
-    var updatedAt: Instant = Instant.now()
 ) : IdentifiableUserResource {
     @PostLoad
     fun populateUserId() {
