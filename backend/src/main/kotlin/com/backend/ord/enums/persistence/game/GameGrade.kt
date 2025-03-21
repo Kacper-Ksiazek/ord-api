@@ -16,10 +16,7 @@ enum class GameGrade(val threshold: Double) {
     C(threshold = 50.0),
 
     /** Fail. */
-    D(threshold = 0.0),
-
-    /** "Not Assigned", default value for a game when it is not graded yet. */
-    NA(threshold = -1.0);
+    D(threshold = 0.0);
 
     companion object {
         fun fromPercentage(percentage: Percentage): GameGrade {
