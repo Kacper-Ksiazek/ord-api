@@ -14,8 +14,8 @@ import java.time.Instant
 import java.util.*
 
 @Entity
-@Table(name = "completed_games")
-data class CompletedGame(
+@Table(name = "finished_games")
+data class FinishedGame(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

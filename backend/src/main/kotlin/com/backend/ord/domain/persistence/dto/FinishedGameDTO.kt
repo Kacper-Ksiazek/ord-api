@@ -8,7 +8,7 @@ import com.backend.ord.enums.persistence.language.LanguageName
 import java.time.Instant
 import java.util.*
 
-data class CompletedGameDTO(
+data class FinishedGameDTO(
     val id: UUID = UUID.randomUUID(),
 
     val duration: String,

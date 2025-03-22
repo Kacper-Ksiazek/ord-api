@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS ongoing_games
     created_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS completed_games
+CREATE TABLE IF NOT EXISTS finished_games
 (
     id          UUID PRIMARY KEY,
 
