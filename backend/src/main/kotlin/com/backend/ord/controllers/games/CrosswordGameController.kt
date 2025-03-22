@@ -86,12 +86,6 @@ class CrosswordGameController(
             gameToAssign = savedGame
         )
 
-        // 6. Save pivot entities for words used in the game
-        gameService.saveAllWordsUsedInAGame(
-            wordsIds = usedWordsIds,
-            gameId = savedGame.id
-        )
-
         return ResponseEntity.ok(
             StartedCrosswordGameResponse(
                 gameId = savedGame.id,
