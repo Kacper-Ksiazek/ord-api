@@ -59,12 +59,17 @@ fun OngoingGame.finish(
     duration: String,
     result: GameResult
 ): FinishedGame {
+    val grade = when (result) {
+        GameResult.COMPLETED -> GameGrade.fromPercentage(Percentage(finalScore))
+        else -> GameGrade.NA
+    }
+
     return FinishedGame(
         duration = duration,
         finalScore = finalScore,
 
         type = type,
-        grade = GameGrade.fromPercentage(Percentage(finalScore)),
+        grade = grade,
         result = result,
         language = language,
         difficulty = difficulty,
