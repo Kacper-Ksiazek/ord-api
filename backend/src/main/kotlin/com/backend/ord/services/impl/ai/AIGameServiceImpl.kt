@@ -94,7 +94,6 @@ class AIGameServiceImpl(
         return AIGameService.Companion.GeneratedCrossWordGame(
             aiGeneratedCrossword = aiGeneratedCrossword,
             gameTokensUsageLogs = gameTokensUsageLogs,
-            wordsUsedIds = words.map { it.id }.toSet(),
             properAnswers = CrosswordProperAnswers(
                 finalWord = aiGeneratedCrossword.answer,
                 questions = aiGeneratedCrossword.questions.associate { it.id to it.word }

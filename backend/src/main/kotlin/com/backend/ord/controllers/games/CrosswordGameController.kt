@@ -8,17 +8,16 @@ import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameRespon
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
+import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
-import com.backend.ord.domain.persistence.entities.Game
+import com.backend.ord.domain.persistence.entities.OngoingGame
 import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.domain.persistence.mappers.GameMapper
+import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.enums.application.game.AnswerScore
-import com.backend.ord.enums.persistence.game.GameStatus
 import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.GameReviewService
 import com.backend.ord.services.GameService
+import com.backend.ord.services.OngoingGameService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -37,8 +36,9 @@ class CrosswordGameController(
     private val aiGameService: AIGameService,
     private val jwtService: JwtService,
     private val gameService: GameService,
+    private val ongoingGameService: OngoingGameService,
     private val gameTokensUsageService: GameTokensUsageService,
-    private val gameMapper: GameMapper,
+    private val ongoingGameMapper: OngoingGameMapper,
     private val gameReviewService: GameReviewService
 
 ) {
@@ -56,7 +56,7 @@ class CrosswordGameController(
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         // 2. Generate crossword game using AI
-        val (properAnswers, aiGeneratedCrosswordBase, usedWordsIds, gpTokensUsageLogs) = aiGameService.generateCrosswordGame(
+        val (properAnswers, aiGeneratedCrosswordBase, gpTokensUsageLogs) = aiGameService.generateCrosswordGame(
             user = user,
             language = body.language,
             difficulty = body.difficulty
@@ -69,13 +69,12 @@ class CrosswordGameController(
         )
 
         // 4. Save the game in the database
-        val savedGame: Game = gameService.save(
-            Game(
+        val savedGame: OngoingGame = ongoingGameService.save(
+            OngoingGame(
                 user = user,
                 difficulty = body.difficulty,
                 type = GameType.CROSSWORD,
                 language = body.language,
-                instruction = jsonObjectMapper.writeValueAsString(instruction),
                 properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
             )
         )
@@ -105,16 +104,11 @@ class CrosswordGameController(
         request: HttpServletRequest,
         @Valid @RequestBody body: CrosswordToFinishRequestData
     ): ResponseEntity<FinishedCrosswordGameResponse> {
-        // 1. Get authenticated user data and retrieve the game from the database
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
-        val game: CrosswordGameDTO = gameMapper.toCrosswordDTO(
-            entity = gameService.findByIdOrFail(id = body.gameId, userId = user.id)
-        )
 
-        // 2. Ensure the game is in progress
-        if (game.status != GameStatus.IN_PROGRESS) {
-            throw BadRequestException("The game's status is not in progress")
-        }
+        val game: OngoingCrosswordGameDTO = ongoingGameMapper.toCrosswordDTO(
+            entity = ongoingGameService.findByIdOrFail(id = body.gameId, userId = user.id)
+        )
 
         // 3. Check all words forming a crossword
         val reviewedQuestions = gameReviewService.reviewUserAnswersAndUpdateDBPoints(
@@ -128,7 +122,7 @@ class CrosswordGameController(
         // 4. Compute points received from words forming a crossword
         val pointsForQuestions: Int = GameReviewService.Companion.computeFinalScoreComponent(
             receivedPoints = reviewedQuestions.sumOf { it.userAnswerScore.wage },
-            maxPoints = game.instruction.questions.size * AnswerScore.CORRECT.wage,
+            maxPoints = game.properAnswers.questions.size * AnswerScore.CORRECT.wage,
             moduleRatio = GamesConfig.Points.ScoreFactorsRatio.Crossword.QUESTIONS
         )
 
@@ -149,8 +143,8 @@ class CrosswordGameController(
         val totalPoints: Int = pointsForQuestions + pointsForFinalWord
 
         // 7. Update the game in the database
-        gameService.finishGame(
-            game = gameMapper.toEntity(game),
+        gameService.completeGame(
+            game = game,
             finalScore = totalPoints,
             duration = body.duration
         )

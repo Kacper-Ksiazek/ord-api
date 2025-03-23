@@ -6,7 +6,6 @@ import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUs
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.services.ai.dto.AIGeneratedCrossword
-import java.util.*
 
 /**
  * Service for generating games via AI requests.
@@ -40,7 +39,6 @@ interface AIGameService {
             val properAnswers: CrosswordProperAnswers,
             val aiGeneratedCrossword: AIGeneratedCrossword,
 
-            val wordsUsedIds: Set<UUID>,
             val gameTokensUsageLogs: Set<GameTokensUsage>
         )
     }

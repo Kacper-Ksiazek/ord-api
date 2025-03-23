@@ -1,8 +1,10 @@
 package com.backend.ord.services.impl
 
+import com.backend.ord.domain.persistence.dto.OngoingGameDTO
 import com.backend.ord.domain.persistence.entities.FinishedGame
 import com.backend.ord.domain.persistence.entities.OngoingGame
 import com.backend.ord.domain.persistence.entities.finish
+import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameResult
@@ -27,6 +29,7 @@ class GameServiceImpl(
     val ongoingGameService: OngoingGameService,
     val userActivityLogService: UserActivityLogService,
     val finishedGameService: FinishedGameService,
+    val ongoingGameMapper: OngoingGameMapper,
 ) : GameService {
 
     override fun completeGame(
@@ -50,6 +53,18 @@ class GameServiceImpl(
 
             it
         }
+    }
+
+    override fun completeGame(
+        ongoingGame: OngoingGameDTO<*>,
+        finalScore: Int,
+        duration: String
+    ) {
+        completeGame(
+            ongoingGame = ongoingGameMapper.toEntity(ongoingGame),
+            finalScore,
+            duration
+        )
     }
 
     @Transactional
