@@ -5,7 +5,7 @@ import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageWithinTimePerio
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.WordTokensUsage
 import com.backend.ord.repositories.gpt_tokens_usage.WordTokensUsageRepository
-import com.backend.ord.seeders.mocks._bases.MocksFromJsonFileHandler
+import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
 import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.stereotype.Component
 
