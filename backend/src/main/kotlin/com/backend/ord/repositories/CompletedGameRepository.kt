@@ -1,7 +1,8 @@
 package com.backend.ord.repositories
 
+import com.backend.ord.domain.persistence.entities.FinishedGame
 import com.backend.ord.repositories.bases.UserResourceRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CompletedGameRepository : UserResourceRepository<CompletedGameRepository>
+interface FinishedGameRepository : UserResourceRepository<FinishedGame>
