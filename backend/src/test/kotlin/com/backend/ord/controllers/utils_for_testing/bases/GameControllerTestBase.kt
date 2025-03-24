@@ -2,10 +2,11 @@ package com.backend.ord.controllers.utils_for_testing.bases
 
 import com.backend.ord.controllers.request_factories.GameRequestFactory
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
-import com.backend.ord.domain.persistence.mappers.GameMapper
+import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
+import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
+import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.repositories.GameRepository
+import com.backend.ord.repositories.OngoingGameRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.seeders.mocks.games.MockCrosswordGames
@@ -18,13 +19,13 @@ abstract class GameControllerTestBase(
     objectMapper: ObjectMapper
 ) : ControllerTestBase(objectMapper = objectMapper) {
     @Autowired
-    lateinit var gameMapper: GameMapper
+    lateinit var ongoingGameMapper: OngoingGameMapper
 
     @Autowired
     lateinit var wordRepository: WordRepository
 
     @Autowired
-    lateinit var gameRepository: GameRepository
+    lateinit var ongoingGameRepository: OngoingGameRepository
 
     @Autowired
     lateinit var wordMockFactory: WordMockFactory
@@ -34,26 +35,33 @@ abstract class GameControllerTestBase(
 
     val gameRequestFactory: GameRequestFactory = GameRequestFactory(objectMapper)
 
-    internal fun prepareCrosswordGame(difficulty: GameDifficulty = GameDifficulty.HARD): Pair<MockedAuthenticatedUser, CrosswordGameDTO> {
+    internal fun prepareCrosswordGame(difficulty: GameDifficulty = GameDifficulty.HARD): Triple<
+            MockedAuthenticatedUser,
+            OngoingCrosswordGameDTO,
+            CrosswordInstruction
+            > {
         val authenticatedUser = mockAuthenticatedUser()
-        val crosswordSavedInDb = gameMapper.toCrosswordDTO(
-            mockCrosswordGames.seedFromJSONFile(
-                user = userMapper.toEntity(authenticatedUser.userInfo)
-            ).filter { it.difficulty == difficulty }.random()
-        )
+        val user = userMapper.toEntity(authenticatedUser.userInfo)
 
-        val userEntity = userMapper.toEntity(authenticatedUser.userInfo)
+        val (crosswordSavedInDb, crosswordInstruction) = mockCrosswordGames
+            .seedFromJSONFile(user = user)
+            .filter { it.first.difficulty == difficulty }
+            .random()
+            .also {
+                ongoingGameRepository.save(ongoingGameMapper.toEntity(it.first))
+            }
+
         wordRepository.saveAll(
             crosswordSavedInDb.properAnswers.questions.values.map {
                 wordMockFactory.mockEntity(
                     origin = it,
                     translatedFrom = crosswordSavedInDb.language,
-                    user = userEntity
+                    user = user
                 )
             }
         )
 
-        return Pair(authenticatedUser, crosswordSavedInDb)
+        return Triple(authenticatedUser, crosswordSavedInDb, crosswordInstruction)
     }
 
 }
