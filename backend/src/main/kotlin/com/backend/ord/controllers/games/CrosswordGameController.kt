@@ -79,12 +79,6 @@ class CrosswordGameController(
             )
         )
 
-        // 5. Save all gpt tokens usage logs in the database
-        gameTokensUsageService.assignGameToMultipleLogs(
-            gptTokensUsageLogs = gpTokensUsageLogs,
-            gameToAssign = savedGame
-        )
-
         return ResponseEntity.ok(
             StartedCrosswordGameResponse(
                 gameId = savedGame.id,

@@ -1,7 +1,6 @@
 package com.backend.ord.domain.persistence.dto.gpt_tokens_usage
 
 import com.backend.ord.domain.persistence.dto.UserDTO
-import com.backend.ord.domain.persistence.dto.game.GameDTOBase
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
@@ -26,7 +25,6 @@ data class GameTokensUsageDTO(
     val priceForMlnOutputTokens: BigDecimal,
 
     val user: UserDTO,
-    val game: GameDTOBase<*, *>? = null,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),

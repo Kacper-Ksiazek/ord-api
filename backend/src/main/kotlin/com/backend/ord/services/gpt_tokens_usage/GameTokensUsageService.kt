@@ -1,6 +1,5 @@
 package com.backend.ord.services.gpt_tokens_usage
 
-import com.backend.ord.domain.persistence.entities.Game
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.persistence.game.GameDifficulty
@@ -22,9 +21,4 @@ interface GameTokensUsageService : TokensUsageServiceBase<GameTokensUsage, Games
         inputTokens: Int,
         outputTokens: Int,
     ): GameTokensUsage
-
-    fun assignGameToMultipleLogs(
-        gptTokensUsageLogs: Set<GameTokensUsage>,
-        gameToAssign: Game,
-    ): List<GameTokensUsage>
 }

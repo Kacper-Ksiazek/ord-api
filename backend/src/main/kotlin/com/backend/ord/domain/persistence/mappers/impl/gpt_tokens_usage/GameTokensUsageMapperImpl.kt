@@ -2,7 +2,6 @@ package com.backend.ord.domain.persistence.mappers.impl.gpt_tokens_usage
 
 import com.backend.ord.domain.persistence.dto.gpt_tokens_usage.GameTokensUsageDTO
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
-import com.backend.ord.domain.persistence.mappers.GameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.domain.persistence.mappers.gpt_tokens_usage.GameTokensUsageMapper
 import org.springframework.stereotype.Component
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component
 @Component
 class GameTokensUsageMapperImpl(
     private val userMapper: UserMapper,
-    private val gameMapper: GameMapper
 ) : GameTokensUsageMapper {
     override fun toEntity(dto: GameTokensUsageDTO): GameTokensUsage {
         return GameTokensUsage(
@@ -29,7 +27,6 @@ class GameTokensUsageMapperImpl(
             priceForMlnOutputTokens = dto.priceForMlnOutputTokens,
 
             user = userMapper.toEntity(dto.user),
-            game = gameMapper.toEntityOrNull(dto.game),
 
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt
@@ -53,7 +50,6 @@ class GameTokensUsageMapperImpl(
             priceForMlnOutputTokens = entity.priceForMlnOutputTokens,
 
             user = userMapper.toDTO(entity.user),
-            game = gameMapper.toDTOOrNull(entity.game),
 
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt

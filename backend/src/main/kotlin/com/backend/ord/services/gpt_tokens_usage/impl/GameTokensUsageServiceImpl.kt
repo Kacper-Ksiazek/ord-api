@@ -1,7 +1,6 @@
 package com.backend.ord.services.gpt_tokens_usage.impl
 
 import com.backend.ord.config.properties.OpenAIProperties
-import com.backend.ord.domain.persistence.entities.Game
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.persistence.game.GameDifficulty
@@ -48,18 +47,6 @@ class GameTokensUsageServiceImpl(
                 cost = computeCost(inputTokens, outputTokens)
 
             )
-        )
-    }
-
-    override fun assignGameToMultipleLogs(
-        gptTokensUsageLogs: Set<GameTokensUsage>,
-        gameToAssign: Game
-    ): List<GameTokensUsage> {
-        return repository.saveAll(
-            gptTokensUsageLogs.map {
-                it.game = gameToAssign
-                it
-            }
         )
     }
 }
