@@ -11,18 +11,16 @@ import com.backend.ord.controllers.utils_for_testing.bases.GameControllerTestBas
 import com.backend.ord.controllers.utils_for_testing.mockAnswersWithMistakes
 import com.backend.ord.controllers.utils_for_testing.toRequestBody
 import com.backend.ord.domain.application.games.Coordinates
-import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
+import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
-import com.backend.ord.enums.persistence.game.GameStatus
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.UserActivityLogRepository
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
-import com.backend.ord.repositories.pivots.WordsUsedInGamesRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
@@ -37,8 +35,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -55,7 +51,6 @@ import java.util.*
 class TestCrosswordGameController @Autowired constructor(
     objectMapper: ObjectMapper,
     private val gameTokensUsageRepository: GameTokensUsageRepository,
-    private val wordsUsedInGamesRepository: WordsUsedInGamesRepository,
     private val userActivityLogRepository: UserActivityLogRepository,
     private val userSeeder: UserSeeder,
 ) : GameControllerTestBase(objectMapper) {
@@ -69,9 +64,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
 
-            crosswordSavedInDb.grade shouldBe GameGrade.NA
             crosswordSavedInDb.type shouldBe GameType.CROSSWORD
-            crosswordSavedInDb.status shouldBe GameStatus.IN_PROGRESS
             crosswordSavedInDb.language shouldBe CrosswordDefaultValues.language
             crosswordSavedInDb.difficulty shouldBe CrosswordDefaultValues.difficulty
 
@@ -88,12 +81,6 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id).size shouldBeGreaterThanOrEqualTo 1
-
-            val numberOfWordsSavedAsPivotEntities =
-                wordsUsedInGamesRepository.findAllByGameId(gameId = crosswordSavedInDb.id).size
-            val numberOfWordsUsedInCrosswordGame = crosswordSentToUser.instruction.questions.size
-
-            numberOfWordsSavedAsPivotEntities shouldBe numberOfWordsUsedInCrosswordGame
 
             crosswordSentToUser.instruction.board.map { it.size }.distinct().size shouldBe 1
 
@@ -191,7 +178,7 @@ class TestCrosswordGameController @Autowired constructor(
         inner class Positive {
             lateinit var authenticatedUser: MockedAuthenticatedUser
             lateinit var crosswordSentToUser: StartedCrosswordGameResponse
-            lateinit var crosswordSavedInDb: CrosswordGameDTO
+            lateinit var crosswordSavedInDb: OngoingCrosswordGameDTO
 
             @BeforeAll
             fun beforeAll() {
@@ -209,9 +196,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `Game is properly saved in the DB`() {
-                crosswordSavedInDb.grade shouldBe GameGrade.NA
                 crosswordSavedInDb.type shouldBe GameType.CROSSWORD
-                crosswordSavedInDb.status shouldBe GameStatus.IN_PROGRESS
                 crosswordSavedInDb.language shouldBe CrosswordDefaultValues.language
                 crosswordSavedInDb.difficulty shouldBe CrosswordDefaultValues.difficulty
 
@@ -234,15 +219,6 @@ class TestCrosswordGameController @Autowired constructor(
             @Test
             fun `GPT use logs are properly saved in the DB`() {
                 gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id).size shouldBeGreaterThanOrEqualTo 1
-            }
-
-            @Test
-            fun `All words used in the crossword game are saved in the DB`() {
-                val numberOfWordsSavedAsPivotEntities =
-                    wordsUsedInGamesRepository.findAllByGameId(gameId = crosswordSavedInDb.id).size
-                val numberOfWordsUsedInCrosswordGame = crosswordSentToUser.instruction.questions.size
-
-                numberOfWordsSavedAsPivotEntities shouldBe numberOfWordsUsedInCrosswordGame
             }
 
             @Test
@@ -525,7 +501,7 @@ class TestCrosswordGameController @Autowired constructor(
         @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Positive {
             lateinit var authenticatedUser: MockedAuthenticatedUser
-            lateinit var crosswordSavedInDb: CrosswordGameDTO
+            lateinit var crosswordSavedInDb: OngoingCrosswordGameDTO
 
 
             @BeforeEach
@@ -591,9 +567,14 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             @Test
-            fun `200 - Game should be marked as COMPLETED`() {
+            fun `200 - Ongoing game should be removed and finished game should be created instead`() {
+                finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).shouldHaveSize(0)
+                ongoingGameRepository.findByIdOrNull(crosswordSavedInDb.id) shouldNotBe null
+
                 finishCrosswordGame()
-                gameRepository.findByIdOrNull(crosswordSavedInDb.id)?.status shouldBe GameStatus.COMPLETED
+
+                ongoingGameRepository.findByIdOrNull(crosswordSavedInDb.id) shouldBe null
+                finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).shouldHaveSize(1)
             }
 
             @Test
@@ -851,11 +832,9 @@ class TestCrosswordGameController @Autowired constructor(
             @Test
             fun `404 - User cannot finish a game that does not belong to them`() {
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-                val crosswordSavedInDb = gameMapper.toCrosswordDTO(
-                    mockCrosswordGames.seedFromJSONFile(
-                        user = userSeeder.seedOneEntity()
-                    ).random()
-                )
+                val crosswordSavedInDb = mockCrosswordGames.seedFromJSONFile(
+                    user = userSeeder.seedOneEntity()
+                ).random().first
 
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = authenticatedUser,
@@ -872,55 +851,13 @@ class TestCrosswordGameController @Autowired constructor(
                 }
             }
 
-
-            @ParameterizedTest
-            @EnumSource(
-                value = GameStatus::class,
-                names = [
-                    "COMPLETED",
-                    "CANCELED",
-                    "PAUSED"
-                ]
-            )
-            fun `400 - User cannot finish a crossword of given type`(blockedType: GameStatus) {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
-
-                val crosswordSavedInDb = gameMapper.toCrosswordDTO(
-                    mockCrosswordGames.seedFromJSONFile(
-                        user = userMapper.toEntity(authenticatedUser.userInfo)
-                    ).random()
-                )
-
-                gameRepository.save(
-                    gameRepository.findByIdOrNull(crosswordSavedInDb.id)!!.copy(
-                        status = blockedType
-                    )
-                )
-
-                val request = gameRequestFactory.finishCrosswordGameRequest(
-                    authenticatedUser = authenticatedUser,
-                    gameId = crosswordSavedInDb.id,
-                    userAnswers = CrosswordUserAnswersData(
-                        answer = "answer",
-                        questionsAnswers = emptySet()
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
-            }
-
             @Test
             fun `400 - Crossword cannot be finished with user answer to single word over 255 characters long`() {
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
-                val crosswordSavedInDb = gameMapper.toCrosswordDTO(
-                    mockCrosswordGames.seedFromJSONFile(
-                        user = userMapper.toEntity(authenticatedUser.userInfo)
-                    ).random()
-                )
+                val crosswordSavedInDb = mockCrosswordGames.seedFromJSONFile(
+                    user = userMapper.toEntity(authenticatedUser.userInfo)
+                ).random().first
 
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = authenticatedUser,
@@ -961,7 +898,7 @@ class TestCrosswordGameController @Autowired constructor(
     private fun mockStartedCrosswordGame(): Triple<
             MockedAuthenticatedUser,
             StartedCrosswordGameResponse,
-            CrosswordGameDTO
+            OngoingCrosswordGameDTO
             > {
         // 1. Create a user
         val authenticatedUser = mockAuthenticatedUser()
@@ -987,8 +924,8 @@ class TestCrosswordGameController @Autowired constructor(
         val crosswordSentToUser = getResponseBody<StartedCrosswordGameResponse>(response)
 
         // 5. Retrieve the crossword game from the database
-        val crosswordSavedInDb = gameMapper.toCrosswordDTO(
-            gameRepository
+        val crosswordSavedInDb = ongoingGameMapper.toCrosswordDTO(
+            ongoingGameRepository
                 .findAllForUser(authenticatedUser.userInfo.id)
                 .first()
         )

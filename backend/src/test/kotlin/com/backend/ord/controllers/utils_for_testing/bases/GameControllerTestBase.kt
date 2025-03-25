@@ -6,6 +6,7 @@ import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.enums.persistence.game.GameDifficulty
+import com.backend.ord.repositories.FinishedGameRepository
 import com.backend.ord.repositories.OngoingGameRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.factories.WordMockFactory
@@ -26,6 +27,9 @@ abstract class GameControllerTestBase(
 
     @Autowired
     lateinit var ongoingGameRepository: OngoingGameRepository
+
+    @Autowired
+    lateinit var finishedGameRepository: FinishedGameRepository
 
     @Autowired
     lateinit var wordMockFactory: WordMockFactory

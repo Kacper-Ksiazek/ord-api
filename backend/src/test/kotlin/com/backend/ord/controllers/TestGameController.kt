@@ -2,13 +2,14 @@ package com.backend.ord.controllers
 
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.controllers.utils_for_testing.bases.GameControllerTestBase
-import com.backend.ord.domain.persistence.dto.game.CrosswordGameDTO
+import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.enums.persistence.game.GameStatus
+import com.backend.ord.enums.persistence.game.GameResult
 import com.backend.ord.repositories.UserActivityLogRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,13 +32,13 @@ class TestGameController @Autowired constructor(
     @DisplayName("[DELETE] /api/v1/games/cancel/{gameId} - cancel a crossword game")
     inner class CancelCrosswordGame {
         lateinit var authenticatedUser: MockedAuthenticatedUser
-        lateinit var crosswordSavedInDb: CrosswordGameDTO
+        lateinit var ongoingCrosswordSavedInDb: OngoingCrosswordGameDTO
 
         @BeforeEach
         fun beforeEach() {
             prepareCrosswordGame().let {
                 authenticatedUser = it.first
-                crosswordSavedInDb = it.second
+                ongoingCrosswordSavedInDb = it.second
             }
         }
 
@@ -53,7 +54,7 @@ class TestGameController @Autowired constructor(
             mockMvc.perform(
                 gameRequestFactory.cancelGameRequest(
                     authenticatedUser = authenticatedUser,
-                    gameId = crosswordSavedInDb.id
+                    gameId = ongoingCrosswordSavedInDb.id
                 )
             ).andReturn().let {
                 it.response.status shouldBe expectedStatus
@@ -70,7 +71,14 @@ class TestGameController @Autowired constructor(
             fun `200 - Crossword game can be canceled`() {
                 cancelGame()
 
-                gameRepository.findByIdOrNull(crosswordSavedInDb.id)?.status shouldBe GameStatus.CANCELED
+                ongoingGameRepository.findByIdOrNull(ongoingCrosswordSavedInDb.id) shouldBe null
+                finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).first().let {
+                    it shouldNotBe null
+
+                    it.result shouldBe GameResult.CANCELED
+                    it.language shouldBe ongoingCrosswordSavedInDb.language
+                    it.difficulty shouldBe ongoingCrosswordSavedInDb.difficulty
+                }
             }
 
             @Test
@@ -82,9 +90,9 @@ class TestGameController @Autowired constructor(
 
                 logs.first().let {
                     it.type shouldBe UserActivityType.GAME_QUIT
-                    it.language shouldBe crosswordSavedInDb.language
+                    it.language shouldBe ongoingCrosswordSavedInDb.language
                     it.points shouldBe UserActivityType.GAME_QUIT.points
-                    it.gameDifficulty shouldBe crosswordSavedInDb.difficulty
+                    it.gameDifficulty shouldBe ongoingCrosswordSavedInDb.difficulty
                 }
             }
         }
@@ -110,7 +118,7 @@ class TestGameController @Autowired constructor(
                     expectedStatus = HttpStatus.FORBIDDEN.value()
                 )
 
-                gameRepository.findByIdOrNull(crosswordSavedInDb.id)?.status shouldBe crosswordSavedInDb.status
+                ongoingGameRepository.findByIdOrNull(ongoingCrosswordSavedInDb.id) shouldNotBe null
             }
 
             @Test
@@ -120,7 +128,7 @@ class TestGameController @Autowired constructor(
                     expectedStatus = HttpStatus.NOT_FOUND.value()
                 )
 
-                gameRepository.findByIdOrNull(crosswordSavedInDb.id)?.status shouldBe crosswordSavedInDb.status
+                ongoingGameRepository.findByIdOrNull(ongoingCrosswordSavedInDb.id) shouldNotBe null
             }
 
         }
