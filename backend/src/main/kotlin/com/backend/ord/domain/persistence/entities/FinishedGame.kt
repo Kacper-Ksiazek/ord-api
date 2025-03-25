@@ -39,7 +39,7 @@ data class FinishedGame(
     var difficulty: GameDifficulty,
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "game_status(0, 0) not null", nullable = false)
+    @Column(name = "result", columnDefinition = "game_result(0, 0) not null", nullable = false)
     var result: GameResult,
 
     @Column(name = "grade", columnDefinition = "game_grade(0, 0) not null")
