@@ -23,7 +23,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @AutoConfigureMockMvc
-@DisplayName("- CrosswordGameController") // TODO: Rename
+@DisplayName("- GameController")
 class TestGameController @Autowired constructor(
     objectMapper: ObjectMapper,
     private val userActivityLogRepository: UserActivityLogRepository,
