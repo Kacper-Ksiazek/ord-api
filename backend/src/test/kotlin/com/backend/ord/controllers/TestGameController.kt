@@ -75,7 +75,7 @@ class TestGameController @Autowired constructor(
                 finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).first().let {
                     it shouldNotBe null
 
-                    it.result shouldBe GameResult.CANCELED
+                    it.result shouldBe GameResult.CANCELLED
                     it.language shouldBe ongoingCrosswordSavedInDb.language
                     it.difficulty shouldBe ongoingCrosswordSavedInDb.difficulty
                 }
@@ -103,11 +103,11 @@ class TestGameController @Autowired constructor(
         @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Negative {
             @Test
-            fun `400 - Game cannot be cancelled twice`() {
+            fun `404 - Game cannot be cancelled twice`() {
                 cancelGame()
 
                 cancelGame(
-                    expectedStatus = HttpStatus.BAD_REQUEST.value()
+                    expectedStatus = HttpStatus.NOT_FOUND.value()
                 )
             }
 

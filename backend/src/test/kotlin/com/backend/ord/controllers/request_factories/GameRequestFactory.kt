@@ -1,5 +1,6 @@
 package com.backend.ord.controllers.request_factories
 
+import com.backend.ord.api.requests.games.data.CancelGameRequestData
 import com.backend.ord.api.requests.games.data.CrosswordUserAnswersData
 import com.backend.ord.controllers.unsafe_api_requests.UnsafeFinishCrosswordGameRequestData
 import com.backend.ord.controllers.unsafe_api_requests.UnsafeStartGameRequestData
@@ -79,5 +80,12 @@ class GameRequestFactory(
             }
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    CancelGameRequestData(
+                        duration = "00:30:10"
+                    )
+                )
+            )
     }
 }

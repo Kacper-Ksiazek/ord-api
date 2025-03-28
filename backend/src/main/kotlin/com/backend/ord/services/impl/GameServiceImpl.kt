@@ -81,7 +81,7 @@ class GameServiceImpl(
                 }
 
                 finishedGameService.save(
-                    it.finish(finalScore = 0, duration, result = GameResult.CANCELED)
+                    it.finish(finalScore = 0, duration, result = GameResult.CANCELLED)
                 )
 
                 userActivityLogService.log(
@@ -90,6 +90,8 @@ class GameServiceImpl(
                     language = it.language,
                     difficulty = it.difficulty
                 )
+
+                ongoingGameService.deleteById(id = it.id, userId = userId)
             }
 
 

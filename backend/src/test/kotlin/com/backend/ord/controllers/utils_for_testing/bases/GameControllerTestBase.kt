@@ -51,8 +51,14 @@ abstract class GameControllerTestBase(
             .seedFromJSONFile(user = user)
             .filter { it.first.difficulty == difficulty }
             .random()
-            .also {
-                ongoingGameRepository.save(ongoingGameMapper.toEntity(it.first))
+            .let {
+                val savedOngoingGame = ongoingGameRepository.save(
+                    ongoingGameMapper.toEntity(it.first)
+                )
+                // TODO: Come up with something smarter for this, eg. involving @PrePersist annotation of hybernate
+                val updatedDTO = it.first.copy(id = savedOngoingGame.id)
+
+                Pair(updatedDTO, it.second)
             }
 
         wordRepository.saveAll(
