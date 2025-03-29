@@ -7,26 +7,24 @@ import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
-import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.controllers.extensions.compareWith
 import com.backend.ord.controllers.extensions.detectChanges
 import com.backend.ord.controllers.request_factories.WordRequestFactory
 import com.backend.ord.controllers.request_factories.data.WordDataChanges
 import com.backend.ord.controllers.request_factories.data.compareWithDefaultCreateWordData
 import com.backend.ord.controllers.request_factories.data.compareWithDefaultUpdateWordData
-import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.domain.dto.WordDTO
-import com.backend.ord.domain.embedded.ExampleSentence
-import com.backend.ord.domain.entities.Bank
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.domain.mappers.UserMapper
-import com.backend.ord.domain.mappers.WordMapper
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.domain.persistence.dto.WordDTO
+import com.backend.ord.domain.persistence.embedded.ExampleSentence
+import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.domain.persistence.mappers.WordMapper
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
@@ -57,21 +55,16 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import java.util.*
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @DisplayName("- WordsController")
 class TestWordsController @Autowired constructor(
-    mockMvc: MockMvc?,
     objectMapper: ObjectMapper,
-    jwtProperties: JwtProperties,
     private val wordService: WordService,
     private val wordRepository: WordRepository,
     private val bankSeeder: BankSeeder,
@@ -80,11 +73,8 @@ class TestWordsController @Autowired constructor(
     private val userSeeder: UserSeeder,
     private val wordSeeder: WordSeeder,
     private val wordMapper: WordMapper,
-    private val bankGroupSeeder: BankGroupSeeder
-) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
-    @Autowired
-    private lateinit var userMapper: UserMapper
-
+    private val bankGroupSeeder: BankGroupSeeder,
+) : ControllerTestBase(objectMapper) {
     @Autowired
     private lateinit var wordMockFactory: WordMockFactory
 
@@ -132,7 +122,7 @@ class TestWordsController @Autowired constructor(
 
                 sortDirection: SortDirection? = null,
                 sortBy: GetAllWordsSortOptions? = null,
-            ): PaginatedDataResponse<WordAsGetManyWordResponse> {
+            ): PaginatedDataResponse<WordListItem> {
                 val request = wordRequestFactory.getManyWordsRequest(
                     authenticatedUser = authenticatedUser,
                     language = learningLanguage,
@@ -158,7 +148,7 @@ class TestWordsController @Autowired constructor(
                     it.response
                 }
 
-                return getResponseBody<PaginatedDataResponse<WordAsGetManyWordResponse>>(response)
+                return getResponseBody<PaginatedDataResponse<WordListItem>>(response)
             }
 
 
@@ -349,7 +339,7 @@ class TestWordsController @Autowired constructor(
 
                 wordRepository.saveAll(wordsToAdd)
 
-                val body: PaginatedDataResponse<WordAsGetManyWordResponse> = makeManyWordsRequest(
+                val body: PaginatedDataResponse<WordListItem> = makeManyWordsRequest(
                     completed = completed,
                     perPage = 500
                 )
@@ -422,8 +412,6 @@ class TestWordsController @Autowired constructor(
                     banksGroupsIds = setOf(bankGroupOne.id),
                     perPage = 500
                 )
-
-                println(body.data.map { it.bank?.bankGroup?.id })
 
                 body.data.forEach {
                     it.bank?.bankGroup?.id shouldBe bankGroupOne.id

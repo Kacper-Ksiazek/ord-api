@@ -30,6 +30,26 @@ CALL create_enum_type(
         ARRAY ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
      );
 
+---  UserActivityType
+CALL create_enum_type(
+        'user_activity_type',
+        ARRAY [
+            'CROSSWORD_GAME_COMPLETED_FLAWLESSLY',
+            'CROSSWORD_GAME_COMPLETED_WITH_MISTAKES',
+            'GAME_QUIT',
+
+            'WORDS_ADDED_IN_ONE_DAY_10',
+            'WORDS_ADDED_IN_ONE_WEEK_50',
+
+            'WORD_COMPLETED',
+            'WORDS_COMPLETED_IN_ONE_DAY_10',
+            'WORDS_COMPLETED_IN_ONE_WEEK_30'
+
+
+            -- TODO: Add more options in the future
+            ]
+     );
+
 --- +-------------------+
 --- |       WORDS       |
 --- +-------------------+
@@ -72,14 +92,12 @@ CALL create_enum_type(
             ]
      );
 
----  GameStatus
+---  GameResult
 CALL create_enum_type(
-        'game_status',
+        'game_result',
         ARRAY [
-            'IN_PROGRESS',
             'COMPLETED',
-            'CANCELED',
-            'PAUSED'
+            'CANCELLED'
             ]
      );
 
@@ -94,6 +112,12 @@ CALL create_enum_type(
             'MOTIVATIONAL',
             'DAILY_CONVERSATION'
             ]
+     );
+
+--- Grade
+CALL create_enum_type(
+        'game_grade',
+        ARRAY ['S', 'A', 'B', 'C', 'D', 'NA']
      );
 
 --- +-------------------+

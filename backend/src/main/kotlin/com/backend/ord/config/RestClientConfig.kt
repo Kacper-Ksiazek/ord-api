@@ -11,7 +11,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.web.client.RestTemplate
 
 @Configuration
-open class RestClientConfig(
+class RestClientConfig(
     private val openAIProperties: OpenAIProperties
 ) {
     private fun openAITemplate(): RestTemplate {

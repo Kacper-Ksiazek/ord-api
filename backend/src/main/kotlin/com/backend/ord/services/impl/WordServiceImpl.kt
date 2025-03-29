@@ -6,14 +6,20 @@ import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.requests.word.enums.toggleProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.domain.infrastructure.CountingSummary
+import com.backend.ord.domain.persistence.dto.WordDTO
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.UserActivityLog
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.domain.persistence.mappers.WordMapper
+import com.backend.ord.enums.persistence.UserActivityType
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.WordRepository
+import com.backend.ord.services.UserActivityLogService
 import com.backend.ord.services.WordService
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest
@@ -22,7 +28,10 @@ import java.util.*
 
 @Service
 class WordServiceImpl(
-    override val repository: WordRepository
+    override val repository: WordRepository,
+
+    val wordMapper: WordMapper,
+    val userActivityLogService: UserActivityLogService
 ) : WordService {
     @Transactional
     override fun changeBankForSingleWord(
@@ -48,8 +57,6 @@ class WordServiceImpl(
         bankId: UUID?,
         userId: UUID
     ): Int {
-        val words = repository.findAll()
-
         return repository.changeBankForMultipleWords(
             bankId = bankId,
             wordIds = wordIds,
@@ -110,7 +117,7 @@ class WordServiceImpl(
 
         page: Int,
         perPage: Int
-    ): PaginatedDataResponse<WordAsGetManyWordResponse> {
+    ): PaginatedDataResponse<WordListItem> {
         return repository.findManyWords(
             language = language,
             completed = completed,
@@ -172,6 +179,58 @@ class WordServiceImpl(
             words.map {
                 it.toggleProperty(property)
             }
+        )
+    }
+
+    override fun saveNewWord(
+        word: WordDTO,
+        user: User
+    ): WordDTO {
+        val result = repository.save(wordMapper.toEntity(word))
+        val language = word.translatedFrom
+
+        val userActivityLogsToSave: MutableSet<UserActivityLog> = mutableSetOf()
+
+        countCreated(language = language, userId = user.id).let {
+            if (it.today >= 10) {
+                userActivityLogsToSave.add(
+                    UserActivityLog(
+                        user = user,
+                        type = UserActivityType.WORDS_ADDED_IN_ONE_DAY_10,
+                        language = language,
+                    )
+                )
+            }
+
+            if (it.week >= 50) {
+                userActivityLogsToSave.add(
+                    UserActivityLog(
+                        user = user,
+                        type = UserActivityType.WORDS_ADDED_IN_ONE_WEEK_50,
+                        language = language,
+                    )
+                )
+            }
+        }
+
+        return wordMapper.toDTO(result)
+    }
+
+    override fun countCreated(
+        language: LanguageName,
+        userId: UUID
+    ): CountingSummary {
+        return CountingSummary(
+            repository.countCreated(language = language, userId = userId)
+        )
+    }
+
+    override fun countCompleted(
+        language: LanguageName,
+        userId: UUID
+    ): CountingSummary {
+        return CountingSummary(
+            repository.countCompleted(language = language, userId = userId)
         )
     }
 }

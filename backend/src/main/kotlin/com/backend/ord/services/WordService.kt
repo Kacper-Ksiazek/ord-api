@@ -5,12 +5,14 @@ import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.domain.infrastructure.CountingSummary
+import com.backend.ord.domain.persistence.dto.WordDTO
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.services.bases.UserResourceService
 import java.util.*
 
@@ -57,7 +59,7 @@ interface WordService : UserResourceService<Word> {
 
         page: Int = 0,
         perPage: Int = 10
-    ): PaginatedDataResponse<WordAsGetManyWordResponse>
+    ): PaginatedDataResponse<WordListItem>
 
     fun findOneWord(
         wordId: UUID,
@@ -75,4 +77,13 @@ interface WordService : UserResourceService<Word> {
         userId: UUID,
         property: WordToggleableProperty
     ): List<Word>
+
+    fun saveNewWord(
+        word: WordDTO,
+        user: User
+    ): WordDTO
+
+    fun countCreated(language: LanguageName, userId: UUID): CountingSummary
+
+    fun countCompleted(language: LanguageName, userId: UUID): CountingSummary
 }

@@ -29,6 +29,7 @@ class RESTExceptionHandler {
     // Catch-all exception handler
     @ExceptionHandler(Exception::class)
     fun handleUncaughtException(e: Exception): ResponseEntity<HTTPErrorResponse> {
+        // TODO: Improve error logging
         val errorResponse = HTTPErrorResponse(
             message = """
                 Unexpected error occurred
@@ -65,6 +66,7 @@ class RESTExceptionHandler {
         is NotFoundException -> HttpStatus.NOT_FOUND.value() // 404
         is PayloadTooLargeException -> HttpStatus.PAYLOAD_TOO_LARGE.value() // 413
         is InternalServerError -> HttpStatus.INTERNAL_SERVER_ERROR.value() // 500
+        is BadGatewayException -> HttpStatus.BAD_GATEWAY.value() // 502
         else -> HttpStatus.INTERNAL_SERVER_ERROR.value() // 500
     }
 }

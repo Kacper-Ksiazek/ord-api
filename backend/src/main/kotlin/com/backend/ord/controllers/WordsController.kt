@@ -5,15 +5,15 @@ import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
+import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.dto.WordDTO
-import com.backend.ord.domain.entities.Bank
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.domain.mappers.BankMapper
-import com.backend.ord.domain.mappers.UserMapper
-import com.backend.ord.domain.mappers.WordMapper
+import com.backend.ord.domain.persistence.dto.WordDTO
+import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.domain.persistence.mappers.BankMapper
+import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.extensions.convertToSetExplicitly
 import com.backend.ord.services.BankService
@@ -40,7 +40,7 @@ class WordController(
     fun getAllWords(
         request: HttpServletRequest,
         @RequestBody @Valid requestBody: GetManyWordsRequestData,
-    ): ResponseEntity<PaginatedDataResponse<WordAsGetManyWordResponse>> {
+    ): ResponseEntity<PaginatedDataResponse<WordListItem>> {
         val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         return ResponseEntity.status(HttpStatus.OK).body(

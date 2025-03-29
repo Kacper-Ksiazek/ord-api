@@ -1,7 +1,7 @@
 package com.backend.ord.services.impl
 
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.entities.UserSession
+import com.backend.ord.domain.persistence.entities.UserSession
 import com.backend.ord.exceptions.UserNotFoundException
 import com.backend.ord.repositories.UserSessionRepository
 import com.backend.ord.services.UserService

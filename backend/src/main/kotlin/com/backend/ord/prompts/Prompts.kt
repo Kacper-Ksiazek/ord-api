@@ -1,8 +1,8 @@
 package com.backend.ord.prompts
 
-import com.backend.ord.enums.game.GameDifficulty
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.language.LanguageProficiencyLevel
+import com.backend.ord.enums.persistence.game.GameDifficulty
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 
 object Prompts {
     const val DEFAULT_CONTEXT =
@@ -35,4 +35,6 @@ object Prompts {
                Words: [ ${wordsToUse.joinToString(", ") { it }} ]
             """.trimIndent()
     }
+
+    // TODO: Gather all prompts here
 }
