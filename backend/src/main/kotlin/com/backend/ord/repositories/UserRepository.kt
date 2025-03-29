@@ -1,11 +1,19 @@
 package com.backend.ord.repositories
 
-import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.persistence.entities.User
+import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
 interface UserRepository : JpaRepository<User, UUID> {
     fun findByEmail(email: String): User?
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM User u WHERE u.email = :email")
+    fun deleteByEmail(email: String)
 }

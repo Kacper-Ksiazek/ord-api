@@ -1,33 +1,42 @@
 package com.backend.ord.controllers
 
+
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.api.requests.enums.SortDirection
+import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
-import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.api.responses.words.SingleWordResponse
+import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.controllers.extensions.compareWith
 import com.backend.ord.controllers.extensions.detectChanges
 import com.backend.ord.controllers.request_factories.WordRequestFactory
 import com.backend.ord.controllers.request_factories.data.WordDataChanges
 import com.backend.ord.controllers.request_factories.data.compareWithDefaultCreateWordData
 import com.backend.ord.controllers.request_factories.data.compareWithDefaultUpdateWordData
-import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.domain.dto.WordDTO
-import com.backend.ord.domain.embedded.ExampleSentence
-import com.backend.ord.domain.entities.Bank
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.domain.mappers.WordMapper
-import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.domain.persistence.dto.WordDTO
+import com.backend.ord.domain.persistence.embedded.ExampleSentence
+import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.domain.persistence.mappers.WordMapper
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.repositories.WordRepository
+import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.entities.WordSeeder
 import com.backend.ord.seeders.factories.BankMockFactory
+import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
 import com.backend.ord.utils.Optional
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -37,40 +46,25 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
-import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
-import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.domain.mappers.UserMapper
-import com.backend.ord.seeders.entities.BankGroupSeeder
-import com.backend.ord.seeders.factories.WordMockFactory
-import io.kotest.matchers.comparables.shouldBeLessThan
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-
-
 import java.util.*
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @DisplayName("- WordsController")
 class TestWordsController @Autowired constructor(
-    mockMvc: MockMvc?,
     objectMapper: ObjectMapper,
-    jwtProperties: JwtProperties,
     private val wordService: WordService,
     private val wordRepository: WordRepository,
     private val bankSeeder: BankSeeder,
@@ -79,11 +73,8 @@ class TestWordsController @Autowired constructor(
     private val userSeeder: UserSeeder,
     private val wordSeeder: WordSeeder,
     private val wordMapper: WordMapper,
-    private val bankGroupSeeder: BankGroupSeeder
-) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
-    @Autowired
-    private lateinit var userMapper: UserMapper
-
+    private val bankGroupSeeder: BankGroupSeeder,
+) : ControllerTestBase(objectMapper) {
     @Autowired
     private lateinit var wordMockFactory: WordMockFactory
 
@@ -121,8 +112,9 @@ class TestWordsController @Autowired constructor(
                 perPage: Int? = null,
 
                 wordType: WordType? = null,
+                completed: Boolean? = null,
                 searchingPhrase: String? = null,
-                bookmarkedOnly: Boolean? = null,
+                bookmarked: Boolean? = null,
                 wordExtraMark: WordExtraMark? = null,
 
                 banksIds: Set<UUID>? = null,
@@ -130,7 +122,7 @@ class TestWordsController @Autowired constructor(
 
                 sortDirection: SortDirection? = null,
                 sortBy: GetAllWordsSortOptions? = null,
-            ): PaginatedDataResponse<WordAsGetManyWordResponse> {
+            ): PaginatedDataResponse<WordListItem> {
                 val request = wordRequestFactory.getManyWordsRequest(
                     authenticatedUser = authenticatedUser,
                     language = learningLanguage,
@@ -139,8 +131,9 @@ class TestWordsController @Autowired constructor(
                     perPage = perPage,
 
                     wordType = wordType,
+                    completed = completed,
                     searchingPhrase = searchingPhrase,
-                    bookmarkedOnly = bookmarkedOnly,
+                    bookmarked = bookmarked,
                     wordExtraMark = wordExtraMark,
 
                     banksIds = banksIds,
@@ -155,7 +148,7 @@ class TestWordsController @Autowired constructor(
                     it.response
                 }
 
-                return getResponseBody<PaginatedDataResponse<WordAsGetManyWordResponse>>(response)
+                return getResponseBody<PaginatedDataResponse<WordListItem>>(response)
             }
 
 
@@ -314,17 +307,48 @@ class TestWordsController @Autowired constructor(
                 }
             }
 
-            @Test
-            fun `200 - Words can be fetched with filtering - by bookmarked`() {
+            @ParameterizedTest
+            @ValueSource(booleans = [true, false])
+            fun `200 - Words can be fetched with filtering - by bookmarked `(bookmarked: Boolean) {
+                val wordsToAdd = List(10) {
+                    wordMockFactory.mockEntity(
+                        user = userMapper.toEntity(authenticatedUser.userInfo),
+                    ).apply { isBookmarked = bookmarked }
+                }
+
+                wordRepository.saveAll(wordsToAdd)
+
                 val body = makeManyWordsRequest(
-                    bookmarkedOnly = true,
+                    bookmarked = bookmarked,
                     perPage = 500
                 )
 
                 body.data.forEach {
-                    it.isBookmarked shouldBe true
+                    it.isBookmarked shouldBe bookmarked
                 }
             }
+
+            @ParameterizedTest
+            @ValueSource(booleans = [true, false])
+            fun `200 - Words can be fetched with filtering - by completed status `(completed: Boolean) {
+                val wordsToAdd = List(10) {
+                    wordMockFactory.mockEntity(
+                        user = userMapper.toEntity(authenticatedUser.userInfo),
+                    ).apply { isCompleted = completed }
+                }
+
+                wordRepository.saveAll(wordsToAdd)
+
+                val body: PaginatedDataResponse<WordListItem> = makeManyWordsRequest(
+                    completed = completed,
+                    perPage = 500
+                )
+
+                body.data.forEach {
+                    it.isCompleted shouldBe completed
+                }
+            }
+
 
             @Test
             fun `200 - Words can be fetched with filtering - by bank`() {
@@ -389,8 +413,6 @@ class TestWordsController @Autowired constructor(
                     perPage = 500
                 )
 
-                println(body.data.map { it.bank?.bankGroup?.id })
-
                 body.data.forEach {
                     it.bank?.bankGroup?.id shouldBe bankGroupOne.id
                 }
@@ -407,7 +429,8 @@ class TestWordsController @Autowired constructor(
                 language: Any? = learningLanguage,
                 wordType: Any? = null,
                 searchingPhrase: Any? = null,
-                bookmarkedOnly: Any? = null,
+                bookmarked: Any? = null,
+                completed: Any? = null,
                 wordExtraMark: Any? = null,
 
                 banksIds: Any? = null,
@@ -424,9 +447,10 @@ class TestWordsController @Autowired constructor(
                     perPage = perPage,
 
                     wordType = wordType,
-                    searchingPhrase = searchingPhrase,
-                    bookmarkedOnly = bookmarkedOnly,
+                    completed = completed,
                     wordExtraMark = wordExtraMark,
+                    bookmarked = bookmarked,
+                    searchingPhrase = searchingPhrase,
 
                     banksIds = banksIds,
                     bankGroupsIds = bankGroupsIds,
@@ -522,9 +546,17 @@ class TestWordsController @Autowired constructor(
 
             @ParameterizedTest
             @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
-            fun `400 - Words cannot be fetched with invalid param - bookmarkedOnly`(parameter: String) {
+            fun `400 - Words cannot be fetched with invalid param - bookmarked`(parameter: String) {
                 makeManyWordsRequestUnsafe(
-                    bookmarkedOnly = parameter
+                    bookmarked = parameter
+                )
+            }
+
+            @ParameterizedTest
+            @ValueSource(strings = ["-1", "0.5", "1.5", "abc"])
+            fun `400 - Words cannot be fetched with invalid param - completed`(parameter: String) {
+                makeManyWordsRequestUnsafe(
+                    completed = parameter
                 )
             }
 
@@ -2187,6 +2219,355 @@ class TestWordsController @Autowired constructor(
         }
     }
 
+    @Nested
+    @DisplayName("[POST] /api/v1/words/{id}/toggle-property - toggle word's property")
+    inner class TogglePropertyForOneWordTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - Word's boolean properties can be toggled from false to true`(property: WordToggleableProperty) {
+                val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                word.updateBooleanProperty(property, false)
+
+                val request = wordRequestFactory.togglePropertyRequest(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id,
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).assertBooleanProperty(property, true)
+            }
+
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - Word's boolean properties can be toggled from true to false`(property: WordToggleableProperty) {
+                val word: Word = wordSeeder.seedOneEntityForUser(
+                    user = authenticatedUser.userInfo,
+                )
+
+                word.updateBooleanProperty(property, true)
+
+                val request = wordRequestFactory.togglePropertyRequest(
+                    authenticatedUser = authenticatedUser,
+                    wordId = word.id,
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                wordService.findByIdOrFail(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).assertBooleanProperty(property, false)
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `403 - Anonymous user cannot toggle word's property`() {
+                val word: Word = wordSeeder.seedOneEntity()
+
+                val request = wordRequestFactory.togglePropertyRequest(
+                    wordId = word.id,
+                    property = WordToggleableProperty.IS_COMPLETED,
+                    authenticatedUser = null
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                }
+            }
+
+            @Test
+            fun `404 - Word's property cannot be toggled by other user than the one who created it`() {
+                val anotherUser: User = userSeeder.seedOneEntity()
+
+                val word: Word = wordSeeder.seedOneEntityForUser(anotherUser)
+
+                val request = wordRequestFactory.togglePropertyRequest(
+                    wordId = word.id,
+                    property = WordToggleableProperty.IS_COMPLETED,
+                    authenticatedUser = authenticatedUser
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
+            }
+
+            @Test
+            fun `404 - Word's property cannot be toggled if word does not exist`() {
+                val request = wordRequestFactory.togglePropertyRequest(
+                    wordId = UUID.randomUUID(),
+                    property = WordToggleableProperty.IS_COMPLETED,
+                    authenticatedUser = authenticatedUser
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
+            }
+
+            @Test
+            fun `400 - Word's property cannot be toggled if property is not boolean`() {
+                val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val request = wordRequestFactory.togglePropertyRequest(
+                    wordId = word.id,
+                    property = null,
+                    authenticatedUser = authenticatedUser
+                )
+
+                // Override the property param
+                request.param("property", "not_boolean")
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
+            }
+        }
+    }
+
+    @Nested
+
+    @DisplayName("[POST] /api/v1/words/toggle-property-for-multiple-words - toggle property for multiple words")
+    inner class TogglePropertyForManyWordsTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - Words' boolean properties can be toggled from false to true`(property: WordToggleableProperty) {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                )
+
+                words.forEach {
+                    it.updateBooleanProperty(property, false)
+                }
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words,
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
+                    it.assertBooleanProperty(property, true)
+                }
+            }
+
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - Words' boolean properties can be toggled from true to false`(property: WordToggleableProperty) {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                )
+
+                words.forEach {
+                    it.updateBooleanProperty(property, true)
+                }
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words,
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
+                    it.assertBooleanProperty(property, false)
+                }
+            }
+
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - All words should be toggled even if one word does not exist`(property: WordToggleableProperty) {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                )
+
+                words.forEach {
+                    it.updateBooleanProperty(property, false)
+                }
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words + wordSeeder.seedOneEntity(),
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+
+                }
+
+                words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
+                    it.assertBooleanProperty(property, true)
+                }
+            }
+
+            @ParameterizedTest
+            @EnumSource(WordToggleableProperty::class)
+            fun `200 - Word of another user should no te toggled`(property: WordToggleableProperty) {
+                val anotherUser: User = userSeeder.seedOneEntity()
+
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo
+                )
+
+                val wordsFromAnotherUser: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = anotherUser
+                )
+
+                (words + wordsFromAnotherUser).forEach {
+                    it.updateBooleanProperty(property, true)
+                }
+
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words + wordsFromAnotherUser,
+                    property = property
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                }
+
+                // All words from authenticated user should be toggled
+                words.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
+                    it.assertBooleanProperty(property, false)
+                }
+
+                // All words from another user should not be toggled
+                wordsFromAnotherUser.map { wordService.findByIdOrFail(it.id, anotherUser.id) }.forEach {
+                    it.assertBooleanProperty(property, true)
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `403 - Anonymous user cannot toggle words' property`() {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo
+                )
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    words = words,
+                    authenticatedUser = null
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                }
+            }
+
+            @Test
+            fun `400 - not found when no words' ids are provided`() {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                )
+
+                words.forEach {
+                    it.updateBooleanProperty(WordToggleableProperty.IS_COMPLETED, false)
+                }
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = listOf(),
+                    property = WordToggleableProperty.IS_COMPLETED
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
+            }
+
+            @Test
+            fun `400 - cannot change non boolean property for multiple words`() {
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = authenticatedUser.userInfo,
+                )
+
+                words.forEach {
+                    it.updateBooleanProperty(WordToggleableProperty.IS_COMPLETED, false)
+                }
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words,
+                    property = null
+                )
+
+                request.param("property", "not_boolean")
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                }
+            }
+
+            @Test
+            fun `404 - when all words do not belong to the user`() {
+                val anotherUser: User = userSeeder.seedOneEntity()
+
+                val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
+                    user = anotherUser
+                )
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words,
+                    property = WordToggleableProperty.IS_COMPLETED
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
+            }
+
+            @Test
+            fun `404 - when all words do not exist`() {
+                val words: List<Word> = List(5, init = { wordMockFactory.mockEntity() })
+
+                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
+                    authenticatedUser = authenticatedUser,
+                    words = words,
+                    property = WordToggleableProperty.IS_COMPLETED
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                }
+            }
+        }
+
+    }
+
     private fun assertThatWordActuallyExists(
         response: MockHttpServletResponse,
         authenticatedUser: MockedAuthenticatedUser
@@ -2216,5 +2597,25 @@ class TestWordsController @Autowired constructor(
             assertNotNull(it)
             it!!
         }
+    }
+
+    // Register a utility function to assert the boolean property of a word
+    private fun Word.assertBooleanProperty(property: WordToggleableProperty, expectedValue: Boolean) {
+        when (property) {
+            WordToggleableProperty.IS_COMPLETED -> isCompleted shouldBe expectedValue
+            WordToggleableProperty.IS_BOOKMARKED -> isBookmarked shouldBe expectedValue
+        }
+    }
+
+    // Register a utility function to update the boolean property of a word and also assert its new value
+    private fun Word.updateBooleanProperty(property: WordToggleableProperty, value: Boolean) {
+        when (property) {
+            WordToggleableProperty.IS_COMPLETED -> isCompleted = value
+            WordToggleableProperty.IS_BOOKMARKED -> isBookmarked = value
+        }
+
+        wordRepository.save(this)
+
+        this.assertBooleanProperty(property, value)
     }
 }

@@ -5,8 +5,8 @@ import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.config.security.JwtFactory
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.entities.*
-import com.backend.ord.enums.UserRole
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.enums.persistence.UserRole
 import com.backend.ord.exceptions.ForbiddenException
 import com.backend.ord.exceptions.UserNotFoundException
 import com.backend.ord.repositories.UserRepository

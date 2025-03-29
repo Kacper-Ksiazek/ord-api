@@ -4,14 +4,14 @@ import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.api.responses.GenerateWordManualAIResponse
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.embedded.ExampleSentence
-import com.backend.ord.domain.entities.LanguageProficiency
-import com.backend.ord.domain.entities.User
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.language.LanguageProficiencyLevel
-import com.backend.ord.enums.tokens_usage.WordsGPTTokensConsumptionType
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.domain.persistence.embedded.ExampleSentence
+import com.backend.ord.domain.persistence.entities.LanguageProficiency
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
+import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
@@ -47,7 +47,7 @@ class OpenAIAccessController(
         @RequestParam(required = false) translateExamplesTo: LanguageName?,
         @RequestParam(defaultValue = "3") examplesCount: Int
     ): ResponseEntity<*> {
-        val user = jwtService.getAuthenticatedUser(request)!!
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         // Create the request
         val openAIRequest = openAIRequestFactory.createRequest(
@@ -122,7 +122,7 @@ class OpenAIAccessController(
                     - NON_EXISTENT_WORD if the word does not exist in the language
             """.trimIndent(), // TODO: Try removing new lines or tabulator to reduce the average amount of used tokens
             context =
-            "I want my answer to be suitable for any JSON parser such as Jackson or JSON.parse from js. Do not add any markdown formatting around the examples, just raw JSON.",
+                "I want my answer to be suitable for any JSON parser such as Jackson or JSON.parse from js. Do not add any markdown formatting around the examples, just raw JSON.",
         )
 
         // Send the request to OpenAI

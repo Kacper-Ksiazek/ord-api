@@ -1,11 +1,11 @@
 package com.backend.ord.seeders.mocks.words
 
-import com.backend.ord.domain.entities.Bank
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.repositories.WordRepository
-import com.backend.ord.seeders.mocks._bases.MocksFromJsonFileHandler
+import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
 import com.backend.ord.seeders.mocks.words.json_data_models.AIGeneratedWordManualInJSON
 import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.stereotype.Component

@@ -1,7 +1,6 @@
 package com.backend.ord.utils
 
-import com.backend.ord.enums.ConsoleColor
-import kotlin.reflect.KFunction
+import com.backend.ord.enums.infrastructure.ConsoleColor
 
 object Console {
     fun print(message: String?) {

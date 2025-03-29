@@ -1,7 +1,8 @@
 package com.backend.ord.repositories
 
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.language.LanguageName
+import com.backend.ord.domain.infrastructure.CountingSummaryProjection
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.repositories.bases.UserResourceRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.Modifying
@@ -13,6 +14,10 @@ import java.util.*
 interface WordRepository :
     UserResourceRepository<Word>,
     WordRepositoryCustomMethods {
+    // ------
+    // READ
+    // ------
+
     @Query("SELECT w.origin FROM Word w WHERE w.translatedFrom = :language ORDER BY w.createdAt DESC")
     fun findNOfLatestWords(language: LanguageName, pageable: Pageable): List<String>
 
@@ -21,6 +26,41 @@ interface WordRepository :
 
     @Query("SELECT w.origin FROM Word w WHERE w.translatedFrom = :language AND w.bank.id IN :banksIds")
     fun findAllWordsFromBanks(language: LanguageName, banksIds: List<UUID>): List<String>
+
+    @Query("SELECT w FROM Word w WHERE w.translatedFrom = :language AND w.origin IN :origins AND w.user.id = :userId")
+    fun findAllWordByTheirOrigins(origins: Set<String>, language: LanguageName, userId: UUID): List<Word>
+
+    // ------
+    // AGGREGATE
+    // ------
+
+    @Query(
+        value = """
+            SELECT * FROM count_words_by_field(
+                'created_at', 
+                cast(:language as text), 
+                :userId
+            )
+        """,
+        nativeQuery = true
+    )
+    fun countCreated(language: LanguageName, userId: UUID): CountingSummaryProjection
+
+    @Query(
+        value = """
+            SELECT * FROM count_words_by_field(
+                'completed_at', 
+                cast(:language as text), 
+                :userId
+            )
+        """,
+        nativeQuery = true
+    )
+    fun countCompleted(language: LanguageName, userId: UUID): CountingSummaryProjection
+
+    // ------
+    // UPDATE
+    // ------
 
     @Modifying
     @Query("UPDATE Word w SET w.bank.id = :bankId WHERE w.id = :wordId AND w.user.id = :userId")

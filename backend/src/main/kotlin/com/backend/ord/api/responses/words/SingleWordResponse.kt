@@ -1,20 +1,21 @@
 package com.backend.ord.api.responses.words
 
 import com.backend.ord.api.responses.words.embedded.BankCompact
-import com.backend.ord.domain.embedded.ExampleSentence
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.domain.persistence.embedded.ExampleSentence
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 data class SingleWordResponse(
     val id: UUID,
 
     var points: Int,
     var origin: String,
-    var translation: String,
     var definition: String,
+    var translation: String,
+    var isCompleted: Boolean,
     var isBookmarked: Boolean,
 
     var type: WordType,

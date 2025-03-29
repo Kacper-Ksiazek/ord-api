@@ -1,11 +1,11 @@
 package com.backend.ord.services.bases
 
-import com.backend.ord.domain.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.bases.UserResourceRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 
 interface UserResourceService<T : IdentifiableUserResource> {
     val repository: UserResourceRepository<T>
@@ -49,9 +49,10 @@ interface UserResourceService<T : IdentifiableUserResource> {
 
     fun findByIdOrFail(
         id: UUID,
-        userId: UUID? = null
+        userId: UUID? = null,
+        message: String = "Entity not found"
     ): T {
-        return this.findById(id, userId) ?: throw NotFoundException("Entity not found")
+        return this.findById(id, userId) ?: throw NotFoundException(message)
     }
 
     fun findAll(userId: UUID? = null): List<T> {

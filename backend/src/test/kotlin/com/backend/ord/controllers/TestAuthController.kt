@@ -1,17 +1,16 @@
 package com.backend.ord.controllers
 
-import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.request_factories.AuthRequestFactory
-import com.backend.ord.controllers.utils_for_testing.ControllerTestBase
-import com.backend.ord.domain.dto.UserDTO
-import com.backend.ord.domain.entities.UserSession
+import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.domain.persistence.dto.UserDTO
+import com.backend.ord.domain.persistence.entities.UserSession
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.Cookie
-import jakarta.transaction.Transactional
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.DisplayName
@@ -23,29 +22,29 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @DisplayName("- AuthenticationController")
 class TestAuthController @Autowired constructor(
-    mockMvc: MockMvc?,
     objectMapper: ObjectMapper,
-    private val jwtProperties: JwtProperties,
     private val userSessionService: UserSessionService,
     private val userService: UserService,
-    private val userSeeder: UserSeeder
-) : ControllerTestBase(mockMvc!!, objectMapper, jwtProperties) {
+    private val userSeeder: UserSeeder,
+) : ControllerTestBase(objectMapper) {
     private val PASSWORD = "123456"
     private val EMAIL = "test@test.com"
     private val BASE_URL = "/api/v1/auth"
 
     private val authRequestFactory = AuthRequestFactory(PASSWORD, EMAIL, BASE_URL, objectMapper)
+
+    @AfterEach
+    fun cleanup() {
+        userRepository.deleteByEmail(EMAIL)
+    }
 
     @Nested
     @DisplayName("General")
@@ -140,7 +139,7 @@ class TestAuthController @Autowired constructor(
 
     @Nested
     @DisplayName("[POST] /api/v1/auth/login - login a user")
-    inner class LoginTests{
+    inner class LoginTests {
 
         @Nested
         @DisplayName("Positive")
@@ -277,7 +276,7 @@ class TestAuthController @Autowired constructor(
 
         @Nested
         @DisplayName("Negative")
-        inner class Negative{
+        inner class Negative {
             @Test
             fun `401 - me endpoint should return 401 for anonymous users`() {
                 // Create a request
@@ -291,7 +290,6 @@ class TestAuthController @Autowired constructor(
 
         }
     }
-
 
 
     // ------------------------------

@@ -2,17 +2,18 @@ package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.word.data.*
+import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
+import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.dto.WordDTO
-import com.backend.ord.domain.entities.Bank
-import com.backend.ord.domain.entities.User
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.domain.mappers.BankMapper
-import com.backend.ord.domain.mappers.UserMapper
-import com.backend.ord.domain.mappers.WordMapper
+import com.backend.ord.domain.persistence.dto.WordDTO
+import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.domain.persistence.mappers.BankMapper
+import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.extensions.convertToSetExplicitly
 import com.backend.ord.services.BankService
@@ -39,15 +40,16 @@ class WordController(
     fun getAllWords(
         request: HttpServletRequest,
         @RequestBody @Valid requestBody: GetManyWordsRequestData,
-    ): ResponseEntity<PaginatedDataResponse<WordAsGetManyWordResponse>> {
+    ): ResponseEntity<PaginatedDataResponse<WordListItem>> {
         val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         return ResponseEntity.status(HttpStatus.OK).body(
             wordService.findManyWords(
                 language = requestBody.language,
                 wordType = requestBody.wordType,
+                completed = requestBody.completed,
                 wordExtraMark = requestBody.wordExtraMark,
-                bookmarkedOnly = requestBody.bookmarkedOnly,
+                bookmarked = requestBody.bookmarked,
                 searchingPhrase = requestBody.searchingPhrase,
 
                 banksIds = requestBody.banksIds?.convertToSetExplicitly(paramName = "banksIds"),
@@ -197,6 +199,40 @@ class WordController(
         return ResponseEntity.status(HttpStatus.OK).build()
     }
 
+    @PostMapping("/{id}/toggle-property")
+    fun togglePropertyForOneWord(
+        request: HttpServletRequest,
+        @PathVariable id: UUID,
+        @RequestParam(required = false) property: WordToggleableProperty
+    ): ResponseEntity<Unit> {
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+
+        wordService.toggleProperty(
+            wordId = id,
+            userId = user.id,
+            property = property
+        )
+
+        return ResponseEntity.status(HttpStatus.OK).build()
+    }
+
+    @PostMapping("/toggle-property-for-multiple-words")
+    fun togglePropertyForManyWords(
+        request: HttpServletRequest,
+        @RequestParam(required = false) property: WordToggleableProperty,
+        @Valid @RequestBody body: WordBulkActionRequestData
+    ): ResponseEntity<Unit> {
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+
+        wordService.togglePropertyForManyWords(
+            wordIds = body.ids.convertToSetExplicitly(paramName = "ids"),
+            userId = user.id,
+            property = property
+        )
+
+        return ResponseEntity.status(HttpStatus.OK).build()
+    }
+
     @DeleteMapping("/{id}")
     fun deleteWord(
         request: HttpServletRequest,
@@ -231,7 +267,7 @@ class WordController(
                 bankToCreate = bankToCreate,
                 user = user
             )!!
-        } catch (e: DataIntegrityViolationException) {
+        } catch (_: DataIntegrityViolationException) {
             throw BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
         }
     }

@@ -1,10 +1,10 @@
 package com.backend.ord.seeders.mocks.bank_groups
 
-import com.backend.ord.domain.entities.BankGroup
-import com.backend.ord.domain.entities.User
+import com.backend.ord.domain.persistence.entities.BankGroup
+import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.repositories.BankGroupRepository
-import com.backend.ord.seeders.mocks._bases.MocksFromJsonFileHandler
 import com.backend.ord.seeders.mocks.bank_groups.json_data_models.BankGroupInJSON
+import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
 import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.stereotype.Component
 

@@ -1,21 +1,18 @@
 package com.backend.ord.controllers.request_factories
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
-import com.backend.ord.api.requests.word.data.ChangeBankForMultipleWordsRequestData
-import com.backend.ord.api.requests.word.data.ChangeBankForSingleWordRequestData
-import com.backend.ord.api.requests.word.data.CreateWordRequestData
-import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.data.GetManyWordsRequestData
+import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.controllers.request_factories.data.CreateWordData
 import com.backend.ord.controllers.request_factories.data.UpdateWordData
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.domain.embedded.ExampleSentence
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.domain.persistence.embedded.ExampleSentence
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.unsage_api_requests.UnsafeGetManyWordsRequestData
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType
@@ -48,8 +45,9 @@ class WordRequestFactory(
         perPage: Int? = null,
 
         wordType: WordType? = null,
+        completed: Boolean? = null,
         searchingPhrase: String? = null,
-        bookmarkedOnly: Boolean? = null,
+        bookmarked: Boolean? = null,
         wordExtraMark: WordExtraMark? = null,
 
         banksIds: Set<UUID>? = null,
@@ -76,8 +74,9 @@ class WordRequestFactory(
                         perPage = perPage,
 
                         wordType = wordType,
+                        completed = completed,
                         wordExtraMark = wordExtraMark,
-                        bookmarkedOnly = bookmarkedOnly,
+                        bookmarked = bookmarked,
                         searchingPhrase = searchingPhrase,
 
                         banksIds = banksIds?.toList(),
@@ -99,7 +98,8 @@ class WordRequestFactory(
 
         wordType: Any? = null,
         searchingPhrase: Any? = null,
-        bookmarkedOnly: Any? = null,
+        bookmarked: Any? = null,
+        completed: Any? = null,
         wordExtraMark: Any? = null,
 
         banksIds: Any? = null,
@@ -126,8 +126,9 @@ class WordRequestFactory(
                         perPage = perPage,
 
                         wordType = wordType,
+                        completed = completed,
                         wordExtraMark = wordExtraMark,
-                        bookmarkedOnly = bookmarkedOnly,
+                        bookmarked = bookmarked,
                         searchingPhrase = searchingPhrase,
 
                         banksIds = banksIds,
@@ -363,6 +364,50 @@ class WordRequestFactory(
             .apply {
                 if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
             }
+    }
+
+    /**
+     * POST /words/{wordId}/toggle-property
+     */
+    fun togglePropertyRequest(
+        wordId: UUID,
+        authenticatedUser: MockedAuthenticatedUser? = null,
+        property: WordToggleableProperty? = null
+    ): MockHttpServletRequestBuilder {
+        return MockMvcRequestBuilders
+            .post("$BASE_URL/$wordId/toggle-property")
+            .apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+                if (property != null) this.param("property", property.toString())
+            }
+    }
+
+    /**
+     * POST /words/toggle-property-for-multiple-words
+     */
+    fun togglePropertyForMultipleWordsRequest(
+        authenticatedUser: MockedAuthenticatedUser? = null,
+        words: List<Word>? = null,
+        property: WordToggleableProperty? = null
+    ): MockHttpServletRequestBuilder {
+        val wordIds = words?.map { it.id }
+
+        return MockMvcRequestBuilders
+            .post("$BASE_URL/toggle-property-for-multiple-words")
+            .apply {
+                if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
+                if (property != null) this.param("property", property.toString())
+            }
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    when (wordIds) {
+                        null -> null
+                        else -> WordBulkActionRequestData(ids = wordIds)
+                    }
+                )
+            )
     }
 
 }

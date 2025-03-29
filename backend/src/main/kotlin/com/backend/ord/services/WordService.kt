@@ -1,17 +1,20 @@
 package com.backend.ord.services
 
-import com.backend.ord.domain.entities.Word
-import com.backend.ord.enums.language.LanguageName
-import com.backend.ord.services.bases.UserResourceService
-import java.util.UUID
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
+import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordAsGetManyWordResponse
-import com.backend.ord.domain.entities.User
-import com.backend.ord.enums.word.WordExtraMark
-import com.backend.ord.enums.word.WordType
+import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.domain.infrastructure.CountingSummary
+import com.backend.ord.domain.persistence.dto.WordDTO
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.word.WordExtraMark
+import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.services.bases.UserResourceService
+import java.util.*
 
 
 interface WordService : UserResourceService<Word> {
@@ -39,26 +42,48 @@ interface WordService : UserResourceService<Word> {
     ): Set<String>
 
     fun findManyWords(
-        searchingPhrase: String?,
-        bookmarkedOnly: Boolean?,
+        completed: Boolean? = null,
+        searchingPhrase: String? = null,
+        bookmarked: Boolean? = null,
 
-        banksIds: Set<UUID>?,
-        bankGroupsIds: Set<UUID>?,
+        banksIds: Set<UUID>? = null,
+        bankGroupsIds: Set<UUID>? = null,
 
-        wordType: WordType?,
+        wordType: WordType? = null,
         language: LanguageName,
-        sortDirection: SortDirection?,
-        wordExtraMark: WordExtraMark?,
-        sortBy: GetAllWordsSortOptions?,
+        sortDirection: SortDirection? = null,
+        wordExtraMark: WordExtraMark? = null,
+        sortBy: GetAllWordsSortOptions? = null,
 
         user: User,
 
-        page: Int,
-        perPage: Int
-    ): PaginatedDataResponse<WordAsGetManyWordResponse>
+        page: Int = 0,
+        perPage: Int = 10
+    ): PaginatedDataResponse<WordListItem>
 
     fun findOneWord(
         wordId: UUID,
         user: User
     ): SingleWordResponse
+
+    fun toggleProperty(
+        wordId: UUID,
+        userId: UUID,
+        property: WordToggleableProperty
+    ): Word
+
+    fun togglePropertyForManyWords(
+        wordIds: Set<UUID>,
+        userId: UUID,
+        property: WordToggleableProperty
+    ): List<Word>
+
+    fun saveNewWord(
+        word: WordDTO,
+        user: User
+    ): WordDTO
+
+    fun countCreated(language: LanguageName, userId: UUID): CountingSummary
+
+    fun countCompleted(language: LanguageName, userId: UUID): CountingSummary
 }

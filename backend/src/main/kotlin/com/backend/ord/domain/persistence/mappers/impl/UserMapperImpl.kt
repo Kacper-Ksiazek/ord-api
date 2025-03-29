@@ -1,0 +1,40 @@
+package com.backend.ord.domain.persistence.mappers.impl
+
+import com.backend.ord.domain.persistence.dto.UserDTO
+import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.domain.persistence.mappers.UserMapper
+import org.springframework.stereotype.Component
+
+@Component
+class UserMapperImpl() : UserMapper {
+    override fun toEntity(dto: UserDTO): User {
+        return User(
+            id = dto.id,
+
+            name = dto.name,
+            email = dto.email,
+            role = dto.role,
+            password = dto.password,
+            nativeLanguage = dto.nativeLanguage,
+
+            createdAt = dto.createdAt,
+            updatedAt = dto.updatedAt
+        )
+    }
+
+    override fun toDTO(entity: User): UserDTO {
+        return UserDTO(
+            id = entity.id,
+
+            name = entity.name,
+            email = entity.email,
+            role = entity.role,
+            password = entity.password,
+            nativeLanguage = entity.nativeLanguage,
+
+            createdAt = entity.createdAt,
+            updatedAt = entity.updatedAt
+        )
+    }
+
+}
