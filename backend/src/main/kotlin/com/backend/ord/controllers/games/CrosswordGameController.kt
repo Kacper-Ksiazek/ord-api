@@ -19,7 +19,6 @@ import com.backend.ord.services.GameReviewService
 import com.backend.ord.services.GameService
 import com.backend.ord.services.OngoingGameService
 import com.backend.ord.services.ai.AIGameService
-import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.servlet.http.HttpServletRequest
@@ -37,7 +36,6 @@ class CrosswordGameController(
     private val jwtService: JwtService,
     private val gameService: GameService,
     private val ongoingGameService: OngoingGameService,
-    private val gameTokensUsageService: GameTokensUsageService,
     private val ongoingGameMapper: OngoingGameMapper,
     private val gameReviewService: GameReviewService
 
