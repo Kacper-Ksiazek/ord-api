@@ -269,9 +269,6 @@ class Board {
 
                 if (!wordHasBeenPlacedAfterInsertingSeparator) {
                     if (attempt < numberOfRetries) {
-                        //TODO: Remove this
-                        println("Retrying...")
-
                         cells = MutableList(dimensions.y) { MutableList(dimensions.x) { null } }
 
                         return placeAllQuestions(

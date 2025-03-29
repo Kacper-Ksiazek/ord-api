@@ -413,8 +413,6 @@ class TestWordsController @Autowired constructor(
                     perPage = 500
                 )
 
-                println(body.data.map { it.bank?.bankGroup?.id })
-
                 body.data.forEach {
                     it.bank?.bankGroup?.id shouldBe bankGroupOne.id
                 }
