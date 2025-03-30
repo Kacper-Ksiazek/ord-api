@@ -15,7 +15,6 @@ import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
-import com.backend.ord.utils.Console
 import com.backend.ord.utils.EnumUtils.joinEnumValues
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -63,13 +62,7 @@ class OpenAIAccessController(
         )
 
         // Send the request to OpenAI
-        val response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
-            // Display the usage tokens consumption
-            Console.printYellow("\nOpenAI request for $examplesCount examples of usage tokens consumption:\n")
-            println("- Prompt: ${it.usage.prompt_tokens}")
-            println("- Completion: ${it.usage.completion_tokens}")
-            println("- Total: ${it.usage.total_tokens}")
-        }
+        val response = restClientConfig.makeOpenAIPostRequest(openAIRequest)
 
         // Parse request into List<String>
         val examples: Set<ExampleSentence> = jsonObjectMapper.readValue(response.data)
@@ -127,22 +120,14 @@ class OpenAIAccessController(
 
         // Send the request to OpenAI
         val response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
-            // Display the usage tokens consumption
-            Console.printYellow("\nOpenAI request for word manual entry usage tokens consumption:\n")
-            println("Word: $word | Original language: $originalLanguage | Translate to: $translateTo | User proficiency: ${userProficiencyInRequestedLanguage.proficiency}")
-            println("- Prompt: ${it.usage.prompt_tokens}")
-            println("- Completion: ${it.usage.completion_tokens}")
-            println("- Total: ${it.usage.total_tokens}")
-
-            // Save the usage tokens consumption
             wordTokensUsageService.save(
                 user = user,
                 word = word,
                 translatedTo = translateTo,
                 translatedFrom = originalLanguage,
                 consumptionType = WordsGPTTokensConsumptionType.GENERATE_ENTIRE_MANUAL,
-                inputTokens = it.usage.prompt_tokens,
-                outputTokens = it.usage.completion_tokens,
+                inputTokens = it.usage.input_tokens,
+                outputTokens = it.usage.output_tokens,
             )
         }
 

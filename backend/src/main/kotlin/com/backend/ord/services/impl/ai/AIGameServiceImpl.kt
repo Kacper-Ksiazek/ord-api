@@ -142,8 +142,8 @@ class AIGameServiceImpl(
                         gameType = GameType.CROSSWORD,
                         consumptionType = GamesGPTTokensConsumptionType.GENERATE,
 
-                        inputTokens = it.usage.prompt_tokens,
-                        outputTokens = it.usage.completion_tokens
+                        inputTokens = it.usage.input_tokens,
+                        outputTokens = it.usage.output_tokens
                     )
                 )
             }
