@@ -57,7 +57,7 @@ class AIWordsController(
 
         // Create the request
         val openAIRequest = openAIRequestFactory.createRequest(
-            prompt = Prompts.generateWordManualPrompt(
+            prompt = Prompts.AIWords.generateWordManualPrompt(
                 word = word,
                 wordLanguage = originalLanguage,
                 desiredLanguage = translateTo,

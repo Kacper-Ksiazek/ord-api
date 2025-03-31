@@ -1,6 +1,7 @@
 package com.backend.ord.prompts
 
 import com.backend.ord.enums.persistence.game.GameDifficulty
+import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.word.WordExtraMark
@@ -11,43 +12,76 @@ object Prompts {
     const val DEFAULT_CONTEXT =
         "Do not include anything more than this json and do not add markdown formatting. I want your output to be suitable for jsonObjectMapper.readValue."
 
-    /**
-     * Prepare a prompt to generate a list of questions for a crossword game.
-     */
-    fun generateCrosswordQuestionsPrompt(
-        amountOfQuestions: Int,
-        language: LanguageName,
-        wordsToUse: List<String>,
-        difficulty: GameDifficulty,
-        languageProficiency: LanguageProficiencyLevel,
-    ): String {
-        return """
-               Generate a foreign language practicing crossword. The game difficulty is set to $difficulty, and the foreign language is $language at $languageProficiency level.
+    object Games {
+        private data class GenerateGamePromptData(
+            val language: LanguageName,
+            val wordsToUse: List<String>,
+            val difficulty: GameDifficulty,
+            val languageProficiency: LanguageProficiencyLevel,
+        )
+
+        private fun prepareGameGenerationPrompt(
+            details: GenerateGamePromptData,
+            gameTypeDescription: String,
+            expectedResponseJSON: String
+        ): String {
+            return """
+               $gameTypeDescription. The game difficulty is set to ${details.difficulty}, and the foreign language is ${details.language} at ${details.languageProficiency} level.
                
                I want my answer to match this JSON format:
                
-               {
-                 answer: string // Either a new word or a short phrase. Do not use a word from the list provided
-                 answerExplanation: string // DO NOT include an answer in its explanation
-                 questions: {
-                   word: string // Use words for the provided list. Each word can be used only once
-                   clue: string // DO NOT include the word in its clue
-                 }[] // A list of $amountOfQuestions with words from the provided list
-               }
+               $expectedResponseJSON
                
-               Words: [ ${wordsToUse.joinToString(", ") { it }} ]
+               Words: [ ${details.wordsToUse.joinToString(", ") { it }} ]
             """.trimIndent()
+        }
+
+        fun generateCrosswordQuestionsPrompt(
+            language: LanguageName,
+            wordsToUse: List<String>,
+            difficulty: GameDifficulty,
+            languageProficiency: LanguageProficiencyLevel,
+        ): String {
+            val details = GenerateGamePromptData(language, wordsToUse, difficulty, languageProficiency)
+            val amountOfQuestions: Int = difficulty.getNumberOfWordsForCrossword()
+
+            return prepareGameGenerationPrompt(
+                details = details,
+                gameTypeDescription = "Generate a foreign language practicing crossword.",
+                expectedResponseJSON = """
+                {
+                     answer: string // Either a new word or a short phrase. Do not use a word from the list provided
+                     answerExplanation: string // DO NOT include an answer in its explanation
+                     questions: {
+                       word: string // Use words for the provided list. Each word can be used only once
+                       clue: string // DO NOT include the word in its clue
+                     }[] // A list of $amountOfQuestions with words from the provided list
+               }
+               """.trimIndent()
+            )
+        }
+
+        fun generateWordsTypingGamePrompt(
+            amountOfQuestions: Int,
+            language: LanguageName,
+            wordsToUse: List<String>,
+            difficulty: GameDifficulty,
+            languageProficiency: LanguageProficiencyLevel,
+        ): String {
+            return "TODO"
+        }
     }
 
-    // TODO: Gather all prompts here
-    fun generateWordManualPrompt(
-        word: String,
-        wordLanguage: LanguageName,
-        desiredLanguage: LanguageName,
-        proficiency: LanguageProficiencyLevel,
-        generativeContentLanguage: LanguageName,
-    ): String {
-        return """
+    object AIWords {
+
+        fun generateWordManualPrompt(
+            word: String,
+            wordLanguage: LanguageName,
+            desiredLanguage: LanguageName,
+            proficiency: LanguageProficiencyLevel,
+            generativeContentLanguage: LanguageName,
+        ): String {
+            return """
                 Response as a foreign language tutor. Generate a manual entry for $wordLanguage "$word" at $proficiency proficiency level in $desiredLanguage language. 
                 Explain always the most common usage of the word, do not provide any rare or outdated meanings.
 
@@ -69,5 +103,7 @@ object Prompts {
                     - WORD_MISSPELLED if the word is misspelled
                     - NON_EXISTENT_WORD if the word does not exist in the language
             """.trimIndent()
+        }
+
     }
 }

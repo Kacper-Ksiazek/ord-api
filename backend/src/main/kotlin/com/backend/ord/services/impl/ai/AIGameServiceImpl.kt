@@ -4,7 +4,7 @@ import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.openai.OpenAIRequest
 import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
-import com.backend.ord.api.responses.openai.embedded.OpenAIResponse
+import com.backend.ord.api.responses.openai.OpenAIResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
@@ -109,11 +109,10 @@ class AIGameServiceImpl(
         val amountOfQuestions = difficulty.getNumberOfWordsForCrossword()
 
         val openAIRequest: OpenAIRequest = openAIRequestFactory.createRequest(
-            prompt = Prompts.generateCrosswordQuestionsPrompt(
+            prompt = Prompts.Games.generateCrosswordQuestionsPrompt(
                 wordsToUse = words.map { it.origin },
                 language = language,
                 difficulty = difficulty,
-                amountOfQuestions = amountOfQuestions,
                 languageProficiency = user.getProficiencyInLanguage(language),
             )
         )
