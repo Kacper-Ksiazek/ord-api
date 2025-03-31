@@ -16,17 +16,9 @@ class OpenAIRequestFactory(
         return OpenAIRequest(
             model = openAIProperties.gptModel,
             temperature = openAIProperties.temperature,
-            max_tokens = openAIProperties.maxTokens,
-            messages = arrayOf(
-                ChatGPTMessage(
-                    role = ChatGPTRole.user,
-                    content = prompt
-                ),
-                ChatGPTMessage(
-                    role = ChatGPTRole.assistant,
-                    content = context
-                )
-            )
+            max_output_tokens = openAIProperties.maxTokens,
+            input = prompt,
+            instructions = context
         )
     }
 
@@ -34,13 +26,8 @@ class OpenAIRequestFactory(
         return OpenAIRequest(
             model = openAIProperties.gptModel,
             temperature = openAIProperties.temperature,
-            max_tokens = openAIProperties.maxTokens,
-            messages = arrayOf(
-                ChatGPTMessage(
-                    role = ChatGPTRole.user,
-                    content = prompt
-                )
-            )
+            max_output_tokens = openAIProperties.maxTokens,
+            input = prompt
         )
     }
 
