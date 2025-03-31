@@ -84,7 +84,7 @@ class AIGameServiceImpl(
             }
 
 
-        val (aiGeneratedCrossword, gameTokensUsageLogs) = makeOpenAIRequestToGenerateCrossword(
+        val aiGeneratedCrossword = makeOpenAIRequestToGenerateCrossword(
             user = user,
             language = language,
             difficulty = difficulty,
@@ -93,7 +93,6 @@ class AIGameServiceImpl(
 
         return AIGameService.Companion.GeneratedCrossWordGame(
             aiGeneratedCrossword = aiGeneratedCrossword,
-            gameTokensUsageLogs = gameTokensUsageLogs,
             properAnswers = CrosswordProperAnswers(
                 finalWord = aiGeneratedCrossword.answer,
                 questions = aiGeneratedCrossword.questions.associate { it.id to it.word }
@@ -106,7 +105,7 @@ class AIGameServiceImpl(
         language: LanguageName,
         difficulty: GameDifficulty,
         words: List<WordListItem>
-    ): Pair<AIGeneratedCrossword, Set<GameTokensUsage>> {
+    ): AIGeneratedCrossword {
         val amountOfQuestions = difficulty.getNumberOfWordsForCrossword()
 
         val openAIRequest: OpenAIRequest = openAIRequestFactory.createRequest(
@@ -128,7 +127,7 @@ class AIGameServiceImpl(
         do {
             openAIRequestFactory.trackOpenAIAPIRequestAttempt(openAIAPIRequestAttempt++)
 
-            // Send the request to the OpenAI APIdd
+            // Send the request to the OpenAI API
             response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
                 // Log the token usage for the request
                 gameTokensUsageLogs.add(
@@ -171,6 +170,6 @@ class AIGameServiceImpl(
             parsedResponseBody.questions.map { it.word }.distinct().size != amountOfQuestions
         )
 
-        return Pair(parsedResponseBody, gameTokensUsageLogs)
+        return parsedResponseBody
     }
 }
