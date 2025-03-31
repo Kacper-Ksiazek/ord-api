@@ -7,20 +7,14 @@ import com.backend.ord.api.responses.games.ProperAnswer
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
-import com.backend.ord.config.security.JwtService
+import com.backend.ord.controllers.games.bases.GameControllerBase
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.entities.OngoingGame
 import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.services.GameReviewService
-import com.backend.ord.services.GameService
-import com.backend.ord.services.OngoingGameService
-import com.backend.ord.services.ai.AIGameService
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -31,17 +25,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/games/crossword")
-class CrosswordGameController(
-    private val aiGameService: AIGameService,
-    private val jwtService: JwtService,
-    private val gameService: GameService,
-    private val ongoingGameService: OngoingGameService,
-    private val ongoingGameMapper: OngoingGameMapper,
-    private val gameReviewService: GameReviewService
-
-) {
-    private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
-
+class CrosswordGameController : GameControllerBase() {
     /**
      * Start a new crossword game
      */
