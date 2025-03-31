@@ -35,6 +35,7 @@ class AIWordsController(
 ) {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
+    // TODO: Move to the POST
     @GetMapping("/generate-manual")
     fun generateWordManual(
         request: HttpServletRequest,
