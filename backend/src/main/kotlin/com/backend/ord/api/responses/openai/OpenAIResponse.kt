@@ -1,4 +1,4 @@
-package com.backend.ord.api.responses.openai.embedded
+package com.backend.ord.api.responses.openai
 
 data class OpenAIResponseTokensUsage(
     val input_tokens: Int,
