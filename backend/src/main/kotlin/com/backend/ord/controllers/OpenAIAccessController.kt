@@ -10,12 +10,10 @@ import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.exceptions.REST.BadRequestException
+import com.backend.ord.prompts.Prompts
 import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
-import com.backend.ord.utils.EnumUtils.joinEnumValues
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -37,6 +35,8 @@ class OpenAIAccessController(
 ) {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
+    // TODO: Remove this since it was just a POC
+    @Deprecated("Use generateWordManual instead")
     @GetMapping("/examples-of-usage")
     fun generateExamplesOfUsage(
         request: HttpServletRequest,
@@ -92,30 +92,13 @@ class OpenAIAccessController(
 
         // Create the request
         val openAIRequest = openAIRequestFactory.createRequest(
-            prompt = """
-                Response as a foreign language tutor. Generate a manual entry for $originalLanguage "$word" at $proficiencyLevel proficiency level in $translateTo language. 
-                Explain always the most common usage of the word, do not provide any rare or outdated meanings.
-
-                Generate response in JSON format matching following typescript interface:
-
-                type response = {
-                translation: string, // Translation of the word in $translateTo. If the word is an idiom or a phrase, provide a translation that is as close as possible to the original meaning, do not translate it literally.
-                definition: string, // One or two short and concise sentences in ${userProficiencyInRequestedLanguage.generativeContentLanguage}
-                type: ${WordType::class.joinEnumValues(separator = " | ")},
-                extraMark: null | ${WordExtraMark::class.joinEnumValues(separator = " | ")}, // Leave null if none of the options are good enough
-                useCases: string[], // If word has multiple definitions, provide multiple use cases in ${userProficiencyInRequestedLanguage.generativeContentLanguage}
-                exampleSentences: {
-                	sentence: string, // Sentence in $originalLanguage
-                	translation: string // Sentence in $translateTo
-                }[] // At least 3 examples. In both languages, the word and its translation should be surrounded with single asterisks.
-                }
-
-                Additionally, return exactly:
-                    - WORD_MISSPELLED if the word is misspelled
-                    - NON_EXISTENT_WORD if the word does not exist in the language
-            """.trimIndent(), // TODO: Try removing new lines or tabulator to reduce the average amount of used tokens
-            context =
-                "I want my answer to be suitable for any JSON parser such as Jackson or JSON.parse from js. Do not add any markdown formatting around the examples, just raw JSON.",
+            prompt = Prompts.generateWordManualPrompt(
+                word = word,
+                wordLanguage = originalLanguage,
+                desiredLanguage = translateTo,
+                proficiency = proficiencyLevel,
+                generativeContentLanguage = userProficiencyInRequestedLanguage.generativeContentLanguage
+            )
         )
 
         // Send the request to OpenAI
