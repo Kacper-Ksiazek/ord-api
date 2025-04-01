@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS language_proficiencies
     id                          UUID PRIMARY KEY,
 
     language                    language_name        NOT NULL,
+    -- TODO: Rename this column to just "level" to be more generic
     proficiency                 language_proficiency NOT NULL,
     user_id                     UUID                 NOT NULL,
 
