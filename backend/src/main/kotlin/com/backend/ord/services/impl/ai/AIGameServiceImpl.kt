@@ -8,13 +8,13 @@ import com.backend.ord.api.responses.openai.OpenAIResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
+import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.prompts.Prompts
@@ -40,10 +40,9 @@ class AIGameServiceImpl(
 ) : AIGameService {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
-    private fun User.getProficiencyInLanguage(language: LanguageName): LanguageProficiencyLevel {
+    private fun User.getProficiencyInLanguage(language: LanguageName): LanguageProficiency {
         return languageProficiencyService
             .findUserProficiencyInLanguageOrThrow(this.id, language)
-            .proficiency
     }
 
     /**

@@ -23,6 +23,22 @@ fun GameDifficulty.getNumberOfWordsForCrossword(): Int {
 }
 
 /**
+ * Returns the number of words for the crossword based on the difficulty.
+ *
+ * It returns:
+ * - 8 for [GameDifficulty.EASY]
+ * - 14 for [GameDifficulty.MEDIUM]
+ * - 20 for [GameDifficulty.HARD]
+ */
+fun GameDifficulty.getNumberOfWordsForWordsTypingGame(): Int {
+    return when (this) {
+        GameDifficulty.EASY -> 8
+        GameDifficulty.MEDIUM -> 14
+        GameDifficulty.HARD -> 20
+    }
+}
+
+/**
  * Returns the number of allowed mistakes for the crossword based on the difficulty.
  *
  * It returns:

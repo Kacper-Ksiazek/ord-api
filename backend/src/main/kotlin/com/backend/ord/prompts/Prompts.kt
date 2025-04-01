@@ -1,48 +1,29 @@
 package com.backend.ord.prompts
 
+import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
+import com.backend.ord.enums.persistence.game.getNumberOfWordsForWordsTypingGame
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.prompts.internal_tools.GenerateGamePromptData
+import com.backend.ord.prompts.internal_tools.prepareGameGenerationPrompt
 import com.backend.ord.utils.EnumUtils.joinEnumValues
 
 object Prompts {
     const val DEFAULT_CONTEXT =
-        "Do not include anything more than this json and do not add markdown formatting. I want your output to be suitable for jsonObjectMapper.readValue."
+        "Do not include anything more than this JSON and do not add markdown formatting. I want your output to be suitable for jsonObjectMapper.readValue."
 
     object Games {
-        private data class GenerateGamePromptData(
-            val language: LanguageName,
-            val wordsToUse: List<String>,
-            val difficulty: GameDifficulty,
-            val languageProficiency: LanguageProficiencyLevel,
-        )
-
-        private fun prepareGameGenerationPrompt(
-            details: GenerateGamePromptData,
-            gameTypeDescription: String,
-            expectedResponseJSON: String
-        ): String {
-            return """
-               $gameTypeDescription. The game difficulty is set to ${details.difficulty}, and the foreign language is ${details.language} at ${details.languageProficiency} level.
-               
-               I want my answer to match this JSON format:
-               
-               $expectedResponseJSON
-               
-               Words: [ ${details.wordsToUse.joinToString(", ") { it }} ]
-            """.trimIndent()
-        }
-
         fun generateCrosswordQuestionsPrompt(
             language: LanguageName,
             wordsToUse: List<String>,
             difficulty: GameDifficulty,
-            languageProficiency: LanguageProficiencyLevel,
+            languageProficiency: LanguageProficiency,
         ): String {
-            val details = GenerateGamePromptData(language, wordsToUse, difficulty, languageProficiency)
+            val details = GenerateGamePromptData(language, wordsToUse, difficulty, languageProficiency.proficiency)
             val amountOfQuestions: Int = difficulty.getNumberOfWordsForCrossword()
 
             return prepareGameGenerationPrompt(
@@ -51,10 +32,10 @@ object Prompts {
                 expectedResponseJSON = """
                 {
                      answer: string // Either a new word or a short phrase. Do not use a word from the list provided
-                     answerExplanation: string // DO NOT include an answer in its explanation
+                     answerExplanation: string // DO NOT include an answer in its explanation. Generate this in the ${languageProficiency.generativeContentLanguage} language
                      questions: {
                        word: string // Use words for the provided list. Each word can be used only once
-                       clue: string // DO NOT include the word in its clue
+                       clue: string // DO NOT include the word in its clue. Generate this in the ${languageProficiency.generativeContentLanguage} language
                      }[] // A list of $amountOfQuestions with words from the provided list
                }
                """.trimIndent()
