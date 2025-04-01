@@ -43,13 +43,24 @@ object Prompts {
         }
 
         fun generateWordsTypingGamePrompt(
-            amountOfQuestions: Int,
             language: LanguageName,
             wordsToUse: List<String>,
             difficulty: GameDifficulty,
-            languageProficiency: LanguageProficiencyLevel,
+            languageProficiency: LanguageProficiency,
         ): String {
-            return "TODO"
+            val details = GenerateGamePromptData(language, wordsToUse, difficulty, languageProficiency.proficiency)
+            val amountOfQuestions: Int = difficulty.getNumberOfWordsForWordsTypingGame()
+
+            return prepareGameGenerationPrompt(
+                details = details,
+                gameTypeDescription = "Generate a foreign language practicing words typing game.",
+                expectedResponseJSON = """
+                {
+                   word: string // Use words for the provided list. Each word can be used only once
+                   clue: string // DO NOT include the word in its clue. Generate this in the ${languageProficiency.generativeContentLanguage} language
+               }[] // A list of $amountOfQuestions with words from the provided list
+               """.trimIndent()
+            )
         }
     }
 
