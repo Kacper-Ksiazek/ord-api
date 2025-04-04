@@ -2,8 +2,8 @@ package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.games.data.CrosswordUserAnswersData
 import com.backend.ord.api.requests.games.data.WordUserAnswer
+import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
-import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.controllers.utils_for_testing.AlteredProperAnswer
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser

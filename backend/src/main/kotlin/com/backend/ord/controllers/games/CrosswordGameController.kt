@@ -4,8 +4,8 @@ import com.backend.ord.api.requests.games.data.CrosswordToFinishRequestData
 import com.backend.ord.api.requests.games.data.StartGameRequestData
 import com.backend.ord.api.responses.games.IdentifiableProperAnswer
 import com.backend.ord.api.responses.games.ProperAnswer
+import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
 import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
-import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.controllers.games.bases.GameControllerBase
 import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
