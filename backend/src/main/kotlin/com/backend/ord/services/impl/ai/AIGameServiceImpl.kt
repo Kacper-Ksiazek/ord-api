@@ -63,10 +63,34 @@ class AIGameServiceImpl(
         language: LanguageName,
         difficulty: GameDifficulty
     ): GeneratedCrosswordGame {
-        val requiredNumberOfWords = difficulty.getNumberOfWordsForCrossword()
+        val aiGeneratedCrossword = makeOpenAIRequestToGenerateCrossword(
+            user = user,
+            language = language,
+            difficulty = difficulty,
+            words = getWordsForGame(
+                user = user,
+                language = language,
+                difficulty.getNumberOfWordsForCrossword()
+            )
+        )
 
-        // Get words for the game
-        val words = wordService.findManyWords(
+        return GeneratedCrosswordGame(
+            aiResponse = aiGeneratedCrossword,
+            properAnswers = CrosswordProperAnswers(
+                finalWord = aiGeneratedCrossword.answer,
+                questions = aiGeneratedCrossword.questions.associate { it.id to it.word }
+            )
+        )
+    }
+
+    private fun getWordsForGame(
+        user: User,
+        language: LanguageName,
+        requiredNumberOfWords: Int
+    ): List<WordListItem> {
+        // TODO: Generate a list of words using AI - plans for the future far far away
+
+        return wordService.findManyWords(
             user = user,
             language = language,
             perPage = 500,
@@ -82,21 +106,14 @@ class AIGameServiceImpl(
                     throw BadRequestException("Not enough words to generate a crossword game")
                 }
             }
+    }
 
-        val aiGeneratedCrossword = makeOpenAIRequestToGenerateCrossword(
-            user = user,
-            language = language,
-            difficulty = difficulty,
-            words = words
-        )
-
-        return GeneratedCrosswordGame(
-            aiResponse = aiGeneratedCrossword,
-            properAnswers = CrosswordProperAnswers(
-                finalWord = aiGeneratedCrossword.answer,
-                questions = aiGeneratedCrossword.questions.associate { it.id to it.word }
-            )
-        )
+    override fun generateWordsTypingGame(
+        user: User,
+        language: LanguageName,
+        difficulty: GameDifficulty
+    ) {
+        TODO("Not yet implemented")
     }
 
     private fun makeOpenAIRequestToGenerateCrossword(

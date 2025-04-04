@@ -11,4 +11,10 @@ interface AIGameService {
         language: LanguageName,
         difficulty: GameDifficulty
     ): GeneratedCrosswordGame
+
+    fun generateWordsTypingGame(
+        user: User,
+        language: LanguageName,
+        difficulty: GameDifficulty
+    )
 }
