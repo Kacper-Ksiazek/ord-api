@@ -22,6 +22,7 @@ import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.dto.GeneratedCrosswordGame
+import com.backend.ord.services.ai.dto.GeneratedWordsTypingGame
 import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedCrossword
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -83,6 +84,15 @@ class AIGameServiceImpl(
         )
     }
 
+    override fun generateWordsTypingGame(
+        user: User,
+        language: LanguageName,
+        difficulty: GameDifficulty
+    ): GeneratedWordsTypingGame {
+        TODO("Not yet implemented")
+    }
+
+
     private fun getWordsForGame(
         user: User,
         language: LanguageName,
@@ -108,13 +118,6 @@ class AIGameServiceImpl(
             }
     }
 
-    override fun generateWordsTypingGame(
-        user: User,
-        language: LanguageName,
-        difficulty: GameDifficulty
-    ) {
-        TODO("Not yet implemented")
-    }
 
     private fun makeOpenAIRequestToGenerateCrossword(
         user: User,
@@ -140,6 +143,8 @@ class AIGameServiceImpl(
         var openAIAPIRequestAttempt: Int = 0;
 
         do {
+            parsedResponseBody = null;
+
             openAIRequestFactory.trackOpenAIAPIRequestAttempt(openAIAPIRequestAttempt++)
 
             // Send the request to the OpenAI API
@@ -164,7 +169,7 @@ class AIGameServiceImpl(
 
             // Attempt to parse the response into the expected AIGeneratedCrossword object
             parsedResponseBody = try {
-                val readValue = jsonObjectMapper.readValue<AIGeneratedCrossword>(response.data)
+                val readValue: AIGeneratedCrossword = jsonObjectMapper.readValue<AIGeneratedCrossword>(response.data)
 
                 readValue.copy(
                     questions = with(readValue.questions) {

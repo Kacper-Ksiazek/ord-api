@@ -24,7 +24,7 @@ class WordsTypingGameController : GameControllerBase() {
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         // 2. Generate crossword game using AI
-        val (aiResponse, properAnswers) = aiGameService.generateCrosswordGame(
+        val (aiResponse, properAnswers) = aiGameService.generateWordsTypingGame(
             user = user,
             language = body.language,
             difficulty = body.difficulty
