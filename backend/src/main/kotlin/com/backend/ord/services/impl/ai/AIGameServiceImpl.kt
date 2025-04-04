@@ -7,10 +7,10 @@ import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.openai.OpenAIResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.RestClientConfig
-import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.GameTokensUsage
+import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
@@ -21,7 +21,8 @@ import com.backend.ord.prompts.Prompts
 import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
-import com.backend.ord.services.ai.dto.AIGeneratedCrossword
+import com.backend.ord.services.ai.dto.GeneratedCrosswordGame
+import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedCrossword
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -61,7 +62,7 @@ class AIGameServiceImpl(
         user: User,
         language: LanguageName,
         difficulty: GameDifficulty
-    ): AIGameService.Companion.GeneratedCrossWordGame {
+    ): GeneratedCrosswordGame {
         val requiredNumberOfWords = difficulty.getNumberOfWordsForCrossword()
 
         // Get words for the game
@@ -82,7 +83,6 @@ class AIGameServiceImpl(
                 }
             }
 
-
         val aiGeneratedCrossword = makeOpenAIRequestToGenerateCrossword(
             user = user,
             language = language,
@@ -90,8 +90,8 @@ class AIGameServiceImpl(
             words = words
         )
 
-        return AIGameService.Companion.GeneratedCrossWordGame(
-            aiGeneratedCrossword = aiGeneratedCrossword,
+        return GeneratedCrosswordGame(
+            aiResponse = aiGeneratedCrossword,
             properAnswers = CrosswordProperAnswers(
                 finalWord = aiGeneratedCrossword.answer,
                 questions = aiGeneratedCrossword.questions.associate { it.id to it.word }

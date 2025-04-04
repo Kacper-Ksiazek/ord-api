@@ -1,10 +1,9 @@
-package com.backend.ord.domain.application.games
+package com.backend.ord.domain.application.games.crossword.board
 
+import com.backend.ord.domain.application.games.crossword.CrosswordQuestion
+import com.backend.ord.domain.application.games.crossword.QuestionBoardPosition
+import com.backend.ord.domain.application.games.crossword.getCoordinatesOfLetterAtIndex
 import com.backend.ord.exceptions.REST.BadGatewayException
-import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
-import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
-import com.backend.ord.services.ai.dto.crossword.QuestionBoardPosition
-import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
 
 /**
  * Represents a matrix for a crossword gameplay area.

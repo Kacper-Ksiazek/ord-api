@@ -1,6 +1,7 @@
-package com.backend.ord.services.ai.dto.crossword
+package com.backend.ord.domain.application.games.crossword
 
-import com.backend.ord.domain.application.games.WordPlacementRange
+import com.backend.ord.domain.application.games.crossword.board.CrosswordWordDirection
+import com.backend.ord.domain.application.games.crossword.board.WordPlacementRange
 
 /**
  * Represents the position of a question on the crossword board.

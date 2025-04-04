@@ -10,7 +10,9 @@ import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.controllers.utils_for_testing.bases.GameControllerTestBase
 import com.backend.ord.controllers.utils_for_testing.mockAnswersWithMistakes
 import com.backend.ord.controllers.utils_for_testing.toRequestBody
-import com.backend.ord.domain.application.games.Coordinates
+import com.backend.ord.domain.application.games.crossword.board.Coordinates
+import com.backend.ord.domain.application.games.crossword.board.CrosswordWordDirection
+import com.backend.ord.domain.application.games.crossword.getCoordinatesOfLetterAtIndex
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.UserActivityType
@@ -22,8 +24,6 @@ import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.UserActivityLogRepository
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
-import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
-import com.backend.ord.services.ai.dto.crossword.getCoordinatesOfLetterAtIndex
 import com.backend.ord.utils.games.HIDDEN_CHARACTER
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper

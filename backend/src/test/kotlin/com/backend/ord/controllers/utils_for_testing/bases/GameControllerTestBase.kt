@@ -2,8 +2,8 @@ package com.backend.ord.controllers.utils_for_testing.bases
 
 import com.backend.ord.controllers.request_factories.GameRequestFactory
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
+import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.repositories.FinishedGameRepository

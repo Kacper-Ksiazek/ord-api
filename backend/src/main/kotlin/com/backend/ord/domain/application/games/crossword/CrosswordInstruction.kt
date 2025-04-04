@@ -1,12 +1,9 @@
-package com.backend.ord.domain.persistence.embedded.game_instructions
+package com.backend.ord.domain.application.games.crossword
 
-import com.backend.ord.domain.application.games.Board
-import com.backend.ord.domain.application.games.Coordinates
+import com.backend.ord.domain.application.games.crossword.board.Board
+import com.backend.ord.domain.application.games.crossword.board.Coordinates
 import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.services.ai.dto.AIGeneratedCrossword
-import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
-import com.backend.ord.services.ai.dto.crossword.addAnswerComponent
-import com.backend.ord.services.ai.dto.crossword.removeAnswerComponents
+import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedCrossword
 import com.backend.ord.utils.games.hideLettersInWord
 import com.backend.ord.utils.games.isHiddenChar
 import com.backend.ord.utils.games.isSpecialChar

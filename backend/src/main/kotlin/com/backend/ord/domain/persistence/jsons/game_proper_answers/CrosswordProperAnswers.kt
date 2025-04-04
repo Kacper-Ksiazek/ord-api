@@ -1,4 +1,4 @@
-package com.backend.ord.domain.persistence.embedded.game_proper_answers
+package com.backend.ord.domain.persistence.jsons.game_proper_answers
 
 import java.util.*
 

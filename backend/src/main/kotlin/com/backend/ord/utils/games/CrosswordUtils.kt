@@ -1,9 +1,9 @@
 package com.backend.ord.utils.games
 
+import com.backend.ord.domain.application.games.crossword.CrosswordQuestion
+import com.backend.ord.domain.application.games.crossword.board.CrosswordWordDirection
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.getNumberOfLettersToReveal
-import com.backend.ord.services.ai.dto.crossword.CrosswordQuestion
-import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
 import kotlin.math.max
 
 const val HIDDEN_CHARACTER: Char = '*'

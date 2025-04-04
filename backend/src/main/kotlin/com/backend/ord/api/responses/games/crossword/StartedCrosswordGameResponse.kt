@@ -1,8 +1,8 @@
 package com.backend.ord.api.responses.games.crossword
 
 import com.backend.ord.api.responses.games.bases.StartedGameResponse
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
-import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
+import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
+import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
 import java.util.*
 
 data class StartedCrosswordGameResponse(

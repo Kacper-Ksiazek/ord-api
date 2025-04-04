@@ -1,8 +1,8 @@
 package com.backend.ord.utils.resource_readers.json_data_models
 
-import com.backend.ord.domain.persistence.embedded.ExampleSentence
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType

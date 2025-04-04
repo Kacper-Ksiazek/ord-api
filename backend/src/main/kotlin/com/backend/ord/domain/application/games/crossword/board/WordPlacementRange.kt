@@ -1,6 +1,4 @@
-package com.backend.ord.domain.application.games
-
-import com.backend.ord.services.ai.dto.crossword.CrosswordWordDirection
+package com.backend.ord.domain.application.games.crossword.board
 
 data class WordPlacementRange(
     /**

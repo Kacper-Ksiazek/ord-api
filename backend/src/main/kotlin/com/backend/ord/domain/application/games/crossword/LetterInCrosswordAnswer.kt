@@ -1,4 +1,4 @@
-package com.backend.ord.services.ai.dto.crossword
+package com.backend.ord.domain.application.games.crossword
 
 /**
  * Represents a pair of indices of a letter in a word and a letter in the password.

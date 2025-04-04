@@ -17,10 +17,10 @@ import com.backend.ord.controllers.request_factories.data.compareWithDefaultUpda
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
 import com.backend.ord.domain.persistence.dto.WordDTO
-import com.backend.ord.domain.persistence.embedded.ExampleSentence
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark

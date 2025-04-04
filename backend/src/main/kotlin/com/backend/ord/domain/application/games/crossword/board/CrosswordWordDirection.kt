@@ -1,4 +1,4 @@
-package com.backend.ord.services.ai.dto.crossword
+package com.backend.ord.domain.application.games.crossword.board
 
 enum class CrosswordWordDirection {
     HORIZONTAL,

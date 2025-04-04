@@ -8,8 +8,8 @@ import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameRespon
 import com.backend.ord.api.responses.games.crossword.StartedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.controllers.games.bases.GameControllerBase
+import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
-import com.backend.ord.domain.persistence.embedded.game_instructions.CrosswordInstruction
 import com.backend.ord.domain.persistence.entities.OngoingGame
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.enums.application.game.AnswerScore
@@ -38,7 +38,7 @@ class CrosswordGameController : GameControllerBase() {
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         // 2. Generate crossword game using AI
-        val (properAnswers, aiGeneratedCrosswordBase) = aiGameService.generateCrosswordGame(
+        val (aiResponse, properAnswers) = aiGameService.generateCrosswordGame(
             user = user,
             language = body.language,
             difficulty = body.difficulty
@@ -46,7 +46,7 @@ class CrosswordGameController : GameControllerBase() {
 
         // 3. Parse the generated crossword game and compute its instruction
         val instruction = CrosswordInstruction.construct(
-            aiGeneratedQuestions = aiGeneratedCrosswordBase,
+            aiGeneratedQuestions = aiResponse,
             difficulty = body.difficulty
         )
 

@@ -55,10 +55,13 @@ object Prompts {
                 details = details,
                 gameTypeDescription = "Generate a foreign language practicing words typing game.",
                 expectedResponseJSON = """
-                {
-                   word: string // Use words for the provided list. Each word can be used only once
-                   clue: string // DO NOT include the word in its clue. Generate this in the ${languageProficiency.generativeContentLanguage} language
-               }[] // A list of $amountOfQuestions with words from the provided list
+                   Map<string, string> // Map of words and their clues
+                   
+                   For this map:
+                   - key (word) - Use words for the provided list. Each word can be used only once
+                   - value (clue) -DO NOT include the word in its clue. Generate this in the ${languageProficiency.generativeContentLanguage} language
+                   
+                   A list of $amountOfQuestions with words from the provided list
                """.trimIndent()
             )
         }

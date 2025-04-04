@@ -1,4 +1,4 @@
-package com.backend.ord.domain.persistence.embedded
+package com.backend.ord.domain.persistence.jsons
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
