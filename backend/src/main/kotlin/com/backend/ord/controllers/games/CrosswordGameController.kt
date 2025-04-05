@@ -45,6 +45,7 @@ class CrosswordGameController : GameControllerBase() {
         )
 
         // 3. Parse the generated crossword game and compute its instruction
+        // TODO: Reconsider delegating this instruction generation logic to the AI service
         val instruction = CrosswordInstruction.construct(
             aiGeneratedQuestions = aiResponse,
             difficulty = body.difficulty
@@ -54,9 +55,10 @@ class CrosswordGameController : GameControllerBase() {
         val savedGame: OngoingGame = ongoingGameService.save(
             OngoingGame(
                 user = user,
-                difficulty = body.difficulty,
                 type = GameType.CROSSWORD,
+
                 language = body.language,
+                difficulty = body.difficulty,
                 properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
             )
         )
