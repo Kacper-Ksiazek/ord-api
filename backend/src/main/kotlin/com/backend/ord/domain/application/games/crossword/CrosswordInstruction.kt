@@ -3,11 +3,13 @@ package com.backend.ord.domain.application.games.crossword
 import com.backend.ord.domain.application.games.crossword.board.Board
 import com.backend.ord.domain.application.games.crossword.board.Coordinates
 import com.backend.ord.enums.persistence.game.GameDifficulty
+import com.backend.ord.enums.persistence.game.getNumberOfLettersToReveal
 import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedCrossword
-import com.backend.ord.utils.games.hideLettersInWord
-import com.backend.ord.utils.games.isHiddenChar
-import com.backend.ord.utils.games.isSpecialChar
 import com.backend.ord.utils.games.updateWord
+import com.backend.ord.utils.hideLetters
+import com.backend.ord.utils.hideLettersInWord
+import com.backend.ord.utils.isHiddenChar
+import com.backend.ord.utils.isSpecial
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 data class CrosswordInstruction(
@@ -64,7 +66,7 @@ data class CrosswordInstruction(
             // 1. Iterate through all letters of the final word
             instruction.answer.withIndex().forEach { finalWordLetter ->
                 // Skip special characters
-                if (isSpecialChar(finalWordLetter.value)) return@forEach
+                if (finalWordLetter.value.isSpecial()) return@forEach
 
                 // 2. Find all words on the board that contain the letter
                 val allWordsContainingLetter = instruction.questions.filter { it.word.contains(finalWordLetter.value) }
@@ -107,10 +109,9 @@ data class CrosswordInstruction(
 
         val instructionCopy = this.copy(
             lettersAreHidden = true,
-            answer = hideLettersInWord(
-                wordToHide = this.answer,
-                difficulty = difficulty,
-                lettersToReveal = this.finalWordUnmatchedIndexes
+            answer = this.answer.hideLetters(
+                lettersToReveal = this.finalWordUnmatchedIndexes,
+                numberOfLettersToReveal = difficulty.getNumberOfLettersToReveal(),
             )
         )
 
@@ -122,7 +123,7 @@ data class CrosswordInstruction(
             // Hide letters in the word
             question.word = hideLettersInWord(
                 wordToHide = question.word,
-                difficulty = difficulty
+                numberOfLettersToReveal = difficulty.getNumberOfLettersToReveal(),
             )
 
             // Remove final word components corresponding to revealed letters
