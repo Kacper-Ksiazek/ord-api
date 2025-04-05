@@ -1,19 +1,23 @@
 package com.backend.ord.api.requests.games
 
-import com.backend.ord.api.requests.games.bases.GameToBeFinishedBase
-import com.backend.ord.api.requests.games.data.WordUserAnswer
+import com.backend.ord.api.requests.games.utils.WordUserAnswer
+import jakarta.validation.Valid
+import java.util.*
 
 
-interface CrosswordUserAnswers {
-    /**
-     * The crossword's final answer - this is this word or phrase constructed after answering all the questions.
-     */
-    val answer: String
+data class CrosswordUserAnswers(
+    val answer: String,
 
-    /**
-     * The user's answers to the questions.
-     */
+    @field:Valid
     val questionsAnswers: Set<WordUserAnswer>
-}
+)
 
-interface CrosswordToFinishRequest : GameToBeFinishedBase<CrosswordUserAnswers>
+
+data class CrosswordToFinishRequest(
+    val gameId: UUID,
+
+    val duration: String,
+
+    @field:Valid
+    val userAnswers: CrosswordUserAnswers
+)

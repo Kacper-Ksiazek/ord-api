@@ -3,7 +3,7 @@ package com.backend.ord.api.requests.games
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.language.LanguageName
 
-interface StartGameRequest {
+data class StartGameRequest(
+    val difficulty: GameDifficulty,
     val language: LanguageName
-    val difficulty: GameDifficulty
-}
+)

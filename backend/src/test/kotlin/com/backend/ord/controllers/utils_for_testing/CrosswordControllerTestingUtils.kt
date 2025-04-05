@@ -1,6 +1,6 @@
 package com.backend.ord.controllers.utils_for_testing
 
-import com.backend.ord.api.requests.games.data.WordUserAnswer
+import com.backend.ord.api.requests.games.utils.WordUserAnswer
 import com.backend.ord.enums.application.game.AnswerScore
 import jakarta.validation.constraints.Min
 import java.util.*

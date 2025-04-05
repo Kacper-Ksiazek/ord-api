@@ -1,8 +1,8 @@
-package com.backend.ord.api.responses.games.crossword
+package com.backend.ord.api.responses.games
 
-import com.backend.ord.api.responses.games.IdentifiableProperAnswer
-import com.backend.ord.api.responses.games.ProperAnswer
 import com.backend.ord.api.responses.games.bases.FinishedGameResponseBase
+import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
+import com.backend.ord.api.responses.games.utils.ProperAnswer
 import com.backend.ord.utils.data_classes.Percentage
 
 class FinishedCrosswordGameResponse(

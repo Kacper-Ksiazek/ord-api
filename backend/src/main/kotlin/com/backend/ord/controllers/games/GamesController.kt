@@ -1,6 +1,6 @@
 package com.backend.ord.controllers.games
 
-import com.backend.ord.api.requests.games.data.CancelGameRequestData
+import com.backend.ord.api.requests.games.CancelGameRequest
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.services.GameService
 import jakarta.servlet.http.HttpServletRequest
@@ -55,7 +55,7 @@ class GamesController(
     fun cancelGame(
         request: HttpServletRequest,
         @PathVariable gameId: UUID,
-        @Valid @RequestBody body: CancelGameRequestData
+        @Valid @RequestBody body: CancelGameRequest
     ): ResponseEntity<Unit> {
         val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 

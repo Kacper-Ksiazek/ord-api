@@ -1,7 +1,7 @@
 package com.backend.ord.controllers.request_factories
 
-import com.backend.ord.api.requests.games.data.CancelGameRequestData
-import com.backend.ord.api.requests.games.data.CrosswordUserAnswersData
+import com.backend.ord.api.requests.games.CancelGameRequest
+import com.backend.ord.api.requests.games.CrosswordUserAnswers
 import com.backend.ord.controllers.unsafe_api_requests.UnsafeFinishCrosswordGameRequestData
 import com.backend.ord.controllers.unsafe_api_requests.UnsafeStartGameRequestData
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
@@ -49,7 +49,7 @@ class GameRequestFactory(
         authenticatedUser: MockedAuthenticatedUser? = null,
         gameId: UUID? = null,
         duration: String? = "02:30:00",
-        userAnswers: CrosswordUserAnswersData? = null,
+        userAnswers: CrosswordUserAnswers? = null,
     ): MockHttpServletRequestBuilder {
         return MockMvcRequestBuilders
             .post("/api/v1/games/crossword/finish")
@@ -82,7 +82,7 @@ class GameRequestFactory(
             .contentType(MediaType.APPLICATION_JSON)
             .content(
                 objectMapper.writeValueAsString(
-                    CancelGameRequestData(
+                    CancelGameRequest(
                         duration = "00:30:10"
                     )
                 )

@@ -1,11 +1,11 @@
 package com.backend.ord.controllers.games
 
-import com.backend.ord.api.requests.games.data.CrosswordToFinishRequestData
-import com.backend.ord.api.requests.games.data.StartGameRequestData
-import com.backend.ord.api.responses.games.IdentifiableProperAnswer
-import com.backend.ord.api.responses.games.ProperAnswer
+import com.backend.ord.api.requests.games.CrosswordToFinishRequest
+import com.backend.ord.api.requests.games.StartGameRequest
+import com.backend.ord.api.responses.games.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
-import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
+import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
+import com.backend.ord.api.responses.games.utils.ProperAnswer
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.controllers.games.bases.GameControllerBase
 import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
@@ -32,7 +32,7 @@ class CrosswordGameController : GameControllerBase() {
     @PostMapping("/start")
     fun startCrosswordGame(
         request: HttpServletRequest,
-        @Valid @RequestBody body: StartGameRequestData
+        @Valid @RequestBody body: StartGameRequest
     ): ResponseEntity<StartedCrosswordGameResponse> {
         // 1. Assert the user is authenticated
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
@@ -76,7 +76,7 @@ class CrosswordGameController : GameControllerBase() {
     @PostMapping("/finish")
     fun finishCrosswordGame(
         request: HttpServletRequest,
-        @Valid @RequestBody body: CrosswordToFinishRequestData
+        @Valid @RequestBody body: CrosswordToFinishRequest
     ): ResponseEntity<FinishedCrosswordGameResponse> {
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 

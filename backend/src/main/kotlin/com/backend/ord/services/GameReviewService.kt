@@ -1,6 +1,6 @@
 package com.backend.ord.services
 
-import com.backend.ord.api.requests.games.data.WordUserAnswer
+import com.backend.ord.api.requests.games.utils.WordUserAnswer
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.game.GameDifficulty

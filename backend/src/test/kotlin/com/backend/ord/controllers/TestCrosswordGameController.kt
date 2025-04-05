@@ -1,9 +1,9 @@
 package com.backend.ord.controllers
 
-import com.backend.ord.api.requests.games.data.CrosswordUserAnswersData
-import com.backend.ord.api.requests.games.data.WordUserAnswer
+import com.backend.ord.api.requests.games.CrosswordUserAnswers
+import com.backend.ord.api.requests.games.utils.WordUserAnswer
+import com.backend.ord.api.responses.games.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
-import com.backend.ord.api.responses.games.crossword.FinishedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.controllers.utils_for_testing.AlteredProperAnswer
 import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
@@ -540,7 +540,7 @@ class TestCrosswordGameController @Autowired constructor(
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
-                    userAnswers = CrosswordUserAnswersData(
+                    userAnswers = CrosswordUserAnswers(
                         answer = finalWord,
                         questionsAnswers = questionsAnswers
                     )
@@ -817,7 +817,7 @@ class TestCrosswordGameController @Autowired constructor(
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = null,
                     gameId = UUID.randomUUID(),
-                    userAnswers = CrosswordUserAnswersData(
+                    userAnswers = CrosswordUserAnswers(
                         answer = "answer",
                         questionsAnswers = emptySet()
                     )
@@ -839,7 +839,7 @@ class TestCrosswordGameController @Autowired constructor(
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
-                    userAnswers = CrosswordUserAnswersData(
+                    userAnswers = CrosswordUserAnswers(
                         answer = "answer",
                         questionsAnswers = emptySet()
                     )
@@ -862,7 +862,7 @@ class TestCrosswordGameController @Autowired constructor(
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
-                    userAnswers = CrosswordUserAnswersData(
+                    userAnswers = CrosswordUserAnswers(
                         answer = "answer",
                         questionsAnswers = setOf(
                             WordUserAnswer(
