@@ -24,7 +24,7 @@ import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.UserActivityLogRepository
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
-import com.backend.ord.utils.games.HIDDEN_CHARACTER
+import com.backend.ord.utils.HIDDEN_CHARACTER
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.collections.shouldHaveSize

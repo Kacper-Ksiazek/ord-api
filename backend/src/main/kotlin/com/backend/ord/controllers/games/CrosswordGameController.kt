@@ -65,8 +65,6 @@ class CrosswordGameController : GameControllerBase() {
             StartedCrosswordGameResponse(
                 gameId = savedGame.id,
                 instruction = instruction,
-
-                // TODO: Remove this
                 properAnswers = properAnswers
             )
         )
