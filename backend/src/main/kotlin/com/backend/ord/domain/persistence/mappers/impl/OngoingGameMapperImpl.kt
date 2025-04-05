@@ -2,8 +2,10 @@ package com.backend.ord.domain.persistence.mappers.impl
 
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.dto.OngoingGameDTO
+import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.entities.OngoingGame
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
+import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.game.GameType
@@ -17,18 +19,11 @@ class OngoingGameMapperImpl(
     val jsonObjectMapper = jacksonObjectMapper()
 
     override fun toCrosswordDTO(entity: OngoingGame): OngoingCrosswordGameDTO {
-        return OngoingCrosswordGameDTO(
-            id = entity.id,
+        return entity.convertToCertainDTO(CrosswordProperAnswers::class.java)
+    }
 
-            properAnswers = jsonObjectMapper.readValue(entity.properAnswers, CrosswordProperAnswers::class.java),
-
-            type = entity.type,
-            language = entity.language,
-            difficulty = entity.difficulty,
-
-            user = userMapper.toDTO(entity.user),
-            createdAt = entity.createdAt
-        )
+    override fun toWordsTypingDTO(entity: OngoingGame): OngoingWordsTypingGameDTO {
+        return entity.convertToCertainDTO(WordsTypingProperAnswers::class.java)
     }
 
     override fun toDTO(entity: OngoingGame): OngoingGameDTO<*> {
@@ -49,6 +44,18 @@ class OngoingGameMapperImpl(
 
             user = userMapper.toEntity(dto.user),
             createdAt = dto.createdAt
+        )
+    }
+
+    private fun <T> OngoingGame.convertToCertainDTO(clazz: Class<T>): OngoingGameDTO<T> {
+        return OngoingGameDTO<T>(
+            id = id,
+            properAnswers = jsonObjectMapper.readValue(properAnswers, clazz),
+            type = type,
+            language = language,
+            difficulty = difficulty,
+            user = userMapper.toDTO(user),
+            createdAt = createdAt
         )
     }
 }
