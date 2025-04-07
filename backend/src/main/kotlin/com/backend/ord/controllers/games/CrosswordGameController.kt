@@ -8,7 +8,6 @@ import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
 import com.backend.ord.api.responses.games.utils.ProperAnswer
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.controllers.games.bases.GameControllerBase
-import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.entities.OngoingGame
 import com.backend.ord.domain.persistence.entities.User
@@ -34,24 +33,14 @@ class CrosswordGameController : GameControllerBase() {
         request: HttpServletRequest,
         @Valid @RequestBody body: StartGameRequest
     ): ResponseEntity<StartedCrosswordGameResponse> {
-        // 1. Assert the user is authenticated
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
-        // 2. Generate crossword game using AI
-        val (aiResponse, properAnswers) = aiGameService.generateCrosswordGame(
+        val (instruction, properAnswers) = aiGameService.generateCrosswordGame(
             user = user,
             language = body.language,
             difficulty = body.difficulty
         )
 
-        // 3. Parse the generated crossword game and compute its instruction
-        // TODO: Reconsider delegating this instruction generation logic to the AI service
-        val instruction = CrosswordInstruction.construct(
-            aiGeneratedQuestions = aiResponse,
-            difficulty = body.difficulty
-        )
-
-        // 4. Save the game in the database
         val savedGame: OngoingGame = ongoingGameService.save(
             OngoingGame(
                 user = user,

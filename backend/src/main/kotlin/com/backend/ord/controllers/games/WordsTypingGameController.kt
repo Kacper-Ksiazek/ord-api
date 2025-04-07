@@ -5,13 +5,10 @@ import com.backend.ord.api.requests.games.WordsTypingToFinishRequest
 import com.backend.ord.api.responses.games.FinishedWordsTypingGameResponse
 import com.backend.ord.api.responses.games.bases.StartedWordsTypingGameResponse
 import com.backend.ord.controllers.games.bases.GameControllerBase
-import com.backend.ord.domain.application.games.words_typing.WordsTypingInstruction
-import com.backend.ord.domain.application.games.words_typing.WordsTypingQuestion
 import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.entities.OngoingGame
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.utils.hideLetters
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -31,22 +28,11 @@ class WordsTypingGameController : GameControllerBase() {
     ): ResponseEntity<StartedWordsTypingGameResponse> {
         val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
-        val (aiResponse, properAnswers) = aiGameService.generateWordsTypingGame(
+        val (instruction, properAnswers) = aiGameService.generateWordsTypingGame(
             user = user,
             language = body.language,
             difficulty = body.difficulty
         )
-
-        // TODO: Reconsider delegating this instruction generation logic to the AI service
-        val instruction: WordsTypingInstruction = aiResponse.entries.map {
-            val id = properAnswers.entries.find { el -> el.value == it.key }!!.key
-
-            WordsTypingQuestion(
-                id = id,
-                word = it.key.hideLetters(),
-                clue = it.value
-            )
-        }
 
         val savedGame: OngoingGame = ongoingGameService.save(
             OngoingGame(
@@ -86,6 +72,7 @@ class WordsTypingGameController : GameControllerBase() {
             expectedAnswers = game.properAnswers,
             userAnswers = body.answers
         )
-    }
 
+        TODO()
+    }
 }

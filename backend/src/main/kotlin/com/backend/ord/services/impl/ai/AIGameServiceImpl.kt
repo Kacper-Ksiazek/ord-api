@@ -3,6 +3,7 @@ package com.backend.ord.services.impl.ai
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
 import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
@@ -85,7 +86,10 @@ class AIGameServiceImpl(
         )
 
         return GeneratedCrosswordGame(
-            aiResponse = aiGeneratedCrossword,
+            instruction = CrosswordInstruction.construct(
+                aiGeneratedQuestions = aiGeneratedCrossword,
+                difficulty = difficulty
+            ),
             properAnswers = CrosswordProperAnswers(
                 finalWord = aiGeneratedCrossword.answer,
                 questions = aiGeneratedCrossword.questions.associate { it.id to it.word }
