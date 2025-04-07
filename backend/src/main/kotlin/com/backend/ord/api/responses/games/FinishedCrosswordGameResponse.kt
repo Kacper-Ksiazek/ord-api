@@ -15,10 +15,10 @@ class FinishedCrosswordGameResponse(
     constructor(
         totalPoints: Int,
         properFinalWord: ProperAnswer,
-        properQuestionsAnswers: List<IdentifiableProperAnswer>
+        properQuestionsAnswers: Set<IdentifiableProperAnswer>
     ) : this(
         finalScore = Percentage(totalPoints).value,
         properFinalWord = properFinalWord,
-        properQuestionsAnswers = properQuestionsAnswers.toSet()
+        properQuestionsAnswers = properQuestionsAnswers
     )
 }

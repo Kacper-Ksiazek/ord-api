@@ -1,6 +1,7 @@
 package com.backend.ord.services.impl
 
 import com.backend.ord.api.requests.games.utils.WordUserAnswer
+import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.UserActivityLog
@@ -27,7 +28,7 @@ class GameReviewServiceImpl(
         expectedAnswers: Map<UUID, String>,
         userAnswers: Set<WordUserAnswer>,
         difficulty: GameDifficulty
-    ): Set<GameReviewService.Companion.ReviewedQuestion> {
+    ): Set<IdentifiableProperAnswer> {
         return expectedAnswers.entries.map { (questionId, expectedAnswer) ->
             val userAnswer: WordUserAnswer? = userAnswers.find {
                 it.id == questionId
@@ -39,10 +40,11 @@ class GameReviewServiceImpl(
                 userAnswer = userAnswer?.word
             )
 
-            return@map GameReviewService.Companion.ReviewedQuestion(
-                questionId = questionId,
-                properAnswer = expectedAnswer,
-                userAnswerScore = score
+            return@map IdentifiableProperAnswer(
+                id = questionId,
+                expectedAnswer = expectedAnswer,
+                userAnswer = userAnswer?.word,
+                score = score
             )
         }.toSet()
     }
@@ -50,17 +52,17 @@ class GameReviewServiceImpl(
     override fun updateDBPointsForManyWords(
         user: User,
         language: LanguageName,
-        reviewedQuestions: Set<GameReviewService.Companion.ReviewedQuestion>
+        reviewedQuestions: Set<IdentifiableProperAnswer>
     ) {
         val wordsToSave: MutableSet<Word> = mutableSetOf()
         val userActivityLogsToSave: MutableSet<UserActivityLog> = mutableSetOf()
 
         wordRepository.findAllWordByTheirOrigins(
-            origins = reviewedQuestions.map { it.properAnswer }.toSet(),
+            origins = reviewedQuestions.map { it.expectedAnswer }.toSet(),
             language = language,
             userId = user.id
         ).forEach { word ->
-            val points: AnswerScore = reviewedQuestions.find { it.properAnswer == word.origin }?.userAnswerScore
+            val points: AnswerScore = reviewedQuestions.find { it.expectedAnswer == word.origin }?.score
                 ?: return@forEach
 
             val isWordCompletedBefore: Boolean = word.isCompleted

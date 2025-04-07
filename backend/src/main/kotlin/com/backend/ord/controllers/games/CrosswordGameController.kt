@@ -76,7 +76,7 @@ class CrosswordGameController : GameControllerBase() {
         )
 
         // 3. Check all words forming a crossword
-        val reviewedQuestions = gameReviewService.reviewUserAnswersAndUpdateDBPoints(
+        val reviewedQuestions: Set<IdentifiableProperAnswer> = gameReviewService.reviewUserAnswersAndUpdateDBPoints(
             user = user,
             language = game.language,
             difficulty = game.difficulty,
@@ -86,7 +86,7 @@ class CrosswordGameController : GameControllerBase() {
 
         // 4. Compute points received from words forming a crossword
         val pointsForQuestions: Int = GameReviewService.Companion.computeFinalScoreComponent(
-            receivedPoints = reviewedQuestions.sumOf { it.userAnswerScore.wage },
+            receivedPoints = reviewedQuestions.sumOf { it.score.wage },
             maxPoints = game.properAnswers.questions.size * AnswerScore.CORRECT.wage,
             moduleRatio = GamesConfig.Points.ScoreFactorsRatio.Crossword.QUESTIONS
         )
@@ -123,16 +123,7 @@ class CrosswordGameController : GameControllerBase() {
                     userAnswer = body.userAnswers.answer,
                     score = reviewedFinalAnswer
                 ),
-                properQuestionsAnswers = reviewedQuestions.map { (id, word, score) ->
-                    val userAnswer = body.userAnswers.questionsAnswers.find { it.word == word }?.word
-
-                    IdentifiableProperAnswer(
-                        id = id,
-                        expectedAnswer = word,
-                        userAnswer = userAnswer,
-                        score = score
-                    )
-                }
+                properQuestionsAnswers = reviewedQuestions
             )
         )
     }
