@@ -4,6 +4,7 @@ import com.backend.ord.api.requests.games.StartGameRequest
 import com.backend.ord.api.requests.games.WordsTypingToFinishRequest
 import com.backend.ord.api.responses.games.FinishedWordsTypingGameResponse
 import com.backend.ord.api.responses.games.bases.StartedWordsTypingGameResponse
+import com.backend.ord.api.responses.games.utils.computeFinalScore
 import com.backend.ord.controllers.games.bases.GameControllerBase
 import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.entities.OngoingGame
@@ -73,6 +74,11 @@ class WordsTypingGameController : GameControllerBase() {
             userAnswers = body.answers
         )
 
-        TODO()
+        return ResponseEntity.ok(
+            FinishedWordsTypingGameResponse(
+                totalPoints = reviewedQuestions.computeFinalScore(),
+                properAnswers = reviewedQuestions
+            )
+        )
     }
 }
