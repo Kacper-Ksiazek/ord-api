@@ -6,6 +6,7 @@ import com.backend.ord.api.responses.games.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
 import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
 import com.backend.ord.api.responses.games.utils.ProperAnswer
+import com.backend.ord.api.responses.games.utils.computeFinalScore
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.controllers.games.bases.GameControllerBase
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
@@ -85,9 +86,7 @@ class CrosswordGameController : GameControllerBase() {
         )
 
         // 4. Compute points received from words forming a crossword
-        val pointsForQuestions: Int = GameReviewService.Companion.computeFinalScoreComponent(
-            receivedPoints = reviewedQuestions.sumOf { it.score.wage },
-            maxPoints = game.properAnswers.questions.size * AnswerScore.CORRECT.wage,
+        val pointsForQuestions: Int = reviewedQuestions.computeFinalScore(
             moduleRatio = GamesConfig.Points.ScoreFactorsRatio.Crossword.QUESTIONS
         )
 

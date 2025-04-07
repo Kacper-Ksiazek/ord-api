@@ -12,9 +12,9 @@ class FinishedWordsTypingGameResponse(
 
     constructor(
         totalPoints: Int,
-        answers: List<IdentifiableProperAnswer>
+        properAnswers: Set<IdentifiableProperAnswer>
     ) : this(
         finalScore = Percentage(totalPoints).value,
-        properAnswers = answers.toSet()
+        properAnswers = properAnswers
     )
 }
