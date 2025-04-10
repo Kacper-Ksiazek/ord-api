@@ -21,6 +21,7 @@ import com.backend.ord.services.ai.OpenAIAPIClientService
 import com.backend.ord.services.ai.dto.GeneratedCrosswordGame
 import com.backend.ord.services.ai.dto.GeneratedWordsTypingGame
 import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedCrossword
+import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedWordsTyping
 import org.springframework.stereotype.Service
 
 @Service
@@ -102,7 +103,44 @@ class AIGameServiceImpl(
         language: LanguageName,
         difficulty: GameDifficulty
     ): GeneratedWordsTypingGame {
-        TODO("Not yet implemented")
+        val languageProficiency: LanguageProficiency = user.getProficiencyInLanguage(language)
+
+        val wordsToUse = getWordsForGame(
+            user = user,
+            language = language,
+            difficulty.getNumberOfWordsForCrossword()
+        ).map { it.origin }
+
+        val prompt: String = Prompts.Games.generateWordsTypingGamePrompt(
+            language = language,
+            difficulty = difficulty,
+            languageProficiency = languageProficiency,
+            wordsToUse = wordsToUse
+        )
+
+        val amountOfQuestion: Int = difficulty.getNumberOfWordsForCrossword()
+
+        val aiGeneratedWordsTypingGame = openAIAPIClientService.makeGameRequest<AIGeneratedWordsTyping>(
+            clazz = AIGeneratedWordsTyping::class.java,
+
+            user = user,
+            prompt = prompt,
+            difficulty = difficulty,
+            leadingLanguage = language,
+            instructionLanguage = languageProficiency.generativeContentLanguage,
+
+            gameType = GameType.CROSSWORD,
+            consumptionType = GamesGPTTokensConsumptionType.GENERATE,
+
+            retryRequestCondition = { parsedResponseBody ->
+                parsedResponseBody?.values?.size != amountOfQuestion ||
+                        parsedResponseBody.keys.distinct().size != amountOfQuestion ||
+                        wordsToUse.all { it in parsedResponseBody.keys }
+            }
+        )
+
+        return GeneratedWordsTypingGame(aiGeneratedWordsTypingGame)
+
     }
 
 
