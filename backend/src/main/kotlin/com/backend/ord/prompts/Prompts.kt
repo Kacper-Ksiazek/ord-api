@@ -53,15 +53,22 @@ object Prompts {
 
             return prepareGameGenerationPrompt(
                 details = details,
-                gameTypeDescription = "Generate a foreign language practicing words typing game.",
+                gameTypeDescription = "Create a word typing game designed for practicing vocabulary in a foreign language",
                 expectedResponseJSON = """
-                   Map<string, string> // Map of words and their clues
+                   Map<string, string> where each key is a word from the provided list, 
+                   and the corresponding value is a clue that describes the word without including the word itself. 
                    
-                   For this map:
-                   - key (word) - Use words for the provided list. Each word can be used only once
-                   - value (clue) -DO NOT include the word in its clue. Generate this in the ${languageProficiency.generativeContentLanguage} language
+                   The clues should be in ${languageProficiency.generativeContentLanguage}.
+
+                   You will generate $amountOfQuestions such pairs.
                    
-                   A list of $amountOfQuestions with words from the provided list
+                   Output the result in the following format:
+
+                   { 
+                       'word1': 'Clue for word1 in the specified language', 
+                       'word2': 'Clue for word2 in the specified language', 
+                       ...
+                   } 
                """.trimIndent()
             )
         }
