@@ -23,6 +23,14 @@ internal fun prepareGameGenerationPrompt(
        
        $expectedResponseJSON
        
-       Words: [ ${details.wordsToUse.joinToString(", ") { it }} ]
+       Words: [ 
+       ${
+        details.wordsToUse.mapIndexed { index, word ->
+            " ${index + 1}. $word"
+        }.joinToString("\n")
+    } 
+    ]
+    
+    Do not add any additional words to the list! All words in the list are actual words in the ${details.language} language do not correct them.
     """.trimIndent()
 }
