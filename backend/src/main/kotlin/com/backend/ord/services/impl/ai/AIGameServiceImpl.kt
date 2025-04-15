@@ -10,6 +10,7 @@ import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordPro
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
+import com.backend.ord.enums.persistence.game.getNumberOfWordsForWordsTypingGame
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
@@ -69,8 +70,8 @@ class AIGameServiceImpl(
             consumptionType = GamesGPTTokensConsumptionType.GENERATE,
 
             retryRequestCondition = { parsedResponseBody ->
-                parsedResponseBody?.questions?.size != amountOfQuestion ||
-                        parsedResponseBody.questions.map { it.word }.distinct().size != amountOfQuestion
+                parsedResponseBody?.questions?.size == amountOfQuestion &&
+                        parsedResponseBody.questions.map { it.word }.distinct().size == amountOfQuestion
             },
 
             parseResponseBody = { responseBody ->
@@ -105,10 +106,12 @@ class AIGameServiceImpl(
     ): GeneratedWordsTypingGame {
         val languageProficiency: LanguageProficiency = user.getProficiencyInLanguage(language)
 
+        val amountOfQuestion: Int = difficulty.getNumberOfWordsForWordsTypingGame()
+
         val wordsToUse = getWordsForGame(
             user = user,
             language = language,
-            difficulty.getNumberOfWordsForCrossword()
+            n = amountOfQuestion
         ).map { it.origin }
 
         val prompt: String = Prompts.Games.generateWordsTypingGamePrompt(
@@ -118,7 +121,6 @@ class AIGameServiceImpl(
             wordsToUse = wordsToUse
         )
 
-        val amountOfQuestion: Int = difficulty.getNumberOfWordsForCrossword()
 
         val aiGeneratedWordsTypingGame = openAIAPIClientService.makeGameRequest<AIGeneratedWordsTyping>(
             clazz = AIGeneratedWordsTyping::class.java,
@@ -129,13 +131,19 @@ class AIGameServiceImpl(
             leadingLanguage = language,
             instructionLanguage = languageProficiency.generativeContentLanguage,
 
-            gameType = GameType.CROSSWORD,
+            gameType = GameType.WORDS_TYPING,
             consumptionType = GamesGPTTokensConsumptionType.GENERATE,
 
             retryRequestCondition = { parsedResponseBody ->
-                parsedResponseBody?.values?.size != amountOfQuestion ||
-                        parsedResponseBody.keys.distinct().size != amountOfQuestion ||
-                        wordsToUse.all { it in parsedResponseBody.keys }
+                parsedResponseBody?.values?.size == amountOfQuestion &&
+                        parsedResponseBody.keys.distinct().size != amountOfQuestion &&
+                        wordsToUse.all { parsedResponseBody.keys.contains(it) }
+            },
+
+            parseResponseBody = { rawResponseBody ->
+                wordsToUse.associate {
+                    it to (rawResponseBody[it] ?: throw BadRequestException("AI response is not valid! $it not found"))
+                }
             }
         )
 
@@ -147,7 +155,7 @@ class AIGameServiceImpl(
     private fun getWordsForGame(
         user: User,
         language: LanguageName,
-        requiredNumberOfWords: Int
+        n: Int
     ): List<WordListItem> {
         // TODO: Generate a list of words using AI - plans for the future far far away
 
@@ -161,9 +169,9 @@ class AIGameServiceImpl(
             // TODO: Add more filters
         ).data
             .shuffled()
-            .take(requiredNumberOfWords)
+            .take(n)
             .apply {
-                if (size < requiredNumberOfWords) {
+                if (size < n) {
                     throw BadRequestException("Not enough words to generate a crossword game")
                 }
             }

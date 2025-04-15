@@ -90,13 +90,11 @@ class OpenAIAPIClientServiceImpl(
             }
 
             parsedResponseBody = try {
-                parseResponseBody(
-                    jsonObjectMapper.readValue(response.data, clazz)
-                )
+                parseResponseBody(jsonObjectMapper.readValue(response.data, clazz))
             } catch (_: Exception) {
                 null // If parsing fails, return null and retry
             }
-        } while (retryRequestCondition(parsedResponseBody))
+        } while (parsedResponseBody !== null && retryRequestCondition(parsedResponseBody))
 
 
         if (parsedResponseBody == null) {

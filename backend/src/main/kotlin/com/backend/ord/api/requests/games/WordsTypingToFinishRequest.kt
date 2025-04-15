@@ -7,6 +7,8 @@ import java.util.*
 data class WordsTypingToFinishRequest(
     val gameId: UUID,
 
+    val duration: String,
+
     @field:Valid
     val answers: Set<WordUserAnswer>
 )

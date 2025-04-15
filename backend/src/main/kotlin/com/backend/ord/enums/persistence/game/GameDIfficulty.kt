@@ -33,8 +33,8 @@ fun GameDifficulty.getNumberOfWordsForCrossword(): Int {
 fun GameDifficulty.getNumberOfWordsForWordsTypingGame(): Int {
     return when (this) {
         GameDifficulty.EASY -> 8
-        GameDifficulty.MEDIUM -> 14
-        GameDifficulty.HARD -> 20
+        GameDifficulty.MEDIUM -> 12
+        GameDifficulty.HARD -> 16
     }
 }
 
