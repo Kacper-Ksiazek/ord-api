@@ -1,6 +1,6 @@
 package com.backend.ord.services
 
-import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.controllers.helpers.utils_for_testing.bases.ControllerTestBase
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
 import com.fasterxml.jackson.databind.ObjectMapper

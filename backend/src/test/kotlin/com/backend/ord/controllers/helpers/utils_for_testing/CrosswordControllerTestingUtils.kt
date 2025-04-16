@@ -1,4 +1,4 @@
-package com.backend.ord.controllers.utils_for_testing
+package com.backend.ord.controllers.helpers.utils_for_testing
 
 import com.backend.ord.api.requests.games.utils.WordUserAnswer
 import com.backend.ord.enums.application.game.AnswerScore

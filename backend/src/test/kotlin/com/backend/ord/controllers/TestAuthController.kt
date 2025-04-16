@@ -1,7 +1,7 @@
 package com.backend.ord.controllers
 
-import com.backend.ord.controllers.request_factories.AuthRequestFactory
-import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.controllers.helpers.request_factories.AuthRequestFactory
+import com.backend.ord.controllers.helpers.utils_for_testing.bases.ControllerTestBase
 import com.backend.ord.domain.persistence.dto.UserDTO
 import com.backend.ord.domain.persistence.entities.UserSession
 import com.backend.ord.seeders.entities.UserSeeder

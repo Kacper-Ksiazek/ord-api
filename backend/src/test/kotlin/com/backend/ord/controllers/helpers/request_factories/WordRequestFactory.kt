@@ -1,13 +1,13 @@
-package com.backend.ord.controllers.request_factories
+package com.backend.ord.controllers.helpers.request_factories
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
-import com.backend.ord.controllers.request_factories.data.CreateWordData
-import com.backend.ord.controllers.request_factories.data.UpdateWordData
-import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
+import com.backend.ord.controllers.helpers.request_factories.data.CreateWordData
+import com.backend.ord.controllers.helpers.request_factories.data.UpdateWordData
+import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName

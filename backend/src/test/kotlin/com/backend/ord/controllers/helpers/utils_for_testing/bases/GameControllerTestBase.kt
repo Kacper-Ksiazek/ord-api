@@ -1,7 +1,7 @@
-package com.backend.ord.controllers.utils_for_testing.bases
+package com.backend.ord.controllers.helpers.utils_for_testing.bases
 
-import com.backend.ord.controllers.request_factories.GameRequestFactory
-import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
+import com.backend.ord.controllers.helpers.request_factories.GameRequestFactory
+import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper

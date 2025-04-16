@@ -1,15 +1,15 @@
-package com.backend.ord.controllers
+package com.backend.ord.controllers.games
 
 import com.backend.ord.api.requests.games.CrosswordUserAnswers
 import com.backend.ord.api.requests.games.utils.WordUserAnswer
 import com.backend.ord.api.responses.games.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
-import com.backend.ord.controllers.utils_for_testing.AlteredProperAnswer
-import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.controllers.utils_for_testing.bases.GameControllerTestBase
-import com.backend.ord.controllers.utils_for_testing.mockAnswersWithMistakes
-import com.backend.ord.controllers.utils_for_testing.toRequestBody
+import com.backend.ord.controllers.helpers.utils_for_testing.AlteredProperAnswer
+import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
+import com.backend.ord.controllers.helpers.utils_for_testing.bases.GameControllerTestBase
+import com.backend.ord.controllers.helpers.utils_for_testing.mockAnswersWithMistakes
+import com.backend.ord.controllers.helpers.utils_for_testing.toRequestBody
 import com.backend.ord.domain.application.games.crossword.board.Coordinates
 import com.backend.ord.domain.application.games.crossword.board.CrosswordWordDirection
 import com.backend.ord.domain.application.games.crossword.getCoordinatesOfLetterAtIndex

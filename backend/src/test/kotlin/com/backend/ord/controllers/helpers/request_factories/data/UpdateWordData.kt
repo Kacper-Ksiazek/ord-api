@@ -1,7 +1,7 @@
-package com.backend.ord.controllers.request_factories.data
+package com.backend.ord.controllers.helpers.request_factories.data
 
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
-import com.backend.ord.controllers.extensions.detectChanges
+import com.backend.ord.controllers.helpers.extensions.detectChanges
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName

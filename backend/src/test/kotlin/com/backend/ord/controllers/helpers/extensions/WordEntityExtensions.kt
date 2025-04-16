@@ -1,8 +1,8 @@
-package com.backend.ord.controllers.extensions
+package com.backend.ord.controllers.helpers.extensions
 
 import com.backend.ord.api.requests.word.UpdateWordRequest
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
-import com.backend.ord.controllers.request_factories.data.WordDataChanges
+import com.backend.ord.controllers.helpers.request_factories.data.WordDataChanges
 import com.backend.ord.domain.persistence.entities.Word
 import io.kotest.matchers.shouldBe
 

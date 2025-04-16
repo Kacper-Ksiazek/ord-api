@@ -1,8 +1,8 @@
-package com.backend.ord.controllers.request_factories
+package com.backend.ord.controllers.helpers.request_factories
 
 import com.backend.ord.api.requests.LoginRequest
 import com.backend.ord.api.requests.RegisterRequest
-import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
+import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType

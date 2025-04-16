@@ -1,8 +1,8 @@
-package com.backend.ord.controllers.utils_for_testing.bases
+package com.backend.ord.controllers.helpers.utils_for_testing.bases
 
 import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
-import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
+import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.persistence.dto.UserDTO
 import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.domain.persistence.mappers.UserMapper

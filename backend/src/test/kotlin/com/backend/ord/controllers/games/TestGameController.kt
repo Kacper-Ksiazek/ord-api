@@ -1,7 +1,7 @@
-package com.backend.ord.controllers
+package com.backend.ord.controllers.games
 
-import com.backend.ord.controllers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.controllers.utils_for_testing.bases.GameControllerTestBase
+import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
+import com.backend.ord.controllers.helpers.utils_for_testing.bases.GameControllerTestBase
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameResult
