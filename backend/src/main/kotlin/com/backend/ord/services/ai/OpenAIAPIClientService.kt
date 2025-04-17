@@ -18,7 +18,7 @@ interface OpenAIAPIClientService {
         instructionLanguage: LanguageName,
         consumptionType: GamesGPTTokensConsumptionType,
 
-        retryRequestCondition: (parsedResponseBody: T?) -> Boolean,
+        validateResponseBody: (parsedResponseBody: T?) -> Boolean,
 
         parseResponseBody: (responseBody: T) -> T = { it },
 

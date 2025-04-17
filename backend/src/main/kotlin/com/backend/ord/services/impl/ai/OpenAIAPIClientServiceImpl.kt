@@ -36,14 +36,14 @@ class OpenAIAPIClientServiceImpl(
         instructionLanguage: LanguageName,
         consumptionType: GamesGPTTokensConsumptionType,
 
-        retryRequestCondition: (parsedResponseBody: T?) -> Boolean,
+        validateResponseBody: (parsedResponseBody: T?) -> Boolean,
 
         parseResponseBody: (responseBody: T) -> T,
 
         ): T {
         return makeRequest<T>(
             prompt = prompt,
-            retryRequestCondition = retryRequestCondition,
+            validateResponseBody = validateResponseBody,
             parseResponseBody = parseResponseBody,
             clazz = clazz,
             saveLog = {
@@ -70,19 +70,17 @@ class OpenAIAPIClientServiceImpl(
         prompt: String,
 
         saveLog: (openAIResponse: OpenAIResponse) -> Unit,
-        retryRequestCondition: (parsedResponseBody: T?) -> Boolean,
+        validateResponseBody: (parsedResponseBody: T?) -> Boolean,
         parseResponseBody: (responseBody: T) -> T = { it }
     ): T {
         val openAIRequest = openAIRequestFactory.createRequest(prompt)
 
         var response: OpenAIResponse
-        var parsedResponseBody: T? = null
+        var parsedResponseBody: T?
 
-        var numberOfAttempts: Int = 0
+        var numberOfAttempts = 0
 
         do {
-            parsedResponseBody = null; // Reset the parsed response body for each attempt
-
             trackOpenAIAPIRequestAttempt(numberOfAttempts++)
 
             response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
@@ -92,14 +90,9 @@ class OpenAIAPIClientServiceImpl(
             parsedResponseBody = try {
                 parseResponseBody(jsonObjectMapper.readValue(response.data, clazz))
             } catch (_: Exception) {
-                null // If parsing fails, return null and retry
+                null
             }
-        } while (parsedResponseBody !== null && retryRequestCondition(parsedResponseBody))
-
-
-        if (parsedResponseBody == null) {
-            throw BadGatewayException("AI service could not generate a valid response. Please try again.")
-        }
+        } while (parsedResponseBody === null || !validateResponseBody(parsedResponseBody))
 
         return parsedResponseBody
     }

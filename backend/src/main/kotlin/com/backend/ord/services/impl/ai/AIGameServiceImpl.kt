@@ -69,7 +69,7 @@ class AIGameServiceImpl(
             gameType = GameType.CROSSWORD,
             consumptionType = GamesGPTTokensConsumptionType.GENERATE,
 
-            retryRequestCondition = { parsedResponseBody ->
+            validateResponseBody = { parsedResponseBody ->
                 parsedResponseBody?.questions?.size == amountOfQuestion &&
                         parsedResponseBody.questions.map { it.word }.distinct().size == amountOfQuestion
             },
@@ -134,15 +134,15 @@ class AIGameServiceImpl(
             gameType = GameType.WORDS_TYPING,
             consumptionType = GamesGPTTokensConsumptionType.GENERATE,
 
-            retryRequestCondition = { parsedResponseBody ->
+            validateResponseBody = { parsedResponseBody ->
                 parsedResponseBody?.values?.size == amountOfQuestion &&
-                        parsedResponseBody.keys.distinct().size != amountOfQuestion &&
+                        parsedResponseBody.keys.distinct().size == amountOfQuestion &&
                         wordsToUse.all { parsedResponseBody.keys.contains(it) }
             },
 
             parseResponseBody = { rawResponseBody ->
-                wordsToUse.associate {
-                    it to (rawResponseBody[it] ?: throw BadRequestException("AI response is not valid! $it not found"))
+                wordsToUse.associateWith {
+                    (rawResponseBody[it] ?: throw BadRequestException("AI response is not valid! $it not found"))
                 }
             }
         )

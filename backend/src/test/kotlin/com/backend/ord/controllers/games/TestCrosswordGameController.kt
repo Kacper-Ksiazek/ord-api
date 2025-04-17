@@ -639,7 +639,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Mistakes in user's answer should be corrected properly`() {
-                var perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+                val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
                 val alteredAnswers: Set<AlteredProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
@@ -679,7 +679,7 @@ class TestCrosswordGameController @Autowired constructor(
             fun `200 - Points should be properly assigned - HALF_CORRECT`() {
                 prepareCrosswordGame(difficulty = GameDifficulty.MEDIUM)
 
-                var perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+                val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
                 val alteredAnswers: Set<AlteredProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
@@ -698,7 +698,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Points should be properly assigned - INCORRECT`() {
-                var perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+                val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
                 val alteredAnswers: Set<AlteredProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
@@ -745,7 +745,7 @@ class TestCrosswordGameController @Autowired constructor(
                     }
                 )
 
-                var perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+                val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
                 val alteredAnswers: Set<AlteredProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
