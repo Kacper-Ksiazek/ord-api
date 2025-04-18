@@ -60,7 +60,7 @@ class TestCrosswordGameController @Autowired constructor(
         @RepeatedTest(100)
         @Disabled("This test is disabled for automatic execution. Run manually when needed.")
         fun `Crossword can be properly stared - function encapsulates the entire process`() {
-            val (authenticatedUser, crosswordSentToUser, crosswordSavedInDb) = mockStartedCrosswordGame()
+            val (authenticatedUser, crosswordSentToUser, crosswordSavedInDb) = simulateMockCrosswordViaAPI()
 
             crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
 
@@ -182,7 +182,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @BeforeAll
             fun beforeAll() {
-                with(mockStartedCrosswordGame()) {
+                with(simulateMockCrosswordViaAPI()) {
                     authenticatedUser = first
                     crosswordSentToUser = second
                     crosswordSavedInDb = third
@@ -506,7 +506,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @BeforeEach
             fun beforeEach() {
-                prepareCrosswordGame().let {
+                createMockCrosswordFromJSON().let {
                     authenticatedUser = it.first
                     crosswordSavedInDb = it.second
                 }
@@ -677,7 +677,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Points should be properly assigned - HALF_CORRECT`() {
-                prepareCrosswordGame(difficulty = GameDifficulty.MEDIUM)
+                createMockCrosswordFromJSON(difficulty = GameDifficulty.MEDIUM)
 
                 val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
@@ -715,9 +715,9 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Points should be properly assigned - both HALF_CORRECT and INCORRECT`() {
-                prepareCrosswordGame(difficulty = GameDifficulty.MEDIUM)
+                createMockCrosswordFromJSON(difficulty = GameDifficulty.MEDIUM)
 
-                var perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+                val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
                 val alteredAnswers: Set<AlteredProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
@@ -735,7 +735,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Words can be marked as completed`() {
-                prepareCrosswordGame(difficulty = GameDifficulty.MEDIUM)
+                createMockCrosswordFromJSON(difficulty = GameDifficulty.MEDIUM)
 
                 wordRepository.saveAll(
                     wordRepository.findAllForUser(authenticatedUser.userInfo.id).map {
@@ -895,20 +895,18 @@ class TestCrosswordGameController @Autowired constructor(
         )
     }
 
-    private fun mockStartedCrosswordGame(): Triple<
+    private fun simulateMockCrosswordViaAPI(): Triple<
             MockedAuthenticatedUser,
             StartedCrosswordGameResponse,
             OngoingCrosswordGameDTO
             > {
-        // 1. Create a user
         val authenticatedUser = mockAuthenticatedUser()
 
-        // 2. Assign exactly 12 words to the user (to be used in the crossword game on Hard difficulty)
         loadWordsFromResourceFile(
             user = userMapper.toEntity(authenticatedUser.userInfo),
             wordsRepository = wordRepository
         )
-        // 3. Make a request to start a new crossword game
+
         val request = gameRequestFactory.startGameRequest(
             gameType = GameType.CROSSWORD,
             language = CrosswordDefaultValues.language,
@@ -920,10 +918,8 @@ class TestCrosswordGameController @Autowired constructor(
             it.response
         }
 
-        // 4. Retrieve the response body
         val crosswordSentToUser = getResponseBody<StartedCrosswordGameResponse>(response)
 
-        // 5. Retrieve the crossword game from the database
         val crosswordSavedInDb = ongoingGameMapper.toCrosswordDTO(
             ongoingGameRepository
                 .findAllForUser(authenticatedUser.userInfo.id)

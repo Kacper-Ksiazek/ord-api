@@ -6,6 +6,7 @@ import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameResult
 import com.backend.ord.repositories.UserActivityLogRepository
+import com.backend.ord.seeders.mocks.games.MockCrosswordGamesFromJSON
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -27,6 +28,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 class TestGameController @Autowired constructor(
     objectMapper: ObjectMapper,
     private val userActivityLogRepository: UserActivityLogRepository,
+    private val mockCrosswordGamesFromJSON: MockCrosswordGamesFromJSON
 ) : GameControllerTestBase(objectMapper) {
     @Nested
     @DisplayName("[DELETE] /api/v1/games/cancel/{gameId} - cancel a crossword game")
@@ -36,10 +38,12 @@ class TestGameController @Autowired constructor(
 
         @BeforeEach
         fun beforeEach() {
-            prepareCrosswordGame().let {
-                authenticatedUser = it.first
-                ongoingCrosswordSavedInDb = it.second
-            }
+            authenticatedUser = mockAuthenticatedUser()
+
+            // TODO: Reconcider this naming
+            ongoingCrosswordSavedInDb = mockCrosswordGamesFromJSON.createMockFromJSON(
+                user = authenticatedUser.userInfo
+            ).first
         }
 
         @AfterEach
