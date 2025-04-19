@@ -49,5 +49,5 @@ CREATE TABLE IF NOT EXISTS words
     created_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT each_user_can_have_only_one_word_with_same_word UNIQUE (user_id, translated_from, origin)
+    CONSTRAINT unique_origin_per_user_and_language UNIQUE (user_id, translated_from, origin)
 )
