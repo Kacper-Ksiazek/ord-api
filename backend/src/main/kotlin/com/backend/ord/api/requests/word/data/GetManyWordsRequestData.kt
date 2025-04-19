@@ -35,3 +35,23 @@ data class GetManyWordsRequestData(
     override val sortDirection: SortDirection?,
     override val sortBy: GetAllWordsSortOptions?
 ) : GetManyWordsRequest
+
+
+data class UnsafeGetManyWordsRequestData(
+    val language: Any?,
+
+    val page: Any?,
+    val perPage: Any?,
+
+    val wordType: Any?,
+    val completed: Any?,
+    val wordExtraMark: Any?,
+    val bookmarked: Any?,
+    val searchingPhrase: Any?,
+
+    val banksIds: Any?,
+    val bankGroupsIds: Any?,
+
+    val sortDirection: Any?,
+    val sortBy: Any?
+)

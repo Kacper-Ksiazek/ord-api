@@ -1,12 +1,15 @@
 package com.backend.ord.controllers
 
-import com.backend.ord.controllers.helpers.request_factories.AuthRequestFactory
-import com.backend.ord.controllers.helpers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.domain.persistence.dto.UserDTO
 import com.backend.ord.domain.persistence.entities.UserSession
+import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.backend.ord.repositories.LanguageProficiencyRepository
+import com.backend.ord.repositories.UserRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
+import com.backend.ord.testing_utils.api_requests_factories.AuthRequestFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import jakarta.servlet.http.Cookie
@@ -23,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @SpringBootTest
@@ -30,11 +34,24 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @AutoConfigureMockMvc
 @DisplayName("- AuthenticationController")
 class TestAuthController @Autowired constructor(
-    objectMapper: ObjectMapper,
     private val userSessionService: UserSessionService,
     private val userService: UserService,
     private val userSeeder: UserSeeder,
-) : ControllerTestBase(objectMapper) {
+
+    objectMapper: ObjectMapper,
+    mockMvc: MockMvc,
+    jwtProperties: JwtProperties,
+    languageProficiencyRepository: LanguageProficiencyRepository,
+    userMapper: UserMapper,
+    userRepository: UserRepository
+) : ControllerTestBase(
+    objectMapper = objectMapper,
+    mockMvc = mockMvc,
+    jwtProperties = jwtProperties,
+    languageProficiencyRepository = languageProficiencyRepository,
+    userMapper = userMapper,
+    userRepository = userRepository
+) {
     private val PASSWORD = "123456"
     private val EMAIL = "test@test.com"
     private val BASE_URL = "/api/v1/auth"

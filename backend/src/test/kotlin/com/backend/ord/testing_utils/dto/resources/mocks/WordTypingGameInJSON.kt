@@ -1,4 +1,4 @@
-package com.backend.ord.seeders.mocks.games.json_data_models
+package com.backend.ord.testing_utils.dto.resources.mocks
 
 import com.backend.ord.domain.application.games.words_typing.WordsTypingInstruction
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers

@@ -19,7 +19,7 @@ class MockBanks(
         > {
     private lateinit var bankGroups: List<BankGroup>;
 
-    override val pathToJSONFile: String = "/banks/banks.json"
+    override val pathToJSONFile: String = "mocks/banks/banks.json"
 
     override fun convertToEntity(
         jsonData: BankInJSON,

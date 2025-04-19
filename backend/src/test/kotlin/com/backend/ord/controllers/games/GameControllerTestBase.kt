@@ -1,0 +1,35 @@
+package com.backend.ord.controllers.games
+
+import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.controllers.ControllerTestBase
+import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
+import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.backend.ord.repositories.*
+import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.test.web.servlet.MockMvc
+
+@AutoConfigureMockMvc
+abstract class GameControllerTestBase(
+    objectMapper: ObjectMapper,
+    mockMvc: MockMvc,
+    userMapper: UserMapper,
+    jwtProperties: JwtProperties,
+    userRepository: UserRepository,
+    languageProficiencyRepository: LanguageProficiencyRepository,
+
+    val wordRepository: WordRepository,
+    val ongoingGameMapper: OngoingGameMapper,
+    val ongoingGameRepository: OngoingGameRepository,
+    val finishedGameRepository: FinishedGameRepository
+) : ControllerTestBase(
+    objectMapper = objectMapper,
+    mockMvc = mockMvc,
+    jwtProperties = jwtProperties,
+    languageProficiencyRepository = languageProficiencyRepository,
+    userMapper = userMapper,
+    userRepository = userRepository
+) {
+    val gameRequestFactory: GameRequestFactory = GameRequestFactory(objectMapper)
+}

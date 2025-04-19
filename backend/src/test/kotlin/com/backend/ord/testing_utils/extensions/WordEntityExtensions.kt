@@ -1,9 +1,9 @@
-package com.backend.ord.controllers.helpers.extensions
+package com.backend.ord.testing_utils.extensions
 
 import com.backend.ord.api.requests.word.UpdateWordRequest
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
-import com.backend.ord.controllers.helpers.request_factories.data.WordDataChanges
 import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.testing_utils.api_requests_factories.data.WordDataChanges
 import io.kotest.matchers.shouldBe
 
 fun Word.compareWith(anotherEntity: Word) {

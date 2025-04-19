@@ -8,23 +8,19 @@ import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
-import com.backend.ord.controllers.helpers.extensions.compareWith
-import com.backend.ord.controllers.helpers.extensions.detectChanges
-import com.backend.ord.controllers.helpers.request_factories.WordRequestFactory
-import com.backend.ord.controllers.helpers.request_factories.data.WordDataChanges
-import com.backend.ord.controllers.helpers.request_factories.data.compareWithDefaultCreateWordData
-import com.backend.ord.controllers.helpers.request_factories.data.compareWithDefaultUpdateWordData
-import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.controllers.helpers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
+import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.repositories.LanguageProficiencyRepository
+import com.backend.ord.repositories.UserRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
@@ -34,6 +30,13 @@ import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.services.BankService
 import com.backend.ord.services.WordService
+import com.backend.ord.testing_utils.api_requests_factories.WordRequestFactory
+import com.backend.ord.testing_utils.api_requests_factories.data.WordDataChanges
+import com.backend.ord.testing_utils.api_requests_factories.data.compareWithDefaultCreateWordData
+import com.backend.ord.testing_utils.api_requests_factories.data.compareWithDefaultUpdateWordData
+import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
+import com.backend.ord.testing_utils.extensions.compareWith
+import com.backend.ord.testing_utils.extensions.detectChanges
 import com.backend.ord.utils.Optional
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.comparables.shouldBeLessThan
@@ -56,6 +59,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import java.util.*
 
@@ -64,7 +68,6 @@ import java.util.*
 @AutoConfigureMockMvc
 @DisplayName("- WordsController")
 class TestWordsController @Autowired constructor(
-    objectMapper: ObjectMapper,
     private val wordService: WordService,
     private val wordRepository: WordRepository,
     private val bankSeeder: BankSeeder,
@@ -74,10 +77,23 @@ class TestWordsController @Autowired constructor(
     private val wordSeeder: WordSeeder,
     private val wordMapper: WordMapper,
     private val bankGroupSeeder: BankGroupSeeder,
-) : ControllerTestBase(objectMapper) {
-    @Autowired
-    private lateinit var wordMockFactory: WordMockFactory
+    private var wordMockFactory: WordMockFactory,
 
+    objectMapper: ObjectMapper,
+    mockMvc: MockMvc,
+    jwtProperties: JwtProperties,
+    languageProficiencyRepository: LanguageProficiencyRepository,
+    userMapper: UserMapper,
+    userRepository: UserRepository
+
+) : ControllerTestBase(
+    objectMapper = objectMapper,
+    mockMvc = mockMvc,
+    jwtProperties = jwtProperties,
+    languageProficiencyRepository = languageProficiencyRepository,
+    userMapper = userMapper,
+    userRepository = userRepository
+) {
     private val wordRequestFactory = WordRequestFactory(
         BASE_URL = "/api/v1/words/",
         objectMapper = objectMapper

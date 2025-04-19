@@ -1,4 +1,4 @@
-package com.backend.ord.utils.resource_readers.json_data_models
+package com.backend.ord.testing_utils.dto.resources.db_rows
 
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word

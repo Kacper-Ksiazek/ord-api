@@ -3,8 +3,8 @@ package com.backend.ord.utils.resource_readers
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.repositories.WordRepository
+import com.backend.ord.testing_utils.dto.resources.db_rows.WordDBExportedRow
 import com.backend.ord.utils.JsonReader
-import com.backend.ord.utils.resource_readers.json_data_models.WordDBExportedRow
 import com.fasterxml.jackson.core.type.TypeReference
 
 private const val ROOT = "./src/test/resources/db_rows"

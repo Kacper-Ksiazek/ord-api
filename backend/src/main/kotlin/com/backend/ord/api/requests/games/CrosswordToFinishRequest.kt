@@ -21,3 +21,9 @@ data class CrosswordToFinishRequest(
     @field:Valid
     val userAnswers: CrosswordUserAnswers
 )
+
+data class UnsafeFinishCrosswordGameRequestData(
+    val gameId: UUID? = null,
+    val duration: String? = null,
+    val userAnswers: CrosswordUserAnswers? = null
+)

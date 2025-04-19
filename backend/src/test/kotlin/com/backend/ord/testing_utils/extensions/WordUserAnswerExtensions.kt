@@ -1,19 +1,11 @@
-package com.backend.ord.controllers.helpers.utils_for_testing
+package com.backend.ord.testing_utils.extensions
 
 import com.backend.ord.api.requests.games.utils.WordUserAnswer
 import com.backend.ord.enums.application.game.AnswerScore
+import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import jakarta.validation.constraints.Min
-import java.util.*
 
-data class AlteredProperAnswer(
-    val questionId: UUID,
-    val originalAnswer: String,
-    val alteredAnswer: String,
-
-    val desiredScore: AnswerScore
-)
-
-private fun WordUserAnswer.makeArtificialMistake(desiredResult: AnswerScore): AlteredProperAnswer {
+private fun WordUserAnswer.makeArtificialMistake(desiredResult: AnswerScore): AlteredWordProperAnswer {
     val alteredAnswer = when (desiredResult) {
         AnswerScore.INCORRECT -> "x".repeat(word.length)
         AnswerScore.HALF_CORRECT -> "x${word.drop(1)}"
@@ -22,7 +14,7 @@ private fun WordUserAnswer.makeArtificialMistake(desiredResult: AnswerScore): Al
         }
     }
 
-    return AlteredProperAnswer(
+    return AlteredWordProperAnswer(
         questionId = id,
         originalAnswer = word,
         alteredAnswer = alteredAnswer,
@@ -32,7 +24,7 @@ private fun WordUserAnswer.makeArtificialMistake(desiredResult: AnswerScore): Al
 
 fun Set<WordUserAnswer>.mockAnswersWithMistakes(
     mistakes: Map<AnswerScore, @Min(0) Int>
-): Set<AlteredProperAnswer> {
+): Set<AlteredWordProperAnswer> {
     if (mistakes.isEmpty()) {
         throw IllegalArgumentException("Mistakes set cannot be empty")
     }
@@ -41,7 +33,7 @@ fun Set<WordUserAnswer>.mockAnswersWithMistakes(
         throw IllegalArgumentException("Requested more mistakes than provided words")
     }
 
-    val result: MutableSet<AlteredProperAnswer> = mutableSetOf()
+    val result: MutableSet<AlteredWordProperAnswer> = mutableSetOf()
     val remainingQuestions = this.toMutableSet()
 
     for ((scoringResult, mistakesCount) in mistakes) {
@@ -59,11 +51,3 @@ fun Set<WordUserAnswer>.mockAnswersWithMistakes(
     return result.toSet()
 }
 
-fun Set<AlteredProperAnswer>.toRequestBody(perfectAnswers: Set<WordUserAnswer>): Set<WordUserAnswer> {
-    return perfectAnswers.toMutableSet().map { answer ->
-        val correspondingAlteredAnswer = find { it.questionId == answer.id }
-
-        return@map if (correspondingAlteredAnswer == null) answer
-        else answer.copy(word = correspondingAlteredAnswer.alteredAnswer)
-    }.toSet()
-}

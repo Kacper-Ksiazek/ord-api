@@ -1,4 +1,4 @@
-package com.backend.ord.controllers.helpers.request_factories.data
+package com.backend.ord.testing_utils.api_requests_factories.data
 
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName

@@ -1,12 +1,12 @@
-package com.backend.ord.controllers.helpers.request_factories.data
+package com.backend.ord.testing_utils.api_requests_factories.data
 
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
-import com.backend.ord.controllers.helpers.extensions.detectChanges
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.testing_utils.extensions.detectChanges
 import io.kotest.matchers.shouldBe
 import java.util.*
 

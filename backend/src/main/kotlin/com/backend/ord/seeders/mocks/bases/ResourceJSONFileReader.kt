@@ -13,6 +13,8 @@ interface ResourceJSONFileReader<
         JSONDataModelType  // Eg. AIGeneratedWordManual
         > {
     val root: RootDir
+        get() = RootDir.MAIN_APP
+
     val pathToJSONFile: String
 
     fun typeReference(): TypeReference<FileContent>

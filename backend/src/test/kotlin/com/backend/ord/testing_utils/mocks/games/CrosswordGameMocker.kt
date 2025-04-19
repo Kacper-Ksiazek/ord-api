@@ -1,11 +1,8 @@
-package com.backend.ord.controllers.helpers.mocks
+package com.backend.ord.testing_utils.mocks.games
 
 import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
-import com.backend.ord.controllers.games.TestCrosswordGameController.CrosswordDefaultValues
-import com.backend.ord.controllers.helpers.mocks.bases.GameMockerBase
-import com.backend.ord.controllers.helpers.request_factories.GameRequestFactory
-import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
-import com.backend.ord.controllers.helpers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.controllers.ControllerTestBase
+import com.backend.ord.controllers.games.TestCrosswordGameController
 import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.dto.UserDTO
@@ -17,18 +14,17 @@ import com.backend.ord.repositories.OngoingGameRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.seeders.mocks.bases.RootDir
-import com.backend.ord.seeders.mocks.games.json_data_models.CrosswordInJSON
+import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
+import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
+import com.backend.ord.testing_utils.dto.resources.mocks.CrosswordInJSON
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.stereotype.Component
 import org.springframework.test.web.servlet.MockMvc
 
-@Component
-class CrosswordGameMocker @Autowired constructor(
+class CrosswordGameMocker(
     private val objectMapper: ObjectMapper,
     private val userMapper: UserMapper,
     private val wordRepository: WordRepository,
@@ -45,8 +41,8 @@ class CrosswordGameMocker @Autowired constructor(
         > {
     val gameRequestFactory: GameRequestFactory = GameRequestFactory(objectMapper)
 
-    override val root = RootDir.MAIN_APP
-    override val pathToJSONFile: String = "/games/crosswords.json"
+    override val root = RootDir.TEST_RESOURCES
+    override val pathToJSONFile: String = "mocks/games/crosswords.json"
 
     override fun typeReference(): TypeReference<List<CrosswordInJSON>> {
         return object : TypeReference<List<CrosswordInJSON>>() {}
@@ -69,14 +65,21 @@ class CrosswordGameMocker @Autowired constructor(
                 Pair(updatedDTO, it.second)
             }
 
+        val currentWords = wordRepository
+            .findAllForUser(userDTO.id)
+            .filter { it.translatedFrom == crosswordSavedInDb.language }
+            .map { it.origin }
+
         wordRepository.saveAll(
-            crosswordSavedInDb.properAnswers.questions.values.map {
-                wordMockFactory.mockEntity(
-                    origin = it,
-                    translatedFrom = crosswordSavedInDb.language,
-                    user = userMapper.toEntity(userDTO),
-                )
-            }
+            crosswordSavedInDb.properAnswers.questions.values
+                .filter { it !in currentWords }
+                .map {
+                    wordMockFactory.mockEntity(
+                        origin = it,
+                        translatedFrom = crosswordSavedInDb.language,
+                        user = userMapper.toEntity(userDTO),
+                    )
+                }
         )
 
         return Pair(crosswordSavedInDb, crosswordInstruction)
@@ -93,8 +96,8 @@ class CrosswordGameMocker @Autowired constructor(
 
         val request = gameRequestFactory.startGameRequest(
             gameType = GameType.CROSSWORD,
-            language = CrosswordDefaultValues.language,
-            difficulty = CrosswordDefaultValues.difficulty,
+            language = TestCrosswordGameController.CrosswordDefaultValues.language,
+            difficulty = TestCrosswordGameController.CrosswordDefaultValues.difficulty,
             authenticatedUser = authenticatedUser
         )
         val response = mockMvc.perform(request).andReturn().let {

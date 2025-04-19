@@ -1,13 +1,13 @@
-package com.backend.ord.controllers.helpers.request_factories
+package com.backend.ord.testing_utils.api_requests_factories
 
 import com.backend.ord.api.requests.games.CancelGameRequest
 import com.backend.ord.api.requests.games.CrosswordUserAnswers
-import com.backend.ord.controllers.helpers.unsafe_api_requests.UnsafeFinishCrosswordGameRequestData
-import com.backend.ord.controllers.helpers.unsafe_api_requests.UnsafeStartGameRequestData
-import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
+import com.backend.ord.api.requests.games.UnsafeFinishCrosswordGameRequestData
+import com.backend.ord.api.requests.games.UnsafeStartGameRequestData
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder

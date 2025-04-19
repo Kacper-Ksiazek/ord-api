@@ -1,4 +1,4 @@
-package com.backend.ord.controllers.helpers.utils_for_testing
+package com.backend.ord.testing_utils.dto
 
 import com.backend.ord.domain.persistence.dto.UserDTO
 import jakarta.servlet.http.Cookie

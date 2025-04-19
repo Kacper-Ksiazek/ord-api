@@ -1,9 +1,9 @@
-package com.backend.ord.controllers.helpers.mocks.bases
+package com.backend.ord.testing_utils.mocks.games
 
-import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.persistence.dto.UserDTO
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.seeders.mocks.bases.ResourceJSONFileReader
+import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 
 interface GameMockerBase<
         TFileContent,       // eg. List<CrosswordInJSON>

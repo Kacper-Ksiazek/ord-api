@@ -1,8 +1,7 @@
-package com.backend.ord.controllers.helpers.utils_for_testing.bases
+package com.backend.ord.controllers
 
 import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
-import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.domain.persistence.dto.UserDTO
 import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.domain.persistence.mappers.UserMapper
@@ -10,10 +9,10 @@ import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.UserRepository
+import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.javafaker.Faker
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockHttpServletResponse
@@ -25,24 +24,14 @@ import kotlin.test.assertNotNull
 
 @AutoConfigureMockMvc
 abstract class ControllerTestBase(
-    val objectMapper: ObjectMapper
+    val objectMapper: ObjectMapper,
+    val mockMvc: MockMvc,
+    val jwtProperties: JwtProperties,
+    val languageProficiencyRepository: LanguageProficiencyRepository,
+    val userMapper: UserMapper,
+    val userRepository: UserRepository
 ) {
     val faker = Faker()
-
-    @Autowired
-    lateinit var mockMvc: MockMvc
-
-    @Autowired
-    lateinit var jwtProperties: JwtProperties
-
-    @Autowired
-    lateinit var userMapper: UserMapper
-
-    @Autowired
-    lateinit var languageProficiencyRepository: LanguageProficiencyRepository
-
-    @Autowired
-    lateinit var userRepository: UserRepository
 
     companion object {
         inline fun <reified T> getResponseBody(objectMapper: ObjectMapper, source: Any): T {
