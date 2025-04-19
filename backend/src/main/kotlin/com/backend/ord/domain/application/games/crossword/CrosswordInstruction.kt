@@ -21,7 +21,7 @@ data class CrosswordInstruction(
     @JsonIgnore
     val lettersAreHidden: Boolean = false
 ) {
-    private lateinit var finalWordUnmatchedIndexes: Set<Int>;
+    private lateinit var finalWordUnmatchedIndexes: Set<Int>
 
     companion object {
         /**

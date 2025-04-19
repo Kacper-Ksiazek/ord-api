@@ -19,7 +19,7 @@ class MockWordsManuals(
         List<AIGeneratedWordManualInJSON>,
         AIGeneratedWordManualInJSON
         > {
-    private lateinit var availableBanks: List<Bank>;
+    private lateinit var availableBanks: List<Bank>
 
     override fun typeReference(): TypeReference<List<AIGeneratedWordManualInJSON>> {
         return object : TypeReference<List<AIGeneratedWordManualInJSON>>() {}
@@ -61,7 +61,7 @@ class MockWordsManuals(
         user: User,
         banks: List<Bank>
     ): List<Word> {
-        this.availableBanks = banks;
+        this.availableBanks = banks
 
         return seedFromJSONFile(user)
     }

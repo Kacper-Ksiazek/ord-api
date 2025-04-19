@@ -17,7 +17,7 @@ class MockBanks(
         List<BankInJSON>,
         BankInJSON
         > {
-    private lateinit var bankGroups: List<BankGroup>;
+    private lateinit var bankGroups: List<BankGroup>
 
     override val pathToJSONFile: String = "mocks/banks/banks.json"
 
@@ -37,14 +37,14 @@ class MockBanks(
     }
 
     override fun typeReference(): TypeReference<List<BankInJSON>> {
-        return object : TypeReference<List<BankInJSON>>() {};
+        return object : TypeReference<List<BankInJSON>>() {}
     }
 
     fun seedFromJSONFile(
         user: User,
         bankGroups: List<BankGroup>
     ): List<Bank> {
-        this.bankGroups = bankGroups;
+        this.bankGroups = bankGroups
 
         return this.seedFromJSONFile(user)
     }

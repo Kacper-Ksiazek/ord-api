@@ -24,7 +24,7 @@ class MocksFromJSONFiles(
     private val mockBanks: MockBanks
 ) {
     fun run(user: User): List<MockedEntitySummary> {
-        val result = mutableListOf<MockedEntitySummary>();
+        val result = mutableListOf<MockedEntitySummary>()
 
         val bankGroups: List<BankGroup> = mockBankGroups.seedFromJSONFile(user)
 
@@ -66,6 +66,6 @@ class MocksFromJSONFiles(
             )
         )
 
-        return result;
+        return result
     }
 }

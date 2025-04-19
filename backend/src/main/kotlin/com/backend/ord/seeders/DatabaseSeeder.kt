@@ -56,8 +56,8 @@ class DatabaseSeeder(
     }
 
     private fun populateDatabase(): String {
-        val numberOfUsers = 10;
-        val numberOfLanguagesPerUser = 3;
+        val numberOfUsers = 10
+        val numberOfLanguagesPerUser = 3
 
         IntStream.range(0, numberOfUsers).forEach { _: Int ->
             val createdUser = userSeeder.seedOneEntity()

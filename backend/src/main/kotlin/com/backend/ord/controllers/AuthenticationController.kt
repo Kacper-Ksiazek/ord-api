@@ -76,7 +76,7 @@ class AuthenticationController(
         return if (authenticatedUser != null) {
             ResponseEntity.ok(userMapper.toDTO(authenticatedUser))
         } else {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         }
     }
 }

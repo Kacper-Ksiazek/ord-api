@@ -797,7 +797,7 @@ class TestCrosswordGameController @Autowired constructor(
                     )
                 )
 
-                val b = finishCrosswordGame(
+                finishCrosswordGame(
                     questionsAnswers = alteredAnswers.toRequestBody(perfectAnswers)
                 )
 

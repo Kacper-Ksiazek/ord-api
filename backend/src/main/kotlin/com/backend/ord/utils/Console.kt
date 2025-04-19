@@ -26,7 +26,7 @@ object Console {
     fun ensureFunctionSuccess(introMsg: String?, function: () -> Any) {
         print(introMsg)
         try {
-            val outroMsg = function();
+            val outroMsg = function()
             printGreen(" ✅ DONE\n")
 
             if (outroMsg is String) {

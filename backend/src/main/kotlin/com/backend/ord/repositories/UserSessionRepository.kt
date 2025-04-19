@@ -16,5 +16,5 @@ interface UserSessionRepository : JpaRepository<UserSession, String> {
 
     @Modifying
     @Query("DELETE FROM UserSession us WHERE us.token = :token")
-    fun deleteByToken(token: String): Unit
+    fun deleteByToken(token: String)
 }

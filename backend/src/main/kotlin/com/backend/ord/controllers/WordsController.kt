@@ -112,7 +112,7 @@ class WordController(
 
         val result = wordService.save(wordMapper.toEntity(wordToSave))
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(wordMapper.toDTO(result));
+        return ResponseEntity.status(HttpStatus.CREATED).body(wordMapper.toDTO(result))
     }
 
     @PatchMapping("/{id}")

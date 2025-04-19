@@ -41,12 +41,12 @@ abstract class ControllerTestBase(
                 else -> throw IllegalArgumentException("Unsupported source type")
             }
 
-            val result = objectMapper.readValue(content, object : TypeReference<T>() {});
+            val result = objectMapper.readValue(content, object : TypeReference<T>() {})
 
             assert(result != null) { "Failed to parse response body! The response body is empty" }
             assert(result is T) { "Failed to parse response body! The response body is not of the expected type" }
 
-            return result;
+            return result
         }
     }
 

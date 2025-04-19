@@ -5,11 +5,11 @@ import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 
 class StringSetValidator : ConstraintValidator<ValidStringSet, Set<String>> {
-    private var minSetSize: Int = 1;
-    private var maxSetSize: Int = 5;
+    private var minSetSize: Int = 1
+    private var maxSetSize: Int = 5
 
-    private var minElementSize: Int = 1;
-    private var maxElementSize: Int = 255;
+    private var minElementSize: Int = 1
+    private var maxElementSize: Int = 255
     override fun initialize(constraintAnnotation: ValidStringSet) {
         super.initialize(constraintAnnotation)
 

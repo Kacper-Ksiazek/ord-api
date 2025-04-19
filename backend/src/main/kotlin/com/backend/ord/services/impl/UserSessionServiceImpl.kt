@@ -42,7 +42,7 @@ class UserSessionServiceImpl(
     }
 
     @Transactional
-    override fun deleteSessionByToken(authToken: String): Unit {
-        userSessionRepository.deleteByToken(authToken);
+    override fun deleteSessionByToken(authToken: String) {
+        userSessionRepository.deleteByToken(authToken)
     }
 }
