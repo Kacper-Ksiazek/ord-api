@@ -16,7 +16,7 @@ class MockDetailedWordsGPTTokensConsumption(
         List<DetailedWordTokensUsage>,
         DetailedWordTokensUsage
         > {
-    override val pathToJSONFile: String =
+    override val pathToJsonFile: String =
         "mocks/gpt_tokens_usage/gpt_tokens_used_to_generate_ai_words_manuals.json"
 
     override fun convertToEntity(

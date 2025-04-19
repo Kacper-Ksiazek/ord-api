@@ -6,10 +6,10 @@ import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
 
-data class WordsTypingGameInJSON(
+data class WordsTypingGameInJson(
     override val type: GameType = GameType.WORDS_TYPING,
     override val language: LanguageName,
     override val difficulty: GameDifficulty,
     override val instruction: WordsTypingInstruction,
     override val properAnswers: WordsTypingProperAnswers
-) : GameInJSON<WordsTypingInstruction, WordsTypingProperAnswers>
+) : GameInJson<WordsTypingInstruction, WordsTypingProperAnswers>

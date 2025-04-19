@@ -9,25 +9,25 @@ enum class RootDir(val path: String) {
 }
 
 interface ResourceJSONFileReader<
-        FileContent, // Eg. List<AIGeneratedWordManual>
-        JSONDataModelType  // Eg. AIGeneratedWordManual
+        TFileContent, // Eg. List<AIGeneratedWordManual>
+        TJsonDataModelType  // Eg. AIGeneratedWordManual
         > {
     val root: RootDir
         get() = RootDir.MAIN_APP
 
-    val pathToJSONFile: String
+    val pathToJsonFile: String
 
-    fun typeReference(): TypeReference<FileContent>
+    fun typeReference(): TypeReference<TFileContent>
 
     /**
      * Reads data from a JSON file and returns a list of JSON data models
      */
-    fun readFromJSONFile(): List<JSONDataModelType> {
+    fun readFromJSONFile(): List<TJsonDataModelType> {
         @Suppress("UNCHECKED_CAST")
         return JsonReader.readJsonFile(
-            pathToJSONFile = getAbsolutePath(pathToJSONFile),
+            pathToJSONFile = getAbsolutePath(pathToJsonFile),
             typeReference = typeReference()
-        ) as List<JSONDataModelType>
+        ) as List<TJsonDataModelType>
     }
 
     private fun getAbsolutePath(path: String): String {

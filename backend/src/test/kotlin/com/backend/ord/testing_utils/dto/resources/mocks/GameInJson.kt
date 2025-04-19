@@ -4,7 +4,7 @@ import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
 
-interface GameInJSON<TGameInstruction, TGameProperAnswers> {
+interface GameInJson<TGameInstruction, TGameProperAnswers> {
     val type: GameType
     val language: LanguageName
     val difficulty: GameDifficulty
