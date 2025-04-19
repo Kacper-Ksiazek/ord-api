@@ -5,6 +5,7 @@ import com.backend.ord.api.requests.games.utils.WordUserAnswer
 import com.backend.ord.api.responses.games.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
+import com.backend.ord.controllers.helpers.mocks.CrosswordGameMocker
 import com.backend.ord.controllers.helpers.utils_for_testing.AlteredProperAnswer
 import com.backend.ord.controllers.helpers.utils_for_testing.MockedAuthenticatedUser
 import com.backend.ord.controllers.helpers.utils_for_testing.bases.GameControllerTestBase
@@ -53,6 +54,7 @@ class TestCrosswordGameController @Autowired constructor(
     private val gameTokensUsageRepository: GameTokensUsageRepository,
     private val userActivityLogRepository: UserActivityLogRepository,
     private val userSeeder: UserSeeder,
+    private val crosswordGameMocker: CrosswordGameMocker
 ) : GameControllerTestBase(objectMapper) {
     @Nested
     @DisplayName("[POST] /api/v1/games/crossword/start - start a new crossword game")
@@ -506,9 +508,9 @@ class TestCrosswordGameController @Autowired constructor(
 
             @BeforeEach
             fun beforeEach() {
-                createMockCrosswordFromJSON().let {
-                    authenticatedUser = it.first
-                    crosswordSavedInDb = it.second
+                authenticatedUser = mockAuthenticatedUser()
+                crosswordGameMocker.mockFromJsonSource(authenticatedUser.userInfo).let {
+                    crosswordSavedInDb = it.first
                 }
             }
 
@@ -677,7 +679,10 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Points should be properly assigned - HALF_CORRECT`() {
-                createMockCrosswordFromJSON(difficulty = GameDifficulty.MEDIUM)
+                crosswordGameMocker.mockFromJsonSource(
+                    difficulty = GameDifficulty.MEDIUM,
+                    userDTO = authenticatedUser.userInfo
+                )
 
                 val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
@@ -735,7 +740,10 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Words can be marked as completed`() {
-                createMockCrosswordFromJSON(difficulty = GameDifficulty.MEDIUM)
+                crosswordGameMocker.mockFromJsonSource(
+                    ussrDTO = authenticatedUser.userInfo,
+                    difficulty = GameDifficulty.MEDIUM
+                )
 
                 wordRepository.saveAll(
                     wordRepository.findAllForUser(authenticatedUser.userInfo.id).map {
@@ -882,7 +890,7 @@ class TestCrosswordGameController @Autowired constructor(
     }
 
 
-    private object CrosswordDefaultValues {
+    object CrosswordDefaultValues {
         val language = LanguageName.ENGLISH
         val difficulty = GameDifficulty.HARD
     }

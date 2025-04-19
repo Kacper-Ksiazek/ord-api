@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.stereotype.Component
 
 @Component
-class MockCrosswordGamesFromJSON(
+final class MockCrosswordGamesFromJSON(
     val userMapper: UserMapper,
     val wordRepository: WordRepository,
     val ongoingGameMapper: OngoingGameMapper,
@@ -32,11 +32,11 @@ class MockCrosswordGamesFromJSON(
         return object : TypeReference<List<CrosswordInJSON>>() {}
     }
 
-    fun createMockFromJSON(
+    final fun createMockFromJSON(
         user: UserDTO,
         difficulty: GameDifficulty = GameDifficulty.HARD
     ): Pair<OngoingCrosswordGameDTO, CrosswordInstruction> {
-        val (crosswordSavedInDb, crosswordInstruction) = parseJSONFileData(user)
+        val (crosswordSavedInDb, crosswordInstruction) = loadDataFromJSON(user)
             .filter { it.first.difficulty == difficulty }
             .random()
             .let {
@@ -63,7 +63,7 @@ class MockCrosswordGamesFromJSON(
     }
 
 
-    private fun parseJSONFileData(
+    private fun loadDataFromJSON(
         userDTO: UserDTO
     ): List<Pair<OngoingCrosswordGameDTO, CrosswordInstruction>> {
         val jsonData: List<CrosswordInJSON> = readFromJSONFile()

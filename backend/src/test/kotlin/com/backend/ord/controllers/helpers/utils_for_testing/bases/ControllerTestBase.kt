@@ -44,6 +44,23 @@ abstract class ControllerTestBase(
     @Autowired
     lateinit var userRepository: UserRepository
 
+    companion object {
+        inline fun <reified T> getResponseBody(objectMapper: ObjectMapper, source: Any): T {
+            val content = when (source) {
+                is MvcResult -> source.response.contentAsString
+                is MockHttpServletResponse -> source.contentAsString
+                else -> throw IllegalArgumentException("Unsupported source type")
+            }
+
+            val result = objectMapper.readValue(content, object : TypeReference<T>() {});
+
+            assert(result != null) { "Failed to parse response body! The response body is empty" }
+            assert(result is T) { "Failed to parse response body! The response body is not of the expected type" }
+
+            return result;
+        }
+    }
+
     fun mockAuthenticatedUser(
         email: String = faker.internet().emailAddress(),
         nativeLanguage: LanguageName = LanguageName.ENGLISH,
@@ -97,17 +114,6 @@ abstract class ControllerTestBase(
     }
 
     inline fun <reified T> getResponseBody(source: Any): T {
-        val content = when (source) {
-            is MvcResult -> source.response.contentAsString
-            is MockHttpServletResponse -> source.contentAsString
-            else -> throw IllegalArgumentException("Unsupported source type")
-        }
-
-        val result = objectMapper.readValue(content, object : TypeReference<T>() {});
-
-        assert(result != null) { "Failed to parse response body! The response body is empty" }
-        assert(result is T) { "Failed to parse response body! The response body is not of the expected type" }
-
-        return result;
+        return getResponseBody(objectMapper, source)
     }
 }
