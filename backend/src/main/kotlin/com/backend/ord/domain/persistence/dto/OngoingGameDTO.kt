@@ -8,10 +8,10 @@ import com.backend.ord.enums.persistence.language.LanguageName
 import java.time.Instant
 import java.util.*
 
-data class OngoingGameDTO<ProperAnswers>(
+data class OngoingGameDTO<TProperAnswers>(
     val id: UUID = UUID.randomUUID(),
 
-    val properAnswers: ProperAnswers,
+    val properAnswers: TProperAnswers,
 
     val type: GameType,
     val language: LanguageName,
