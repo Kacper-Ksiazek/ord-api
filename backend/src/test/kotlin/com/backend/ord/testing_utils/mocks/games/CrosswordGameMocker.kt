@@ -16,7 +16,7 @@ import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.seeders.mocks.bases.RootDir
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
-import com.backend.ord.testing_utils.dto.resources.mocks.CrosswordInJSON
+import com.backend.ord.testing_utils.dto.resources.mocks.CrosswordInJson
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -33,8 +33,7 @@ class CrosswordGameMocker(
     private val wordMockFactory: WordMockFactory,
     private val mockMvc: MockMvc,
 ) : GameMockerBase<
-        List<CrosswordInJSON>,
-        CrosswordInJSON,
+        CrosswordInJson,
         OngoingCrosswordGameDTO,
         CrosswordInstruction,
         StartedCrosswordGameResponse
@@ -42,24 +41,24 @@ class CrosswordGameMocker(
     val gameRequestFactory: GameRequestFactory = GameRequestFactory(objectMapper)
 
     override val root = RootDir.TEST_RESOURCES
-    override val pathToJSONFile: String = "mocks/games/crosswords.json"
+    override val pathToJsonFile: String = "mocks/games/crosswords.json"
 
-    override fun typeReference(): TypeReference<List<CrosswordInJSON>> {
-        return object : TypeReference<List<CrosswordInJSON>>() {}
+    override fun typeReference(): TypeReference<List<CrosswordInJson>> {
+        return object : TypeReference<List<CrosswordInJson>>() {}
     }
 
     override fun mockFromJsonSource(
         userDTO: UserDTO,
         difficulty: GameDifficulty
     ): Pair<OngoingCrosswordGameDTO, CrosswordInstruction> {
-        val (crosswordSavedInDb, crosswordInstruction) = loadDataFromJSON(userDTO)
+        val (crosswordSavedInDb, crosswordInstruction) = loadDataFromJSONFile(userDTO)
             .filter { it.first.difficulty == difficulty }
             .random()
             .let {
                 val savedOngoingGame = ongoingGameRepository.save(
                     ongoingGameMapper.toEntity(it.first)
                 )
-                // TODO: Come up with something smarter for this, eg. involving @PrePersist annotation of hybernate
+
                 val updatedDTO = it.first.copy(id = savedOngoingGame.id)
 
                 Pair(updatedDTO, it.second)
@@ -120,21 +119,16 @@ class CrosswordGameMocker(
         )
     }
 
-    private fun loadDataFromJSON(
+    override fun createOngoingGameDTO(
+        jsonData: CrosswordInJson,
         userDTO: UserDTO
-    ): List<Pair<OngoingCrosswordGameDTO, CrosswordInstruction>> {
-        val jsonData: List<CrosswordInJSON> = readFromJSONFile()
-
-        return jsonData.map {
-            val ongoingGameDTO = OngoingCrosswordGameDTO(
-                properAnswers = it.properAnswers,
-                type = GameType.CROSSWORD,
-                language = it.language,
-                difficulty = it.difficulty,
-                user = userDTO
-            )
-
-            return@map Pair(ongoingGameDTO, it.instruction)
-        }
+    ): OngoingCrosswordGameDTO {
+        return OngoingCrosswordGameDTO(
+            properAnswers = jsonData.properAnswers,
+            type = GameType.CROSSWORD,
+            language = jsonData.language,
+            difficulty = jsonData.difficulty,
+            user = userDTO
+        )
     }
 }
