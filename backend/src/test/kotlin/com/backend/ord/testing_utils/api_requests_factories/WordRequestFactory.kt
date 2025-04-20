@@ -55,7 +55,7 @@ class WordRequestFactory(
         sortDirection: SortDirection? = null,
         sortBy: GetAllWordsSortOptions? = null,
     ): MockHttpServletRequestBuilder {
-        var url = "$BASE_URL/get-many-words"
+        val url = "$BASE_URL/get-many-words"
 
         return MockMvcRequestBuilders
             .post(url)

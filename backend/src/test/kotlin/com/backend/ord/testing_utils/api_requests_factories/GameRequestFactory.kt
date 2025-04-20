@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import java.util.*
 
 private fun GameType.getStartGameAPIUrl(): String {
-    return "/api/v1/games/${this.name.lowercase()}/start"
+    return "/api/v1/games/${this.name.lowercase().replace('_', '-')}/start"
 }
 
 class GameRequestFactory(

@@ -27,7 +27,7 @@ fun loadWordsFromResourceFile(
     /** If null, all words will be loaded */
     numberOfWordsToLoad: Int? = null
 ): List<Word> {
-    val path = getAbsolutePath("/words_12_rows.json")
+    val path = getAbsolutePath("/words_24_rows.json")
     val typeReference = object : TypeReference<List<WordDBExportedRow>>() {}
 
     val result = JsonReader.readJsonFile(

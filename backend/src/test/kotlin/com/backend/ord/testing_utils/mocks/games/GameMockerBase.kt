@@ -112,7 +112,7 @@ interface GameMockerBase<
     ): Pair<TOngoingGameDTO, TAPIResponseDTO> {
         loadWordsFromResourceFile(
             user = userMapper.toEntity(authenticatedUser.userInfo),
-            wordsRepository = wordRepository
+            wordsRepository = wordRepository,
         )
 
         val request = gameRequestFactory.startGameRequest(

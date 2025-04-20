@@ -1,15 +1,20 @@
 package com.backend.ord.controllers.games
 
+import com.backend.ord.api.responses.games.bases.StartedWordsTypingGameResponse
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.games.bases.GameControllerTestBase
+import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.testing_utils.mocks.games.GameMockerBase
 import com.backend.ord.testing_utils.mocks.games.WordsTypingGameMocker
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -79,7 +84,33 @@ class TestWordsTypingGameController @Autowired constructor(
         @TestInstance(TestInstance.Lifecycle.PER_CLASS)
         @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Positive {
-            // TODO
+            val authenticatedUser = mockAuthenticatedUser()
+
+            lateinit var gameSavedInDb: OngoingWordsTypingGameDTO
+            lateinit var gameSentToUser: StartedWordsTypingGameResponse
+
+            @BeforeAll
+            fun beforeAll() {
+                with(wordsTypingGameMocker.mockThroughApiFlow(authenticatedUser)) {
+                    gameSavedInDb = first
+                    gameSentToUser = second
+                }
+            }
+
+            @Test
+            fun `Game returned in response is the game saved in the DB`() {
+                gameSavedInDb.id shouldBe gameSentToUser.gameId
+            }
+
+            @Test
+            fun `Game is properly saved in the DB`() {
+                gameSavedInDb.type shouldBe GameType.WORDS_TYPING
+                gameSavedInDb.language shouldBe GameMockerBase.Companion.DefaultParams.language
+                gameSavedInDb.difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
+
+                gameSavedInDb.user.id shouldBe authenticatedUser.userInfo.id
+            }
+
         }
 
         @Nested
