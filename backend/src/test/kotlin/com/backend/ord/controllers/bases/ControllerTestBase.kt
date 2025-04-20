@@ -1,4 +1,4 @@
-package com.backend.ord.controllers
+package com.backend.ord.controllers.bases
 
 import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties

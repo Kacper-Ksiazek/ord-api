@@ -16,8 +16,7 @@ interface ResourceJSONFileReader<
         get() = RootDir.MAIN_APP
 
     val pathToJsonFile: String
-
-    fun typeReference(): TypeReference<TFileContent>
+    val jsonFileContentTypeRef: TypeReference<TFileContent>
 
     /**
      * Reads data from a JSON file and returns a list of JSON data models
@@ -26,7 +25,7 @@ interface ResourceJSONFileReader<
         @Suppress("UNCHECKED_CAST")
         return JsonReader.readJsonFile(
             pathToJSONFile = getAbsolutePath(pathToJsonFile),
-            typeReference = typeReference()
+            typeReference = jsonFileContentTypeRef
         ) as List<TJsonDataModelType>
     }
 

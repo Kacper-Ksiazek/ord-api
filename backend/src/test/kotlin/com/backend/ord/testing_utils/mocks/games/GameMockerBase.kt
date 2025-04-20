@@ -1,7 +1,7 @@
 package com.backend.ord.testing_utils.mocks.games
 
 import com.backend.ord.api.responses.games.bases.StartedGameResponse
-import com.backend.ord.controllers.ControllerTestBase
+import com.backend.ord.controllers.bases.ControllerTestBase
 import com.backend.ord.domain.persistence.dto.OngoingGameDTO
 import com.backend.ord.domain.persistence.dto.UserDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
@@ -38,8 +38,7 @@ interface GameMockerBase<
     val mockingGameType: GameType
 
     // Class references:
-    val ongoingGameTypeReference: TypeReference<TOngoingGameDTO> // TODO: Remove this one
-    val apiResponseTypeReference: TypeReference<TAPIResponseDTO>
+    val apiResponseTypeRef: TypeReference<TAPIResponseDTO>
 
     // Dependencies:
     val mockMvc: MockMvc
@@ -122,7 +121,7 @@ interface GameMockerBase<
         val apiResponseBody = ControllerTestBase.Companion.getResponseBody(
             objectMapper,
             response,
-            typeReference = apiResponseTypeReference
+            typeReference = apiResponseTypeRef
         )
 
         @Suppress("UNCHECKED_CAST") val ongoingGameDTO = ongoingGameMapper.toDTO(

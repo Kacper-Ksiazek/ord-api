@@ -1,6 +1,7 @@
 package com.backend.ord.controllers.games
 
 import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.controllers.games.bases.GameControllerTestBase
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper

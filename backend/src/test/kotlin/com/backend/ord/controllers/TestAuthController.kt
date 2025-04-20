@@ -1,6 +1,7 @@
 package com.backend.ord.controllers
 
 import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.controllers.bases.ControllerTestBase
 import com.backend.ord.domain.persistence.dto.UserDTO
 import com.backend.ord.domain.persistence.entities.UserSession
 import com.backend.ord.domain.persistence.mappers.UserMapper

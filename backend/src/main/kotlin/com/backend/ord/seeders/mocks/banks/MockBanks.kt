@@ -36,9 +36,8 @@ class MockBanks(
         )
     }
 
-    override fun typeReference(): TypeReference<List<BankInJSON>> {
-        return object : TypeReference<List<BankInJSON>>() {}
-    }
+    override val jsonFileContentTypeRef: TypeReference<List<BankInJSON>> =
+        object : TypeReference<List<BankInJSON>>() {}
 
     fun seedFromJSONFile(
         user: User,

@@ -39,7 +39,6 @@ class MockDetailedWordsGPTTokensConsumption(
         )
     }
 
-    override fun typeReference(): TypeReference<List<DetailedWordTokensUsage>> {
-        return object : TypeReference<List<DetailedWordTokensUsage>>() {}
-    }
+    override val jsonFileContentTypeRef: TypeReference<List<DetailedWordTokensUsage>> =
+        object : TypeReference<List<DetailedWordTokensUsage>>() {}
 }

@@ -1,8 +1,8 @@
 package com.backend.ord.testing_utils.mocks.games
 
-import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
-import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
-import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
+import com.backend.ord.api.responses.games.bases.StartedWordsTypingGameResponse
+import com.backend.ord.domain.application.games.words_typing.WordsTypingInstruction
+import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.dto.UserDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
@@ -11,12 +11,13 @@ import com.backend.ord.repositories.OngoingGameRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
-import com.backend.ord.testing_utils.dto.resources.mocks.CrosswordInJson
+import com.backend.ord.testing_utils.dto.resources.mocks.WordsTypingGameInJson
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.test.web.servlet.MockMvc
 
-class CrosswordGameMocker(
+
+class WordsTypingGameMocker(
     override val mockMvc: MockMvc,
     override val userMapper: UserMapper,
     override val objectMapper: ObjectMapper,
@@ -25,39 +26,39 @@ class CrosswordGameMocker(
     override val ongoingGameRepository: OngoingGameRepository,
     override val wordMockFactory: WordMockFactory,
 ) : GameMockerBase<
-        CrosswordInJson,
-        OngoingCrosswordGameDTO,
-        CrosswordInstruction,
-        StartedCrosswordGameResponse
+        WordsTypingGameInJson,
+        OngoingWordsTypingGameDTO,
+        WordsTypingInstruction,
+        StartedWordsTypingGameResponse
         > {
     // Properties:
-    override val mockingGameType: GameType = GameType.CROSSWORD
-    override val pathToJsonFile: String = "mocks/games/crosswords.json"
+    override val mockingGameType: GameType = GameType.WORDS_TYPING
+    override val pathToJsonFile: String = "mocks/games/words_typing.json"
 
     // Classes & type references:
-    override val apiResponseTypeRef: TypeReference<StartedCrosswordGameResponse> =
-        object : TypeReference<StartedCrosswordGameResponse>() {}
+    override val apiResponseTypeRef: TypeReference<StartedWordsTypingGameResponse> =
+        object : TypeReference<StartedWordsTypingGameResponse>() {}
 
-    override val jsonFileContentTypeRef: TypeReference<List<CrosswordInJson>> =
-        object : TypeReference<List<CrosswordInJson>>() {}
+    override val jsonFileContentTypeRef: TypeReference<List<WordsTypingGameInJson>> =
+        object : TypeReference<List<WordsTypingGameInJson>>() {}
 
     // Dependencies:
     override val gameRequestFactory: GameRequestFactory = GameRequestFactory(objectMapper)
 
     override fun createOngoingGameDTO(
-        jsonData: CrosswordInJson,
+        jsonData: WordsTypingGameInJson,
         userDTO: UserDTO
-    ): OngoingCrosswordGameDTO {
-        return OngoingCrosswordGameDTO(
+    ): OngoingWordsTypingGameDTO {
+        return OngoingWordsTypingGameDTO(
             properAnswers = jsonData.properAnswers,
-            type = GameType.CROSSWORD,
+            type = GameType.WORDS_TYPING,
             language = jsonData.language,
             difficulty = jsonData.difficulty,
             user = userDTO
         )
     }
 
-    override fun getListOfUsedWords(ongoingGameDTO: OngoingCrosswordGameDTO): Set<String> {
-        return ongoingGameDTO.properAnswers.questions.values.toSet()
+    override fun getListOfUsedWords(ongoingGameDTO: OngoingWordsTypingGameDTO): Set<String> {
+        return ongoingGameDTO.properAnswers.values.toSet()
     }
 }

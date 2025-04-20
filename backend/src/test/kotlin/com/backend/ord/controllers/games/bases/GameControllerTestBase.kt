@@ -1,7 +1,7 @@
-package com.backend.ord.controllers.games
+package com.backend.ord.controllers.games.bases
 
 import com.backend.ord.config.properties.JwtProperties
-import com.backend.ord.controllers.ControllerTestBase
+import com.backend.ord.controllers.bases.ControllerTestBase
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.repositories.*

@@ -21,9 +21,8 @@ class MockWordsManuals(
         > {
     private lateinit var availableBanks: List<Bank>
 
-    override fun typeReference(): TypeReference<List<AIGeneratedWordManualInJSON>> {
-        return object : TypeReference<List<AIGeneratedWordManualInJSON>>() {}
-    }
+    override val jsonFileContentTypeRef: TypeReference<List<AIGeneratedWordManualInJSON>> =
+        object : TypeReference<List<AIGeneratedWordManualInJSON>>() {}
 
     override val pathToJsonFile: String = "mocks/words/ai_generated_words_manuals.json"
 

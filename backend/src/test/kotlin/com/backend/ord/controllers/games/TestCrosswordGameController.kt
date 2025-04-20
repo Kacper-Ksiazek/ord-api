@@ -6,6 +6,7 @@ import com.backend.ord.api.responses.games.FinishedCrosswordGameResponse
 import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.controllers.games.bases.GameControllerTestBase
 import com.backend.ord.domain.application.games.crossword.board.Coordinates
 import com.backend.ord.domain.application.games.crossword.board.CrosswordWordDirection
 import com.backend.ord.domain.application.games.crossword.getCoordinatesOfLetterAtIndex
