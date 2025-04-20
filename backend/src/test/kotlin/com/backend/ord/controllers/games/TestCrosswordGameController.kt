@@ -29,6 +29,7 @@ import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.dto.toRequestBody
 import com.backend.ord.testing_utils.extensions.mockAnswersWithMistakes
 import com.backend.ord.testing_utils.mocks.games.CrosswordGameMocker
+import com.backend.ord.testing_utils.mocks.games.GameMockerBase
 import com.backend.ord.utils.HIDDEN_CHARACTER
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -107,8 +108,8 @@ class TestCrosswordGameController @Autowired constructor(
             crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
 
             crosswordSavedInDb.type shouldBe GameType.CROSSWORD
-            crosswordSavedInDb.language shouldBe CrosswordDefaultValues.language
-            crosswordSavedInDb.difficulty shouldBe CrosswordDefaultValues.difficulty
+            crosswordSavedInDb.language shouldBe GameMockerBase.Companion.DefaultParams.language
+            crosswordSavedInDb.difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
 
             crosswordSavedInDb.user.id shouldBe authenticatedUser.userInfo.id
 
@@ -219,14 +220,15 @@ class TestCrosswordGameController @Autowired constructor(
         @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Positive {
             val authenticatedUser = mockAuthenticatedUser()
-            lateinit var crosswordSentToUser: StartedCrosswordGameResponse
+
             lateinit var crosswordSavedInDb: OngoingCrosswordGameDTO
+            lateinit var crosswordSentToUser: StartedCrosswordGameResponse
 
             @BeforeAll
             fun beforeAll() {
                 with(crosswordGameMocker.mockThroughApiFlow(authenticatedUser)) {
-                    crosswordSentToUser = second
                     crosswordSavedInDb = first
+                    crosswordSentToUser = second
                 }
             }
 
@@ -238,8 +240,8 @@ class TestCrosswordGameController @Autowired constructor(
             @Test
             fun `Game is properly saved in the DB`() {
                 crosswordSavedInDb.type shouldBe GameType.CROSSWORD
-                crosswordSavedInDb.language shouldBe CrosswordDefaultValues.language
-                crosswordSavedInDb.difficulty shouldBe CrosswordDefaultValues.difficulty
+                crosswordSavedInDb.language shouldBe GameMockerBase.Companion.DefaultParams.language
+                crosswordSavedInDb.difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
 
                 crosswordSavedInDb.user.id shouldBe authenticatedUser.userInfo.id
             }
@@ -930,10 +932,5 @@ class TestCrosswordGameController @Autowired constructor(
                 }
             }
         }
-    }
-
-    object CrosswordDefaultValues {
-        val language = LanguageName.ENGLISH
-        val difficulty = GameDifficulty.HARD
     }
 }

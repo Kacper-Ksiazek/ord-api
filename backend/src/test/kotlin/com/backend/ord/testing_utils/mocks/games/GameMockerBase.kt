@@ -50,6 +50,14 @@ interface GameMockerBase<
     val gameRequestFactory: GameRequestFactory
     val ongoingGameRepository: OngoingGameRepository
 
+    // Static
+    companion object {
+        object DefaultParams {
+            val language: LanguageName = LanguageName.ENGLISH
+            val difficulty: GameDifficulty = GameDifficulty.HARD
+        }
+    }
+
     /**
      * **FAST way** of mocking an ongoing game.
      * Loads predefined data from JSON file, saves it to the database and returns it.
@@ -99,8 +107,8 @@ interface GameMockerBase<
      */
     fun mockThroughApiFlow(
         authenticatedUser: MockedAuthenticatedUser,
-        difficulty: GameDifficulty = GameDifficulty.HARD,
-        language: LanguageName = LanguageName.ENGLISH,
+        difficulty: GameDifficulty = DefaultParams.difficulty,
+        language: LanguageName = DefaultParams.language
     ): Pair<TOngoingGameDTO, TAPIResponseDTO> {
         loadWordsFromResourceFile(
             user = userMapper.toEntity(authenticatedUser.userInfo),

@@ -10,6 +10,7 @@ import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.UserRepository
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
+import com.backend.ord.testing_utils.mocks.games.GameMockerBase
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.javafaker.Faker
@@ -73,7 +74,7 @@ abstract class ControllerTestBase(
         email: String = faker.internet().emailAddress(),
         nativeLanguage: LanguageName = LanguageName.ENGLISH,
         languages: Map<LanguageName, LanguageProficiencyLevel> = mapOf(
-            LanguageName.ENGLISH to LanguageProficiencyLevel.C1
+            GameMockerBase.Companion.DefaultParams.language to LanguageProficiencyLevel.C1
         ),
     ): MockedAuthenticatedUser {
         // Create a request
