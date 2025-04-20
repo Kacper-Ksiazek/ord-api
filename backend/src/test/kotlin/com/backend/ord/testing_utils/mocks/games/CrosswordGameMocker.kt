@@ -21,17 +21,19 @@ import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 
 class CrosswordGameMocker(
-    private val objectMapper: ObjectMapper,
-    private val userMapper: UserMapper,
-    private val wordRepository: WordRepository,
-    private val ongoingGameMapper: OngoingGameMapper,
-    private val ongoingGameRepository: OngoingGameRepository,
-    private val wordMockFactory: WordMockFactory,
     private val mockMvc: MockMvc,
+    private val objectMapper: ObjectMapper,
+
+    override val userMapper: UserMapper,
+    override val wordRepository: WordRepository,
+    override val ongoingGameMapper: OngoingGameMapper,
+    override val ongoingGameRepository: OngoingGameRepository,
+    override val wordMockFactory: WordMockFactory,
 ) : GameMockerBase<
         CrosswordInJson,
         OngoingCrosswordGameDTO,
@@ -45,43 +47,6 @@ class CrosswordGameMocker(
 
     override fun typeReference(): TypeReference<List<CrosswordInJson>> {
         return object : TypeReference<List<CrosswordInJson>>() {}
-    }
-
-    override fun mockFromJsonSource(
-        userDTO: UserDTO,
-        difficulty: GameDifficulty
-    ): Pair<OngoingCrosswordGameDTO, CrosswordInstruction> {
-        val (crosswordSavedInDb, crosswordInstruction) = loadDataFromJSONFile(userDTO)
-            .filter { it.first.difficulty == difficulty }
-            .random()
-            .let {
-                val savedOngoingGame = ongoingGameRepository.save(
-                    ongoingGameMapper.toEntity(it.first)
-                )
-
-                val updatedDTO = it.first.copy(id = savedOngoingGame.id)
-
-                Pair(updatedDTO, it.second)
-            }
-
-        val currentWords = wordRepository
-            .findAllForUser(userDTO.id)
-            .filter { it.translatedFrom == crosswordSavedInDb.language }
-            .map { it.origin }
-
-        wordRepository.saveAll(
-            crosswordSavedInDb.properAnswers.questions.values
-                .filter { it !in currentWords }
-                .map {
-                    wordMockFactory.mockEntity(
-                        origin = it,
-                        translatedFrom = crosswordSavedInDb.language,
-                        user = userMapper.toEntity(userDTO),
-                    )
-                }
-        )
-
-        return Pair(crosswordSavedInDb, crosswordInstruction)
     }
 
     override fun mockThroughApiFlow(
@@ -108,9 +73,7 @@ class CrosswordGameMocker(
             ControllerTestBase.Companion.getResponseBody<StartedCrosswordGameResponse>(objectMapper, response)
 
         val crosswordSavedInDb = ongoingGameMapper.toCrosswordDTO(
-            ongoingGameRepository
-                .findAllForUser(authenticatedUser.userInfo.id)
-                .first()
+            ongoingGameRepository.findByIdOrNull(crosswordSentToUser.gameId)!!
         )
 
         return Pair(
@@ -130,5 +93,9 @@ class CrosswordGameMocker(
             difficulty = jsonData.difficulty,
             user = userDTO
         )
+    }
+
+    override fun getListOfUsedWords(ongoingGameDTO: OngoingCrosswordGameDTO): Set<String> {
+        return ongoingGameDTO.properAnswers.questions.values.toSet()
     }
 }
