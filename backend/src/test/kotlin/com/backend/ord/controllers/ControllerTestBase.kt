@@ -35,11 +35,7 @@ abstract class ControllerTestBase(
 
     companion object {
         inline fun <reified T> getResponseBody(objectMapper: ObjectMapper, source: Any): T {
-            val content = when (source) {
-                is MvcResult -> source.response.contentAsString
-                is MockHttpServletResponse -> source.contentAsString
-                else -> throw IllegalArgumentException("Unsupported source type")
-            }
+            val content = extractContent(source)
 
             val result = objectMapper.readValue(content, object : TypeReference<T>() {})
 
@@ -48,6 +44,25 @@ abstract class ControllerTestBase(
 
             return result
         }
+
+        fun <T> getResponseBody(objectMapper: ObjectMapper, source: Any, clazz: Class<T>): T {
+            val content = extractContent(source)
+
+            val result = objectMapper.readValue(content, clazz)
+
+            requireNotNull(result) { "Failed to parse response body! The response body is empty" }
+
+            return result
+        }
+
+        fun extractContent(source: Any): String {
+            return when (source) {
+                is MvcResult -> source.response.contentAsString
+                is MockHttpServletResponse -> source.contentAsString
+                else -> throw IllegalArgumentException("Unsupported source type: ${source::class.simpleName}")
+            }
+        }
+
     }
 
     fun mockAuthenticatedUser(
@@ -104,5 +119,9 @@ abstract class ControllerTestBase(
 
     inline fun <reified T> getResponseBody(source: Any): T {
         return getResponseBody(objectMapper, source)
+    }
+
+    fun <T> getResponseBody(source: Any, clazz: Class<T>): T {
+        return getResponseBody(objectMapper, source, clazz)
     }
 }

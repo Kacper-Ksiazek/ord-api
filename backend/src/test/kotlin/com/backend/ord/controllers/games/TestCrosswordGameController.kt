@@ -268,6 +268,8 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `All words should be unique`() {
+                print(crosswordSavedInDb)
+
                 crosswordSavedInDb.properAnswers.questions.values.distinct().size shouldBe crosswordSentToUser.instruction.questions.size
             }
 
@@ -928,7 +930,6 @@ class TestCrosswordGameController @Autowired constructor(
             }
         }
     }
-
 
     object CrosswordDefaultValues {
         val language = LanguageName.ENGLISH
