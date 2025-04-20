@@ -72,7 +72,9 @@ abstract class ControllerTestBase(
     fun mockAuthenticatedUser(
         email: String = faker.internet().emailAddress(),
         nativeLanguage: LanguageName = LanguageName.ENGLISH,
-        languages: Map<LanguageName, LanguageProficiencyLevel> = mapOf(),
+        languages: Map<LanguageName, LanguageProficiencyLevel> = mapOf(
+            LanguageName.ENGLISH to LanguageProficiencyLevel.C1
+        ),
     ): MockedAuthenticatedUser {
         // Create a request
         val request = MockMvcRequestBuilders.post("/api/v1/auth/register")

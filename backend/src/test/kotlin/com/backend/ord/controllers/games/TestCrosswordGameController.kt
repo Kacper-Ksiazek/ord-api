@@ -936,12 +936,4 @@ class TestCrosswordGameController @Autowired constructor(
         val language = LanguageName.ENGLISH
         val difficulty = GameDifficulty.HARD
     }
-
-    private fun mockAuthenticatedUser(): MockedAuthenticatedUser {
-        return mockAuthenticatedUser(
-            languages = mapOf(
-                CrosswordDefaultValues.language to LanguageProficiencyLevel.C1
-            )
-        )
-    }
 }
