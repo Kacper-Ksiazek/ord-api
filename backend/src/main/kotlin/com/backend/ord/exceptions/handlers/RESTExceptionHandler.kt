@@ -2,6 +2,8 @@ package com.backend.ord.exceptions.handlers
 
 import com.backend.ord.api.responses.HTTPErrorResponse
 import com.backend.ord.exceptions.REST.*
+import com.backend.ord.utils.Console
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 
 @ControllerAdvice
 class RESTExceptionHandler {
+    val logger = LoggerFactory.getLogger(RESTExceptionHandler::class.java)
+
     @ExceptionHandler(
         BadRequestException::class,
         UnauthorizedException::class,
@@ -29,7 +33,9 @@ class RESTExceptionHandler {
     // Catch-all exception handler
     @ExceptionHandler(Exception::class)
     fun handleUncaughtException(e: Exception): ResponseEntity<HTTPErrorResponse> {
-        // TODO: Improve error logging
+        Console.printRed("\n\uD83D\uDEA8 [500] Internal Server Error: ${e.message}")
+        logger.error("Uncaught exception: ${e.message}", e)
+
         val errorResponse = HTTPErrorResponse(
             message = """
                 Unexpected error occurred
@@ -55,6 +61,9 @@ class RESTExceptionHandler {
             message = e.bindingResult.allErrors.joinToString { it.defaultMessage ?: "" },
             status = status
         )
+
+        Console.printRed("\n\uD83D\uDEA8 [$status] Exception: ${e.message}")
+        logger.error("Validation error: ${errorResponse.message}", e)
 
         return ResponseEntity.status(status).body(errorResponse)
     }
