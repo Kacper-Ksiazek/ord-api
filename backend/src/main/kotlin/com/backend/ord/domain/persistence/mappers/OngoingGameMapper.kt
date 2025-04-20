@@ -12,17 +12,11 @@ interface OngoingGameMapper : MapperBase<OngoingGame, OngoingGameDTO<*>> {
 
     fun toWordsTypingDTO(entity: OngoingGame): OngoingWordsTypingGameDTO
 
-    fun <T : OngoingGameDTO<*>> toDTO(entity: OngoingGame, clazz: Class<T>): T {
-        val dto: OngoingGameDTO<*> = when (entity.type) {
+    override fun toDTO(entity: OngoingGame): OngoingGameDTO<*> {
+        return when (entity.type) {
             GameType.CROSSWORD -> toCrosswordDTO(entity)
             GameType.WORDS_TYPING -> toWordsTypingDTO(entity)
             else -> throw IllegalArgumentException("Unsupported type: ${entity.type}")
         }
-
-        if (!clazz.isInstance(dto)) {
-            throw IllegalArgumentException("Expected type ${clazz.simpleName}, but got ${dto::class.simpleName}")
-        }
-
-        return clazz.cast(dto)
     }
 }

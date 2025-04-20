@@ -8,9 +8,9 @@ import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordPro
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
-import com.backend.ord.enums.persistence.game.GameType
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Component
+import kotlin.reflect.KClass
 
 @Component
 class OngoingGameMapperImpl(
@@ -19,19 +19,19 @@ class OngoingGameMapperImpl(
     val jsonObjectMapper = jacksonObjectMapper()
 
     override fun toCrosswordDTO(entity: OngoingGame): OngoingCrosswordGameDTO {
-        return entity.convertToCertainDTO(CrosswordProperAnswers::class.java)
+        return entity.convertToCertainDTO(CrosswordProperAnswers::class)
     }
 
     override fun toWordsTypingDTO(entity: OngoingGame): OngoingWordsTypingGameDTO {
-        return entity.convertToCertainDTO(WordsTypingProperAnswers::class.java)
+        return entity.convertToCertainDTO(WordsTypingProperAnswers::class)
     }
 
-    override fun toDTO(entity: OngoingGame): OngoingGameDTO<*> {
-        return when (entity.type) {
-            GameType.CROSSWORD -> toCrosswordDTO(entity)
-            else -> throw IllegalArgumentException("Invalid game type")
-        }
-    }
+//    override fun toDTO(entity: OngoingGame): OngoingGameDTO<*> {
+//        return when (entity.type) {
+//            GameType.CROSSWORD -> toCrosswordDTO(entity)
+//            else -> throw IllegalArgumentException("Invalid game type")
+//        }
+//    }
 
     override fun toEntity(dto: OngoingGameDTO<*>): OngoingGame {
         return OngoingGame(
@@ -47,10 +47,10 @@ class OngoingGameMapperImpl(
         )
     }
 
-    private fun <T> OngoingGame.convertToCertainDTO(clazz: Class<T>): OngoingGameDTO<T> {
+    private fun <T : Any> OngoingGame.convertToCertainDTO(clazz: KClass<T>): OngoingGameDTO<T> {
         return OngoingGameDTO<T>(
             id = id,
-            properAnswers = jsonObjectMapper.readValue(properAnswers, clazz),
+            properAnswers = jsonObjectMapper.readValue(properAnswers, clazz.java),
             type = type,
             language = language,
             difficulty = difficulty,

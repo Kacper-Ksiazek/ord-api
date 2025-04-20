@@ -45,10 +45,14 @@ abstract class ControllerTestBase(
             return result
         }
 
-        fun <T> getResponseBody(objectMapper: ObjectMapper, source: Any, clazz: Class<T>): T {
+        fun <T> getResponseBody(
+            objectMapper: ObjectMapper,
+            source: Any,
+            typeReference: TypeReference<T>
+        ): T {
             val content = extractContent(source)
 
-            val result = objectMapper.readValue(content, clazz)
+            val result = objectMapper.readValue(content, typeReference)
 
             requireNotNull(result) { "Failed to parse response body! The response body is empty" }
 
@@ -121,7 +125,7 @@ abstract class ControllerTestBase(
         return getResponseBody(objectMapper, source)
     }
 
-    fun <T> getResponseBody(source: Any, clazz: Class<T>): T {
-        return getResponseBody(objectMapper, source, clazz)
+    fun <T> getResponseBody(source: Any, typeReference: TypeReference<T>): T {
+        return getResponseBody(objectMapper, source, typeReference)
     }
 }

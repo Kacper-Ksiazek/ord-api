@@ -35,8 +35,11 @@ class CrosswordGameMocker(
     override val pathToJsonFile: String = "mocks/games/crosswords.json"
 
     // Classes & type references:
-    override val ongoingGameClass: Class<OngoingCrosswordGameDTO> = OngoingCrosswordGameDTO::class.java
-    override val apiResponseClass: Class<StartedCrosswordGameResponse> = StartedCrosswordGameResponse::class.java
+    override val ongoingGameTypeReference: TypeReference<OngoingCrosswordGameDTO> =
+        object : TypeReference<OngoingCrosswordGameDTO>() {}
+
+    override val apiResponseTypeReference: TypeReference<StartedCrosswordGameResponse> =
+        object : TypeReference<StartedCrosswordGameResponse>() {}
 
     override fun typeReference(): TypeReference<List<CrosswordInJson>> {
         return object : TypeReference<List<CrosswordInJson>>() {}

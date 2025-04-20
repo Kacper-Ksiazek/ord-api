@@ -18,6 +18,7 @@ import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.dto.resources.mocks.GameInJson
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import org.springframework.data.repository.findByIdOrNull
@@ -37,8 +38,8 @@ interface GameMockerBase<
     val mockingGameType: GameType
 
     // Class references:
-    val ongoingGameClass: Class<TOngoingGameDTO>
-    val apiResponseClass: Class<TAPIResponseDTO>
+    val ongoingGameTypeReference: TypeReference<TOngoingGameDTO> // TODO: Remove this one
+    val apiResponseTypeReference: TypeReference<TAPIResponseDTO>
 
     // Dependencies:
     val mockMvc: MockMvc
@@ -68,7 +69,8 @@ interface GameMockerBase<
 
                 val updatedDTO = it.first.copy(id = savedOngoingGame.id)
 
-                Pair(ongoingGameClass.cast(updatedDTO), it.second)
+                @Suppress("UNCHECKED_CAST")
+                Pair(updatedDTO as TOngoingGameDTO, it.second)
             }
 
         val currentWords = wordRepository
@@ -120,13 +122,12 @@ interface GameMockerBase<
         val apiResponseBody = ControllerTestBase.Companion.getResponseBody(
             objectMapper,
             response,
-            clazz = apiResponseClass
+            typeReference = apiResponseTypeReference
         )
 
-        val ongoingGameDTO = ongoingGameMapper.toDTO(
+        @Suppress("UNCHECKED_CAST") val ongoingGameDTO = ongoingGameMapper.toDTO(
             entity = ongoingGameRepository.findByIdOrNull(apiResponseBody.gameId)!!,
-            clazz = ongoingGameClass
-        )
+        ) as TOngoingGameDTO
 
         return Pair(
             ongoingGameDTO,
