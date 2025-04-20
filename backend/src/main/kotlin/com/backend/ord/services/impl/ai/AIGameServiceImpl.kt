@@ -51,7 +51,8 @@ class AIGameServiceImpl(
             wordsToUse = getWordsForGame(
                 user = user,
                 language = language,
-                difficulty.getNumberOfWordsForCrossword()
+                difficulty.getNumberOfWordsForCrossword(),
+                maximumWordLength = 18
             ).map { it.origin },
         )
 
@@ -155,11 +156,12 @@ class AIGameServiceImpl(
     private fun getWordsForGame(
         user: User,
         language: LanguageName,
-        n: Int
+        n: Int,
+        maximumWordLength: Int? = null,
     ): List<WordListItem> {
         // TODO: Generate a list of words using AI - plans for the future far far away
 
-        return wordService.findManyWords(
+        val words = wordService.findManyWords(
             user = user,
             language = language,
             perPage = 500,
@@ -168,12 +170,20 @@ class AIGameServiceImpl(
             completed = false
             // TODO: Add more filters
         ).data
-            .shuffled()
-            .take(n)
             .apply {
                 if (size < n) {
-                    throw BadRequestException("Not enough words to generate a crossword game")
+                    throw BadRequestException("Not enough words to generate a game")
                 }
             }
+            .shuffled()
+
+        return if (maximumWordLength != null) {
+            words
+                .take(2 * n)
+                .filter { it.origin.length <= maximumWordLength }
+                .take(n)
+        } else {
+            words.take(n)
+        }
     }
 }
