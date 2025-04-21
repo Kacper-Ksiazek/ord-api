@@ -8,9 +8,9 @@ import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordPro
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Component
-import kotlin.reflect.KClass
 
 @Component
 class OngoingGameMapperImpl(
@@ -19,11 +19,11 @@ class OngoingGameMapperImpl(
     val jsonObjectMapper = jacksonObjectMapper()
 
     override fun toCrosswordDTO(entity: OngoingGame): OngoingCrosswordGameDTO {
-        return entity.convertToCertainDTO(CrosswordProperAnswers::class)
+        return entity.convertToCertainDTO(object : TypeReference<CrosswordProperAnswers>() {})
     }
 
     override fun toWordsTypingDTO(entity: OngoingGame): OngoingWordsTypingGameDTO {
-        return entity.convertToCertainDTO(WordsTypingProperAnswers::class)
+        return entity.convertToCertainDTO(object : TypeReference<WordsTypingProperAnswers>() {})
     }
 
 //    override fun toDTO(entity: OngoingGame): OngoingGameDTO<*> {
@@ -47,10 +47,10 @@ class OngoingGameMapperImpl(
         )
     }
 
-    private fun <T : Any> OngoingGame.convertToCertainDTO(clazz: KClass<T>): OngoingGameDTO<T> {
-        return OngoingGameDTO<T>(
+    private fun <T : Any> OngoingGame.convertToCertainDTO(typeReference: TypeReference<T>): OngoingGameDTO<T> {
+        return OngoingGameDTO(
             id = id,
-            properAnswers = jsonObjectMapper.readValue(properAnswers, clazz.java),
+            properAnswers = jsonObjectMapper.readValue(properAnswers, typeReference),
             type = type,
             language = language,
             difficulty = difficulty,
