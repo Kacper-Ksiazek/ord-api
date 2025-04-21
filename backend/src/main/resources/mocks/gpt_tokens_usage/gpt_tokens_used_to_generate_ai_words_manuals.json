@@ -8,7 +8,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:00.592730Z"
   },
@@ -21,7 +21,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:03.670382Z"
   },
@@ -34,7 +34,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:06.452221Z"
   },
@@ -47,7 +47,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:09.557966Z"
   },
@@ -60,7 +60,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:13.905158Z"
   },
@@ -73,7 +73,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:17.008369Z"
   },
@@ -86,7 +86,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:20.757288Z"
   },
@@ -99,7 +99,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:23.700300Z"
   },
@@ -112,7 +112,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:26.127858Z"
   },
@@ -125,7 +125,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:30.097909Z"
   },
@@ -138,7 +138,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:34.242346Z"
   },
@@ -151,7 +151,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:38.540749Z"
   },
@@ -164,7 +164,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:40.787278Z"
   },
@@ -177,7 +177,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:43.523022Z"
   },
@@ -190,7 +190,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:46.609828Z"
   },
@@ -203,7 +203,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:50.086378Z"
   },
@@ -216,7 +216,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:52.718906Z"
   },
@@ -229,7 +229,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:55.498553Z"
   },
@@ -242,7 +242,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:53:58.435472Z"
   },
@@ -255,7 +255,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:01.847999Z"
   },
@@ -268,7 +268,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:05.025840Z"
   },
@@ -281,7 +281,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:07.653696Z"
   },
@@ -294,7 +294,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:12.306512Z"
   },
@@ -307,7 +307,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:17.978420Z"
   },
@@ -320,7 +320,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:21.460540Z"
   },
@@ -333,7 +333,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:24.071789Z"
   },
@@ -346,7 +346,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:27.254259Z"
   },
@@ -359,7 +359,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:30.828656Z"
   },
@@ -372,7 +372,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:33.483144Z"
   },
@@ -385,7 +385,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:37.148143Z"
   },
@@ -398,7 +398,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:40.531240Z"
   },
@@ -411,7 +411,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:43.581781Z"
   },
@@ -424,7 +424,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:47.430871Z"
   },
@@ -437,7 +437,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:50.829745Z"
   },
@@ -450,7 +450,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:55.034203Z"
   },
@@ -463,7 +463,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:54:58.291257Z"
   },
@@ -476,7 +476,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:55:01.117876Z"
   },
@@ -489,7 +489,7 @@
     "priceForMlnInputTokens": 0.15,
     "priceForMlnOutputTokens": 0.6,
     "translatedTo": "POLISH",
-    "translatedFrom": "ENGLISH",
+    "language": "ENGLISH",
     "consumptionType": "GENERATE_ENTIRE_MANUAL",
     "createdAt": "2024-10-27T18:55:04.153810Z"
   }

@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS word_tokens_usages
     user_id                     UUID                              REFERENCES users (id) ON DELETE SET NULL,
 
     word                        VARCHAR(255)                      NOT NULL,
-    translated_from             language_name                     NOT NULL,
+    language   language_name NOT NULL,
     translated_to               language_name                     NOT NULL,
 
     consumption_type            words_gpt_tokens_consumption_type NOT NULL,
@@ -31,11 +31,10 @@ CREATE TABLE IF NOT EXISTS game_tokens_usages
 
     user_id                     UUID                              REFERENCES users (id) ON DELETE SET NULL,
 
+    language   language_name NOT NULL,
     game_type                   game_type                         NOT NULL,
     game_difficulty             game_difficulty                   NOT NULL,
     consumption_type            games_gpt_tokens_consumption_type NOT NULL,
-    translated_from             language_name                     NOT NULL,
-    instruction_language        language_name                     NOT NULL,
 
     -- Number of Open AI tokens consumed
     input_tokens                INTEGER                           NOT NULL CHECK (input_tokens >= 0),
@@ -49,8 +48,8 @@ CREATE TABLE IF NOT EXISTS game_tokens_usages
     price_for_mln_output_tokens DECIMAL(20, 10)                   NOT NULL,
 
 
-    created_at                  TIMESTAMP WITH TIME ZONE                                                   DEFAULT CURRENT_TIMESTAMP,
-    updated_at                  TIMESTAMP WITH TIME ZONE                                                   DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS story_tokens_usages

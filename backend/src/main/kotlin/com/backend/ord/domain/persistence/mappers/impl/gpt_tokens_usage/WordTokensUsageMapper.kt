@@ -22,7 +22,7 @@ class WordTokensUsageMapper(
             priceForMlnOutputTokens = dto.priceForMlnOutputTokens,
 
             translatedTo = dto.translatedTo,
-            translatedFrom = dto.translatedFrom,
+            language = dto.language,
             consumptionType = dto.consumptionType,
 
             user = userMapper.toEntity(dto.user),
@@ -44,7 +44,7 @@ class WordTokensUsageMapper(
             priceForMlnOutputTokens = entity.priceForMlnOutputTokens,
 
             translatedTo = entity.translatedTo,
-            translatedFrom = entity.translatedFrom,
+            language = entity.language,
             consumptionType = entity.consumptionType,
 
             user = userMapper.toDTO(entity.user),

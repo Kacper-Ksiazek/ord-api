@@ -27,9 +27,9 @@ data class WordTokensUsage(
     @Enumerated(EnumType.STRING)
     val translatedTo: LanguageName,
 
-    @Column(name = "translated_from", nullable = false)
+    @Column(name = "language", nullable = false)
     @Enumerated(EnumType.STRING)
-    val translatedFrom: LanguageName,
+    val language: LanguageName,
 
     @Column(name = "input_tokens", nullable = false)
     val inputTokens: Int,

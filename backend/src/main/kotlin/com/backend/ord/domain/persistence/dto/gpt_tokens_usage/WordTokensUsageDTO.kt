@@ -18,8 +18,8 @@ data class WordTokensUsageDTO(
     val priceForMlnOutputTokens: BigDecimal,
 
 
+    var language: LanguageName,
     var translatedTo: LanguageName,
-    var translatedFrom: LanguageName,
     var consumptionType: WordsGPTTokensConsumptionType,
 
     val user: UserDTO,

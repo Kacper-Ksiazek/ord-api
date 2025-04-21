@@ -10,17 +10,16 @@ interface OpenAIAPIClientService {
     fun <T> makeGameRequest(
         clazz: Class<T>,
 
-        user: User,
         prompt: String,
+
         gameType: GameType,
+        language: LanguageName,
         difficulty: GameDifficulty,
-        leadingLanguage: LanguageName,
-        instructionLanguage: LanguageName,
         consumptionType: GamesGPTTokensConsumptionType,
 
-        validateResponseBody: (parsedResponseBody: T?) -> Boolean,
+        user: User,
 
         parseResponseBody: (responseBody: T) -> T = { it },
-
-        ): T
+        validateResponseBody: (parsedResponseBody: T?) -> Boolean,
+    ): T
 }

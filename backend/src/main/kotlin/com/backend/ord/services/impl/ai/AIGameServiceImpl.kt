@@ -64,8 +64,7 @@ class AIGameServiceImpl(
             user = user,
             prompt = prompt,
             difficulty = difficulty,
-            leadingLanguage = language,
-            instructionLanguage = languageProficiency.generativeContentLanguage,
+            language = language,
 
             gameType = GameType.CROSSWORD,
             consumptionType = GamesGPTTokensConsumptionType.GENERATE,
@@ -129,8 +128,7 @@ class AIGameServiceImpl(
             user = user,
             prompt = prompt,
             difficulty = difficulty,
-            leadingLanguage = language,
-            instructionLanguage = languageProficiency.generativeContentLanguage,
+            language = language,
 
             gameType = GameType.WORDS_TYPING,
             consumptionType = GamesGPTTokensConsumptionType.GENERATE,

@@ -32,7 +32,7 @@ class MockDetailedWordsGPTTokensConsumption(
             priceForMlnOutputTokens = jsonData.priceForMlnOutputTokens,
 
             translatedTo = jsonData.translatedTo,
-            translatedFrom = jsonData.translatedFrom,
+            language = jsonData.language,
             consumptionType = jsonData.consumptionType,
 
             user = user,

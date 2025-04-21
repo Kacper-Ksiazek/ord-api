@@ -27,20 +27,18 @@ class OpenAIAPIClientServiceImpl(
 
     override fun <T> makeGameRequest(
         clazz: Class<T>,
-
-        user: User,
         prompt: String,
+
         gameType: GameType,
+        language: LanguageName,
         difficulty: GameDifficulty,
-        leadingLanguage: LanguageName,
-        instructionLanguage: LanguageName,
         consumptionType: GamesGPTTokensConsumptionType,
 
-        validateResponseBody: (parsedResponseBody: T?) -> Boolean,
+        user: User,
 
-        parseResponseBody: (responseBody: T) -> T,
-
-        ): T {
+        parseResponseBody: (T) -> T,
+        validateResponseBody: (T?) -> Boolean
+    ): T {
         return makeRequest<T>(
             prompt = prompt,
             validateResponseBody = validateResponseBody,
@@ -51,8 +49,7 @@ class OpenAIAPIClientServiceImpl(
                     user = user,
 
                     gameDifficulty = difficulty,
-                    leadingLanguage = leadingLanguage,
-                    instructionLanguage = instructionLanguage,
+                    language = language,
 
                     gameType = gameType,
                     consumptionType = consumptionType,

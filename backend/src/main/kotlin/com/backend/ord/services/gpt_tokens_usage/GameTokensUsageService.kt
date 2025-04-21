@@ -13,9 +13,8 @@ interface GameTokensUsageService : TokensUsageServiceBase<GameTokensUsage, Games
         user: User,
 
         gameType: GameType,
-        leadingLanguage: LanguageName,
+        language: LanguageName,
         gameDifficulty: GameDifficulty,
-        instructionLanguage: LanguageName,
         consumptionType: GamesGPTTokensConsumptionType,
 
         inputTokens: Int,
