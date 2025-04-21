@@ -20,6 +20,7 @@ import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
+import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
@@ -247,7 +248,7 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             @Test
-            fun `Proper answers are properly saved in the DB`() {
+            fun `Proper answers are correctly saved in the DB`() {
                 crosswordSavedInDb.properAnswers.questions.size shouldBe crosswordSentToUser.instruction.questions.size
                 crosswordSavedInDb.properAnswers.finalWord.length shouldBe crosswordSentToUser.instruction.answer.length
 
@@ -261,7 +262,16 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `GPT use logs are properly saved in the DB`() {
-                gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id).size shouldBeGreaterThanOrEqualTo 1
+                val logs = gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id)
+
+                logs shouldHaveSize 1
+
+                with(logs.first()) {
+                    gameType shouldBe GameType.CROSSWORD
+                    language shouldBe GameMockerBase.Companion.DefaultParams.language
+                    gameDifficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
+                    consumptionType shouldBe GamesGPTTokensConsumptionType.GENERATE
+                }
             }
 
             @Test
