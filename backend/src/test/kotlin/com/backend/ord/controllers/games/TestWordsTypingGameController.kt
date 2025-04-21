@@ -7,6 +7,7 @@ import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.game.GameType
+import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
@@ -14,7 +15,9 @@ import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.testing_utils.mocks.games.GameMockerBase
 import com.backend.ord.testing_utils.mocks.games.WordsTypingGameMocker
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -86,6 +89,7 @@ class TestWordsTypingGameController @Autowired constructor(
         inner class Positive {
             val authenticatedUser = mockAuthenticatedUser()
 
+            var initialNumberOfLogs: Int = 0
             lateinit var gameSavedInDb: OngoingWordsTypingGameDTO
             lateinit var gameSentToUser: StartedWordsTypingGameResponse
 
@@ -104,13 +108,40 @@ class TestWordsTypingGameController @Autowired constructor(
 
             @Test
             fun `Game is properly saved in the DB`() {
-                gameSavedInDb.type shouldBe GameType.WORDS_TYPING
-                gameSavedInDb.language shouldBe GameMockerBase.Companion.DefaultParams.language
-                gameSavedInDb.difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
+                with(gameSavedInDb) {
+                    type shouldBe GameType.WORDS_TYPING
+                    language shouldBe GameMockerBase.Companion.DefaultParams.language
+                    difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
 
-                gameSavedInDb.user.id shouldBe authenticatedUser.userInfo.id
+                    user.id shouldBe authenticatedUser.userInfo.id
+                }
             }
 
+            @Test
+            fun `Proper answers are correctly saved in the DB`() {
+                gameSavedInDb.properAnswers.size shouldBe gameSentToUser.instruction.size
+
+                gameSavedInDb.properAnswers.entries.forEach { (questionId, answer) ->
+                    with(gameSentToUser.instruction.find { it.id == questionId }) {
+                        this shouldNotBe null
+                        this!!.word.length shouldBe answer.length
+                    }
+                }
+            }
+
+            @Test
+            fun `GPT use logs are properly saved in the DB`() {
+                val logs = gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id)
+
+                logs shouldHaveSize 1
+
+                with(logs.first()) {
+                    gameType shouldBe GameType.WORDS_TYPING
+                    language shouldBe GameMockerBase.Companion.DefaultParams.language
+                    gameDifficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
+                    consumptionType shouldBe GamesGPTTokensConsumptionType.GENERATE
+                }
+            }
         }
 
         @Nested
