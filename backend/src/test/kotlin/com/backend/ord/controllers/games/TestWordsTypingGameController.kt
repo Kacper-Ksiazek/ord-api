@@ -77,7 +77,7 @@ class TestWordsTypingGameController @Autowired constructor(
 
         @RepeatedTest(100)
         @Disabled("This test is disabled for automatic execution. Run manually when needed.")
-        fun `Crossword can be properly stared - function encapsulates the entire process`() {
+        fun `Words typing game can be properly stared - function encapsulates the entire process`() {
             TODO("Implement")
         }
 
@@ -89,7 +89,6 @@ class TestWordsTypingGameController @Autowired constructor(
         inner class Positive {
             val authenticatedUser = mockAuthenticatedUser()
 
-            var initialNumberOfLogs: Int = 0
             lateinit var gameSavedInDb: OngoingWordsTypingGameDTO
             lateinit var gameSentToUser: StartedWordsTypingGameResponse
 
@@ -98,6 +97,13 @@ class TestWordsTypingGameController @Autowired constructor(
                 with(wordsTypingGameMocker.mockThroughApiFlow(authenticatedUser)) {
                     gameSavedInDb = first
                     gameSentToUser = second
+                }
+            }
+
+            @Test
+            fun `All words should be unique`() {
+                with(gameSavedInDb.properAnswers.values) {
+                    this.distinct().size shouldBe this.size
                 }
             }
 
