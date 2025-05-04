@@ -402,8 +402,6 @@ class TestCrosswordGameController @Autowired constructor(
             fun `403 - Anonymous user cannot start a crossword game`() {
                 val request = gameRequestFactory.startGameRequest(
                     gameType = GameType.CROSSWORD,
-                    language = LanguageName.ENGLISH,
-                    difficulty = GameDifficulty.HARD,
                     authenticatedUser = null,
                 )
 
@@ -415,16 +413,10 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `400 - User with no words assigned cannot start a crossword game`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
-                    languages = mapOf(
-                        LanguageName.ENGLISH to LanguageProficiencyLevel.C1
-                    )
-                )
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 val request = gameRequestFactory.startGameRequest(
                     gameType = GameType.CROSSWORD,
-                    language = LanguageName.ENGLISH,
-                    difficulty = GameDifficulty.HARD,
                     authenticatedUser = authenticatedUser,
                 )
 
@@ -452,8 +444,6 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val request = gameRequestFactory.startGameRequest(
                     gameType = GameType.CROSSWORD,
-                    language = LanguageName.ENGLISH,
-                    difficulty = GameDifficulty.HARD,
                     authenticatedUser = authenticatedUser,
                 )
 
@@ -481,7 +471,6 @@ class TestCrosswordGameController @Autowired constructor(
                 val request = gameRequestFactory.startGameRequest(
                     gameType = GameType.CROSSWORD,
                     language = unknownForUserLanguage,
-                    difficulty = GameDifficulty.HARD,
                     authenticatedUser = authenticatedUser,
                 )
 
@@ -506,7 +495,6 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val request = gameRequestFactory.startGameRequest(
                     gameType = GameType.CROSSWORD,
-                    language = LanguageName.ENGLISH,
                     difficulty = null,
                     authenticatedUser = authenticatedUser,
                 )
@@ -533,7 +521,6 @@ class TestCrosswordGameController @Autowired constructor(
                 val request = gameRequestFactory.startGameRequest(
                     gameType = GameType.CROSSWORD,
                     language = null,
-                    difficulty = GameDifficulty.HARD,
                     authenticatedUser = authenticatedUser,
                 )
 
