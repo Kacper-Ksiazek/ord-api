@@ -822,6 +822,7 @@ class TestCrosswordGameController @Autowired constructor(
                 }
             }
 
+            // TODO: Move this to a reusable extension functions file
             private fun assertDBPointsWereUpdatedProperly(
                 response: FinishedCrosswordGameResponse,
                 alteredAnswers: Set<AlteredWordProperAnswer> = emptySet()
