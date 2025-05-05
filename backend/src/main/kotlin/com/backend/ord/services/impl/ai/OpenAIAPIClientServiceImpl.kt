@@ -12,6 +12,8 @@ import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionT
 import com.backend.ord.exceptions.REST.BadGatewayException
 import com.backend.ord.services.ai.OpenAIAPIClientService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
+import com.backend.ord.utils.Console
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Service
@@ -24,6 +26,8 @@ class OpenAIAPIClientServiceImpl(
     private val gameTokensUsageService: GameTokensUsageService,
 ) : OpenAIAPIClientService {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
+        .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
+
 
     override fun <T> makeGameRequest(
         clazz: Class<T>,
