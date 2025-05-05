@@ -1,8 +1,7 @@
 package com.backend.ord.testing_utils.api_requests_factories
 
 import com.backend.ord.api.requests.games.CancelGameRequest
-import com.backend.ord.api.requests.games.CrosswordUserAnswers
-import com.backend.ord.api.requests.games.UnsafeFinishCrosswordGameRequestData
+import com.backend.ord.api.requests.games.UnsafeFinishGameRequestData
 import com.backend.ord.api.requests.games.UnsafeStartGameRequestData
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
@@ -14,8 +13,20 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import java.util.*
 
+private fun GameType.getSlugName(): String {
+    return when (this) {
+        GameType.CROSSWORD -> "crossword"
+        GameType.WORDS_TYPING -> "words-typing"
+        else -> throw UnsupportedOperationException()
+    }
+}
+
 private fun GameType.getStartGameAPIUrl(): String {
-    return "/api/v1/games/${this.name.lowercase().replace('_', '-')}/start"
+    return "/api/v1/games/${this.getSlugName()}/start"
+}
+
+private fun GameType.getFinishGameAPIUrl(): String {
+    return "/api/v1/games/${this.getSlugName()}/finish"
 }
 
 class GameRequestFactory(
@@ -45,14 +56,15 @@ class GameRequestFactory(
             )
     }
 
-    fun finishCrosswordGameRequest(
+    fun <TUserAnswers> finishGameRequest(
+        gameType: GameType,
         authenticatedUser: MockedAuthenticatedUser? = null,
         gameId: UUID? = null,
         duration: String? = "02:30:00",
-        userAnswers: CrosswordUserAnswers? = null,
+        answers: TUserAnswers? = null,
     ): MockHttpServletRequestBuilder {
         return MockMvcRequestBuilders
-            .post("/api/v1/games/crossword/finish")
+            .post(gameType.getFinishGameAPIUrl())
             .apply {
                 if (authenticatedUser != null) this.cookie(authenticatedUser.authCookie)
             }
@@ -60,10 +72,10 @@ class GameRequestFactory(
             .contentType(MediaType.APPLICATION_JSON)
             .content(
                 objectMapper.writeValueAsString(
-                    UnsafeFinishCrosswordGameRequestData(
+                    UnsafeFinishGameRequestData(
                         gameId = gameId,
                         duration = duration,
-                        userAnswers = userAnswers
+                        answers = answers
                     )
                 )
             )

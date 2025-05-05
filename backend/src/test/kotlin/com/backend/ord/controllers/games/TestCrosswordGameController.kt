@@ -578,7 +578,8 @@ class TestCrosswordGameController @Autowired constructor(
                     numberOfProperAnswers
                 )
             ): FinishedCrosswordGameResponse {
-                val request = gameRequestFactory.finishCrosswordGameRequest(
+                val request = gameRequestFactory.finishGameRequest(
+                    gameType = GameType.CROSSWORD,
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
                     answers = CrosswordUserAnswers(
@@ -860,7 +861,8 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `403 - Anonymous user cannot finish a crossword game`() {
-                val request = gameRequestFactory.finishCrosswordGameRequest(
+                val request = gameRequestFactory.finishGameRequest(
+                    gameType = GameType.CROSSWORD,
                     authenticatedUser = null,
                     gameId = UUID.randomUUID(),
                     answers = CrosswordUserAnswers(
@@ -884,7 +886,8 @@ class TestCrosswordGameController @Autowired constructor(
                     difficulty = GameDifficulty.MEDIUM
                 ).first
 
-                val request = gameRequestFactory.finishCrosswordGameRequest(
+                val request = gameRequestFactory.finishGameRequest(
+                    gameType = GameType.CROSSWORD,
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
                     answers = CrosswordUserAnswers(
@@ -908,7 +911,8 @@ class TestCrosswordGameController @Autowired constructor(
                     difficulty = GameDifficulty.MEDIUM
                 ).first
 
-                val request = gameRequestFactory.finishCrosswordGameRequest(
+                val request = gameRequestFactory.finishGameRequest(
+                    gameType = GameType.CROSSWORD,
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
                     answers = CrosswordUserAnswers(
