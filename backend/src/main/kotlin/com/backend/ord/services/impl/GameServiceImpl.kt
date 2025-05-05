@@ -8,6 +8,7 @@ import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameResult
+import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.services.FinishedGameService
 import com.backend.ord.services.GameService
@@ -43,11 +44,11 @@ class GameServiceImpl(
 
     override fun completeGame(
         ongoingGame: OngoingGame,
-        finalScore: Int,
+        totalPoints: Int,
         duration: String
     ): FinishedGame {
         return finishedGameService.save(
-            ongoingGame.finish(finalScore, duration, GameResult.COMPLETED)
+            ongoingGame.finish(totalPoints, duration, GameResult.COMPLETED)
         ).let {
             val userId = it.user.id
 
@@ -66,12 +67,12 @@ class GameServiceImpl(
 
     override fun completeGame(
         ongoingGame: OngoingGameDTO<*>,
-        finalScore: Int,
+        totalPoints: Int,
         duration: String
     ) {
         completeGame(
             ongoingGame = ongoingGameMapper.toEntity(ongoingGame),
-            finalScore,
+            totalPoints,
             duration
         )
     }

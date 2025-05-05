@@ -109,7 +109,7 @@ class CrosswordGameController : GameControllerBase() {
         // 7. Update the game in the database
         gameService.completeGame(
             game = game,
-            finalScore = totalPoints,
+            totalPoints = totalPoints,
             duration = body.duration
         )
 
