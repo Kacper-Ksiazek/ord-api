@@ -1,20 +1,28 @@
 package com.backend.ord.controllers.games
 
+import com.backend.ord.api.requests.games.utils.WordUserAnswer
+import com.backend.ord.api.responses.games.FinishedWordsTypingGameResponse
 import com.backend.ord.api.responses.games.bases.StartedWordsTypingGameResponse
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.games.bases.GameControllerTestBase
 import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.backend.ord.enums.persistence.UserActivityType
+import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
+import com.backend.ord.testing_utils.extensions.assertUserActivityLogForCompletingGame
+import com.backend.ord.testing_utils.extensions.getPerfectAnswersForQuestions
 import com.backend.ord.testing_utils.mocks.games.GameMockerBase
 import com.backend.ord.testing_utils.mocks.games.WordsTypingGameMocker
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -23,6 +31,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
@@ -208,6 +218,131 @@ class TestWordsTypingGameController @Autowired constructor(
         @TestInstance(TestInstance.Lifecycle.PER_CLASS)
         @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Positive {
+            lateinit var authenticatedUser: MockedAuthenticatedUser
+            lateinit var gameSavedInDb: OngoingWordsTypingGameDTO
+
+            @BeforeEach
+            fun beforeAll() {
+                authenticatedUser = mockAuthenticatedUser()
+                gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(authenticatedUser.userInfo).first
+            }
+
+            @AfterEach
+            fun afterEach() {
+                userRepository.deleteById(authenticatedUser.userInfo.id)
+            }
+
+            private fun getPerfectAnswersForQuestions(
+                numberOfProperAnswers: Int? = null
+            ): Set<WordUserAnswer> {
+                return gameSavedInDb.properAnswers.getPerfectAnswersForQuestions(
+                    numberOfProperAnswers
+                )
+            }
+
+            private fun finishWordsTypingGame(
+                numberOfProperAnswers: Int? = null,
+                answers: Set<WordUserAnswer> = getPerfectAnswersForQuestions(
+                    numberOfProperAnswers
+                )
+            ): FinishedWordsTypingGameResponse {
+                val request = gameRequestFactory.finishGameRequest(
+                    gameType = GameType.WORDS_TYPING,
+                    authenticatedUser = authenticatedUser,
+                    gameId = gameSavedInDb.id,
+                    answers = answers
+                )
+
+                val response = mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.OK.value()
+                    it.response
+                }
+
+                response.status shouldBe HttpStatus.OK.value()
+
+                return getResponseBody<FinishedWordsTypingGameResponse>(response)
+            }
+
+            private fun assertUserActivityLogForCompletingCrossword(expectedType: UserActivityType) {
+                userActivityLogRepository.assertUserActivityLogForCompletingGame(
+                    expectedType = expectedType,
+
+                    userId = authenticatedUser.userInfo.id,
+                    language = gameSavedInDb.language,
+                    difficulty = gameSavedInDb.difficulty
+                )
+            }
+
+            @Test
+            fun `200 - Ongoing game should be removed and finished game should be created instead`() {
+                finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).shouldHaveSize(0)
+                ongoingGameRepository.findByIdOrNull(gameSavedInDb.id) shouldNotBe null
+
+                finishWordsTypingGame()
+
+                ongoingGameRepository.findByIdOrNull(gameSavedInDb.id) shouldBe null
+                finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).shouldHaveSize(1)
+            }
+
+            @Test
+            fun `200 - Proper user activity log should be assigned after completing the game flawlessly`() {
+                finishWordsTypingGame()
+
+                assertUserActivityLogForCompletingCrossword(UserActivityType.WORDS_TYPING_GAME_COMPLETED_FLAWLESSLY)
+            }
+
+            @Test
+            fun `200 - Proper user activity log should be assigned after completing the game with mistakes`() {
+                finishWordsTypingGame(
+                    numberOfProperAnswers = 9
+                )
+
+                assertUserActivityLogForCompletingCrossword(UserActivityType.WORDS_TYPING_GAME_COMPLETED_WITH_MISTAKES)
+            }
+
+            @Test
+            fun `200 - Grade can be achieved - S`() {
+                val response = finishWordsTypingGame()
+
+                response.finalScore shouldBe 100.0
+                response.grade shouldBe GameGrade.S
+            }
+
+            @Test
+            fun `200 - Grade can be achieved - A`() {
+                val response = finishWordsTypingGame(
+                    numberOfProperAnswers = 15
+                )
+
+                response.grade shouldBe GameGrade.A
+            }
+
+            @Test
+            fun `200 - Grade can be achieved - B`() {
+                val response = finishWordsTypingGame(
+                    numberOfProperAnswers = 12
+                )
+
+                response.grade shouldBe GameGrade.B
+            }
+
+            @Test
+            fun `200 - Grade can be achieved - C`() {
+                val response = finishWordsTypingGame(
+                    numberOfProperAnswers = 10
+                )
+
+                response.grade shouldBe GameGrade.C
+            }
+
+            @Test
+            fun `200 - Grade can be achieved - D`() {
+                val response = finishWordsTypingGame(
+                    numberOfProperAnswers = 0
+                )
+
+                response.grade shouldBe GameGrade.D
+            }
         }
 
         @Nested
