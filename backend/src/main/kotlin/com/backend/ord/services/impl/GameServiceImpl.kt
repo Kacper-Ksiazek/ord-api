@@ -18,9 +18,18 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 private fun FinishedGame.getUserActivityType(): UserActivityType {
-    return when (grade) {
-        GameGrade.S -> UserActivityType.CROSSWORD_GAME_COMPLETED_FLAWLESSLY
-        else -> UserActivityType.CROSSWORD_GAME_COMPLETED_WITH_MISTAKES
+    return when (type) {
+        GameType.CROSSWORD -> when (grade) {
+            GameGrade.S -> UserActivityType.CROSSWORD_GAME_COMPLETED_FLAWLESSLY
+            else -> UserActivityType.CROSSWORD_GAME_COMPLETED_WITH_MISTAKES
+        }
+
+        GameType.WORDS_TYPING -> when (grade) {
+            GameGrade.S -> UserActivityType.WORDS_TYPING_GAME_COMPLETED_FLAWLESSLY
+            else -> UserActivityType.WORDS_TYPING_GAME_COMPLETED_WITH_MISTAKES
+        }
+
+        else -> throw UnsupportedOperationException()
     }
 }
 
