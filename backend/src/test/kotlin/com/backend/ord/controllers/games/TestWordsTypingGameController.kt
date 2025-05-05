@@ -78,9 +78,50 @@ class TestWordsTypingGameController @Autowired constructor(
         @RepeatedTest(100)
         @Disabled("This test is disabled for automatic execution. Run manually when needed.")
         fun `Words typing game can be properly stared - function encapsulates the entire process`() {
-            TODO("Implement")
-        }
+            val authenticatedUser = mockAuthenticatedUser()
 
+            lateinit var gameSavedInDb: OngoingWordsTypingGameDTO
+            lateinit var gameSentToUser: StartedWordsTypingGameResponse
+
+            with(wordsTypingGameMocker.mockThroughApiFlow(authenticatedUser)) {
+                gameSavedInDb = first
+                gameSentToUser = second
+            }
+
+            with(gameSavedInDb.properAnswers.values) {
+                this.distinct().size shouldBe this.size
+            }
+
+            gameSavedInDb.id shouldBe gameSentToUser.gameId
+
+            with(gameSavedInDb) {
+                type shouldBe GameType.WORDS_TYPING
+                language shouldBe GameMockerBase.Companion.DefaultParams.language
+                difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
+
+                user.id shouldBe authenticatedUser.userInfo.id
+            }
+
+            gameSavedInDb.properAnswers.size shouldBe gameSentToUser.instruction.size
+
+            gameSavedInDb.properAnswers.entries.forEach { (questionId, answer) ->
+                with(gameSentToUser.instruction.find { it.id == questionId }) {
+                    this shouldNotBe null
+                    this!!.word.length shouldBe answer.length
+                }
+            }
+
+            val logs = gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id)
+
+            logs shouldNotHaveSize 0
+
+            logs.forEach {
+                it.gameType shouldBe GameType.WORDS_TYPING
+                it.consumptionType shouldBe GamesGPTTokensConsumptionType.GENERATE
+                it.language shouldBe GameMockerBase.Companion.DefaultParams.language
+                it.gameDifficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
+            }
+        }
 
         @Nested
         @DisplayName("Positive")
