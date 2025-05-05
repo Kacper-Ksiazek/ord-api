@@ -74,9 +74,17 @@ class WordsTypingGameController : GameControllerBase() {
             userAnswers = body.answers
         )
 
+        val totalPoints = reviewedQuestions.computeFinalScore()
+
+        gameService.completeGame(
+            game = game,
+            totalPoints = totalPoints,
+            duration = body.duration
+        )
+
         return ResponseEntity.ok(
             FinishedWordsTypingGameResponse(
-                totalPoints = reviewedQuestions.computeFinalScore(),
+                totalPoints = totalPoints,
                 properAnswers = reviewedQuestions
             )
         )
