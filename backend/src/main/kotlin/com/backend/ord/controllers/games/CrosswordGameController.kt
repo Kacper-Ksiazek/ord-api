@@ -82,7 +82,7 @@ class CrosswordGameController : GameControllerBase() {
             language = game.language,
             difficulty = game.difficulty,
             expectedAnswers = game.properAnswers.questions,
-            userAnswers = body.userAnswers.questionsAnswers,
+            userAnswers = body.answers.questions,
         )
 
         // 4. Compute points received from words forming a crossword
@@ -92,7 +92,7 @@ class CrosswordGameController : GameControllerBase() {
 
         // 5. Compute points received from the final word
         val reviewedFinalAnswer: AnswerScore = AnswerScore.Companion.reviewUserAnswer(
-            userAnswer = body.userAnswers.answer,
+            userAnswer = body.answers.finalWord,
             expectedAnswer = game.properAnswers.finalWord,
             difficulty = game.difficulty
         )
@@ -119,7 +119,7 @@ class CrosswordGameController : GameControllerBase() {
                 totalPoints = totalPoints,
                 properFinalWord = ProperAnswer(
                     expectedAnswer = game.properAnswers.finalWord,
-                    userAnswer = body.userAnswers.answer,
+                    userAnswer = body.answers.finalWord,
                     score = reviewedFinalAnswer
                 ),
                 properQuestionsAnswers = reviewedQuestions

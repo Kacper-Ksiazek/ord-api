@@ -550,9 +550,7 @@ class TestCrosswordGameController @Autowired constructor(
             @BeforeEach
             fun beforeEach() {
                 authenticatedUser = mockAuthenticatedUser()
-                crosswordGameMocker.mockFromJsonSource(authenticatedUser.userInfo).let {
-                    crosswordSavedInDb = it.first
-                }
+                crosswordSavedInDb = crosswordGameMocker.mockFromJsonSource(authenticatedUser.userInfo).first
             }
 
             @AfterEach
@@ -583,9 +581,9 @@ class TestCrosswordGameController @Autowired constructor(
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
-                    userAnswers = CrosswordUserAnswers(
-                        answer = finalWord,
-                        questionsAnswers = questionsAnswers
+                    answers = CrosswordUserAnswers(
+                        finalWord = finalWord,
+                        questions = questionsAnswers
                     )
                 )
 
@@ -865,9 +863,9 @@ class TestCrosswordGameController @Autowired constructor(
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = null,
                     gameId = UUID.randomUUID(),
-                    userAnswers = CrosswordUserAnswers(
-                        answer = "answer",
-                        questionsAnswers = emptySet()
+                    answers = CrosswordUserAnswers(
+                        finalWord = "answer",
+                        questions = emptySet()
                     )
                 )
 
@@ -889,9 +887,9 @@ class TestCrosswordGameController @Autowired constructor(
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
-                    userAnswers = CrosswordUserAnswers(
-                        answer = "answer",
-                        questionsAnswers = emptySet()
+                    answers = CrosswordUserAnswers(
+                        finalWord = "answer",
+                        questions = emptySet()
                     )
                 )
 
@@ -913,9 +911,9 @@ class TestCrosswordGameController @Autowired constructor(
                 val request = gameRequestFactory.finishCrosswordGameRequest(
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
-                    userAnswers = CrosswordUserAnswers(
-                        answer = "answer",
-                        questionsAnswers = setOf(
+                    answers = CrosswordUserAnswers(
+                        finalWord = "answer",
+                        questions = setOf(
                             WordUserAnswer(
                                 id = UUID.randomUUID(),
                                 word = "x".repeat(256)
