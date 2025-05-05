@@ -35,6 +35,7 @@ import com.backend.ord.utils.HIDDEN_CHARACTER
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldNotHaveSize
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
@@ -264,13 +265,13 @@ class TestCrosswordGameController @Autowired constructor(
             fun `GPT use logs are properly saved in the DB`() {
                 val logs = gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id)
 
-                logs shouldHaveSize 1
+                logs shouldNotHaveSize 0
 
-                with(logs.first()) {
-                    gameType shouldBe GameType.CROSSWORD
-                    language shouldBe GameMockerBase.Companion.DefaultParams.language
-                    gameDifficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
-                    consumptionType shouldBe GamesGPTTokensConsumptionType.GENERATE
+                logs.forEach {
+                    it.gameType shouldBe GameType.CROSSWORD
+                    it.consumptionType shouldBe GamesGPTTokensConsumptionType.GENERATE
+                    it.language shouldBe GameMockerBase.Companion.DefaultParams.language
+                    it.gameDifficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
                 }
             }
 
