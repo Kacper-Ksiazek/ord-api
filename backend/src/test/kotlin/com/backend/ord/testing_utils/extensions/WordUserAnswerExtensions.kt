@@ -50,4 +50,3 @@ fun Set<WordUserAnswer>.mockAnswersWithMistakes(
 
     return result.toSet()
 }
-

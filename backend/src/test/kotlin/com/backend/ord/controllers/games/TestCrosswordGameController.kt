@@ -28,6 +28,7 @@ import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.dto.toRequestBody
+import com.backend.ord.testing_utils.extensions.getPerfectAnswersForQuestions
 import com.backend.ord.testing_utils.extensions.mockAnswersWithMistakes
 import com.backend.ord.testing_utils.mocks.games.CrosswordGameMocker
 import com.backend.ord.testing_utils.mocks.games.GameMockerBase
@@ -561,14 +562,9 @@ class TestCrosswordGameController @Autowired constructor(
             private fun getPerfectAnswersForQuestions(
                 numberOfProperAnswers: Int? = null
             ): Set<WordUserAnswer> {
-                val limit = numberOfProperAnswers ?: crosswordSavedInDb.properAnswers.questions.size
-
-                return crosswordSavedInDb.properAnswers.questions.entries.mapIndexed { index, (questionId, answer) ->
-                    WordUserAnswer(
-                        id = questionId,
-                        word = if (index < limit) answer else "__invalid__"
-                    )
-                }.toSet()
+                return crosswordSavedInDb.properAnswers.questions.getPerfectAnswersForQuestions(
+                    numberOfProperAnswers
+                )
             }
 
             private fun finishCrosswordGame(
@@ -598,6 +594,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             private fun assertUserActivityLogForCompletingCrossword(expectedType: UserActivityType) {
                 val logs = userActivityLogRepository.findAllForUser(authenticatedUser.userInfo.id)
+
                 logs shouldHaveSize 1
 
                 logs.first().let {
