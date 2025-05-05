@@ -371,36 +371,6 @@
     ]
   },
   {
-    "origin": "though-out",
-    "translation": "pomimo",
-    "definition": "The word 'though' is used to indicate a contrast with something previously stated or understood.",
-    "type": "ADVERB",
-    "extraMark": null,
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH",
-    "isCompleted": false,
-    "isBookmarked": false,
-    "points": 0,
-    "useCases": [
-      "Used to introduce a concessive clause.",
-      "Used informally to add a non-essential element to a sentence."
-    ],
-    "exampleSentences": [
-      {
-        "sentence": "I love to travel, *though* I don't have much time.",
-        "translation": "Uwielbiam podróżować, *pomimo* że nie mam zbyt wiele czasu."
-      },
-      {
-        "sentence": "It was raining, *though* we still went for a walk.",
-        "translation": "Padał deszcz, *pomimo* że i tak poszliśmy na spacer."
-      },
-      {
-        "sentence": "I think the movie was good, *though* the ending was a bit predictable.",
-        "translation": "Myślę, że film był dobry, *pomimo* że zakończenie było nieco przewidywalne."
-      }
-    ]
-  },
-  {
     "origin": "paid-for",
     "translation": "płatny",
     "definition": "The term 'paid-for' refers to something that has been purchased or is compensated by payment.",
