@@ -90,7 +90,10 @@ class OpenAIAPIClientServiceImpl(
 
             parsedResponseBody = try {
                 parseResponseBody(jsonObjectMapper.readValue(response.data, clazz))
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                // TODO: Hide behind "debug" feature flag
+                Console.printRed("\n\uD83D\uDEA8 [OPENAI REQUEST PARSING ERROR] Exception: ${e.message}")
+                println(e)
                 null
             }
         } while (parsedResponseBody === null || !validateResponseBody(parsedResponseBody))
