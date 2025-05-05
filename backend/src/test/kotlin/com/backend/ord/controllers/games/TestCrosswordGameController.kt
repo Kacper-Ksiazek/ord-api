@@ -28,6 +28,7 @@ import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.dto.toRequestBody
+import com.backend.ord.testing_utils.extensions.assertUserActivityLogForCompletingGame
 import com.backend.ord.testing_utils.extensions.getPerfectAnswersForQuestions
 import com.backend.ord.testing_utils.extensions.mockAnswersWithMistakes
 import com.backend.ord.testing_utils.mocks.games.CrosswordGameMocker
@@ -593,16 +594,13 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             private fun assertUserActivityLogForCompletingCrossword(expectedType: UserActivityType) {
-                val logs = userActivityLogRepository.findAllForUser(authenticatedUser.userInfo.id)
+                userActivityLogRepository.assertUserActivityLogForCompletingGame(
+                    expectedType = expectedType,
 
-                logs shouldHaveSize 1
-
-                logs.first().let {
-                    it.type shouldBe expectedType
-                    it.language shouldBe crosswordSavedInDb.language
-                    it.points shouldBe expectedType.points
-                    it.gameDifficulty shouldBe crosswordSavedInDb.difficulty
-                }
+                    userId = authenticatedUser.userInfo.id,
+                    language = crosswordSavedInDb.language,
+                    difficulty = crosswordSavedInDb.difficulty
+                )
             }
 
             @Test
