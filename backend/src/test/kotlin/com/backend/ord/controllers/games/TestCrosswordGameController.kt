@@ -28,6 +28,7 @@ import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.dto.toRequestBody
+import com.backend.ord.testing_utils.extensions.assertDBPointsWereUpdatedProperly
 import com.backend.ord.testing_utils.extensions.assertUserActivityLogForCompletingGame
 import com.backend.ord.testing_utils.extensions.getPerfectAnswersForQuestions
 import com.backend.ord.testing_utils.extensions.mockAnswersWithMistakes
@@ -822,32 +823,17 @@ class TestCrosswordGameController @Autowired constructor(
                 }
             }
 
-            // TODO: Move this to a reusable extension functions file
             private fun assertDBPointsWereUpdatedProperly(
                 response: FinishedCrosswordGameResponse,
                 alteredAnswers: Set<AlteredWordProperAnswer> = emptySet()
             ) {
-                val wordsUsedInGame = wordRepository.findAllWordByTheirOrigins(
-                    origins = crosswordSavedInDb.properAnswers.questions.values.toSet(),
+                wordRepository.assertDBPointsWereUpdatedProperly(
+                    words = crosswordSavedInDb.properAnswers.questions.values.toSet(),
                     language = crosswordSavedInDb.language,
-                    userId = authenticatedUser.userInfo.id
+                    userId = authenticatedUser.userInfo.id,
+                    response = response,
+                    alteredAnswers = alteredAnswers
                 )
-
-                wordsUsedInGame shouldHaveSize crosswordSavedInDb.properAnswers.questions.size
-
-                response.properQuestionsAnswers.forEach {
-                    val correspondingWordEntity =
-                        wordsUsedInGame.find { word -> word.origin.lowercase() == it.expectedAnswer.lowercase() }
-                    val correspondingAlteredAnswer: AlteredWordProperAnswer? = alteredAnswers.find { alteredAnswer ->
-                        alteredAnswer.questionId == it.id
-                    }
-
-                    correspondingWordEntity!!.points shouldBe it.score.dbPoints
-
-                    if (correspondingAlteredAnswer != null) {
-                        correspondingAlteredAnswer.desiredScore shouldBe it.score
-                    }
-                }
             }
         }
 
