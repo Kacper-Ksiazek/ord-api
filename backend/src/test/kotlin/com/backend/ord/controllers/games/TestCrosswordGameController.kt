@@ -28,10 +28,7 @@ import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.dto.toRequestBody
-import com.backend.ord.testing_utils.extensions.assertDBPointsWereUpdatedProperly
-import com.backend.ord.testing_utils.extensions.assertUserActivityLogForCompletingGame
-import com.backend.ord.testing_utils.extensions.getPerfectAnswersForQuestions
-import com.backend.ord.testing_utils.extensions.mockAnswersWithMistakes
+import com.backend.ord.testing_utils.extensions.*
 import com.backend.ord.testing_utils.mocks.games.CrosswordGameMocker
 import com.backend.ord.testing_utils.mocks.games.GameMockerBase
 import com.backend.ord.utils.HIDDEN_CHARACTER
@@ -604,6 +601,27 @@ class TestCrosswordGameController @Autowired constructor(
                 )
             }
 
+
+            private fun assertPointsForMistakesWereAssignedProperly(
+                response: FinishedCrosswordGameResponse,
+                alteredAnswers: Set<AlteredWordProperAnswer>
+            ) {
+                response.properQuestionsAnswers.assertPointsForMistakesWereAssignedProperly(alteredAnswers)
+            }
+
+            private fun assertDBPointsWereUpdatedProperly(
+                response: FinishedCrosswordGameResponse,
+                alteredAnswers: Set<AlteredWordProperAnswer> = emptySet()
+            ) {
+                wordRepository.assertDBPointsWereUpdatedProperly(
+                    words = crosswordSavedInDb.properAnswers.questions.values.toSet(),
+                    language = crosswordSavedInDb.language,
+                    userId = authenticatedUser.userInfo.id,
+                    response = response,
+                    alteredAnswers = alteredAnswers
+                )
+            }
+
             @Test
             fun `200 - Ongoing game should be removed and finished game should be created instead`() {
                 finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).shouldHaveSize(0)
@@ -808,32 +826,6 @@ class TestCrosswordGameController @Autowired constructor(
                         it.points shouldBeGreaterThanOrEqual GamesConfig.Points.COMPLETE_WORD_THRESHOLD
                         it.isCompleted shouldBe true
                     }
-            }
-
-            private fun assertPointsForMistakesWereAssignedProperly(
-                response: FinishedCrosswordGameResponse,
-                alteredAnswers: Set<AlteredWordProperAnswer>
-            ) {
-                response.properQuestionsAnswers.forEach { properAnswer ->
-                    val alteredAnswer = alteredAnswers.find { it.questionId == properAnswer.id }
-                    if (alteredAnswer == null) return@forEach
-
-                    properAnswer.expectedAnswer shouldBe alteredAnswer.originalAnswer
-                    properAnswer.score shouldBe alteredAnswer.desiredScore
-                }
-            }
-
-            private fun assertDBPointsWereUpdatedProperly(
-                response: FinishedCrosswordGameResponse,
-                alteredAnswers: Set<AlteredWordProperAnswer> = emptySet()
-            ) {
-                wordRepository.assertDBPointsWereUpdatedProperly(
-                    words = crosswordSavedInDb.properAnswers.questions.values.toSet(),
-                    language = crosswordSavedInDb.language,
-                    userId = authenticatedUser.userInfo.id,
-                    response = response,
-                    alteredAnswers = alteredAnswers
-                )
             }
         }
 
