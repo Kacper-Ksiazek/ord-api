@@ -19,6 +19,7 @@ import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.dto.toRequestBody
@@ -41,6 +42,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import java.util.*
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -493,6 +496,77 @@ class TestWordsTypingGameController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
 
+            internal fun GameRequestFactory.finishGameRequest(
+                gameId: UUID,
+                authenticatedUser: MockedAuthenticatedUser?,
+                answers: Set<WordUserAnswer> = emptySet()
+            ): MockHttpServletRequestBuilder {
+                return finishGameRequest(
+                    gameType = GameType.WORDS_TYPING,
+                    authenticatedUser = authenticatedUser,
+                    gameId = gameId,
+                    answers = answers
+                )
+            }
+
+            @Test
+            fun `403 - Anonymous user cannot finish a words typing game`() {
+                val request = gameRequestFactory.finishGameRequest(
+                    authenticatedUser = null,
+                    gameId = UUID.randomUUID(),
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `404 - User cannot finish a game that does not belong to them`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(
+                    userDTO = userMapper.toDTO(userSeeder.seedOneEntity()),
+                    difficulty = GameDifficulty.MEDIUM
+                ).first
+
+                val request = gameRequestFactory.finishGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = gameSavedInDb.id,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - Crossword cannot be finished with user answer to single word over 255 characters long`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(
+                    userDTO = userMapper.toDTO(userSeeder.seedOneEntity()),
+                    difficulty = GameDifficulty.MEDIUM
+                ).first
+
+                val request = gameRequestFactory.finishGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = gameSavedInDb.id,
+                    answers = setOf(
+                        WordUserAnswer(
+                            id = UUID.randomUUID(),
+                            word = "x".repeat(256)
+                        )
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
         }
     }
 }

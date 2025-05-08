@@ -35,7 +35,6 @@ data class CrosswordUserAnswers(
 )
 
 typealias CrosswordToFinishRequest = FinishGameRequestData<CrosswordUserAnswers>
-typealias UnsafeCrosswordToFinishRequest = UnsafeFinishGameRequestData<CrosswordUserAnswers>
 
-
+typealias WordsTypingToFinishRequest = FinishGameRequestData<Set<WordUserAnswer>>
 

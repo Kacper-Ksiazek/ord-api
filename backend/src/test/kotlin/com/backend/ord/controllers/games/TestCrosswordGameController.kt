@@ -25,6 +25,7 @@ import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.dto.toRequestBody
@@ -51,6 +52,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import java.util.*
 
 
@@ -831,17 +833,27 @@ class TestCrosswordGameController @Autowired constructor(
         @Nested
         @DisplayName("Negative")
         inner class Negative {
+            internal fun GameRequestFactory.finishGameRequest(
+                gameId: UUID,
+                authenticatedUser: MockedAuthenticatedUser?,
+                answers: CrosswordUserAnswers = CrosswordUserAnswers(
+                    finalWord = "answer",
+                    questions = emptySet()
+                )
+            ): MockHttpServletRequestBuilder {
+                return finishGameRequest(
+                    gameType = GameType.CROSSWORD,
+                    authenticatedUser = authenticatedUser,
+                    gameId = gameId,
+                    answers = answers
+                )
+            }
 
             @Test
             fun `403 - Anonymous user cannot finish a crossword game`() {
                 val request = gameRequestFactory.finishGameRequest(
-                    gameType = GameType.CROSSWORD,
                     authenticatedUser = null,
                     gameId = UUID.randomUUID(),
-                    answers = CrosswordUserAnswers(
-                        finalWord = "answer",
-                        questions = emptySet()
-                    )
                 )
 
                 mockMvc.perform(request).andReturn().let {
@@ -860,13 +872,8 @@ class TestCrosswordGameController @Autowired constructor(
                 ).first
 
                 val request = gameRequestFactory.finishGameRequest(
-                    gameType = GameType.CROSSWORD,
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
-                    answers = CrosswordUserAnswers(
-                        finalWord = "answer",
-                        questions = emptySet()
-                    )
                 )
 
                 mockMvc.perform(request).andReturn().let {
@@ -885,7 +892,6 @@ class TestCrosswordGameController @Autowired constructor(
                 ).first
 
                 val request = gameRequestFactory.finishGameRequest(
-                    gameType = GameType.CROSSWORD,
                     authenticatedUser = authenticatedUser,
                     gameId = crosswordSavedInDb.id,
                     answers = CrosswordUserAnswers(
