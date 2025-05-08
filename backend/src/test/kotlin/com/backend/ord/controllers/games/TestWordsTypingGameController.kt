@@ -3,12 +3,15 @@ package com.backend.ord.controllers.games
 import com.backend.ord.api.requests.games.utils.WordUserAnswer
 import com.backend.ord.api.responses.games.FinishedWordsTypingGameResponse
 import com.backend.ord.api.responses.games.bases.StartedWordsTypingGameResponse
+import com.backend.ord.config.GamesConfig
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.games.bases.GameControllerTestBase
 import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.UserActivityType
+import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
@@ -16,14 +19,16 @@ import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
-import com.backend.ord.testing_utils.extensions.assertUserActivityLogForCompletingGame
-import com.backend.ord.testing_utils.extensions.getPerfectAnswersForQuestions
+import com.backend.ord.testing_utils.dto.toRequestBody
+import com.backend.ord.testing_utils.extensions.*
 import com.backend.ord.testing_utils.mocks.games.GameMockerBase
 import com.backend.ord.testing_utils.mocks.games.WordsTypingGameMocker
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotHaveSize
+import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
@@ -273,6 +278,26 @@ class TestWordsTypingGameController @Autowired constructor(
                 )
             }
 
+            private fun assertPointsForMistakesWereAssignedProperly(
+                response: FinishedWordsTypingGameResponse,
+                alteredAnswers: Set<AlteredWordProperAnswer>
+            ) {
+                response.properAnswers.assertPointsForMistakesWereAssignedProperly(alteredAnswers)
+            }
+
+            private fun assertDBPointsWereUpdatedProperly(
+                response: FinishedWordsTypingGameResponse,
+                alteredAnswers: Set<AlteredWordProperAnswer> = emptySet()
+            ) {
+                wordRepository.assertDBPointsWereUpdatedProperly(
+                    words = gameSavedInDb.properAnswers.values.toSet(),
+                    language = gameSavedInDb.language,
+                    userId = authenticatedUser.userInfo.id,
+                    properAnswers = response.properAnswers,
+                    alteredAnswers = alteredAnswers
+                )
+            }
+
             @Test
             fun `200 - Ongoing game should be removed and finished game should be created instead`() {
                 finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).shouldHaveSize(0)
@@ -342,6 +367,125 @@ class TestWordsTypingGameController @Autowired constructor(
                 )
 
                 response.grade shouldBe GameGrade.D
+            }
+
+            @Test
+            fun `200 - Mistakes in user's answer should be corrected properly`() {
+                val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+
+                val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
+                    mistakes = mapOf(
+                        AnswerScore.INCORRECT to 3,
+                    )
+                )
+
+                val response = finishWordsTypingGame(
+                    answers = alteredAnswers.toRequestBody(perfectAnswers)
+                )
+
+                assertPointsForMistakesWereAssignedProperly(response, alteredAnswers)
+            }
+
+            @Test
+            fun `200 - Points should be properly assigned - CORRECT`() {
+                val response = finishWordsTypingGame()
+
+                assertDBPointsWereUpdatedProperly(response)
+            }
+
+            @Test
+            fun `200 - Points should be properly assigned - HALF_CORRECT`() {
+                val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+
+                val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
+                    mistakes = mapOf(
+                        AnswerScore.HALF_CORRECT to 3,
+                    )
+                )
+
+                val response = finishWordsTypingGame(
+                    answers = alteredAnswers.toRequestBody(perfectAnswers)
+                )
+
+                assertDBPointsWereUpdatedProperly(response)
+            }
+
+            @Test
+            fun `200 - Points should be properly assigned - INCORRECT`() {
+                val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+
+                val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
+                    mistakes = mapOf(
+                        AnswerScore.INCORRECT to 3,
+                    )
+                )
+
+                val response = finishWordsTypingGame(
+                    answers = alteredAnswers.toRequestBody(perfectAnswers)
+                )
+
+                assertDBPointsWereUpdatedProperly(response)
+            }
+
+            @Test
+            fun `200 - Points should be properly assigned - both HALF_CORRECT and INCORRECT`() {
+                gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(
+                    userDTO = authenticatedUser.userInfo,
+                    difficulty = GameDifficulty.MEDIUM
+                ).first
+
+                val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+
+                val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
+                    mistakes = mapOf(
+                        AnswerScore.HALF_CORRECT to 3,
+                        AnswerScore.INCORRECT to 3,
+                    )
+                )
+
+                val response = finishWordsTypingGame(
+                    answers = alteredAnswers.toRequestBody(perfectAnswers)
+                )
+
+                assertDBPointsWereUpdatedProperly(response)
+            }
+
+            @Test
+            fun `200 - Words can be marked as completed`() {
+                gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(
+                    userDTO = authenticatedUser.userInfo,
+                    difficulty = GameDifficulty.MEDIUM
+                ).first
+
+                wordRepository.saveAll(
+                    wordRepository.findAllForUser(authenticatedUser.userInfo.id).map {
+                        it.copy(
+                            points = GamesConfig.Points.COMPLETE_WORD_THRESHOLD - 1
+                        )
+                    }
+                )
+
+                val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
+
+                val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
+                    mistakes = mapOf(
+                        AnswerScore.HALF_CORRECT to 3,
+                    )
+                )
+
+                finishWordsTypingGame(
+                    answers = alteredAnswers.toRequestBody(perfectAnswers)
+                )
+
+                val wordsUsedInGame = perfectAnswers.map { it.word }
+
+                wordRepository
+                    .findAllForUser(authenticatedUser.userInfo.id)
+                    .filter { it.origin in wordsUsedInGame }
+                    .forEach {
+                        it.points shouldBeGreaterThanOrEqual GamesConfig.Points.COMPLETE_WORD_THRESHOLD
+                        it.isCompleted shouldBe true
+                    }
             }
         }
 
