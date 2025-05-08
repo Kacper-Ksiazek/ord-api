@@ -17,7 +17,7 @@ fun Map<UUID, String>.getPerfectAnswersForQuestions(
     return this.entries.mapIndexed { index, (questionId, answer) ->
         WordUserAnswer(
             id = questionId,
-            word = if (index < limit) answer else "__invalid__"
+            answer = if (index < limit) answer else "__invalid__"
         )
     }.toSet()
 }

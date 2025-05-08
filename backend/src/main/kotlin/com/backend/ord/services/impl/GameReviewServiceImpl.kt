@@ -37,13 +37,13 @@ class GameReviewServiceImpl(
             val score = AnswerScore.Companion.reviewUserAnswer(
                 difficulty = difficulty,
                 expectedAnswer = expectedAnswer,
-                userAnswer = userAnswer?.word
+                userAnswer = userAnswer?.answer
             )
 
             return@map IdentifiableProperAnswer(
                 id = questionId,
                 expectedAnswer = expectedAnswer,
-                userAnswer = userAnswer?.word,
+                userAnswer = userAnswer?.answer,
                 score = score
             )
         }.toSet()

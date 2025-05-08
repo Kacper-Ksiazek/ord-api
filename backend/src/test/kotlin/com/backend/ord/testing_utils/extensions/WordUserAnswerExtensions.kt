@@ -7,8 +7,8 @@ import jakarta.validation.constraints.Min
 
 private fun WordUserAnswer.makeArtificialMistake(desiredResult: AnswerScore): AlteredWordProperAnswer {
     val alteredAnswer = when (desiredResult) {
-        AnswerScore.INCORRECT -> "x".repeat(word.length)
-        AnswerScore.HALF_CORRECT -> "x${word.drop(1)}"
+        AnswerScore.INCORRECT -> "x".repeat(answer.length)
+        AnswerScore.HALF_CORRECT -> "x${answer.drop(1)}"
         else -> {
             throw IllegalArgumentException("desiredResult must to be either INCORRECT or HALF_CORRECT")
         }
@@ -16,7 +16,7 @@ private fun WordUserAnswer.makeArtificialMistake(desiredResult: AnswerScore): Al
 
     return AlteredWordProperAnswer(
         questionId = id,
-        originalAnswer = word,
+        originalAnswer = answer,
         alteredAnswer = alteredAnswer,
         desiredScore = desiredResult
     )

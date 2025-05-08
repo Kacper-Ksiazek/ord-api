@@ -17,6 +17,6 @@ fun Set<AlteredWordProperAnswer>.toRequestBody(perfectAnswers: Set<WordUserAnswe
         val correspondingAlteredAnswer = find { it.questionId == answer.id }
 
         return@map if (correspondingAlteredAnswer == null) answer
-        else answer.copy(word = correspondingAlteredAnswer.alteredAnswer)
+        else answer.copy(answer = correspondingAlteredAnswer.alteredAnswer)
     }.toSet()
 }

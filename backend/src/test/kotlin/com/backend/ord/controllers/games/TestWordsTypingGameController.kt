@@ -617,7 +617,7 @@ class TestWordsTypingGameController @Autowired constructor(
                     answers = alteredAnswers.toRequestBody(perfectAnswers)
                 )
 
-                val wordsUsedInGame = perfectAnswers.map { it.word }
+                val wordsUsedInGame = perfectAnswers.map { it.answer }
 
                 wordRepository
                     .findAllForUser(authenticatedUser.userInfo.id)
@@ -694,7 +694,7 @@ class TestWordsTypingGameController @Autowired constructor(
                     answers = setOf(
                         WordUserAnswer(
                             id = UUID.randomUUID(),
-                            word = "x".repeat(256)
+                            answer = "x".repeat(256)
                         )
                     )
                 )
