@@ -14,6 +14,8 @@ import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameType
+import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
@@ -26,6 +28,7 @@ import com.backend.ord.testing_utils.dto.toRequestBody
 import com.backend.ord.testing_utils.extensions.*
 import com.backend.ord.testing_utils.mocks.games.GameMockerBase
 import com.backend.ord.testing_utils.mocks.games.WordsTypingGameMocker
+import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotHaveSize
@@ -212,7 +215,141 @@ class TestWordsTypingGameController @Autowired constructor(
         @Nested
         @DisplayName("Negative")
         inner class Negative {
-            // TODO
+
+            internal fun GameRequestFactory.startGameRequest(
+                authenticatedUser: MockedAuthenticatedUser?,
+                language: LanguageName? = LanguageName.ENGLISH,
+                difficulty: GameDifficulty? = GameDifficulty.HARD,
+            ): MockHttpServletRequestBuilder {
+                return startGameRequest(
+                    gameType = GameType.WORDS_TYPING,
+                    language = language,
+                    difficulty = difficulty,
+                    authenticatedUser = authenticatedUser
+                )
+            }
+
+            @Test
+            fun `403 - Anonymous user cannot start a words typing game`() {
+                val request = gameRequestFactory.startGameRequest(
+                    authenticatedUser = null,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - User with no words assigned cannot start a crossword game`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val request = gameRequestFactory.startGameRequest(
+                    authenticatedUser = authenticatedUser,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - User with insufficient number of words assigned cannot start a crossword game`() {
+                val requiredNumberOfWords = 12
+
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                loadWordsFromResourceFile(
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    wordsRepository = wordRepository,
+                    numberOfWordsToLoad = requiredNumberOfWords - 1
+                )
+
+                val request = gameRequestFactory.startGameRequest(
+                    authenticatedUser = authenticatedUser,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - User with no proficiency in the language cannot start a crossword game`() {
+                val unknownForUserLanguage = LanguageName.ITALIAN
+
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(
+                        LanguageName.ENGLISH to LanguageProficiencyLevel.A1
+                    )
+                )
+
+                loadWordsFromResourceFile(
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    wordsRepository = wordRepository
+                )
+
+                val request = gameRequestFactory.startGameRequest(
+                    language = unknownForUserLanguage,
+                    authenticatedUser = authenticatedUser,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - Cannot start a game without providing difficulty`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(
+                        LanguageName.ENGLISH to LanguageProficiencyLevel.C1
+                    )
+                )
+
+                loadWordsFromResourceFile(
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    wordsRepository = wordRepository
+                )
+
+                val request = gameRequestFactory.startGameRequest(
+                    difficulty = null,
+                    authenticatedUser = authenticatedUser,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - Cannot start a game without providing language`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(
+                        LanguageName.ENGLISH to LanguageProficiencyLevel.C1
+                    )
+                )
+
+                loadWordsFromResourceFile(
+                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    wordsRepository = wordRepository
+                )
+
+                val request = gameRequestFactory.startGameRequest(
+                    language = null,
+                    authenticatedUser = authenticatedUser,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
         }
 
     }
@@ -543,7 +680,7 @@ class TestWordsTypingGameController @Autowired constructor(
             }
 
             @Test
-            fun `400 - Crossword cannot be finished with user answer to single word over 255 characters long`() {
+            fun `400 - Words typing game cannot be finished with user answer to single word over 255 characters long`() {
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 val gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(

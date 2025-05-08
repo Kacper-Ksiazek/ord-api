@@ -19,7 +19,6 @@ import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
@@ -401,10 +400,23 @@ class TestCrosswordGameController @Autowired constructor(
         @Nested
         @DisplayName("Negative")
         inner class Negative {
+
+            internal fun GameRequestFactory.startGameRequest(
+                authenticatedUser: MockedAuthenticatedUser?,
+                language: LanguageName? = LanguageName.ENGLISH,
+                difficulty: GameDifficulty? = GameDifficulty.HARD,
+            ): MockHttpServletRequestBuilder {
+                return startGameRequest(
+                    gameType = GameType.CROSSWORD,
+                    language = language,
+                    difficulty = difficulty,
+                    authenticatedUser = authenticatedUser
+                )
+            }
+
             @Test
             fun `403 - Anonymous user cannot start a crossword game`() {
                 val request = gameRequestFactory.startGameRequest(
-                    gameType = GameType.CROSSWORD,
                     authenticatedUser = null,
                 )
 
@@ -419,7 +431,6 @@ class TestCrosswordGameController @Autowired constructor(
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 val request = gameRequestFactory.startGameRequest(
-                    gameType = GameType.CROSSWORD,
                     authenticatedUser = authenticatedUser,
                 )
 
@@ -434,9 +445,6 @@ class TestCrosswordGameController @Autowired constructor(
                 val requiredNumberOfWords = 12
 
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
-                    languages = mapOf(
-                        LanguageName.ENGLISH to LanguageProficiencyLevel.C1
-                    )
                 )
 
                 loadWordsFromResourceFile(
@@ -446,7 +454,6 @@ class TestCrosswordGameController @Autowired constructor(
                 )
 
                 val request = gameRequestFactory.startGameRequest(
-                    gameType = GameType.CROSSWORD,
                     authenticatedUser = authenticatedUser,
                 )
 
@@ -460,11 +467,7 @@ class TestCrosswordGameController @Autowired constructor(
             fun `400 - User with no proficiency in the language cannot start a crossword game`() {
                 val unknownForUserLanguage = LanguageName.ITALIAN
 
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
-                    languages = mapOf(
-                        LanguageName.ENGLISH to LanguageProficiencyLevel.A1
-                    )
-                )
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
                     user = userMapper.toEntity(authenticatedUser.userInfo),
@@ -472,7 +475,6 @@ class TestCrosswordGameController @Autowired constructor(
                 )
 
                 val request = gameRequestFactory.startGameRequest(
-                    gameType = GameType.CROSSWORD,
                     language = unknownForUserLanguage,
                     authenticatedUser = authenticatedUser,
                 )
@@ -485,11 +487,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `400 - Cannot start a game without providing difficulty`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
-                    languages = mapOf(
-                        LanguageName.ENGLISH to LanguageProficiencyLevel.C1
-                    )
-                )
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
                     user = userMapper.toEntity(authenticatedUser.userInfo),
@@ -497,7 +495,6 @@ class TestCrosswordGameController @Autowired constructor(
                 )
 
                 val request = gameRequestFactory.startGameRequest(
-                    gameType = GameType.CROSSWORD,
                     difficulty = null,
                     authenticatedUser = authenticatedUser,
                 )
@@ -510,11 +507,7 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `400 - Cannot start a game without providing language`() {
-                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
-                    languages = mapOf(
-                        LanguageName.ENGLISH to LanguageProficiencyLevel.C1
-                    )
-                )
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
                     user = userMapper.toEntity(authenticatedUser.userInfo),
@@ -522,7 +515,6 @@ class TestCrosswordGameController @Autowired constructor(
                 )
 
                 val request = gameRequestFactory.startGameRequest(
-                    gameType = GameType.CROSSWORD,
                     language = null,
                     authenticatedUser = authenticatedUser,
                 )
