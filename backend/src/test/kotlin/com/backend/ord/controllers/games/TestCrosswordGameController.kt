@@ -617,7 +617,7 @@ class TestCrosswordGameController @Autowired constructor(
                     words = crosswordSavedInDb.properAnswers.questions.values.toSet(),
                     language = crosswordSavedInDb.language,
                     userId = authenticatedUser.userInfo.id,
-                    response = response,
+                    properAnswers = response.properQuestionsAnswers,
                     alteredAnswers = alteredAnswers
                 )
             }
@@ -723,7 +723,6 @@ class TestCrosswordGameController @Autowired constructor(
                 response.properFinalWord.score shouldBe AnswerScore.INCORRECT
             }
 
-            // Prepare test for points calculation
             @Test
             fun `200 - Points should be properly assigned - CORRECT`() {
                 val response: FinishedCrosswordGameResponse = finishCrosswordGame()
