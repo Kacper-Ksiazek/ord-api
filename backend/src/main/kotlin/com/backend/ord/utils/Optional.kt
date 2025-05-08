@@ -5,7 +5,7 @@ data class Optional<T>(
     val isPresent: Boolean = value != null,
 ) {
     fun getOrDefault(default: T): T? {
-        return if (this.isPresent) value;
+        return if (this.isPresent) value
         else default
     }
 }

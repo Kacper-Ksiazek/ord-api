@@ -16,8 +16,8 @@ class MockDetailedWordsGPTTokensConsumption(
         List<DetailedWordTokensUsage>,
         DetailedWordTokensUsage
         > {
-    override val pathToJSONFile: String =
-        "gpt_tokens_usage/gpt_tokens_used_to_generate_ai_words_manuals.json"
+    override val pathToJsonFile: String =
+        "mocks/gpt_tokens_usage/gpt_tokens_used_to_generate_ai_words_manuals.json"
 
     override fun convertToEntity(
         jsonData: DetailedWordTokensUsage,
@@ -32,14 +32,13 @@ class MockDetailedWordsGPTTokensConsumption(
             priceForMlnOutputTokens = jsonData.priceForMlnOutputTokens,
 
             translatedTo = jsonData.translatedTo,
-            translatedFrom = jsonData.translatedFrom,
+            language = jsonData.language,
             consumptionType = jsonData.consumptionType,
 
             user = user,
         )
     }
 
-    override fun typeReference(): TypeReference<List<DetailedWordTokensUsage>> {
-        return object : TypeReference<List<DetailedWordTokensUsage>>() {}
-    }
+    override val jsonFileContentTypeRef: TypeReference<List<DetailedWordTokensUsage>> =
+        object : TypeReference<List<DetailedWordTokensUsage>>() {}
 }

@@ -16,11 +16,10 @@ class MockBankGroups(
         List<BankGroupInJSON>,
         BankGroupInJSON
         > {
-    override val pathToJSONFile: String = "/banks/bank_groups.json"
+    override val pathToJsonFile: String = "mocks/banks/bank_groups.json"
 
-    override fun typeReference(): TypeReference<List<BankGroupInJSON>> {
-        return object : TypeReference<List<BankGroupInJSON>>() {}
-    }
+    override val jsonFileContentTypeRef: TypeReference<List<BankGroupInJSON>> =
+        object : TypeReference<List<BankGroupInJSON>>() {}
 
     override fun convertToEntity(
         jsonData: BankGroupInJSON,

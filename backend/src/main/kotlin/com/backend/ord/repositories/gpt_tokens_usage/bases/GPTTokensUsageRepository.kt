@@ -36,7 +36,7 @@ interface GPTTokensUsageRepository<RepositoryType, ConsumptionType> : JpaReposit
         """
         SELECT new com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics(
             w.consumptionType, 
-            w.translatedFrom, 
+            w.language, 
             COUNT(w.id),
             SUM(w.cost), 
             AVG(w.inputTokens), 
@@ -46,7 +46,7 @@ interface GPTTokensUsageRepository<RepositoryType, ConsumptionType> : JpaReposit
         WHERE w.user.id = :userId
             AND EXTRACT(MONTH FROM w.createdAt) = :month
             AND EXTRACT(YEAR FROM w.createdAt) = :year
-        GROUP BY w.consumptionType, w.translatedFrom
+        GROUP BY w.consumptionType, w.language
         ORDER BY COUNT(w.id) DESC
     """
     )

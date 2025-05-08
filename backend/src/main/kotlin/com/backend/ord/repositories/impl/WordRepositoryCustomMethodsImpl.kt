@@ -12,11 +12,11 @@ import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.api.responses.words.embedded.BankCompact
 import com.backend.ord.api.responses.words.embedded.BankGroupCompact
-import com.backend.ord.domain.persistence.embedded.ExampleSentence
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.BankGroup
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType

@@ -18,7 +18,7 @@ data class DetailedWordTokensUsage(
     val priceForMlnOutputTokens: BigDecimal,
 
     var translatedTo: LanguageName,
-    var translatedFrom: LanguageName,
+    var language: LanguageName,
     var consumptionType: WordsGPTTokensConsumptionType,
 
     val createdAt: Instant,
@@ -36,7 +36,7 @@ fun WordTokensUsage.toDetailedWordTokensUsage(): DetailedWordTokensUsage {
         priceForMlnOutputTokens = priceForMlnOutputTokens,
 
         translatedTo = translatedTo,
-        translatedFrom = translatedFrom,
+        language = language,
         consumptionType = consumptionType,
 
         createdAt = createdAt,

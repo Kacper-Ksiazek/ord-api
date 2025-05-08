@@ -1,7 +1,11 @@
 package com.backend.ord.services
 
-import com.backend.ord.controllers.utils_for_testing.bases.ControllerTestBase
+import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.controllers.bases.ControllerTestBase
+import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.repositories.LanguageProficiencyRepository
+import com.backend.ord.repositories.UserRepository
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -11,15 +15,29 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.servlet.MockMvc
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @AutoConfigureMockMvc
 class TestLanguageProficiencyService @Autowired constructor(
-    objectMapper: ObjectMapper,
     private val languageProficiencyService: LanguageProficiencyService,
     private val languageProficiencySeeder: LanguageProficiencySeeder,
-) : ControllerTestBase(objectMapper) {
+
+    objectMapper: ObjectMapper,
+    mockMvc: MockMvc,
+    jwtProperties: JwtProperties,
+    languageProficiencyRepository: LanguageProficiencyRepository,
+    userMapper: UserMapper,
+    userRepository: UserRepository
+) : ControllerTestBase(
+    objectMapper = objectMapper,
+    mockMvc = mockMvc,
+    jwtProperties = jwtProperties,
+    languageProficiencyRepository = languageProficiencyRepository,
+    userMapper = userMapper,
+    userRepository = userRepository
+) {
 
     @Test
     fun `Fetch user proficiency in given language`() {

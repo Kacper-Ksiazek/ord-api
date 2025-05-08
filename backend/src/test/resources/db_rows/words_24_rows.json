@@ -1,0 +1,713 @@
+[
+  {
+    "origin": "fleeting",
+    "translation": "ulotny",
+    "definition": "Something that lasts for a very short time or is difficult to hold onto.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "He captured the fleeting beauty of the sunset in his painting.",
+      "The joy of the moment was fleeting.",
+      "The fleeting nature of youth is often reflected upon."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "He captured the *fleeting* beauty of the sunset in his painting.",
+        "translation": "Uchwycił *ulotne* piękno zachodu słońca w swoim obrazie."
+      },
+      {
+        "sentence": "The *fleeting* nature of youth is often reflected upon.",
+        "translation": "Ulotna natura młodości jest często przedmiotem refleksji."
+      },
+      {
+        "sentence": "The joy of the moment was *fleeting*.",
+        "translation": "Radość chwili była *ulotna*."
+      }
+    ]
+  },
+  {
+    "origin": "depletes",
+    "translation": "wyczerpuje",
+    "definition": "To diminish the quantity or supply of something; to exhaust resources or energy.",
+    "type": "VERB",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Running excessively can deplete one's energy levels.",
+      "He is trying to deplete his debt by making regular payments.",
+      "To deplete natural resources can cause environmental issues."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "If we continue to *deplete* fossil fuels, future generations will face severe consequences.",
+        "translation": "Jeśli nadal będziemy *wyczerpywać* paliwa kopalne, przyszłe pokolenia staną przed poważnymi konsekwencjami."
+      },
+      {
+        "sentence": "The intense training can *deplete* an athlete's stamina.",
+        "translation": "Intensywne treningi mogą *wyczerpywać* wytrzymałość sportowca."
+      },
+      {
+        "sentence": "The factory's operations *deplete* the local water supply.",
+        "translation": "Działalność fabryki *wyczerpuje* lokalne zasoby wody."
+      }
+    ]
+  },
+  {
+    "origin": "don't shoot them down in flames",
+    "translation": "nie gaś ich entuzjazmu.”",
+    "definition": "This idiom means to harshly criticize or dismiss someone's ideas or efforts, often in a way that can be humiliating.",
+    "type": "IDIOM",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Used to warn someone not to undermine or belittle someone else's efforts.",
+      "Applicable in professional settings where constructive feedback is essential.",
+      "Commonly used in informal contexts to advise someone to be supportive rather than destructive."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "Instead of shooting her down in flames, try to offer some constructive criticism.",
+        "translation": "Zamiast gasić jej entuzjazm, spróbuj zaproponować konstruktywną krytykę."
+      },
+      {
+        "sentence": "He was afraid to present his ideas because he didn't want others to shoot him down in flames.",
+        "translation": "Obawiał się przedstawić swoje pomysły, ponieważ nie chciał, żeby inni gasili jego entuzjazm."
+      },
+      {
+        "sentence": "When giving feedback, remember: don't shoot them down in flames.",
+        "translation": "Udzielając informacji zwrotnej, pamiętaj: nie gaś ich entuzjazmu."
+      }
+    ]
+  },
+  {
+    "origin": "fruit of thought",
+    "translation": "owoce myśli",
+    "definition": "The phrase 'fruit of thought' refers to the results or outcomes of contemplation, reflection, or intellectual effort.",
+    "type": "IDIOM",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Reflecting on a difficult decision often leads to the *fruit of thought* that guides your actions.",
+      "The *fruit of thought* from our discussions helped us to arrive at a consensus.",
+      "Through meditation, she found the *fruit of thought* that would inspire her next project."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "He wrote down the *fruit of thought* that came to him during his walk in the park.",
+        "translation": "Zanotował owoce myśli, które przyszły mu do głowy podczas spaceru w parku."
+      },
+      {
+        "sentence": "After hours of reflection, she finally understood the *fruit of thought* she had been searching for.",
+        "translation": "Po wielu godzinach refleksji w końcu zrozumiała owoce myśli, których szukała."
+      },
+      {
+        "sentence": "The *fruit of thought* from our brainstorming session was truly impressive.",
+        "translation": "Owoce myśli z naszej sesji burzy mózgów były naprawdę imponujące."
+      }
+    ]
+  },
+  {
+    "origin": "down the rabbit hole",
+    "translation": "w dół króliczej nory",
+    "definition": "The phrase 'down the rabbit hole' refers to a situation that becomes increasingly complex or bizarre, often leading to unexpected outcomes.",
+    "type": "IDIOM",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Getting involved in conspiracy theories can take you down a rabbit hole of doubt and confusion.",
+      "Exploring a new topic can sometimes lead you down the rabbit hole of information.",
+      "Once you start watching those videos, you might find yourself going down the rabbit hole."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "After reading one article, I went down the rabbit hole and spent hours online.",
+        "translation": "Po przeczytaniu jednego artykułu, wpadłem w dół króliczej nory i spędziłem godziny online."
+      },
+      {
+        "sentence": "He started researching a simple question, but it led him down the rabbit hole of quantum physics.",
+        "translation": "Zaczął badać proste pytanie, ale to zaprowadziło go w dół króliczej nory fizyki kwantowej."
+      },
+      {
+        "sentence": "Once she started following the links, there was no stopping her; she was down the rabbit hole.",
+        "translation": "Gdy tylko zaczęła podążać za linkami, nie dało się jej zatrzymać; była w dół króliczej nory."
+      }
+    ]
+  },
+  {
+    "origin": "well-to-do",
+    "translation": "zamożny",
+    "definition": "A term used to describe someone who is wealthy or affluent.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Indicating communities or neighborhoods characterized by high-income residents.",
+      "Describing individuals with significant financial resources.",
+      "Referring to families with considerable wealth."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "The *well-to-do* family donated generously to the local charity.",
+        "translation": "Rodzina *zamożna* hojnie przekazała darowiznę na lokalną organizację charytatywną."
+      },
+      {
+        "sentence": "She moved to a *well-to-do* neighborhood to provide her children with better opportunities.",
+        "translation": "Przeprowadziła się do *zamożnej* dzielnicy, aby zapewnić swoim dzieciom lepsze możliwości."
+      },
+      {
+        "sentence": "Many *well-to-do* individuals participate in philanthropic activities.",
+        "translation": "Wielu *zamożnych* ludzi angażuje się w działalność filantropijną."
+      }
+    ]
+  },
+  {
+    "origin": "across-the-board",
+    "translation": "ogólny",
+    "definition": "The term 'across-the-board' refers to something that applies universally or to all parts or members without exception.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "There was an across-the-board increase in salaries this year.",
+      "The new policy will apply across-the-board, affecting all employees.",
+      "The changes will be implemented across-the-board for all departments."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "We expect an *across-the-board* improvement in performance.",
+        "translation": "Spodziewamy się *ogólnej* poprawy wydajności."
+      },
+      {
+        "sentence": "The company announced an *across-the-board* salary increase.",
+        "translation": "Firma ogłosiła *ogólny* wzrost wynagrodzeń."
+      },
+      {
+        "sentence": "The reforms are *across-the-board* and will impact everyone.",
+        "translation": "Reformy są *ogólne* i wpłyną na wszystkich."
+      }
+    ]
+  },
+  {
+    "origin": "run-of-the-mill",
+    "translation": "przeciętny",
+    "definition": "The term describes something that is ordinary or of average quality, lacking any special features or characteristics.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "To refer to a person or thing that is not exceptional in any way.",
+      "To describe an average quality or typical example of something."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "Her performance was just *run-of-the-mill*.",
+        "translation": "Jej występ był po prostu *przeciętny*."
+      },
+      {
+        "sentence": "He has a *run-of-the-mill* job that doesn't challenge him.",
+        "translation": "Ma *przeciętną* pracę, która go nie wyzwala."
+      },
+      {
+        "sentence": "The restaurant served a *run-of-the-mill* meal that didn't impress anyone.",
+        "translation": "Restauracja serwowała *przeciętny* posiłek, który nikogo nie zachwycił."
+      }
+    ]
+  },
+  {
+    "origin": "state-of-the-art",
+    "translation": "najnowocześniejszy",
+    "definition": "The term refers to the most advanced or sophisticated technology, methods, or design currently available.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Describing the most advanced methods in a specific field.",
+      "Referring to the latest technology in a product.",
+      "Indicating that something is at the forefront of innovation."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "This smartphone features a *state-of-the-art* camera.",
+        "translation": "Ten smartfon ma *najnowocześniejszy* aparat."
+      },
+      {
+        "sentence": "Our company uses *state-of-the-art* equipment for manufacturing.",
+        "translation": "Nasza firma używa *najnowocześniejszego* sprzętu do produkcji."
+      },
+      {
+        "sentence": "The laboratory is equipped with *state-of-the-art* technology.",
+        "translation": "Laboratorium jest wyposażone w *najnowocześniejszą* technologię."
+      }
+    ]
+  },
+  {
+    "origin": "off-the-cuff",
+    "translation": "z marszu",
+    "definition": "The term 'off-the-cuff' refers to something said or done spontaneously, without preparation.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Her off-the-cuff remarks often make the atmosphere lively.",
+      "Giving a speech off-the-cuff can be challenging but also exciting.",
+      "He answered the questions off-the-cuff, demonstrating his deep knowledge."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "He made an *off-the-cuff* comment that caught everyone by surprise.",
+        "translation": "Zrobił *z marszu* uwagi, które zaskoczyły wszystkich."
+      },
+      {
+        "sentence": "His *off-the-cuff* jokes often lighten the mood in meetings.",
+        "translation": "Jego *z marszu* żarty często rozluźniają atmosferę na spotkaniach."
+      },
+      {
+        "sentence": "When asked about the policy, she provided an *off-the-cuff* response.",
+        "translation": "Zapytana o politykę, dała *z marszu* odpowiedź."
+      }
+    ]
+  },
+  {
+    "origin": "larger-than-life",
+    "translation": "osobowość większa niż życie",
+    "definition": "This phrase describes someone or something that is notably impressive or larger than the ordinary, often in a charismatic or dramatic way.",
+    "type": "IDIOM",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Talking about someone with grand ambitions.",
+      "Describing a charismatic performer.",
+      "Referring to an extravagant character in a story."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "The actor is known for his *larger-than-life* persona on and off stage.",
+        "translation": "Ten aktor jest znany z *osobowości większej niż życie* na scenie i poza nią."
+      },
+      {
+        "sentence": "The event was a *larger-than-life* celebration, filled with extravagance.",
+        "translation": "Wydarzenie było *świętowaniem większym niż życie*, wypełnionym ekstrawagancją."
+      },
+      {
+        "sentence": "Her *larger-than-life* ambitions led her to achieve remarkable success.",
+        "translation": "Jej *ambicje większe niż życie* doprowadziły ją do osiągnięcia niezwykłego sukcesu."
+      }
+    ]
+  },
+  {
+    "origin": "middle-of-the-road",
+    "translation": "umiarkowany",
+    "definition": "The term 'middle-of-the-road' describes something that is moderate or not extreme.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Her taste in music is quite middle-of-the-road, favoring popular artists.",
+      "The candidate has a middle-of-the-road approach to policies, appealing to both sides.",
+      "The restaurant offers a middle-of-the-road menu that caters to a variety of tastes."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "His views are quite *middle-of-the-road*, which makes him relatable to many voters.",
+        "translation": "Jego poglądy są dość *umiarkowane*, co sprawia, że jest bliski wielu wyborcom."
+      },
+      {
+        "sentence": "The film is a *middle-of-the-road* comedy that doesn't take too many risks.",
+        "translation": "Film to *umiarkowana* komedia, która nie podejmuje zbyt wielu ryzyk."
+      },
+      {
+        "sentence": "She prefers a *middle-of-the-road* style when decorating her home.",
+        "translation": "Preferuje *umiarkowany* styl przy urządzaniu swojego domu."
+      }
+    ]
+  },
+  {
+    "origin": "paid-for",
+    "translation": "płatny",
+    "definition": "The term 'paid-for' refers to something that has been purchased or is compensated by payment.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "A paid-for subscription provides access to premium content.",
+      "She prefers paid-for services for more reliable support.",
+      "They invested in a paid-for advertisement to promote their product."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "He subscribed to a *paid-for* streaming service for better quality.",
+        "translation": "Zarejestrował się w *płatnej* usłudze strumieniowej dla lepszej jakości."
+      },
+      {
+        "sentence": "The *paid-for* content was significantly more detailed than the free version.",
+        "translation": "Treść *płatna* była znacznie bardziej szczegółowa niż wersja darmowa."
+      },
+      {
+        "sentence": "They are considering a *paid-for* advertising campaign to increase visibility.",
+        "translation": "Rozważają *płatną* kampanię reklamową, aby zwiększyć widoczność."
+      }
+    ]
+  },
+  {
+    "origin": "take-it-or-leave-it",
+    "translation": "bierz albo zostaw",
+    "definition": "A phrase indicating that a person must accept the terms offered or forgo the opportunity altogether.",
+    "type": "PHRASE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Expressing a take-it-or-leave-it attitude in discussions.",
+      "Insisting on a decision without further discussion.",
+      "Used in negotiations to indicate finality of an offer."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "The deal is a *take-it-or-leave-it* offer, so you need to decide quickly.",
+        "translation": "Umowa jest *bierzesz albo zostawiasz*, więc musisz szybko podjąć decyzję."
+      },
+      {
+        "sentence": "During the meeting, he made it clear that the terms were *take-it-or-leave-it*.",
+        "translation": "Podczas spotkania jasno dał do zrozumienia, że warunki były *bierzesz albo zostawiasz*."
+      },
+      {
+        "sentence": "She told him it’s a *take-it-or-leave-it* situation regarding the job offer.",
+        "translation": "Powiedziała mu, że to sytuacja *bierzesz albo zostawiasz* odnośnie oferty pracy."
+      }
+    ]
+  },
+  {
+    "origin": "business-as-usual",
+    "translation": "normalne funkcjonowanie",
+    "definition": "The term 'business-as-usual' refers to the usual or expected activities and processes in an organization, especially during unusual circumstances.",
+    "type": "PHRASE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Despite the disruptions, the team focused on achieving 'business-as-usual' results.",
+      "The firm's 'business-as-usual' strategy helped them to navigate through the pandemic.",
+      "In a crisis, the company aims to maintain 'business-as-usual' operations to ensure stability."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "Even during the pandemic, we strive for *business-as-usual* operations.",
+        "translation": "Nawet w czasie pandemii dążymy do *normalnego funkcjonowania*."
+      },
+      {
+        "sentence": "Our goal is to ensure *business-as-usual* despite the recent challenges.",
+        "translation": "Naszym celem jest zapewnienie *normalnego funkcjonowania* pomimo ostatnich wyzwań."
+      },
+      {
+        "sentence": "The manager emphasized the importance of returning to *business-as-usual* after the merger.",
+        "translation": "Menadżer podkreślił znaczenie powrotu do *normalnego funkcjonowania* po fuzji."
+      }
+    ]
+  },
+  {
+    "origin": "all-you-can-eat",
+    "translation": "wszystko, co możesz zjeść",
+    "definition": "An offer at a restaurant where customers can eat as much food as they want for a set price.",
+    "type": "PHRASE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Often used in promotions to attract customers.",
+      "A common type of dining experience in buffet-style restaurants."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "I love going to places that have *all-you-can-eat* sushi.",
+        "translation": "Uwielbiam chodzić do miejsc, które mają *wszystko, co możesz zjeść* sushi."
+      },
+      {
+        "sentence": "They advertised an *all-you-can-eat* deal for the holiday season.",
+        "translation": "Reklamowali ofertę *wszystko, co możesz zjeść* na sezon świąteczny."
+      },
+      {
+        "sentence": "The restaurant is offering an *all-you-can-eat* buffet on weekends.",
+        "translation": "Restauracja oferuje *wszystko, co możesz zjeść* w formie bufetu w weekendy."
+      }
+    ]
+  },
+  {
+    "origin": "meagre",
+    "translation": "fuzja",
+    "definition": "To *merge* means to combine two or more entities into one.",
+    "type": "VERB",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "To *merge* data from different sources for analysis.",
+      "To *merge* layers in graphic design software.",
+      "To *merge* two companies into one."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "Please *merge* the files into a single document.",
+        "translation": "Proszę *połączyć* pliki w jeden dokument."
+      },
+      {
+        "sentence": "The artist used the *merge* tool to combine different elements in her artwork.",
+        "translation": "Artystka użyła narzędzia *fuzji*, aby połączyć różne elementy w swoim dziele."
+      },
+      {
+        "sentence": "The two companies decided to *merge* to improve their market position.",
+        "translation": "Dwie firmy zdecydowały się na *fuzję*, aby poprawić swoją pozycję na rynku."
+      }
+    ]
+  },
+  {
+    "origin": "firm",
+    "translation": "firma",
+    "definition": "A firm is a business or company, often used to refer specifically to one providing professional services.",
+    "type": "NOUN",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "She works for a marketing firm.",
+      "A law firm specializes in legal matters.",
+      "The firm has expanded its services internationally."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "She started her own *firm* last year.",
+        "translation": "Założyła swoją własną *firmę* w zeszłym roku."
+      },
+      {
+        "sentence": "The *firm* is known for its innovative products.",
+        "translation": "Ta *firma* jest znana ze swoich innowacyjnych produktów."
+      },
+      {
+        "sentence": "They hired a *firm* to handle their taxes.",
+        "translation": "Zatrudnili *firmę*, aby zajęła się ich podatkami."
+      }
+    ]
+  },
+  {
+    "origin": "doting",
+    "translation": "roztkliwiony",
+    "definition": "Doting refers to showing excessive love or fondness, often in a way that can be considered overly indulgent.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "In romantic relationships, a doting partner may be overly attentive and caring.",
+      "A doting parent may spoil their child with gifts and affection.",
+      "People often describe grandparents as doting because they tend to shower their grandchildren with love."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "His *doting* behavior towards his dog was evident in how he pampered it.",
+        "translation": "Jego *roztkliwione* zachowanie wobec psa było ewidentne w tym, jak je rozpieszczał."
+      },
+      {
+        "sentence": "Despite being a strict teacher, he had a *doting* side that emerged during class trips.",
+        "translation": "Mimo że był surowym nauczycielem, miał *roztkliwioną* stronę, która ujawniała się podczas wycieczek klasowych."
+      },
+      {
+        "sentence": "She was a *doting* mother, always providing her children with everything they needed.",
+        "translation": "Była *roztkliwioną* matką, zawsze zapewniającą swoim dzieciom wszystko, czego potrzebowały."
+      }
+    ]
+  },
+  {
+    "origin": "bluntly",
+    "translation": "szczery",
+    "definition": "To speak in a straightforward and honest manner, often without regard for others' feelings.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Addressing difficult topics without sugar-coating.",
+      "Giving a direct opinion.",
+      "Providing criticism or feedback in an unfiltered way."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "He was *blunt* about the project's shortcomings during the meeting.",
+        "translation": "Był *szczery* co do niedociągnięć projektu podczas spotkania."
+      },
+      {
+        "sentence": "The teacher addressed the class *bluntly*, explaining the importance of studying.",
+        "translation": "Nauczyciel *szczerze* wyjaśnił klasie znaczenie nauki."
+      },
+      {
+        "sentence": "She told him, *bluntly*, that she didn't like his new haircut.",
+        "translation": "Powiedziała mu *szczerze*, że nie podoba jej się jego nowa fryzura."
+      }
+    ]
+  },
+  {
+    "origin": "to add insult to injury",
+    "translation": "przykładać sól do rany",
+    "definition": "To add insult to injury means to make a bad situation even worse by saying or doing something that is hurtful.",
+    "type": "IDIOM",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Criticizing a person's efforts after they've already failed only adds insult to injury.",
+      "If a company's financial problems worsen and they also lose a key client, one could say they added insult to injury.",
+      "When someone is already upset, making a mocking comment can add insult to injury."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "She was already feeling bad about the mistake, and his sarcastic remarks just added insult to injury.",
+        "translation": "Już czuła się źle z powodu błędu, a jego sarkastyczne uwagi tylko *przykładały sól do rany*."
+      },
+      {
+        "sentence": "Their criticism after the team lost the match was adding insult to injury.",
+        "translation": "Ich krytyka po tym, jak drużyna przegrała mecz, *przykładała sól do rany*."
+      },
+      {
+        "sentence": "When he made fun of her outfit after she lost her job, he really added insult to injury.",
+        "translation": "Kiedy zażartował z jej stroju po tym, jak straciła pracę, naprawdę *przykładał sól do rany*."
+      }
+    ]
+  },
+  {
+    "origin": "to cap it all",
+    "translation": "a na dodatek",
+    "definition": "This phrase is used to emphasize an additional, often negative, fact that culminates a series of events or situations.",
+    "type": "IDIOM",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "To conclude a list of complaints with a significant point.",
+      "To express frustration by highlighting an additional issue.",
+      "To indicate that something has gotten worse than expected."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "I forgot my wallet, lost my job, and to cap it all, my car broke down.",
+        "translation": "Zapomniałem portfela, straciłem pracę, a na dodatek zepsuł mi się samochód."
+      },
+      {
+        "sentence": "She was late to the meeting, her presentation was a mess, and to cap it all, she spilled coffee on her boss.",
+        "translation": "Spóźniła się na zebranie, jej prezentacja była bałaganem, a na dodatek przewróciła kawę na swojego szefa."
+      },
+      {
+        "sentence": "We planned a nice vacation, but the weather was terrible, and to cap it all, we got into an accident.",
+        "translation": "Zaplanowaliśmy miłe wakacje, ale pogoda była okropna, a na dodatek mieliśmy wypadek."
+      }
+    ]
+  },
+  {
+    "origin": "flustered",
+    "translation": "roztrzęsiony",
+    "definition": "To be flustered means to be in a state of agitated confusion or nervous excitement.",
+    "type": "ADJECTIVE",
+    "extraMark": null,
+    "translatedFrom": "ENGLISH",
+    "translatedTo": "POLISH",
+    "isCompleted": false,
+    "isBookmarked": false,
+    "points": 0,
+    "useCases": [
+      "Being flustered when receiving unexpected news.",
+      "Feeling flustered before an important presentation.",
+      "Getting flustered when trying to multitask under pressure."
+    ],
+    "exampleSentences": [
+      {
+        "sentence": "He seemed *flustered* by the sudden changes in the plan.",
+        "translation": "Wydawał się *roztrzęsiony* nagłymi zmianami w planie."
+      },
+      {
+        "sentence": "She became *flustered* when asked to speak in front of the crowd.",
+        "translation": "Ona stała się *roztrzęsiona*, gdy poproszono ją o przemówienie przed tłumem."
+      },
+      {
+        "sentence": "I always get *flustered* when I have too many things to do at once.",
+        "translation": "Zawsze czuję się *roztrzęsiony*, gdy mam za dużo rzeczy do zrobienia na raz."
+      }
+    ]
+  }
+]

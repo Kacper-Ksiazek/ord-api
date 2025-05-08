@@ -8,13 +8,13 @@ import java.util.*
 interface GameService {
     fun completeGame(
         game: OngoingGame,
-        finalScore: Int,
+        totalPoints: Int,
         duration: String
     ): FinishedGame
 
     fun completeGame(
         game: OngoingGameDTO<*>,
-        finalScore: Int,
+        totalPoints: Int,
         duration: String
     )
 

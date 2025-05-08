@@ -1,7 +1,7 @@
 package com.backend.ord.api.requests.word
 
 import com.backend.ord.api.requests.bank.CreateBankRequest
-import com.backend.ord.domain.persistence.embedded.ExampleSentence
+import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType

@@ -312,32 +312,6 @@
         ]
     },
     {
-        "originalWord": "uheard",
-        "translation": "słyszałem",
-        "definition": "To be aware of sound or speech through the auditory sense.",
-        "type": "VERB",
-        "extraMark": null,
-        "useCases": [
-            "Used to indicate that someone has received information through listening.",
-            "Commonly used to convey a sense of acknowledgment of what was communicated.",
-            "Can imply that someone has knowledge of an event or situation."
-        ],
-        "exampleSentences": [
-            {
-                "sentence": "I *heard* a strange noise coming from the basement.",
-                "translation": "Słyszałem dziwny hałas dochodzący z piwnicy."
-            },
-            {
-                "sentence": "She *heard* what you said and took it seriously.",
-                "translation": "Ona *słyszała*, co powiedziałeś i wzięła to na poważnie."
-            },
-            {
-                "sentence": "Have you *heard* the news about the promotion?",
-                "translation": "Czy *słyszałeś* wiadomości o awansie?"
-            }
-        ]
-    },
-    {
         "originalWord": "well-to-do",
         "translation": "zamożny",
         "definition": "A term used to describe someone who is wealthy or affluent.",
@@ -647,7 +621,7 @@
         ]
     },
     {
-        "originalWord": "mearge",
+        "originalWord": "meagre",
         "translation": "fuzja",
         "definition": "To *merge* means to combine two or more entities into one.",
         "type": "VERB",
@@ -803,7 +777,7 @@
         ]
     },
     {
-        "originalWord": "flusterted",
+        "originalWord": "flustered",
         "translation": "roztrzęsiony",
         "definition": "To be flustered means to be in a state of agitated confusion or nervous excitement.",
         "type": "ADJECTIVE",
@@ -958,7 +932,7 @@
         ]
     },
     {
-        "originalWord": "pick someones's brain",
+        "originalWord": "pick someone's brain",
         "translation": "wyciągnąć kogoś na rozmowę",
         "definition": "To 'pick someone's brain' means to seek advice or information from someone, often about their expertise or knowledge.",
         "type": "IDIOM",
@@ -1295,7 +1269,7 @@
         ]
     },
     {
-        "originalWord": "certanity",
+        "originalWord": "certainty",
         "translation": "pewność",
         "definition": "A state of being sure, confident, or certain about something.",
         "type": "NOUN",

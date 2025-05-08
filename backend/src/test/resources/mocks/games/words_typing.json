@@ -1,0 +1,245 @@
+[
+  {
+    "difficulty": "HARD",
+    "language": "ENGLISH",
+    "type": "WORDS_TYPING",
+    "instruction": [
+      {
+        "id": "3e46406a-8c70-4a0a-9737-46d4709af0d9",
+        "word": "**** *******'* *****",
+        "clue": "To seek advice or information from someone knowledgeable."
+      },
+      {
+        "id": "42caddb6-f3b5-4d1c-9892-9e5367c585e4",
+        "word": "********",
+        "clue": "To think deeply about something, often reflecting repeatedly."
+      },
+      {
+        "id": "584df9ff-fb77-4e88-afde-aac82a153c85",
+        "word": "*********",
+        "clue": "The state of being sure or confident about something."
+      },
+      {
+        "id": "d39efc00-1847-4b78-8ff5-7200bd7156b3",
+        "word": "******",
+        "clue": "To speak in a low voice, often in dissatisfaction or annoyance."
+      },
+      {
+        "id": "c0658827-c393-4aab-8179-e05ad01322e9",
+        "word": "******-****-****",
+        "clue": "Someone or something that has an exaggerated or impressive presence."
+      },
+      {
+        "id": "82c79791-e451-4e36-a479-561cc9d6c7ee",
+        "word": "***********",
+        "clue": "Allowed or permitted within certain limits."
+      },
+      {
+        "id": "4da26acc-95b9-4674-b297-3581bc14ddea",
+        "word": "****-***",
+        "clue": "Acquired or owned through monetary exchange."
+      },
+      {
+        "id": "c62031c2-983f-46d3-a226-befa4ae7d684",
+        "word": "***-***-****",
+        "clue": "Said or done without preparation or forethought."
+      },
+      {
+        "id": "a7adce9f-aa5b-41e2-be84-0684f0749588",
+        "word": "****",
+        "clue": "Having a strong or solid structure; not soft or yielding."
+      },
+      {
+        "id": "63d7adaa-5d62-48be-866b-eff88f913982",
+        "word": "***'* ***** **** **** ** ******",
+        "clue": "To criticize or dismiss someone's ideas harshly."
+      },
+      {
+        "id": "866c9414-ccf2-416d-ba32-edb3b68b5b04",
+        "word": "** *******",
+        "clue": "To experience or endure something challenging or difficult."
+      },
+      {
+        "id": "0bc6df0f-2072-4ae6-8602-94be256e7c49",
+        "word": "********",
+        "clue": "To violate or encroach upon a person's rights or laws."
+      },
+      {
+        "id": "e65857d4-e2f4-4b1c-9869-691b3cec3df6",
+        "word": "**********",
+        "clue": "Burdensome; difficult to handle or manage due to size or weight."
+      },
+      {
+        "id": "afc0618f-a027-427d-8224-9c060eb650dc",
+        "word": "*******",
+        "clue": "A structure where bees live and produce honey, often resembling a busy place."
+      },
+      {
+        "id": "8b0ebb91-dab4-4cbb-99a2-c7631301940c",
+        "word": "**********",
+        "clue": "A polite remark or light conversation, often to create a cheerful atmosphere."
+      },
+      {
+        "id": "8af1b846-933e-49ed-8fcd-a1d1c3bf2e32",
+        "word": "****",
+        "clue": "To calm or soothe someone, often to help them sleep or relax."
+      }
+    ],
+    "properAnswers": {
+      "3e46406a-8c70-4a0a-9737-46d4709af0d9": "pick someone's brain",
+      "42caddb6-f3b5-4d1c-9892-9e5367c585e4": "ruminate",
+      "584df9ff-fb77-4e88-afde-aac82a153c85": "certainty",
+      "d39efc00-1847-4b78-8ff5-7200bd7156b3": "mutter",
+      "c0658827-c393-4aab-8179-e05ad01322e9": "larger-than-life",
+      "82c79791-e451-4e36-a479-561cc9d6c7ee": "permissible",
+      "4da26acc-95b9-4674-b297-3581bc14ddea": "paid-for",
+      "c62031c2-983f-46d3-a226-befa4ae7d684": "off-the-cuff",
+      "a7adce9f-aa5b-41e2-be84-0684f0749588": "firm",
+      "63d7adaa-5d62-48be-866b-eff88f913982": "don't shoot them down in flames",
+      "866c9414-ccf2-416d-ba32-edb3b68b5b04": "go through",
+      "0bc6df0f-2072-4ae6-8602-94be256e7c49": "infringe",
+      "e65857d4-e2f4-4b1c-9869-691b3cec3df6": "cumbersome",
+      "afc0618f-a027-427d-8224-9c060eb650dc": "beehive",
+      "8b0ebb91-dab4-4cbb-99a2-c7631301940c": "pleasantry",
+      "8af1b846-933e-49ed-8fcd-a1d1c3bf2e32": "lull"
+    }
+  },
+  {
+    "difficulty": "MEDIUM",
+    "language": "ENGLISH",
+    "type": "WORDS_TYPING",
+    "instruction": [
+      {
+        "id": "278cc64b-a158-4003-81bc-feb81cbba4ea",
+        "word": "** *** ** ***",
+        "clue": "A phrase used to denote an ultimate conclusion or event that emphasizes everything that has happened before."
+      },
+      {
+        "id": "787a7de8-173f-40bf-b489-6e48b6f2b8a3",
+        "word": "****",
+        "clue": "A type of organization, often associated with business or law, that operates as a single entity."
+      },
+      {
+        "id": "3f942c31-6869-4ea4-a365-f11be70aa41d",
+        "word": "**********",
+        "clue": "The state of being unnecessary or superfluous, often in the context of jobs or roles being duplicated."
+      },
+      {
+        "id": "3e9c98f2-9522-4754-8958-51233d9f0035",
+        "word": "**** *******'* *****",
+        "clue": "To seek advice or gather information from someone who is knowledgeable about a specific topic."
+      },
+      {
+        "id": "3323f436-fb4a-4a63-a4ce-a05f635e2fa4",
+        "word": "****",
+        "clue": "A device used to motivate or encourage action, often associated with riders on horses."
+      },
+      {
+        "id": "adb89ef1-4767-4267-9f93-d2f43320406e",
+        "word": "********-**-*****",
+        "clue": "Referring to the normal state of affairs, particularly in operations or procedures, despite unusual circumstances."
+      },
+      {
+        "id": "e9933fb3-fcb3-4b45-9e7b-fa07f60901b7",
+        "word": "*********",
+        "clue": "Describing something that lasts for a very short time, often used in the context of beauty or life."
+      },
+      {
+        "id": "2bac26d0-ef80-4b1a-ae95-abfa2ce24d3a",
+        "word": "******-**-***-****",
+        "clue": "Describing something that is moderate or average, avoiding extremes or radical views."
+      },
+      {
+        "id": "2c556ada-3aaf-44f2-9e37-1c256e6bf505",
+        "word": "******",
+        "clue": "A conjunction used to introduce a contrast, similar to saying 'although' or 'even though'."
+      },
+      {
+        "id": "2c47df01-4606-4108-9015-b7fa1a62637b",
+        "word": "** ** ** *** **",
+        "clue": "An expression indicating that someone or something is improving or becoming more successful."
+      },
+      {
+        "id": "560ca029-6802-4b5f-84ba-b3662cbf15b1",
+        "word": "****** *****",
+        "clue": "A pattern of growth or increase over time, often referred to in economic or market contexts."
+      },
+      {
+        "id": "3cb65bc2-ce5b-4304-94f7-8d7083dccef7",
+        "word": "*********",
+        "clue": "A type of flowering plant often used in teas, known for its calming and soothing properties."
+      }
+    ],
+    "properAnswers": {
+      "278cc64b-a158-4003-81bc-feb81cbba4ea": "to cap it all",
+      "787a7de8-173f-40bf-b489-6e48b6f2b8a3": "firm",
+      "3f942c31-6869-4ea4-a365-f11be70aa41d": "redundancy",
+      "3e9c98f2-9522-4754-8958-51233d9f0035": "pick someone's brain",
+      "3323f436-fb4a-4a63-a4ce-a05f635e2fa4": "spur",
+      "adb89ef1-4767-4267-9f93-d2f43320406e": "business-as-usual",
+      "e9933fb3-fcb3-4b45-9e7b-fa07f60901b7": "ephemeral",
+      "2bac26d0-ef80-4b1a-ae95-abfa2ce24d3a": "middle-of-the-road",
+      "2c556ada-3aaf-44f2-9e37-1c256e6bf505": "albeit",
+      "2c47df01-4606-4108-9015-b7fa1a62637b": "to be on the up",
+      "560ca029-6802-4b5f-84ba-b3662cbf15b1": "upward trend",
+      "3cb65bc2-ce5b-4304-94f7-8d7083dccef7": "chamomile"
+    }
+  },
+  {
+    "difficulty": "EASY",
+    "language": "ENGLISH",
+    "type": "WORDS_TYPING",
+    "instruction": [
+      {
+        "id": "514a1d69-a0f7-4eab-b376-c7114174e966",
+        "word": "********",
+        "clue": "To think deeply or repeatedly about something."
+      },
+      {
+        "id": "8e1a91af-38ad-46ed-b35a-7af5f69c2ffb",
+        "word": "****",
+        "clue": "To encourage or stimulate someone to take action."
+      },
+      {
+        "id": "a42aa110-f2d8-487f-be4d-4b601037f534",
+        "word": "******",
+        "clue": "Although; even if."
+      },
+      {
+        "id": "2eac396f-b1e3-4515-9219-3259ecd0b4b9",
+        "word": "****-**-**",
+        "clue": "Wealthy or affluent."
+      },
+      {
+        "id": "486ac7ad-9130-478b-8945-58de4e9b31b1",
+        "word": "******",
+        "clue": "Showing excessive love or fondness."
+      },
+      {
+        "id": "c67c9b57-4811-4a9b-8ef2-fab4c402fc29",
+        "word": "********",
+        "clue": "To violate or encroach upon someone's rights."
+      },
+      {
+        "id": "637a2da3-06a2-4127-a9c4-1df639da9407",
+        "word": "*********",
+        "clue": "Temporary or lasting for a short time."
+      },
+      {
+        "id": "3ea90401-27ab-462e-8876-f04e2d0bf155",
+        "word": "****",
+        "clue": "To get rid of something or to cast off."
+      }
+    ],
+    "properAnswers": {
+      "514a1d69-a0f7-4eab-b376-c7114174e966": "ruminate",
+      "8e1a91af-38ad-46ed-b35a-7af5f69c2ffb": "spur",
+      "a42aa110-f2d8-487f-be4d-4b601037f534": "albeit",
+      "2eac396f-b1e3-4515-9219-3259ecd0b4b9": "well-to-do",
+      "486ac7ad-9130-478b-8945-58de4e9b31b1": "doting",
+      "c67c9b57-4811-4a9b-8ef2-fab4c402fc29": "infringe",
+      "637a2da3-06a2-4127-a9c4-1df639da9407": "transient",
+      "3ea90401-27ab-462e-8876-f04e2d0bf155": "shed"
+    }
+  }
+]

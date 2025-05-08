@@ -3,38 +3,37 @@ package com.backend.ord.seeders.mocks.bases
 import com.backend.ord.utils.JsonReader
 import com.fasterxml.jackson.core.type.TypeReference
 
-private const val ROOT = "./src/main/resources/mocks/"
+enum class RootDir(val path: String) {
+    MAIN_APP(path = "./src/main/resources/"),
+    TEST_RESOURCES(path = "./src/test/resources/");
+}
 
 interface ResourceJSONFileReader<
-        FileContent, // Eg. List<AIGeneratedWordManual>
-        JSONDataModelType  // Eg. AIGeneratedWordManual
+        TFileContent, // Eg. List<AIGeneratedWordManual>
+        TJsonDataModelType  // Eg. AIGeneratedWordManual
         > {
-    /**
-     * The path to the JSON file that contains the data to be read
-     */
-    val pathToJSONFile: String
+    val root: RootDir
+        get() = RootDir.MAIN_APP
 
-    /**
-     * Provides the `TypeReference` for the specific `JSONDataModelType` at runtime.
-     */
-    fun typeReference(): TypeReference<FileContent>
+    val pathToJsonFile: String
+    val jsonFileContentTypeRef: TypeReference<TFileContent>
 
     /**
      * Reads data from a JSON file and returns a list of JSON data models
      */
-    fun readFromJSONFile(): List<JSONDataModelType> {
+    fun readFromJSONFile(): List<TJsonDataModelType> {
         @Suppress("UNCHECKED_CAST")
         return JsonReader.readJsonFile(
-            pathToJSONFile = getAbsolutePath(pathToJSONFile),
-            typeReference = typeReference()
-        ) as List<JSONDataModelType>
+            pathToJSONFile = getAbsolutePath(pathToJsonFile),
+            typeReference = jsonFileContentTypeRef
+        ) as List<TJsonDataModelType>
     }
 
     private fun getAbsolutePath(path: String): String {
         return if (path.startsWith('/')) {
-            ROOT + path
+            root.path + path
         } else {
-            "$ROOT/$path"
+            "${root.path}/$path"
         }
     }
 }

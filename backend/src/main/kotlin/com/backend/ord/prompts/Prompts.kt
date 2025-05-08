@@ -1,53 +1,89 @@
 package com.backend.ord.prompts
 
+import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.enums.persistence.game.GameDifficulty
+import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
+import com.backend.ord.enums.persistence.game.getNumberOfWordsForWordsTypingGame
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.prompts.internal_tools.GenerateGamePromptData
+import com.backend.ord.prompts.internal_tools.prepareGameGenerationPrompt
 import com.backend.ord.utils.EnumUtils.joinEnumValues
 
 object Prompts {
     const val DEFAULT_CONTEXT =
-        "Do not include anything more than this json and do not add markdown formatting. I want your output to be suitable for jsonObjectMapper.readValue."
+        "Do not include anything more than this JSON and do not add markdown formatting. I want your output to be suitable for jsonObjectMapper.readValue."
 
-    /**
-     * Prepare a prompt to generate a list of questions for a crossword game.
-     */
-    fun generateCrosswordQuestionsPrompt(
-        amountOfQuestions: Int,
-        language: LanguageName,
-        wordsToUse: List<String>,
-        difficulty: GameDifficulty,
-        languageProficiency: LanguageProficiencyLevel,
-    ): String {
-        return """
-               Generate a foreign language practicing crossword. The game difficulty is set to $difficulty, and the foreign language is $language at $languageProficiency level.
-               
-               I want my answer to match this JSON format:
-               
-               {
-                 answer: string // Either a new word or a short phrase. Do not use a word from the list provided
-                 answerExplanation: string // DO NOT include an answer in its explanation
-                 questions: {
-                   word: string // Use words for the provided list. Each word can be used only once
-                   clue: string // DO NOT include the word in its clue
-                 }[] // A list of $amountOfQuestions with words from the provided list
+    object Games {
+        fun generateCrosswordQuestionsPrompt(
+            language: LanguageName,
+            wordsToUse: List<String>,
+            difficulty: GameDifficulty,
+            languageProficiency: LanguageProficiency,
+        ): String {
+            val details = GenerateGamePromptData(language, wordsToUse, difficulty, languageProficiency.proficiency)
+            val amountOfQuestions: Int = difficulty.getNumberOfWordsForCrossword()
+
+            return prepareGameGenerationPrompt(
+                details = details,
+                gameTypeDescription = "Generate a foreign language practicing crossword.",
+                expectedResponseJSON = """
+                {
+                     answer: string // Either a new word or a short phrase. Do not use a word from the list provided
+                     answerExplanation: string // DO NOT include an answer in its explanation. Generate this in the ${languageProficiency.generativeContentLanguage} language
+                     questions: {
+                       word: string // Use words for the provided list. Each word can be used only once
+                       clue: string // DO NOT include the word in its clue. Generate this in the ${languageProficiency.generativeContentLanguage} language
+                     }[] // A list of $amountOfQuestions with words from the provided list
                }
-               
-               Words: [ ${wordsToUse.joinToString(", ") { it }} ]
-            """.trimIndent()
+               """.trimIndent()
+            )
+        }
+
+        fun generateWordsTypingGamePrompt(
+            language: LanguageName,
+            wordsToUse: List<String>,
+            difficulty: GameDifficulty,
+            languageProficiency: LanguageProficiency,
+        ): String {
+            val details = GenerateGamePromptData(language, wordsToUse, difficulty, languageProficiency.proficiency)
+            val amountOfQuestions: Int = difficulty.getNumberOfWordsForWordsTypingGame()
+
+            return prepareGameGenerationPrompt(
+                details = details,
+                gameTypeDescription = "Create a word typing game designed for practicing vocabulary in a foreign language",
+                expectedResponseJSON = """
+                   Map<string, string> where each key is a word from the provided list, 
+                   and the corresponding value is a clue that describes the word without including the word itself. 
+                   
+                   The clues should be in ${languageProficiency.generativeContentLanguage}.
+
+                   You will generate $amountOfQuestions such pairs.
+                   
+                   Output the result in the following format:
+
+                   { 
+                       'word1': 'Clue for word1 in the specified language', 
+                       'word2': 'Clue for word2 in the specified language', 
+                       ...
+                   } 
+               """.trimIndent()
+            )
+        }
     }
 
-    // TODO: Gather all prompts here
-    fun generateWordManualPrompt(
-        word: String,
-        wordLanguage: LanguageName,
-        desiredLanguage: LanguageName,
-        proficiency: LanguageProficiencyLevel,
-        generativeContentLanguage: LanguageName,
-    ): String {
-        return """
+    object AIWords {
+
+        fun generateWordManualPrompt(
+            word: String,
+            wordLanguage: LanguageName,
+            desiredLanguage: LanguageName,
+            proficiency: LanguageProficiencyLevel,
+            generativeContentLanguage: LanguageName,
+        ): String {
+            return """
                 Response as a foreign language tutor. Generate a manual entry for $wordLanguage "$word" at $proficiency proficiency level in $desiredLanguage language. 
                 Explain always the most common usage of the word, do not provide any rare or outdated meanings.
 
@@ -69,5 +105,7 @@ object Prompts {
                     - WORD_MISSPELLED if the word is misspelled
                     - NON_EXISTENT_WORD if the word does not exist in the language
             """.trimIndent()
+        }
+
     }
 }

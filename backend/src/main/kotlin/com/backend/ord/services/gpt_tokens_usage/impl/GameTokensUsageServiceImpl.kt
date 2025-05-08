@@ -23,9 +23,8 @@ class GameTokensUsageServiceImpl(
     override fun save(
         user: User,
         gameType: GameType,
-        leadingLanguage: LanguageName,
+        language: LanguageName,
         gameDifficulty: GameDifficulty,
-        instructionLanguage: LanguageName,
         consumptionType: GamesGPTTokensConsumptionType,
         inputTokens: Int,
         outputTokens: Int
@@ -34,11 +33,10 @@ class GameTokensUsageServiceImpl(
             GameTokensUsage(
                 user = user,
 
+                language = language,
                 gameType = gameType,
                 gameDifficulty = gameDifficulty,
-                translatedFrom = leadingLanguage,
                 consumptionType = consumptionType,
-                instructionLanguage = instructionLanguage,
 
                 inputTokens = inputTokens,
                 outputTokens = outputTokens,

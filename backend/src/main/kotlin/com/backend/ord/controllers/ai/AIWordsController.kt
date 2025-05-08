@@ -44,7 +44,7 @@ class AIWordsController(
         @RequestParam(name = "level") receivedProficiencyLevel: LanguageProficiencyLevel?,
         @RequestParam(name = "translateTo") receivedTranslateToLanguage: LanguageName?
     ): ResponseEntity<GenerateWordManualAIResponse> {
-        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request);
+        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         val userProficiencyInRequestedLanguage: LanguageProficiency =
             languageProficiencyService.findUserProficiencyInLanguage(user.id, originalLanguage)
@@ -57,7 +57,7 @@ class AIWordsController(
 
         // Create the request
         val openAIRequest = openAIRequestFactory.createRequest(
-            prompt = Prompts.generateWordManualPrompt(
+            prompt = Prompts.AIWords.generateWordManualPrompt(
                 word = word,
                 wordLanguage = originalLanguage,
                 desiredLanguage = translateTo,
@@ -85,7 +85,7 @@ class AIWordsController(
                 contains("NON_EXISTENT_WORD") -> throw BadRequestException("The word $word does not exist in the language $originalLanguage.")
 
                 else -> {
-                    val result = jsonObjectMapper.readValue<GenerateWordManualAIResponse>(this);
+                    val result = jsonObjectMapper.readValue<GenerateWordManualAIResponse>(this)
                     result.originalWord = word
 
                     return ResponseEntity.ok().body(result)

@@ -17,9 +17,9 @@ class MockBanks(
         List<BankInJSON>,
         BankInJSON
         > {
-    private lateinit var bankGroups: List<BankGroup>;
+    private lateinit var bankGroups: List<BankGroup>
 
-    override val pathToJSONFile: String = "/banks/banks.json"
+    override val pathToJsonFile: String = "mocks/banks/banks.json"
 
     override fun convertToEntity(
         jsonData: BankInJSON,
@@ -36,15 +36,14 @@ class MockBanks(
         )
     }
 
-    override fun typeReference(): TypeReference<List<BankInJSON>> {
-        return object : TypeReference<List<BankInJSON>>() {};
-    }
+    override val jsonFileContentTypeRef: TypeReference<List<BankInJSON>> =
+        object : TypeReference<List<BankInJSON>>() {}
 
     fun seedFromJSONFile(
         user: User,
         bankGroups: List<BankGroup>
     ): List<Bank> {
-        this.bankGroups = bankGroups;
+        this.bankGroups = bankGroups
 
         return this.seedFromJSONFile(user)
     }

@@ -14,11 +14,10 @@ class GameTokensUsageMapperImpl(
         return GameTokensUsage(
             id = dto.id,
 
+            language = dto.language,
             gameType = dto.gameType,
             gameDifficulty = dto.gameDifficulty,
             consumptionType = dto.consumptionType,
-            translatedFrom = dto.translatedFrom,
-            instructionLanguage = dto.instructionLanguage,
 
             cost = dto.cost,
             inputTokens = dto.inputTokens,
@@ -37,11 +36,10 @@ class GameTokensUsageMapperImpl(
         return GameTokensUsageDTO(
             id = entity.id,
 
+            language = entity.language,
             gameType = entity.gameType,
             gameDifficulty = entity.gameDifficulty,
             consumptionType = entity.consumptionType,
-            translatedFrom = entity.translatedFrom,
-            instructionLanguage = entity.instructionLanguage,
 
             cost = entity.cost,
             inputTokens = entity.inputTokens,

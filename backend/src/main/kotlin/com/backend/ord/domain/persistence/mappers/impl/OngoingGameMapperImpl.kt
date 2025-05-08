@@ -2,11 +2,13 @@ package com.backend.ord.domain.persistence.mappers.impl
 
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.dto.OngoingGameDTO
-import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
+import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.entities.OngoingGame
+import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
+import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.domain.persistence.mappers.UserMapper
-import com.backend.ord.enums.persistence.game.GameType
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Component
 
@@ -17,26 +19,19 @@ class OngoingGameMapperImpl(
     val jsonObjectMapper = jacksonObjectMapper()
 
     override fun toCrosswordDTO(entity: OngoingGame): OngoingCrosswordGameDTO {
-        return OngoingCrosswordGameDTO(
-            id = entity.id,
-
-            properAnswers = jsonObjectMapper.readValue(entity.properAnswers, CrosswordProperAnswers::class.java),
-
-            type = entity.type,
-            language = entity.language,
-            difficulty = entity.difficulty,
-
-            user = userMapper.toDTO(entity.user),
-            createdAt = entity.createdAt
-        )
+        return entity.convertToCertainDTO(object : TypeReference<CrosswordProperAnswers>() {})
     }
 
-    override fun toDTO(entity: OngoingGame): OngoingGameDTO<*> {
-        return when (entity.type) {
-            GameType.CROSSWORD -> toCrosswordDTO(entity)
-            else -> throw IllegalArgumentException("Invalid game type")
-        }
+    override fun toWordsTypingDTO(entity: OngoingGame): OngoingWordsTypingGameDTO {
+        return entity.convertToCertainDTO(object : TypeReference<WordsTypingProperAnswers>() {})
     }
+
+//    override fun toDTO(entity: OngoingGame): OngoingGameDTO<*> {
+//        return when (entity.type) {
+//            GameType.CROSSWORD -> toCrosswordDTO(entity)
+//            else -> throw IllegalArgumentException("Invalid game type")
+//        }
+//    }
 
     override fun toEntity(dto: OngoingGameDTO<*>): OngoingGame {
         return OngoingGame(
@@ -49,6 +44,18 @@ class OngoingGameMapperImpl(
 
             user = userMapper.toEntity(dto.user),
             createdAt = dto.createdAt
+        )
+    }
+
+    private fun <T : Any> OngoingGame.convertToCertainDTO(typeReference: TypeReference<T>): OngoingGameDTO<T> {
+        return OngoingGameDTO(
+            id = id,
+            properAnswers = jsonObjectMapper.readValue(properAnswers, typeReference),
+            type = type,
+            language = language,
+            difficulty = difficulty,
+            user = userMapper.toDTO(user),
+            createdAt = createdAt
         )
     }
 }

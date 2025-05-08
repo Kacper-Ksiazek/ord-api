@@ -1,16 +1,17 @@
 package com.backend.ord.domain.persistence.dto
 
-import com.backend.ord.domain.persistence.embedded.game_proper_answers.CrosswordProperAnswers
+import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
+import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
 import java.time.Instant
 import java.util.*
 
-data class OngoingGameDTO<ProperAnswers>(
+data class OngoingGameDTO<TProperAnswers>(
     val id: UUID = UUID.randomUUID(),
 
-    val properAnswers: ProperAnswers,
+    val properAnswers: TProperAnswers,
 
     val type: GameType,
     val language: LanguageName,
@@ -23,3 +24,4 @@ data class OngoingGameDTO<ProperAnswers>(
 )
 
 typealias OngoingCrosswordGameDTO = OngoingGameDTO<CrosswordProperAnswers>
+typealias OngoingWordsTypingGameDTO = OngoingGameDTO<WordsTypingProperAnswers>
