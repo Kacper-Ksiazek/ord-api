@@ -39,7 +39,7 @@ object Prompts {
                        clue: string // DO NOT include the word in its clue. Generate this in the ${languageProficiency.generativeContentLanguage} language
                      }[] // A list of $amountOfQuestions with words from the provided list
                }
-               """.trimIndent()
+               """
             )
         }
 
@@ -73,6 +73,31 @@ object Prompts {
                """.trimIndent()
             )
         }
+
+        fun generateSentencesWritingGamePrompt(
+            language: LanguageName,
+            wordsToUse: List<String>,
+            difficulty: GameDifficulty,
+            languageProficiency: LanguageProficiency,
+        ): String {
+            val details = GenerateGamePromptData(language, wordsToUse, difficulty, languageProficiency.proficiency)
+
+            return prepareGamePrompt(
+                details = details,
+                gameTypeDescription = """
+                    You are a writing tutor in a vocabulary learning app. Your task is to generate one topic for each word. 
+                    
+                    These topics should encourage users to write cohesive sentences that clearly demonstrate their understanding of each word. 
+                    
+                    Keep the topics casual and straightforward, allowing 
+                    users to respond in just one or two sentences, rather than writing a full essay.
+                """.trimIndent(),
+                expectedResponseJSON = """
+                    "Your answer must adhere to this structure: Map<String, String>, where the keys are words, and the values are their corresponding topics.
+                """.trimIndent()
+            )
+        }
+
     }
 
     object AIWords {
