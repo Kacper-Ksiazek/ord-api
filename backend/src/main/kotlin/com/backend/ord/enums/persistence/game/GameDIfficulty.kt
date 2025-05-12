@@ -27,14 +27,30 @@ fun GameDifficulty.getNumberOfWordsForCrossword(): Int {
  *
  * It returns:
  * - 8 for [GameDifficulty.EASY]
- * - 14 for [GameDifficulty.MEDIUM]
- * - 20 for [GameDifficulty.HARD]
+ * - 12 for [GameDifficulty.MEDIUM]
+ * - 16 for [GameDifficulty.HARD]
  */
 fun GameDifficulty.getNumberOfWordsForWordsTypingGame(): Int {
     return when (this) {
         GameDifficulty.EASY -> 8
         GameDifficulty.MEDIUM -> 12
         GameDifficulty.HARD -> 16
+    }
+}
+
+/**
+ * Returns the number of words for the crossword based on the difficulty.
+ *
+ * It returns:
+ * - 3 for [GameDifficulty.EASY]
+ * - 5 for [GameDifficulty.MEDIUM]
+ * - 7 for [GameDifficulty.HARD]
+ */
+fun GameDifficulty.getNumberOfSentencesForSentencesWritingGame(): Int {
+    return when (this) {
+        GameDifficulty.EASY -> 3
+        GameDifficulty.MEDIUM -> 5
+        GameDifficulty.HARD -> 7
     }
 }
 
@@ -58,7 +74,7 @@ fun GameDifficulty.getNumberOfAllowedMistakes(): Int {
 fun GameDifficulty.getNumberOfLettersToReveal(): Int {
     return when (this) {
         /**
-         * [EASY] Probability:
+         * [GameDifficulty.EASY] Probability:
          * - 0: 30%
          * - 1: 40%
          * - 2: 20%
@@ -72,7 +88,7 @@ fun GameDifficulty.getNumberOfLettersToReveal(): Int {
         ).random()
 
         /**
-         * [MEDIUM] Probability:
+         * [GameDifficulty.MEDIUM] Probability:
          * - 0: 30%
          * - 1: 40%
          * - 2: 20%
@@ -86,7 +102,7 @@ fun GameDifficulty.getNumberOfLettersToReveal(): Int {
         ).random()
 
         /**
-         * [HARD] Probability:
+         * [GameDifficulty.HARD] Probability:
          * - 0: 50%
          * - 1: 30%
          * - 2: 10%
