@@ -20,6 +20,7 @@ import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.OpenAIAPIClientService
 import com.backend.ord.services.ai.dto.GeneratedCrosswordGame
+import com.backend.ord.services.ai.dto.GeneratedSentencesWritingGame
 import com.backend.ord.services.ai.dto.GeneratedWordsTypingGame
 import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedCrossword
 import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedWordsTyping
@@ -148,6 +149,14 @@ class AIGameServiceImpl(
 
         return GeneratedWordsTypingGame(aiGeneratedWordsTypingGame)
 
+    }
+
+    override fun generateSentencesWritingGame(
+        user: User,
+        language: LanguageName,
+        difficulty: GameDifficulty
+    ): GeneratedSentencesWritingGame {
+        TODO("Not yet implemented")
     }
 
 

@@ -15,5 +15,5 @@ data class StartedGameResponse<GameInstruction, ProperAnswers>(
 )
 
 typealias StartedCrosswordGameResponse = StartedGameResponse<CrosswordInstruction, CrosswordProperAnswers>
-
 typealias StartedWordsTypingGameResponse = StartedGameResponse<WordsTypingInstruction, WordsTypingProperAnswers>
+typealias StartedSentencesWritingGameResponse = StartedGameResponse

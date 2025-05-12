@@ -9,14 +9,26 @@ import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedWordsTyping
 import com.backend.ord.utils.hideLetters
 import java.util.*
 
+// ---
+// Data classes
+// ---
+
 data class GeneratedGame<GameInstruction, ProperAnswers>(
     val instruction: GameInstruction,
     val properAnswers: ProperAnswers
 )
 
-typealias GeneratedCrosswordGame = GeneratedGame<CrosswordInstruction, CrosswordProperAnswers>
+// ---
+// Types
+// ---
 
+typealias GeneratedCrosswordGame = GeneratedGame<CrosswordInstruction, CrosswordProperAnswers>
 typealias GeneratedWordsTypingGame = GeneratedGame<WordsTypingInstruction, WordsTypingProperAnswers>
+typealias GeneratedSentencesWritingGame = Map<String, String>
+
+// ---
+// Extensions
+// ---
 
 fun GeneratedWordsTypingGame(
     aiResponse: AIGeneratedWordsTyping,
