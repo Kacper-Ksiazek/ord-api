@@ -11,26 +11,30 @@ internal data class GenerateGamePromptData(
     val languageProficiency: LanguageProficiencyLevel,
 )
 
-internal fun prepareGameGenerationPrompt(
+internal fun prepareGamePrompt(
     details: GenerateGamePromptData,
     gameTypeDescription: String,
-    expectedResponseJSON: String
+    expectedResponseJSON: String,
+
 ): String {
+    val serializedWords = details.wordsToUse.mapIndexed { index, word ->
+        " ${index + 1}. $word"
+    }.joinToString("\n")
+
+
     return """
-       $gameTypeDescription. The game difficulty is set to ${details.difficulty}, and the foreign language is ${details.language} at ${details.languageProficiency} level.
+       $gameTypeDescription. 
+       
+       The game difficulty is set to ${details.difficulty}, and the foreign language is ${details.language} at ${details.languageProficiency} level.
    
-       I want my answer to match this JSON format:
+       Your response must adhere to this JSON format:
        
        $expectedResponseJSON
        
        Words: [ 
-       ${
-        details.wordsToUse.mapIndexed { index, word ->
-            " ${index + 1}. $word"
-        }.joinToString("\n")
-    } 
-    ]
+       $serializedWords 
+       ]
     
-    Do not add any additional words to the list! All words in the list are actual words in the ${details.language} language do not correct them.
+       Do not add any additional words to the list! All words in the list are actual words in the ${details.language} language do not correct them.
     """.trimIndent()
 }
