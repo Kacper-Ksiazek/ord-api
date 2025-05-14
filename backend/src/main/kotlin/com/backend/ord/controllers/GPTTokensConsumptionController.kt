@@ -4,7 +4,7 @@ import com.backend.ord.api.responses.gpt_tokens_usage.DetailedWordTokensUsage
 import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
 import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageWithinTimePeriod
 import com.backend.ord.api.responses.gpt_tokens_usage.toDetailedWordTokensUsage
-import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService

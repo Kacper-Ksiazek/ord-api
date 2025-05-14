@@ -1,7 +1,7 @@
 package com.backend.ord.controllers.games
 
 import com.backend.ord.api.requests.games.CancelGameRequest
-import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.services.GameService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid

@@ -1,6 +1,6 @@
 package com.backend.ord.shared.controllers
 
-import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.services.GameReviewService
 import com.backend.ord.services.GameService

@@ -1,5 +1,6 @@
-package com.backend.ord.config.security
+package com.backend.ord.config.security.jwt
 
+import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException
 import com.backend.ord.services.UserSessionService
 import io.jsonwebtoken.ExpiredJwtException

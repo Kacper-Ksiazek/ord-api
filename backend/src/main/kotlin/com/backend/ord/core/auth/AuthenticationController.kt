@@ -1,13 +1,13 @@
-package com.backend.ord.controllers
+package com.backend.ord.core.auth
 
 import com.backend.ord.api.requests.LoginRequest
 import com.backend.ord.api.requests.RegisterRequest
-import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.auth.jwt.JwtService
+import com.backend.ord.core.auth.service.AuthenticationService
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.exceptions.ForbiddenException
 import com.backend.ord.exceptions.UserNotFoundException
-import com.backend.ord.services.AuthenticationService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.dao.DataIntegrityViolationException

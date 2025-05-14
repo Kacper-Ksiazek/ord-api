@@ -1,4 +1,4 @@
-package com.backend.ord.domain.persistence.entities
+package com.backend.ord.core.auth.models
 
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.shared.models.IdentifiableUserResource
@@ -12,7 +12,7 @@ import java.util.*
 
 @Entity
 @Table(name = "user_sessions")
-data class UserSession(
+data class UserSessionEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

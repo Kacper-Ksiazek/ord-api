@@ -6,7 +6,7 @@ import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
-import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.WordDTO

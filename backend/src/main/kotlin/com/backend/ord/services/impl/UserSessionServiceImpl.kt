@@ -1,8 +1,8 @@
 package com.backend.ord.services.impl
 
-import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.auth.jwt.JwtService
+import com.backend.ord.core.auth.models.UserSessionEntity
 import com.backend.ord.core.user.service.UserService
-import com.backend.ord.domain.persistence.entities.UserSession
 import com.backend.ord.exceptions.UserNotFoundException
 import com.backend.ord.repositories.UserSessionRepository
 import com.backend.ord.services.UserSessionService
@@ -16,15 +16,15 @@ class UserSessionServiceImpl(
     private val jwtService: JwtService,
     private val userService: UserService
 ) : UserSessionService {
-    override fun save(userSession: UserSession): UserSession {
+    override fun save(userSession: UserSessionEntity): UserSessionEntity {
         return userSessionRepository.save(userSession)
     }
 
-    override fun findByToken(token: String): UserSession? {
+    override fun findByToken(token: String): UserSessionEntity? {
         return userSessionRepository.findByToken(token)
     }
 
-    override fun findByTokenAndUserId(token: String, userId: UUID): UserSession? {
+    override fun findByTokenAndUserId(token: String, userId: UUID): UserSessionEntity? {
         return userSessionRepository.findByTokenAndUserId(token, userId)
     }
 
@@ -34,7 +34,7 @@ class UserSessionServiceImpl(
         val user = userService.findById(userId) ?: throw UserNotFoundException(userId = userId)
 
         userSessionRepository.save(
-            UserSession(
+            UserSessionEntity(
                 token = token,
                 user = user
             )

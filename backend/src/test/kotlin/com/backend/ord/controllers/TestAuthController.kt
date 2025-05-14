@@ -2,12 +2,12 @@ package com.backend.ord.controllers
 
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.bases.ControllerTestBase
+import com.backend.ord.core.auth.models.UserSessionEntity
 import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.user.service.UserService
-import com.backend.ord.domain.persistence.entities.UserSession
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.services.UserSessionService
 import com.backend.ord.testing_utils.api_requests_factories.AuthRequestFactory
@@ -343,7 +343,7 @@ class TestAuthController @Autowired constructor(
         token: String,
         email: String = EMAIL
     ) {
-        val correspondingSession: UserSession = userSessionService.findByToken(token).also {
+        val correspondingSession: UserSessionEntity = userSessionService.findByToken(token).also {
             assertNotNull(it)
         }!!
 

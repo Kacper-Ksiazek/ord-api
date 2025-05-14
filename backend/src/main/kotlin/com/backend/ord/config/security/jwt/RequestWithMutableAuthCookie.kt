@@ -1,4 +1,4 @@
-package com.backend.ord.config.security
+package com.backend.ord.config.security.jwt
 
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest

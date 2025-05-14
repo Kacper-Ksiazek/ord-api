@@ -1,18 +1,18 @@
-package com.backend.ord.services.impl
+package com.backend.ord.core.auth.service.impl
 
 import com.backend.ord.api.requests.LoginRequest
 import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
-import com.backend.ord.config.security.JwtFactory
-import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.auth.jwt.JwtFactory
+import com.backend.ord.core.auth.jwt.JwtService
+import com.backend.ord.core.auth.service.AuthenticationService
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.enums.UserRole
 import com.backend.ord.exceptions.ForbiddenException
 import com.backend.ord.exceptions.UserNotFoundException
-import com.backend.ord.services.AuthenticationService
 import com.backend.ord.services.UserSessionService
-import com.backend.ord.utils.CookieUtils.deleteCookie
+import com.backend.ord.utils.CookieUtils
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.AuthenticationManager
@@ -87,6 +87,6 @@ class AuthenticationServiceImpl(
         userSessionService.deleteSessionByToken(token)
 
         // Delete JWT cookie
-        deleteCookie(jwtProperties.authCookieName, response)
+        CookieUtils.deleteCookie(jwtProperties.authCookieName, response)
     }
 }
