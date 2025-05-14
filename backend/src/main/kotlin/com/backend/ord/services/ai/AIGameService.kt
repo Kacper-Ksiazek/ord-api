@@ -3,9 +3,9 @@ package com.backend.ord.services.ai
 import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.services.ai.dto.GeneratedCrosswordGame
-import com.backend.ord.services.ai.dto.GeneratedSentencesWritingGame
-import com.backend.ord.services.ai.dto.GeneratedWordsTypingGame
+import com.backend.ord.services.ai.dto.generated_games.GeneratedCrosswordGame
+import com.backend.ord.services.ai.dto.generated_games.GeneratedSentencesWritingGame
+import com.backend.ord.services.ai.dto.generated_games.GeneratedWordsTypingGame
 
 interface AIGameService {
     fun generateCrosswordGame(

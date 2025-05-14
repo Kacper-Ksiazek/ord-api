@@ -19,11 +19,11 @@ import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.OpenAIAPIClientService
-import com.backend.ord.services.ai.dto.GeneratedCrosswordGame
-import com.backend.ord.services.ai.dto.GeneratedSentencesWritingGame
-import com.backend.ord.services.ai.dto.GeneratedWordsTypingGame
 import com.backend.ord.services.ai.dto.ai_responses.games.AIGeneratedCrosswordData
 import com.backend.ord.services.ai.dto.ai_responses.games.AIGeneratedWordsTypingData
+import com.backend.ord.services.ai.dto.generated_games.GeneratedCrosswordGame
+import com.backend.ord.services.ai.dto.generated_games.GeneratedSentencesWritingGame
+import com.backend.ord.services.ai.dto.generated_games.GeneratedWordsTypingGame
 import org.springframework.stereotype.Service
 
 @Service
