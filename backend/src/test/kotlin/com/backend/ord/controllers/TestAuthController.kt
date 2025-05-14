@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @AutoConfigureMockMvc
-@DisplayName("- AuthenticationController")
+@DisplayName("- AuthController")
 class TestAuthController @Autowired constructor(
     private val userSessionService: UserSessionService,
     private val userService: UserService,

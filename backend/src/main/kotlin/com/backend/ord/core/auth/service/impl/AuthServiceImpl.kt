@@ -5,7 +5,7 @@ import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.core.auth.jwt.JwtFactory
 import com.backend.ord.core.auth.jwt.JwtService
-import com.backend.ord.core.auth.service.AuthenticationService
+import com.backend.ord.core.auth.service.AuthService
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.enums.UserRole
@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class AuthenticationServiceImpl(
+class AuthServiceImpl(
     private val jwtService: JwtService,
     private val jwtProperties: JwtProperties,
     private val passwordEncoder: PasswordEncoder,
@@ -29,7 +29,7 @@ class AuthenticationServiceImpl(
     private val jwtFactory: JwtFactory,
     private val userRepository: UserRepository,
     private val userSessionService: UserSessionService
-) : AuthenticationService {
+) : AuthService {
 
     @Throws(UserNotFoundException::class)
     override fun register(

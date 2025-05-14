@@ -3,7 +3,7 @@ package com.backend.ord.core.auth
 import com.backend.ord.api.requests.LoginRequest
 import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.core.auth.jwt.JwtService
-import com.backend.ord.core.auth.service.AuthenticationService
+import com.backend.ord.core.auth.service.AuthService
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.exceptions.ForbiddenException
@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthenticationController(
+class AuthController(
     private val userMapper: UserMapper,
     private val jwtService: JwtService,
-    private val authService: AuthenticationService
+    private val authService: AuthService
 ) {
     @PostMapping("/register")
     fun register(

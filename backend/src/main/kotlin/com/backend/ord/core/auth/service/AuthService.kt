@@ -8,7 +8,7 @@ import com.backend.ord.exceptions.UserNotFoundException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 
-interface AuthenticationService {
+interface AuthService {
     @Throws(UserNotFoundException::class)
     fun register(
         request: RegisterRequest,
