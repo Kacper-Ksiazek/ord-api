@@ -1,8 +1,8 @@
-package com.backend.ord.services.bases
+package com.backend.ord.shared.services
 
 import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.exceptions.REST.NotFoundException
-import com.backend.ord.repositories.bases.UserResourceRepository
+import com.backend.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import java.util.*

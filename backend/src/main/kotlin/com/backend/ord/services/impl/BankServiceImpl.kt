@@ -1,12 +1,12 @@
 package com.backend.ord.services.impl
 
 import com.backend.ord.api.requests.bank.CreateBankRequest
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Bank
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.exceptions.REST.NotFoundException
-import com.backend.ord.repositories.bases.UserResourceRepository
 import com.backend.ord.services.BankService
+import com.backend.ord.shared.repositories.UserResourceRepository
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -17,7 +17,7 @@ class BankServiceImpl(
     override fun findByIdOrCreate(
         bankId: UUID?,
         bankToCreate: CreateBankRequest?,
-        user: User
+        user: UserEntity
     ): Bank? {
         if (bankToCreate != null && bankId != null) {
             throw BadRequestException("You cannot create a new bank and use an existing bank at the same time")

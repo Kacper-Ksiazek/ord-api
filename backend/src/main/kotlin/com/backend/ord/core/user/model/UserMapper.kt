@@ -1,14 +1,12 @@
-package com.backend.ord.domain.persistence.mappers.impl
+package com.backend.ord.core.user.model
 
-import com.backend.ord.domain.persistence.dto.UserDTO
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.domain.persistence.mappers.UserMapper
+import com.backend.ord.shared.models.MapperBase
 import org.springframework.stereotype.Component
 
 @Component
-class UserMapperImpl() : UserMapper {
-    override fun toEntity(dto: UserDTO): User {
-        return User(
+class UserMapper : MapperBase<UserEntity, UserDTO> {
+    override fun toEntity(dto: UserDTO): UserEntity {
+        return UserEntity(
             id = dto.id,
 
             name = dto.name,
@@ -22,7 +20,7 @@ class UserMapperImpl() : UserMapper {
         )
     }
 
-    override fun toDTO(entity: User): UserDTO {
+    override fun toDTO(entity: UserEntity): UserDTO {
         return UserDTO(
             id = entity.id,
 
@@ -36,5 +34,4 @@ class UserMapperImpl() : UserMapper {
             updatedAt = entity.updatedAt
         )
     }
-
 }

@@ -1,10 +1,10 @@
 package com.backend.ord.services.impl
 
 import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.user.service.UserService
 import com.backend.ord.domain.persistence.entities.UserSession
 import com.backend.ord.exceptions.UserNotFoundException
 import com.backend.ord.repositories.UserSessionRepository
-import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service

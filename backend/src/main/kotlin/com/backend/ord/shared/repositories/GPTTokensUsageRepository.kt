@@ -1,4 +1,4 @@
-package com.backend.ord.repositories.gpt_tokens_usage.bases
+package com.backend.ord.shared.repositories
 
 import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
 import org.springframework.data.jpa.repository.JpaRepository

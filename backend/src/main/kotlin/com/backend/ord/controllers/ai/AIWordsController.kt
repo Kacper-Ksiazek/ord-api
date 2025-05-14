@@ -4,8 +4,8 @@ import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.api.responses.GenerateWordManualAIResponse
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.LanguageProficiency
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
@@ -44,7 +44,7 @@ class AIWordsController(
         @RequestParam(name = "level") receivedProficiencyLevel: LanguageProficiencyLevel?,
         @RequestParam(name = "translateTo") receivedTranslateToLanguage: LanguageName?
     ): ResponseEntity<GenerateWordManualAIResponse> {
-        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         val userProficiencyInRequestedLanguage: LanguageProficiency =
             languageProficiencyService.findUserProficiencyInLanguage(user.id, originalLanguage)

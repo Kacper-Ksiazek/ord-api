@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.factories
 
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.enums.persistence.UserRole
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.user.model.enums.UserRole
 import com.backend.ord.seeders.EnumValuesGenerator
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
@@ -15,8 +15,8 @@ class UserMockFactory(
         email: String = faker.internet().emailAddress(),
         password: String = faker.internet().password(),
         role: UserRole = UserRole.USER
-    ): User {
-        return User(
+    ): UserEntity {
+        return UserEntity(
             name = name,
             email = email,
             password = passwordEncoder.encode(password),

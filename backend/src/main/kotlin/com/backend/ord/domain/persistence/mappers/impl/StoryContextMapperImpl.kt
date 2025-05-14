@@ -1,9 +1,9 @@
 package com.backend.ord.domain.persistence.mappers.impl
 
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.StoryContextDTO
 import com.backend.ord.domain.persistence.entities.StoryContext
 import com.backend.ord.domain.persistence.mappers.StoryContextMapper
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import org.springframework.stereotype.Component
 
 @Component

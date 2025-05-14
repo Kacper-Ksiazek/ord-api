@@ -1,6 +1,6 @@
-package com.backend.ord.domain.persistence.dto
+package com.backend.ord.core.user.model
 
-import com.backend.ord.enums.persistence.UserRole
+import com.backend.ord.core.user.model.enums.UserRole
 import com.backend.ord.enums.persistence.language.LanguageName
 import java.time.Instant
 import java.util.*

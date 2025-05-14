@@ -2,7 +2,7 @@ package com.backend.ord.services
 
 import com.backend.ord.api.requests.games.utils.WordUserAnswer
 import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.utils.data_classes.Percentage
@@ -13,7 +13,7 @@ interface GameReviewService {
         expectedAnswers: Map<UUID, String>,
         userAnswers: Set<WordUserAnswer>,
         difficulty: GameDifficulty,
-        user: User,
+        user: UserEntity,
         language: LanguageName
     ): Set<IdentifiableProperAnswer> {
         val reviewedQuestions = reviewUserAnswers(
@@ -38,7 +38,7 @@ interface GameReviewService {
     ): Set<IdentifiableProperAnswer>
 
     fun updateDBPointsForManyWords(
-        user: User,
+        user: UserEntity,
         language: LanguageName,
         reviewedQuestions: Set<IdentifiableProperAnswer>
     )

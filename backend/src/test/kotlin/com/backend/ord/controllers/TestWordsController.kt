@@ -10,18 +10,18 @@ import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.bases.ControllerTestBase
+import com.backend.ord.core.user.UserRepository
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.Bank
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.repositories.LanguageProficiencyRepository
-import com.backend.ord.repositories.UserRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
@@ -1431,7 +1431,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word can be deleted only by its owner`() {
-                val anotherUser: User = userSeeder.seedOneEntity()
+                val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val word = wordSeeder.seedOneEntityForUser(anotherUser)
 
@@ -1652,7 +1652,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word's bank cannot be changed by other user than the one who created it`() {
-                val anotherUser: User = userSeeder.seedOneEntity()
+                val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val word: Word = wordSeeder.seedOneEntityForUser(anotherUser)
 
@@ -1695,7 +1695,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word's bank cannot be changed if bank does not belong to the user`() {
-                val anotherUser: User = userSeeder.seedOneEntity()
+                val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val word: Word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
                 val bank: Bank = bankSeeder.seedOneEntityForUser(anotherUser)
@@ -1958,7 +1958,7 @@ class TestWordsController @Autowired constructor(
         inner class Negative {
             @Test
             fun `403 - Anonymous user cannot change words' bank`() {
-                val user: User = userSeeder.seedOneEntity()
+                val user: UserEntity = userSeeder.seedOneEntity()
 
                 val initialBank = bankSeeder.seedOneEntityForUser(user = user)
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
@@ -1982,7 +1982,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Words' bank cannot be changed by other user than the one who created them`() {
-                val anotherUser: User = userSeeder.seedOneEntity()
+                val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val bankToChange = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
@@ -2057,7 +2057,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Words' bank cannot be changed if bank does not belong to the user`() {
-                val anotherUser: User = userSeeder.seedOneEntity()
+                val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val bankOfAnotherUser: Bank = bankSeeder.seedOneEntityForUser(anotherUser)
@@ -2311,7 +2311,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - Word's property cannot be toggled by other user than the one who created it`() {
-                val anotherUser: User = userSeeder.seedOneEntity()
+                val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val word: Word = wordSeeder.seedOneEntityForUser(anotherUser)
 
@@ -2448,7 +2448,7 @@ class TestWordsController @Autowired constructor(
             @ParameterizedTest
             @EnumSource(WordToggleableProperty::class)
             fun `200 - Word of another user should no te toggled`(property: WordToggleableProperty) {
-                val anotherUser: User = userSeeder.seedOneEntity()
+                val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo
@@ -2550,7 +2550,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `404 - when all words do not belong to the user`() {
-                val anotherUser: User = userSeeder.seedOneEntity()
+                val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val words: List<Word> = wordSeeder.seedMultipleEntitiesForUser(
                     user = anotherUser

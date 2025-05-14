@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.mocks.words_gpt_tokens_usage
 
 import com.backend.ord.api.responses.gpt_tokens_usage.DetailedWordTokensUsage
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.WordTokensUsage
 import com.backend.ord.repositories.gpt_tokens_usage.WordTokensUsageRepository
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
@@ -21,7 +21,7 @@ class MockDetailedWordsGPTTokensConsumption(
 
     override fun convertToEntity(
         jsonData: DetailedWordTokensUsage,
-        user: User
+        user: UserEntity
     ): WordTokensUsage {
         return WordTokensUsage(
             word = jsonData.word,

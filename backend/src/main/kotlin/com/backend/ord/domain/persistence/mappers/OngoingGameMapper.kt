@@ -4,8 +4,8 @@ import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.dto.OngoingGameDTO
 import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.entities.OngoingGame
-import com.backend.ord.domain.persistence.mappers.bases.MapperBase
 import com.backend.ord.enums.persistence.game.GameType
+import com.backend.ord.shared.models.MapperBase
 
 interface OngoingGameMapper : MapperBase<OngoingGame, OngoingGameDTO<*>> {
     fun toCrosswordDTO(entity: OngoingGame): OngoingCrosswordGameDTO

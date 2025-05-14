@@ -1,7 +1,7 @@
 package com.backend.ord.repositories
 
 import com.backend.ord.domain.persistence.entities.BankGroup
-import com.backend.ord.repositories.bases.UserResourceRepository
+import com.backend.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.util.*

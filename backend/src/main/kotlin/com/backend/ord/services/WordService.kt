@@ -6,14 +6,14 @@ import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.infrastructure.CountingSummary
 import com.backend.ord.domain.persistence.dto.WordDTO
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
-import com.backend.ord.services.bases.UserResourceService
+import com.backend.ord.shared.services.UserResourceService
 import java.util.*
 
 
@@ -55,7 +55,7 @@ interface WordService : UserResourceService<Word> {
         wordExtraMark: WordExtraMark? = null,
         sortBy: GetAllWordsSortOptions? = null,
 
-        user: User,
+        user: UserEntity,
 
         page: Int = 0,
         perPage: Int = 10
@@ -63,7 +63,7 @@ interface WordService : UserResourceService<Word> {
 
     fun findOneWord(
         wordId: UUID,
-        user: User
+        user: UserEntity
     ): SingleWordResponse
 
     fun toggleProperty(
@@ -80,7 +80,7 @@ interface WordService : UserResourceService<Word> {
 
     fun saveNewWord(
         word: WordDTO,
-        user: User
+        user: UserEntity
     ): WordDTO
 
     fun countCreated(language: LanguageName, userId: UUID): CountingSummary

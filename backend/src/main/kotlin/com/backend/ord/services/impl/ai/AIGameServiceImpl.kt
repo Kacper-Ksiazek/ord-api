@@ -3,9 +3,9 @@ package com.backend.ord.services.impl.ai
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
 import com.backend.ord.domain.persistence.entities.LanguageProficiency
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
@@ -33,13 +33,13 @@ class AIGameServiceImpl(
     private val openAIAPIClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService,
 ) : AIGameService {
-    private fun User.getProficiencyInLanguage(language: LanguageName): LanguageProficiency {
+    private fun UserEntity.getProficiencyInLanguage(language: LanguageName): LanguageProficiency {
         return languageProficiencyService
             .findUserProficiencyInLanguageOrThrow(this.id, language)
     }
 
     override fun generateCrosswordGame(
-        user: User,
+        user: UserEntity,
         language: LanguageName,
         difficulty: GameDifficulty
     ): GeneratedCrosswordGame {
@@ -101,7 +101,7 @@ class AIGameServiceImpl(
     }
 
     override fun generateWordsTypingGame(
-        user: User,
+        user: UserEntity,
         language: LanguageName,
         difficulty: GameDifficulty
     ): GeneratedWordsTypingGame {
@@ -152,7 +152,7 @@ class AIGameServiceImpl(
     }
 
     override fun generateSentencesWritingGame(
-        user: User,
+        user: UserEntity,
         language: LanguageName,
         difficulty: GameDifficulty
     ): GeneratedSentencesWritingGame {
@@ -161,7 +161,7 @@ class AIGameServiceImpl(
 
 
     private fun getWordsForGame(
-        user: User,
+        user: UserEntity,
         language: LanguageName,
         n: Int,
         maximumWordLength: Int? = null,

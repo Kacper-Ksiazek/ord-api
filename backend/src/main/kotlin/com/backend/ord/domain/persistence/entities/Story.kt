@@ -1,5 +1,6 @@
 package com.backend.ord.domain.persistence.entities
 
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.persistence.Table
@@ -31,7 +32,7 @@ data class Story(
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id")
-    override var user: User,
+    override var user: UserEntity,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)

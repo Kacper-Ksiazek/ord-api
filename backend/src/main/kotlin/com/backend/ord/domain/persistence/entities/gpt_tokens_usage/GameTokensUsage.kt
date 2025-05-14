@@ -1,6 +1,6 @@
 package com.backend.ord.domain.persistence.entities.gpt_tokens_usage
 
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
@@ -56,7 +56,7 @@ data class GameTokensUsage(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "user_id")
-    override var user: User,
+    override var user: UserEntity,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

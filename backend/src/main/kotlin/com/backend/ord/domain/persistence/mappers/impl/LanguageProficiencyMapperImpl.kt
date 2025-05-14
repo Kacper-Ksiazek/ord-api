@@ -1,5 +1,6 @@
 package com.backend.ord.domain.persistence.mappers.impl
 
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.LanguageProficiencyDTO
 import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.domain.persistence.mappers.LanguageProficiencyMapper
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class LanguageProficiencyMapperImpl(
-    private val userMapper: UserMapperImpl
+    private val userMapper: UserMapper
 ) : LanguageProficiencyMapper {
     override fun toEntity(dto: LanguageProficiencyDTO): LanguageProficiency {
         return LanguageProficiency(

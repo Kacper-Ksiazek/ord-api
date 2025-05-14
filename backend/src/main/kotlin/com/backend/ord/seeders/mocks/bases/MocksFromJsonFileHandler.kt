@@ -1,6 +1,6 @@
 package com.backend.ord.seeders.mocks.bases
 
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
@@ -18,12 +18,12 @@ interface MocksFromJsonFileHandler<
     /**
      * Converts the user to an entity
      */
-    fun convertToEntity(jsonData: JSONDataModelType, user: User): RepositoryTargetType
+    fun convertToEntity(jsonData: JSONDataModelType, user: UserEntity): RepositoryTargetType
 
     /**
      * Seeds the data from the JSON file to the database. Returns the number of records seeded
      */
-    fun seedFromJSONFile(user: User): List<RepositoryTargetType> {
+    fun seedFromJSONFile(user: UserEntity): List<RepositoryTargetType> {
         val data = readFromJSONFile().map {
             this.convertToEntity(
                 jsonData = it,

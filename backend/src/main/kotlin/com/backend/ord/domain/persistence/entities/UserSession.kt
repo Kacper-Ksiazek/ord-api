@@ -1,5 +1,6 @@
 package com.backend.ord.domain.persistence.entities
 
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -22,7 +23,7 @@ data class UserSession(
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    override var user: User,
+    override var user: UserEntity,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

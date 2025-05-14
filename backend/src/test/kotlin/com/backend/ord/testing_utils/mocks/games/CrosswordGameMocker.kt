@@ -1,11 +1,11 @@
 package com.backend.ord.testing_utils.mocks.games
 
 import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
+import com.backend.ord.core.user.model.UserDTO
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
-import com.backend.ord.domain.persistence.dto.UserDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.repositories.OngoingGameRepository
 import com.backend.ord.repositories.WordRepository

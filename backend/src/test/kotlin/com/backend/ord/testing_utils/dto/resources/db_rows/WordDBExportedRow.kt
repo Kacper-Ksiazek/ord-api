@@ -1,6 +1,6 @@
 package com.backend.ord.testing_utils.dto.resources.db_rows
 
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName
@@ -21,7 +21,7 @@ data class WordDBExportedRow(
     val translatedFrom: LanguageName,
     val translatedTo: LanguageName
 ) {
-    fun convertIntoWordEntity(user: User): Word {
+    fun convertIntoWordEntity(user: UserEntity): Word {
         return Word(
             type = type,
             extraMark = extraMark,

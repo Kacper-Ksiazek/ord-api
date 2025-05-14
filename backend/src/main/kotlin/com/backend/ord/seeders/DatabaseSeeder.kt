@@ -1,7 +1,7 @@
 package com.backend.ord.seeders
 
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.enums.persistence.UserRole
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.user.model.enums.UserRole
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
@@ -82,7 +82,7 @@ class DatabaseSeeder(
     private fun createMyUser(): String {
         // 1. Create a user
         val kacper = userSeeder.seedOneEntity(
-            User(
+            UserEntity(
                 name = "Kacper Książek",
                 email = "kacper.b.ksiazek@gmail.com",
                 password = passwordEncoder.encode("zaq1"),

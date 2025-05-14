@@ -5,11 +5,11 @@ import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.config.security.JwtFactory
 import com.backend.ord.config.security.JwtService
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.enums.persistence.UserRole
+import com.backend.ord.core.user.UserRepository
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.user.model.enums.UserRole
 import com.backend.ord.exceptions.ForbiddenException
 import com.backend.ord.exceptions.UserNotFoundException
-import com.backend.ord.repositories.UserRepository
 import com.backend.ord.services.AuthenticationService
 import com.backend.ord.services.UserSessionService
 import com.backend.ord.utils.CookieUtils.deleteCookie
@@ -35,10 +35,10 @@ class AuthenticationServiceImpl(
     override fun register(
         request: RegisterRequest,
         response: HttpServletResponse
-    ): User {
+    ): UserEntity {
         // Save user to database
         val user = userRepository.save( // Create user object
-            User(
+            UserEntity(
                 name = request.name,
                 email = request.email,
                 password = passwordEncoder.encode(request.password),
@@ -58,7 +58,7 @@ class AuthenticationServiceImpl(
     override fun login(
         request: LoginRequest,
         response: HttpServletResponse
-    ): User {
+    ): UserEntity {
         val user = userRepository.findByEmail(request.email)
             ?: throw UserNotFoundException(email = request.email)
 

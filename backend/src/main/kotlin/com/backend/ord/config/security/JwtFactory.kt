@@ -1,13 +1,12 @@
 package com.backend.ord.config.security
 
 import com.backend.ord.config.properties.JwtProperties
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.exceptions.UserNotFoundException
 import com.backend.ord.services.UserSessionService
 import com.backend.ord.utils.CookieUtils.createCookie
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Component
-import kotlin.Throws
 
 @Component
 class JwtFactory(
@@ -17,7 +16,7 @@ class JwtFactory(
 ) {
     @Throws(UserNotFoundException::class)
     fun createTokenForUser(
-        user: User,
+        user: UserEntity,
         response: HttpServletResponse
     ): String? {
         // Generate token
@@ -37,7 +36,7 @@ class JwtFactory(
     }
 
     // ### Helpers
-    private fun getExtraClaims(user: User): Map<String, Any> {
+    private fun getExtraClaims(user: UserEntity): Map<String, Any> {
         val claimName = jwtProperties.userIdClaimName
         val claimValue = user.id.toString()
 

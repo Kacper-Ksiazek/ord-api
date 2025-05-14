@@ -1,6 +1,6 @@
 package com.backend.ord.services
 
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
@@ -13,7 +13,7 @@ interface UserActivityLogService {
      * Returns true if the log was successfully saved and false if it wasn't
      */
     fun log(
-        user: User,
+        user: UserEntity,
         type: UserActivityType,
         language: LanguageName,
         difficulty: GameDifficulty? = null

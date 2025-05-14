@@ -1,10 +1,10 @@
 package com.backend.ord.domain.persistence.mappers.impl
 
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.BankDTO
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.mappers.BankGroupMapper
 import com.backend.ord.domain.persistence.mappers.BankMapper
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import org.springframework.stereotype.Component
 
 @Component

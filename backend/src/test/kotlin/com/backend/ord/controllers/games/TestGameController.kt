@@ -2,9 +2,10 @@ package com.backend.ord.controllers.games
 
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.games.bases.GameControllerTestBase
+import com.backend.ord.core.user.UserRepository
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameResult
 import com.backend.ord.repositories.*

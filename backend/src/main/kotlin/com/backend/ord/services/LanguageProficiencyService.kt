@@ -2,7 +2,7 @@ package com.backend.ord.services
 
 import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.services.bases.UserResourceService
+import com.backend.ord.shared.services.UserResourceService
 import java.util.*
 
 interface LanguageProficiencyService : UserResourceService<LanguageProficiency> {

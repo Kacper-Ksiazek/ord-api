@@ -1,5 +1,6 @@
 package com.backend.ord.domain.persistence.entities
 
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.validation.constraints.Size
@@ -28,7 +29,7 @@ data class BankGroup(
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    override var user: User,
+    override var user: UserEntity,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

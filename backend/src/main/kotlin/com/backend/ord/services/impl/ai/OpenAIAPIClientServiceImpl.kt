@@ -4,7 +4,7 @@ import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.api.responses.openai.OpenAIResponse
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.config.properties.OpenAIProperties
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.language.LanguageName
@@ -38,7 +38,7 @@ class OpenAIAPIClientServiceImpl(
         difficulty: GameDifficulty,
         consumptionType: GamesGPTTokensConsumptionType,
 
-        user: User,
+        user: UserEntity,
 
         parseResponseBody: (T) -> T,
         validateResponseBody: (T?) -> Boolean

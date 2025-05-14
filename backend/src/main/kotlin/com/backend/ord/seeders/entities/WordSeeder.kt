@@ -1,10 +1,10 @@
 package com.backend.ord.seeders.entities
 
-import com.backend.ord.domain.persistence.dto.UserDTO
+import com.backend.ord.core.user.model.UserDTO
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.entities.Bank
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.factories.WordMockFactory
@@ -30,7 +30,7 @@ class WordSeeder(
     }
 
     fun seedOneEntityForUser(
-        user: User,
+        user: UserEntity,
         bank: Optional<Bank?> = Optional(null, false),
         language: LanguageName = LanguageName.ENGLISH
     ): Word {
@@ -53,7 +53,7 @@ class WordSeeder(
     }
 
     fun seedMultipleEntitiesForUser(
-        user: User,
+        user: UserEntity,
         amount: Int = 5,
         bank: Optional<Bank?> = Optional(null, false),
         language: LanguageName = LanguageName.ENGLISH

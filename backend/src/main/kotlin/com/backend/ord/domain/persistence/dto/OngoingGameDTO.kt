@@ -1,5 +1,6 @@
 package com.backend.ord.domain.persistence.dto
 
+import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers
 import com.backend.ord.enums.persistence.game.GameDifficulty

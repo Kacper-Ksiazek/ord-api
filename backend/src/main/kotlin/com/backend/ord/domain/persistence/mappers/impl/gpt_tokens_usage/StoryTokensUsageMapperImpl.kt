@@ -1,9 +1,9 @@
 package com.backend.ord.domain.persistence.mappers.impl.gpt_tokens_usage
 
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.gpt_tokens_usage.StoryTokensUsageDTO
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.StoryTokensUsage
 import com.backend.ord.domain.persistence.mappers.StoryMapper
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.domain.persistence.mappers.gpt_tokens_usage.StoryTokensUsageMapper
 import org.springframework.stereotype.Component
 

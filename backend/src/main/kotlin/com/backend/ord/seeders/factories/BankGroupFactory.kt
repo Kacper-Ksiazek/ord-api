@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.factories
 
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.BankGroup
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.seeders.entities.UserSeeder
 import org.springframework.stereotype.Component
 
@@ -12,7 +12,7 @@ class BankGroupFactory(
     fun mockEntity(
         name: String = faker.name().fullName(),
         color: String = faker.color().hex(),
-        user: User = userSeeder.seedOneEntity()
+        user: UserEntity = userSeeder.seedOneEntity()
     ): BankGroup {
         return BankGroup(
             name = name,

@@ -1,5 +1,6 @@
 package com.backend.ord.domain.persistence.mappers.impl
 
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.QuicklyAddedWordDTO
 import com.backend.ord.domain.persistence.entities.QuicklyAddedWord
 import com.backend.ord.domain.persistence.mappers.QuicklyAddedWordMapper
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class QuicklyAddedWordMapperImpl(
-    private val userMapper: UserMapperImpl
+    private val userMapper: UserMapper
 ) : QuicklyAddedWordMapper {
     override fun toEntity(dto: QuicklyAddedWordDTO): QuicklyAddedWord {
         return QuicklyAddedWord(

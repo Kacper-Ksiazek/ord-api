@@ -1,8 +1,8 @@
 package com.backend.ord.seeders.mocks.banks
 
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.BankGroup
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.repositories.BankRepository
 import com.backend.ord.seeders.mocks.banks.json_data_models.BankInJSON
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
@@ -23,7 +23,7 @@ class MockBanks(
 
     override fun convertToEntity(
         jsonData: BankInJSON,
-        user: User
+        user: UserEntity
     ): Bank {
 
         return Bank(
@@ -40,7 +40,7 @@ class MockBanks(
         object : TypeReference<List<BankInJSON>>() {}
 
     fun seedFromJSONFile(
-        user: User,
+        user: UserEntity,
         bankGroups: List<BankGroup>
     ): List<Bank> {
         this.bankGroups = bankGroups

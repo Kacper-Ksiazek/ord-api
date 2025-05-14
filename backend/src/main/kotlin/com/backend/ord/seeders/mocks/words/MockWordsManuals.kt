@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.mocks.words
 
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Bank
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.repositories.WordRepository
@@ -28,7 +28,7 @@ class MockWordsManuals(
 
     override fun convertToEntity(
         jsonData: AIGeneratedWordManualInJSON,
-        user: User
+        user: UserEntity
     ): Word {
         val bank: Bank? = getRandomBank()
 
@@ -57,7 +57,7 @@ class MockWordsManuals(
     }
 
     fun seedFromJSONFile(
-        user: User,
+        user: UserEntity,
         banks: List<Bank>
     ): List<Word> {
         this.availableBanks = banks

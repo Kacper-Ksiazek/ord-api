@@ -1,7 +1,7 @@
 package com.backend.ord.domain.persistence.mappers
 
-import com.backend.ord.domain.persistence.dto.UserDTO
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.domain.persistence.mappers.bases.MapperBase
+import com.backend.ord.core.user.model.UserDTO
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.shared.models.MapperBase
 
-interface UserMapper : MapperBase<User, UserDTO>
+interface userMapper : MapperBase<UserEntity, UserDTO>

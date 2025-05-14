@@ -1,4 +1,4 @@
-package com.backend.ord.domain.persistence.mappers.bases
+package com.backend.ord.shared.models
 
 interface MapperBase<Entity, DTO> {
     fun toDTO(entity: Entity): DTO

@@ -1,9 +1,9 @@
 package com.backend.ord.seeders.factories
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.BankGroup
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.seeders.entities.UserSeeder
 import org.springframework.stereotype.Component
 import java.util.*
@@ -15,7 +15,7 @@ class BankMockFactory(
     fun mockEntity(
         name: String = faker.name().fullName(),
         description: String = faker.lorem().sentence(),
-        user: User = userSeeder.seedOneEntity(),
+        user: UserEntity = userSeeder.seedOneEntity(),
         bankGroup: BankGroup? = null
     ): Bank {
         return Bank(

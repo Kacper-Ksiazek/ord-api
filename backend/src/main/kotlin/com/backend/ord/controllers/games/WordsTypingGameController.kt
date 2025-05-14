@@ -5,11 +5,11 @@ import com.backend.ord.api.requests.games.WordsTypingToFinishRequest
 import com.backend.ord.api.responses.games.FinishedWordsTypingGameResponse
 import com.backend.ord.api.responses.games.bases.StartedWordsTypingGameResponse
 import com.backend.ord.api.responses.games.utils.computeFinalScore
-import com.backend.ord.controllers.games.bases.GameControllerBase
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
 import com.backend.ord.domain.persistence.entities.OngoingGame
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.enums.persistence.game.GameType
+import com.backend.ord.shared.controllers.GameControllerBase
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -27,7 +27,7 @@ class WordsTypingGameController : GameControllerBase() {
         request: HttpServletRequest,
         @Valid @RequestBody body: StartGameRequest
     ): ResponseEntity<StartedWordsTypingGameResponse> {
-        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         val (instruction, properAnswers) = aiGameService.generateWordsTypingGame(
             user = user,
@@ -60,7 +60,7 @@ class WordsTypingGameController : GameControllerBase() {
         request: HttpServletRequest,
         @Valid @RequestBody body: WordsTypingToFinishRequest
     ): ResponseEntity<FinishedWordsTypingGameResponse> {
-        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         val game: OngoingWordsTypingGameDTO = ongoingGameMapper.toWordsTypingDTO(
             entity = ongoingGameService.findByIdOrFail(id = body.gameId, userId = user.id)

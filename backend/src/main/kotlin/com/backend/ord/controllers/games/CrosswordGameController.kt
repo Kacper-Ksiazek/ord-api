@@ -8,13 +8,13 @@ import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
 import com.backend.ord.api.responses.games.utils.ProperAnswer
 import com.backend.ord.api.responses.games.utils.computeFinalScore
 import com.backend.ord.config.GamesConfig
-import com.backend.ord.controllers.games.bases.GameControllerBase
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.entities.OngoingGame
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.services.GameReviewService
+import com.backend.ord.shared.controllers.GameControllerBase
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -34,7 +34,7 @@ class CrosswordGameController : GameControllerBase() {
         request: HttpServletRequest,
         @Valid @RequestBody body: StartGameRequest
     ): ResponseEntity<StartedCrosswordGameResponse> {
-        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         val (instruction, properAnswers) = aiGameService.generateCrosswordGame(
             user = user,
@@ -70,7 +70,7 @@ class CrosswordGameController : GameControllerBase() {
         request: HttpServletRequest,
         @Valid @RequestBody body: CrosswordToFinishRequest
     ): ResponseEntity<FinishedCrosswordGameResponse> {
-        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         val game: OngoingCrosswordGameDTO = ongoingGameMapper.toCrosswordDTO(
             entity = ongoingGameService.findByIdOrFail(id = body.gameId, userId = user.id)

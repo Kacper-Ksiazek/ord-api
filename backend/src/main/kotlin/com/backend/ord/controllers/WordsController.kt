@@ -7,12 +7,12 @@ import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.Bank
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.mappers.BankMapper
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.extensions.convertToSetExplicitly
@@ -87,7 +87,7 @@ class WordController(
         request: HttpServletRequest,
         @Valid @RequestBody body: CreateWordRequestData
     ): ResponseEntity<WordDTO> {
-        val user: User = jwtService.getAuthenticatedUser(request)!!
+        val user: UserEntity = jwtService.getAuthenticatedUser(request)!!
 
         val bank = getBankFromRequestOrNull(
             bankId = body.bankId,
@@ -205,7 +205,7 @@ class WordController(
         @PathVariable id: UUID,
         @RequestParam(required = false) property: WordToggleableProperty
     ): ResponseEntity<Unit> {
-        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         wordService.toggleProperty(
             wordId = id,
@@ -222,7 +222,7 @@ class WordController(
         @RequestParam(required = false) property: WordToggleableProperty,
         @Valid @RequestBody body: WordBulkActionRequestData
     ): ResponseEntity<Unit> {
-        val user: User = jwtService.getAuthenticatedUserOrThrowForbidden(request)
+        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         wordService.togglePropertyForManyWords(
             wordIds = body.ids.convertToSetExplicitly(paramName = "ids"),
@@ -251,7 +251,7 @@ class WordController(
     private fun getBankFromRequest(
         bankId: UUID?,
         bankToCreate: CreateBankRequestData?,
-        user: User
+        user: UserEntity
     ): Bank {
         if (bankToCreate == null && bankId == null) {
             throw BadRequestException("Either bankToCreate or bankId has to be specifed")
@@ -275,7 +275,7 @@ class WordController(
     private fun getBankFromRequestOrNull(
         bankId: UUID?,
         bankToCreate: CreateBankRequestData?,
-        user: User
+        user: UserEntity
     ): Bank? {
         if (bankToCreate != null && bankId != null) {
             throw BadRequestException("You cannot create a new bank and use an existing bank at the same time")

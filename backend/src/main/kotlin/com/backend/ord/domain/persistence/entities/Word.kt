@@ -1,5 +1,6 @@
 package com.backend.ord.domain.persistence.entities
 
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName
@@ -64,7 +65,7 @@ data class Word(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
-    override var user: User,
+    override var user: UserEntity,
 
     @Column(name = "user_id", insertable = false, updatable = false)
     var userId: UUID = user.id,

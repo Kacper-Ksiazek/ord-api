@@ -1,9 +1,9 @@
 package com.backend.ord.domain.persistence.mappers.impl
 
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.mappers.BankMapper
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.domain.persistence.mappers.WordMapper
 import org.springframework.stereotype.Component
 

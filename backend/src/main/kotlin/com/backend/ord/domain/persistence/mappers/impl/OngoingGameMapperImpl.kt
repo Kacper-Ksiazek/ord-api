@@ -1,5 +1,6 @@
 package com.backend.ord.domain.persistence.mappers.impl
 
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.dto.OngoingGameDTO
 import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
@@ -7,7 +8,6 @@ import com.backend.ord.domain.persistence.entities.OngoingGame
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Component

@@ -1,10 +1,10 @@
 package com.backend.ord.config.security
 
 import com.backend.ord.config.properties.JwtProperties
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.user.service.UserService
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException
 import com.backend.ord.exceptions.UserNotFoundException
-import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
 import com.backend.ord.utils.CookieUtils.deleteCookie
 import io.jsonwebtoken.ExpiredJwtException
@@ -88,7 +88,7 @@ class JwtAuthenticationFilter(
             deleteCookieWithToken(response)
         } catch (e: ExpiredJwtException) {
             // Get the user associated with the expired JWT token
-            userService.findUserByAuthToken(jwtToken)!!.let { user: User ->
+            userService.findUserByAuthToken(jwtToken)!!.let { user: UserEntity ->
                 // Generate a new JWT token for the user
                 renewUserSession(
                     user = user,
@@ -108,7 +108,7 @@ class JwtAuthenticationFilter(
     }
 
     private fun renewUserSession(
-        user: User,
+        user: UserEntity,
         request: HttpServletRequest,
         response: HttpServletResponse,
         requestWithMutableAuthCookie: RequestWithMutableAuthCookie

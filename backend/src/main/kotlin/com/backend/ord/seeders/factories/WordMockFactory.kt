@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.factories
 
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Bank
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName
@@ -42,7 +42,7 @@ class WordMockFactory(
                 )
             }
         },
-        user: User = userSeeder.seedOneEntity(),
+        user: UserEntity = userSeeder.seedOneEntity(),
         bank: Bank? = null
     ): Word {
         return Word(

@@ -7,9 +7,9 @@ import com.backend.ord.api.requests.word.enums.toggleProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.infrastructure.CountingSummary
 import com.backend.ord.domain.persistence.dto.WordDTO
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.mappers.WordMapper
@@ -113,7 +113,7 @@ class WordServiceImpl(
         wordExtraMark: WordExtraMark?,
         sortBy: GetAllWordsSortOptions?,
 
-        user: User,
+        user: UserEntity,
 
         page: Int,
         perPage: Int
@@ -142,7 +142,7 @@ class WordServiceImpl(
 
     override fun findOneWord(
         wordId: UUID,
-        user: User
+        user: UserEntity,
     ): SingleWordResponse {
         return repository.findOneWord(
             wordId = wordId,
@@ -184,7 +184,7 @@ class WordServiceImpl(
 
     override fun saveNewWord(
         word: WordDTO,
-        user: User
+        user: UserEntity
     ): WordDTO {
         val result = repository.save(wordMapper.toEntity(word))
         val language = word.translatedFrom

@@ -1,10 +1,10 @@
 package com.backend.ord.seeders.entities
 
-import com.backend.ord.domain.persistence.dto.UserDTO
+import com.backend.ord.core.user.model.UserDTO
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.BankGroup
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.repositories.BankRepository
 import com.backend.ord.seeders.factories.BankMockFactory
 import org.springframework.stereotype.Component
@@ -20,7 +20,7 @@ class BankSeeder(
     }
 
     fun seedOneEntityForUser(
-        user: User,
+        user: UserEntity,
         bankGroup: BankGroup? = null
     ): Bank {
         return bankRepository.save(

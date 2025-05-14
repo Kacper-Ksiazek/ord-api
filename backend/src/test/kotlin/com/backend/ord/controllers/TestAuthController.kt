@@ -2,13 +2,13 @@ package com.backend.ord.controllers
 
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.bases.ControllerTestBase
-import com.backend.ord.domain.persistence.dto.UserDTO
+import com.backend.ord.core.user.UserRepository
+import com.backend.ord.core.user.model.UserDTO
+import com.backend.ord.core.user.model.UserMapper
+import com.backend.ord.core.user.service.UserService
 import com.backend.ord.domain.persistence.entities.UserSession
-import com.backend.ord.domain.persistence.mappers.UserMapper
 import com.backend.ord.repositories.LanguageProficiencyRepository
-import com.backend.ord.repositories.UserRepository
 import com.backend.ord.seeders.entities.UserSeeder
-import com.backend.ord.services.UserService
 import com.backend.ord.services.UserSessionService
 import com.backend.ord.testing_utils.api_requests_factories.AuthRequestFactory
 import com.fasterxml.jackson.databind.ObjectMapper

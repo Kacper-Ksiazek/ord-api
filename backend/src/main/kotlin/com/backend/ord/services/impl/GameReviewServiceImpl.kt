@@ -3,7 +3,7 @@ package com.backend.ord.services.impl
 import com.backend.ord.api.requests.games.utils.WordUserAnswer
 import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
 import com.backend.ord.config.GamesConfig
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.enums.application.game.AnswerScore
@@ -50,7 +50,7 @@ class GameReviewServiceImpl(
     }
 
     override fun updateDBPointsForManyWords(
-        user: User,
+        user: UserEntity,
         language: LanguageName,
         reviewedQuestions: Set<IdentifiableProperAnswer>
     ) {

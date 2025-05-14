@@ -1,6 +1,6 @@
 package com.backend.ord.utils.resource_readers
 
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.testing_utils.dto.resources.db_rows.WordDBExportedRow
@@ -22,7 +22,7 @@ private fun getAbsolutePath(path: String): String {
  * The file contains 12 rows of words.
  */
 fun loadWordsFromResourceFile(
-    user: User,
+    user: UserEntity,
     wordsRepository: WordRepository? = null,
     /** If null, all words will be loaded */
     numberOfWordsToLoad: Int? = null

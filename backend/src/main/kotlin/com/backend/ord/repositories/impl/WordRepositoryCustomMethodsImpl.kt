@@ -12,9 +12,9 @@ import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.api.responses.words.embedded.BankCompact
 import com.backend.ord.api.responses.words.embedded.BankGroupCompact
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.BankGroup
-import com.backend.ord.domain.persistence.entities.User
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.enums.persistence.language.LanguageName
@@ -41,7 +41,7 @@ class WordRepositoryCustomMethodsImpl(
 
     override fun findOneWord(
         wordId: UUID,
-        user: User
+        user: UserEntity
     ): SingleWordResponse {
         val criteriaQuery = criteriaBuilder.createTupleQuery()
 
@@ -153,7 +153,7 @@ class WordRepositoryCustomMethodsImpl(
         wordExtraMark: WordExtraMark?,
         sortBy: GetAllWordsSortOptions,
 
-        user: User,
+        user: UserEntity,
 
         page: Int,
         perPage: Int

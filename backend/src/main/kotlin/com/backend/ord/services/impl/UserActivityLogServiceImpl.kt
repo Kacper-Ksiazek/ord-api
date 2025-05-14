@@ -1,6 +1,7 @@
 package com.backend.ord.services.impl
 
-import com.backend.ord.domain.persistence.entities.User
+import com.backend.ord.core.user.UserRepository
+import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.enums.application.UserActivityFrequency
 import com.backend.ord.enums.persistence.UserActivityType
@@ -8,7 +9,6 @@ import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.repositories.UserActivityLogRepository
-import com.backend.ord.repositories.UserRepository
 import com.backend.ord.services.UserActivityLogService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -34,7 +34,7 @@ class UserActivityLogServiceImpl(
     }
 
     override fun log(
-        user: User,
+        user: UserEntity,
         type: UserActivityType,
         language: LanguageName,
         difficulty: GameDifficulty?

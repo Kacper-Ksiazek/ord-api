@@ -1,4 +1,4 @@
-package com.backend.ord.controllers.games.bases
+package com.backend.ord.shared.controllers
 
 import com.backend.ord.config.security.JwtService
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
