@@ -1,4 +1,4 @@
-package com.backend.ord.services.ai.dto.ai_responses
+package com.backend.ord.services.ai.dto.ai_responses.games
 
 import com.backend.ord.domain.application.games.crossword.CrosswordQuestion
 
@@ -17,7 +17,7 @@ import com.backend.ord.domain.application.games.crossword.CrosswordQuestion
  * @property questions
  *   The list of questions that make up the crossword board.
  */
-data class AIGeneratedCrossword(
+data class AIGeneratedCrosswordData(
     var answer: String,
     val answerExplanation: String,
 

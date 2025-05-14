@@ -22,8 +22,8 @@ import com.backend.ord.services.ai.OpenAIAPIClientService
 import com.backend.ord.services.ai.dto.GeneratedCrosswordGame
 import com.backend.ord.services.ai.dto.GeneratedSentencesWritingGame
 import com.backend.ord.services.ai.dto.GeneratedWordsTypingGame
-import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedCrossword
-import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedWordsTyping
+import com.backend.ord.services.ai.dto.ai_responses.games.AIGeneratedCrosswordData
+import com.backend.ord.services.ai.dto.ai_responses.games.AIGeneratedWordsTypingData
 import org.springframework.stereotype.Service
 
 @Service
@@ -59,8 +59,8 @@ class AIGameServiceImpl(
 
         val amountOfQuestion: Int = difficulty.getNumberOfWordsForCrossword()
 
-        val aiGeneratedCrossword = openAIAPIClientService.makeGameRequest<AIGeneratedCrossword>(
-            clazz = AIGeneratedCrossword::class.java,
+        val aiGeneratedCrossword = openAIAPIClientService.makeGameRequest<AIGeneratedCrosswordData>(
+            clazz = AIGeneratedCrosswordData::class.java,
 
             user = user,
             prompt = prompt,
@@ -123,8 +123,8 @@ class AIGameServiceImpl(
         )
 
 
-        val aiGeneratedWordsTypingGame = openAIAPIClientService.makeGameRequest<AIGeneratedWordsTyping>(
-            clazz = AIGeneratedWordsTyping::class.java,
+        val aiGeneratedWordsTypingGame = openAIAPIClientService.makeGameRequest<AIGeneratedWordsTypingData>(
+            clazz = AIGeneratedWordsTypingData::class.java,
 
             user = user,
             prompt = prompt,

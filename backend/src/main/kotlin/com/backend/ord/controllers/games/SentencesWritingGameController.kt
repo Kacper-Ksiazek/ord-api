@@ -45,11 +45,7 @@ class SentencesWritingGameController : GameControllerBase() {
         )
 
         return ResponseEntity.ok(
-            StartedWordsTypingGameResponse(
-                gameId = savedGame.id,
-                instruction = instruction,
-                properAnswers = properAnswers
-            )
+            TODO()
         )
     }
 

@@ -1,7 +1,6 @@
 package com.backend.ord.prompts
 
 import com.backend.ord.domain.persistence.entities.LanguageProficiency
-import com.backend.ord.domain.persistence.jsons.game_proper_answers.SentencesWritingMultipleTopicProperAnswerForAI
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForWordsTypingGame
@@ -9,6 +8,7 @@ import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.prompts.dto.games.SentencesWritingMultipleTopicProperAnswerForAI
 import com.backend.ord.prompts.internal_tools.GenerateGamePromptData
 import com.backend.ord.prompts.internal_tools.prepareGamePrompt
 import com.backend.ord.utils.EnumUtils.joinEnumValues

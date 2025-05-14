@@ -4,7 +4,7 @@ import com.backend.ord.domain.application.games.crossword.board.Board
 import com.backend.ord.domain.application.games.crossword.board.Coordinates
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.getNumberOfLettersToReveal
-import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedCrossword
+import com.backend.ord.services.ai.dto.ai_responses.games.AIGeneratedCrosswordData
 import com.backend.ord.utils.games.updateWord
 import com.backend.ord.utils.hideLetters
 import com.backend.ord.utils.hideLettersInWord
@@ -28,7 +28,7 @@ data class CrosswordInstruction(
          * A factory method to construct a crossword instruction from AI-generated questions.
          */
         fun construct(
-            aiGeneratedQuestions: AIGeneratedCrossword,
+            aiGeneratedQuestions: AIGeneratedCrosswordData,
             boardDimension: Coordinates = Coordinates(x = 32, y = 24),
             firstWordStart: Coordinates = Coordinates(x = 5, y = 5),
             difficulty: GameDifficulty? = null

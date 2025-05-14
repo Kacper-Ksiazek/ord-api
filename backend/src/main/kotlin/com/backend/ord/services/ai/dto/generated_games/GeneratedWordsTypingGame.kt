@@ -1,37 +1,16 @@
-package com.backend.ord.services.ai.dto
+package com.backend.ord.services.ai.dto.generated_games
 
-import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
 import com.backend.ord.domain.application.games.words_typing.WordsTypingInstruction
 import com.backend.ord.domain.application.games.words_typing.WordsTypingQuestion
-import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers
-import com.backend.ord.services.ai.dto.ai_responses.AIGeneratedWordsTyping
+import com.backend.ord.services.ai.dto.ai_responses.games.AIGeneratedWordsTypingData
 import com.backend.ord.utils.hideLetters
 import java.util.*
 
-// ---
-// Data classes
-// ---
-
-data class GeneratedGame<GameInstruction, ProperAnswers>(
-    val instruction: GameInstruction,
-    val properAnswers: ProperAnswers
-)
-
-// ---
-// Types
-// ---
-
-typealias GeneratedCrosswordGame = GeneratedGame<CrosswordInstruction, CrosswordProperAnswers>
-typealias GeneratedWordsTypingGame = GeneratedGame<WordsTypingInstruction, WordsTypingProperAnswers>
-typealias GeneratedSentencesWritingGame = Map<String, String>
-
-// ---
-// Extensions
-// ---
+typealias GeneratedWordsTypingGame = GeneratedGameBase<WordsTypingInstruction, WordsTypingProperAnswers>
 
 fun GeneratedWordsTypingGame(
-    aiResponse: AIGeneratedWordsTyping,
+    aiResponse: AIGeneratedWordsTypingData,
 ): GeneratedWordsTypingGame {
     val properAnswers: WordsTypingProperAnswers = aiResponse.map {
         UUID.randomUUID() to it.key
