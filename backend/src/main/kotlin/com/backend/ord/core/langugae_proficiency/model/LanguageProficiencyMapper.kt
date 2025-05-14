@@ -1,17 +1,15 @@
-package com.backend.ord.domain.persistence.mappers.impl
+package com.backend.ord.core.langugae_proficiency.model
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.dto.LanguageProficiencyDTO
-import com.backend.ord.domain.persistence.entities.LanguageProficiency
-import com.backend.ord.domain.persistence.mappers.LanguageProficiencyMapper
+import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 
 @Component
-class LanguageProficiencyMapperImpl(
+class LanguageProficiencyMapper(
     private val userMapper: UserMapper
-) : LanguageProficiencyMapper {
-    override fun toEntity(dto: LanguageProficiencyDTO): LanguageProficiency {
-        return LanguageProficiency(
+) : MapperBase<LanguageProficiencyEntity, LanguageProficiencyDTO> {
+    override fun toEntity(dto: LanguageProficiencyDTO): LanguageProficiencyEntity {
+        return LanguageProficiencyEntity(
             id = dto.id,
 
             language = dto.language,
@@ -25,7 +23,7 @@ class LanguageProficiencyMapperImpl(
         )
     }
 
-    override fun toDTO(entity: LanguageProficiency): LanguageProficiencyDTO {
+    override fun toDTO(entity: LanguageProficiencyEntity): LanguageProficiencyDTO {
         return LanguageProficiencyDTO(
             id = entity.id,
 

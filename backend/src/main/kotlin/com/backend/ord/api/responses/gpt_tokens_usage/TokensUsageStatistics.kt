@@ -1,6 +1,6 @@
 package com.backend.ord.api.responses.gpt_tokens_usage
 
-import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import java.math.BigDecimal
 
 data class TokensUsageStatistics<T>(

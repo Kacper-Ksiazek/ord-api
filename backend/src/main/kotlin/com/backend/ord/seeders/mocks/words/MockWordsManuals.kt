@@ -1,9 +1,9 @@
 package com.backend.ord.seeders.mocks.words
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
 import com.backend.ord.seeders.mocks.words.json_data_models.AIGeneratedWordManualInJSON

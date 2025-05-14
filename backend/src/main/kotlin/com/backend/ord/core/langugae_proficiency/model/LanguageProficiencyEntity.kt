@@ -1,9 +1,9 @@
-package com.backend.ord.domain.persistence.entities
+package com.backend.ord.core.langugae_proficiency.model
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
+import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -12,7 +12,7 @@ import java.util.*
 
 @Entity
 @Table(name = "language_proficiencies")
-data class LanguageProficiency(
+data class LanguageProficiencyEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

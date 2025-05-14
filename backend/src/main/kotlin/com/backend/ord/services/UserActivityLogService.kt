@@ -1,10 +1,10 @@
 package com.backend.ord.services
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.enums.persistence.language.LanguageName
 import java.util.*
 
 interface UserActivityLogService {

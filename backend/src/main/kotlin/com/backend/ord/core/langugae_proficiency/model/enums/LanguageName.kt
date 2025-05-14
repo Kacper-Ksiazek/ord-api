@@ -1,4 +1,4 @@
-package com.backend.ord.enums.persistence.language
+package com.backend.ord.core.langugae_proficiency.model.enums
 
 enum class LanguageName {
     POLISH,

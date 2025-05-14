@@ -2,7 +2,7 @@ package com.backend.ord.testing_utils.extensions
 
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.repositories.UserActivityLogRepository
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe

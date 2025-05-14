@@ -2,7 +2,7 @@ package com.backend.ord.testing_utils.api_requests_factories
 
 import com.backend.ord.api.requests.LoginRequest
 import com.backend.ord.api.requests.RegisterRequest
-import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType

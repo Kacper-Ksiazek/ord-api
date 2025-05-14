@@ -2,8 +2,8 @@ package com.backend.ord.domain.persistence.entities.gpt_tokens_usage
 
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Story
-import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.enums.persistence.tokens_usage.StoriesGPTTokensConsumptionType
+import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete

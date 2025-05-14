@@ -1,8 +1,8 @@
 package com.backend.ord.repositories
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.domain.infrastructure.CountingSummaryProjection
 import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.Modifying

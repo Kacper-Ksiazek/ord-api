@@ -1,9 +1,9 @@
 package com.backend.ord.seeders.entities
 
+import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.LanguageProficiency
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.seeders.factories.LanguageProficiencyMockFactory
 import org.springframework.stereotype.Component
@@ -13,8 +13,8 @@ class LanguageProficiencySeeder(
     private val userSeeder: UserSeeder,
     private val languageProficiencyRepository: LanguageProficiencyRepository,
     private val languageProficiencyFactory: LanguageProficiencyMockFactory
-) : SeederInterface<LanguageProficiency> {
-    override fun seedOneEntity(data: LanguageProficiency?): LanguageProficiency {
+) : SeederInterface<LanguageProficiencyEntity> {
+    override fun seedOneEntity(data: LanguageProficiencyEntity?): LanguageProficiencyEntity {
         return languageProficiencyRepository.save(
             data ?: languageProficiencyFactory.mockEntity()
         )
@@ -29,7 +29,7 @@ class LanguageProficiencySeeder(
         languageName: LanguageName? = null,
         generativeContentLanguage: LanguageName? = null,
         languageProficiency: LanguageProficiencyLevel? = null
-    ): LanguageProficiency {
+    ): LanguageProficiencyEntity {
         val data = languageProficiencyFactory.mockEntity(user)
 
         languageName?.also { data.language = it }

@@ -3,7 +3,7 @@ package com.backend.ord.api.requests.word.data
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.GetManyWordsRequest
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
-import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
 import jakarta.validation.constraints.Max

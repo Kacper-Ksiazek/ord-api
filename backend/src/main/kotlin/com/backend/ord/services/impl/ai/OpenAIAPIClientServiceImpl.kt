@@ -4,10 +4,10 @@ import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.api.responses.openai.OpenAIResponse
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.config.properties.OpenAIProperties
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadGatewayException
 import com.backend.ord.services.ai.OpenAIAPIClientService

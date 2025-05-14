@@ -18,7 +18,7 @@ import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.domain.persistence.mappers.WordMapper
-import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.repositories.LanguageProficiencyRepository

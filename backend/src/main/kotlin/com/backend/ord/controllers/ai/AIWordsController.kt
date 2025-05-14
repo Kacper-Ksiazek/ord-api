@@ -4,14 +4,14 @@ import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.api.responses.GenerateWordManualAIResponse
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.config.security.JwtService
+import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
+import com.backend.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.LanguageProficiency
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.prompts.Prompts
-import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -46,7 +46,7 @@ class AIWordsController(
     ): ResponseEntity<GenerateWordManualAIResponse> {
         val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
-        val userProficiencyInRequestedLanguage: LanguageProficiency =
+        val userProficiencyInRequestedLanguage: LanguageProficiencyEntity =
             languageProficiencyService.findUserProficiencyInLanguage(user.id, originalLanguage)
                 ?: throw BadRequestException("User does not have any proficiency in the requested language.")
 

@@ -2,9 +2,9 @@ package com.backend.ord.services
 
 import com.backend.ord.api.requests.games.utils.WordUserAnswer
 import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.utils.data_classes.Percentage
 import java.util.*
 

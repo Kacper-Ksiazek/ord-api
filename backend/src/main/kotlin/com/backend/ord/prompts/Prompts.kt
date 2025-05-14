@@ -1,11 +1,11 @@
 package com.backend.ord.prompts
 
-import com.backend.ord.domain.persistence.entities.LanguageProficiency
+import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForWordsTypingGame
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.prompts.dto.games.SentencesWritingMultipleTopicProperAnswerForAI
@@ -22,7 +22,7 @@ object Prompts {
             language: LanguageName,
             wordsToUse: List<String>,
             difficulty: GameDifficulty,
-            languageProficiency: LanguageProficiency,
+            languageProficiency: LanguageProficiencyEntity,
         ): String {
             val details = GenerateGamePromptData(language, wordsToUse, difficulty, languageProficiency.proficiency)
             val amountOfQuestions: Int = difficulty.getNumberOfWordsForCrossword()
@@ -47,7 +47,7 @@ object Prompts {
             language: LanguageName,
             wordsToUse: List<String>,
             difficulty: GameDifficulty,
-            languageProficiency: LanguageProficiency,
+            languageProficiency: LanguageProficiencyEntity,
         ): String {
             val details = GenerateGamePromptData(language, wordsToUse, difficulty, languageProficiency.proficiency)
             val amountOfQuestions: Int = difficulty.getNumberOfWordsForWordsTypingGame()
@@ -78,7 +78,7 @@ object Prompts {
             language: LanguageName,
             wordsToUse: List<String>,
             difficulty: GameDifficulty,
-            languageProficiency: LanguageProficiency,
+            languageProficiency: LanguageProficiencyEntity,
         ): String {
             val details = GenerateGamePromptData(language, wordsToUse, difficulty, languageProficiency.proficiency)
 
@@ -101,7 +101,7 @@ object Prompts {
         fun reviewSentencesWritingGamePrompt(
             language: LanguageName,
             difficulty: GameDifficulty,
-            languageProficiency: LanguageProficiency,
+            languageProficiency: LanguageProficiencyEntity,
             answers: Set<SentencesWritingMultipleTopicProperAnswerForAI>
         ): String {
             val serializedAnswers = answers

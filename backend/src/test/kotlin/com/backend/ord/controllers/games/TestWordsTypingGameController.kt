@@ -6,6 +6,8 @@ import com.backend.ord.api.responses.games.bases.StartedWordsTypingGameResponse
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.games.bases.GameControllerTestBase
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
@@ -15,8 +17,6 @@ import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.repositories.*
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository

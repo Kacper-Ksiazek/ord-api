@@ -1,10 +1,10 @@
-package com.backend.ord.services.impl
+package com.backend.ord.core.langugae_proficiency.service.impl
 
-import com.backend.ord.domain.persistence.entities.LanguageProficiency
-import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.repositories.LanguageProficiencyRepository
-import com.backend.ord.services.LanguageProficiencyService
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -12,7 +12,7 @@ import java.util.*
 class LanguageProficiencyServiceImpl(
     override val repository: LanguageProficiencyRepository
 ) : LanguageProficiencyService {
-    override fun findUserProficiencyInLanguage(userId: UUID, languageName: LanguageName): LanguageProficiency? {
+    override fun findUserProficiencyInLanguage(userId: UUID, languageName: LanguageName): LanguageProficiencyEntity? {
         return repository.findUserProficiencyInLanguage(
             userId = userId,
             languageName = languageName.name
@@ -22,7 +22,7 @@ class LanguageProficiencyServiceImpl(
     override fun findUserProficiencyInLanguageOrThrow(
         userId: UUID,
         languageName: LanguageName
-    ): LanguageProficiency {
+    ): LanguageProficiencyEntity {
         return findUserProficiencyInLanguage(userId, languageName)
             ?: throw BadRequestException("User does not have any proficiency in the requested language.")
     }

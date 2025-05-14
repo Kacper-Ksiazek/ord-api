@@ -1,10 +1,10 @@
 package com.backend.ord.domain.persistence.entities
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.validation.constraints.Min
 import org.hibernate.annotations.CreationTimestamp

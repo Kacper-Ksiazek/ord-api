@@ -1,7 +1,7 @@
 package com.backend.ord.domain.persistence.dto
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
-import com.backend.ord.enums.persistence.language.LanguageName
 import java.time.Instant
 import java.util.*
 

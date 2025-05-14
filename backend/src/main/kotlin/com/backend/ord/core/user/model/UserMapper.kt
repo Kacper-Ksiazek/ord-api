@@ -1,6 +1,6 @@
 package com.backend.ord.core.user.model
 
-import com.backend.ord.shared.models.MapperBase
+import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 
 @Component

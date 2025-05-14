@@ -8,7 +8,7 @@ import com.backend.ord.domain.persistence.dto.OngoingGameDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.repositories.OngoingGameRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.factories.WordMockFactory

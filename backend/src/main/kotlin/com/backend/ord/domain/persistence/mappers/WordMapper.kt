@@ -2,6 +2,6 @@ package com.backend.ord.domain.persistence.mappers
 
 import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.shared.models.MapperBase
+import com.backend.ord.shared.models.mappers.MapperBase
 
 interface WordMapper : MapperBase<Word, WordDTO>

@@ -1,7 +1,7 @@
 package com.backend.ord.core.user.model
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.enums.UserRole
-import com.backend.ord.enums.persistence.language.LanguageName
 import java.time.Instant
 import java.util.*
 

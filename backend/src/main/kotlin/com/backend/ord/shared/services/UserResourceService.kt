@@ -1,7 +1,7 @@
 package com.backend.ord.shared.services
 
-import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.exceptions.REST.NotFoundException
+import com.backend.ord.shared.models.IdentifiableUserResource
 import com.backend.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional

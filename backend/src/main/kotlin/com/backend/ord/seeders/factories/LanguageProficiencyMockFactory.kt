@@ -1,8 +1,8 @@
 package com.backend.ord.seeders.factories
 
+import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.LanguageProficiency
-import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.seeders.EnumValuesGenerator
 import com.backend.ord.utils.EnumUtils.getRandomValue
 import org.springframework.stereotype.Component
@@ -17,9 +17,9 @@ class LanguageProficiencyMockFactory(
 
     fun mockEntity(
         user: UserEntity = userMockFactory.mockEntity()
-    ): LanguageProficiency {
+    ): LanguageProficiencyEntity {
         // Return a new language proficiency entity
-        return LanguageProficiency(
+        return LanguageProficiencyEntity(
             language = EnumValuesGenerator.mockLanguageName(),
             proficiency = EnumValuesGenerator.mockProficiencyLevel(),
             user = user,

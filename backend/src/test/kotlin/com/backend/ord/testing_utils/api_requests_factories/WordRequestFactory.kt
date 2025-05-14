@@ -7,7 +7,7 @@ import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.testing_utils.api_requests_factories.data.CreateWordData

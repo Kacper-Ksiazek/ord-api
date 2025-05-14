@@ -1,9 +1,9 @@
 package com.backend.ord.seeders
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.enums.UserRole
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.LanguageProficiencyMockFactory

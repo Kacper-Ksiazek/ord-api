@@ -1,7 +1,7 @@
 package com.backend.ord.api.responses.gpt_tokens_usage
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.WordTokensUsage
-import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
 import java.math.BigDecimal
 import java.time.Instant

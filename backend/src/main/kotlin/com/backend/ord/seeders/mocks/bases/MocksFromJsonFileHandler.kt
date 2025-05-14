@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.mocks.bases
 
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.shared.models.IdentifiableUserResource
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 

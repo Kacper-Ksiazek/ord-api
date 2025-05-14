@@ -1,6 +1,6 @@
 package com.backend.ord.repositories
 
-import com.backend.ord.domain.persistence.entities.LanguageProficiency
+import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface LanguageProficiencyRepository : UserResourceRepository<LanguageProficiency> {
+interface LanguageProficiencyRepository : UserResourceRepository<LanguageProficiencyEntity> {
     @Query(
         """ 
         SELECT * FROM language_proficiencies 
@@ -22,7 +22,7 @@ interface LanguageProficiencyRepository : UserResourceRepository<LanguageProfici
     fun findUserProficiencyInLanguage(
         userId: UUID,
         languageName: String
-    ): LanguageProficiency?
+    ): LanguageProficiencyEntity?
 
     @Query(
         """

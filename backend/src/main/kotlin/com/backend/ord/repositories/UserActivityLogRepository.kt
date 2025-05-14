@@ -1,8 +1,8 @@
 package com.backend.ord.repositories
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository

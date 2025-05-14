@@ -1,7 +1,7 @@
 package com.backend.ord.domain.persistence.entities
 
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
+import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.validation.constraints.Size
 import org.hibernate.annotations.CreationTimestamp

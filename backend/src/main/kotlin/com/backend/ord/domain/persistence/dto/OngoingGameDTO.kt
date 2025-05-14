@@ -1,11 +1,11 @@
 package com.backend.ord.domain.persistence.dto
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.enums.persistence.language.LanguageName
 import java.time.Instant
 import java.util.*
 

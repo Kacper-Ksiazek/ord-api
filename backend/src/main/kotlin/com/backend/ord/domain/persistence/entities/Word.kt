@@ -1,11 +1,11 @@
 package com.backend.ord.domain.persistence.entities
 
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.interfaces.IdentifiableUserResource
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.persistence.Table
 import org.hibernate.annotations.*

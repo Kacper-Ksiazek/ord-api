@@ -3,19 +3,19 @@ package com.backend.ord.services.impl.ai
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.responses.words.WordListItem
+import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
-import com.backend.ord.domain.persistence.entities.LanguageProficiency
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForWordsTypingGame
-import com.backend.ord.enums.persistence.language.LanguageName
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.prompts.Prompts
-import com.backend.ord.services.LanguageProficiencyService
 import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.OpenAIAPIClientService
@@ -33,7 +33,7 @@ class AIGameServiceImpl(
     private val openAIAPIClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService,
 ) : AIGameService {
-    private fun UserEntity.getProficiencyInLanguage(language: LanguageName): LanguageProficiency {
+    private fun UserEntity.getProficiencyInLanguage(language: LanguageName): LanguageProficiencyEntity {
         return languageProficiencyService
             .findUserProficiencyInLanguageOrThrow(this.id, language)
     }
@@ -43,7 +43,7 @@ class AIGameServiceImpl(
         language: LanguageName,
         difficulty: GameDifficulty
     ): GeneratedCrosswordGame {
-        val languageProficiency: LanguageProficiency = user.getProficiencyInLanguage(language)
+        val languageProficiency: LanguageProficiencyEntity = user.getProficiencyInLanguage(language)
 
         val prompt: String = Prompts.Games.generateCrosswordQuestionsPrompt(
             language = language,
@@ -105,7 +105,7 @@ class AIGameServiceImpl(
         language: LanguageName,
         difficulty: GameDifficulty
     ): GeneratedWordsTypingGame {
-        val languageProficiency: LanguageProficiency = user.getProficiencyInLanguage(language)
+        val languageProficiency: LanguageProficiencyEntity = user.getProficiencyInLanguage(language)
 
         val amountOfQuestion: Int = difficulty.getNumberOfWordsForWordsTypingGame()
 
