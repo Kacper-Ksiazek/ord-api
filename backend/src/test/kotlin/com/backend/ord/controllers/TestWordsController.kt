@@ -10,6 +10,8 @@ import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.bases.ControllerTestBase
+import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
@@ -18,10 +20,8 @@ import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.domain.persistence.mappers.WordMapper
-import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.enums.persistence.word.WordExtraMark
 import com.backend.ord.enums.persistence.word.WordType
-import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder

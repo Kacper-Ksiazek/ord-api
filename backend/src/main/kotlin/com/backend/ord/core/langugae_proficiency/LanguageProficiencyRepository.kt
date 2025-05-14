@@ -1,4 +1,4 @@
-package com.backend.ord.repositories
+package com.backend.ord.core.langugae_proficiency
 
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.shared.repositories.UserResourceRepository

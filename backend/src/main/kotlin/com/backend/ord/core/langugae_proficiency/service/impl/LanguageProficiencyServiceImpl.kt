@@ -1,10 +1,10 @@
 package com.backend.ord.core.langugae_proficiency.service.impl
 
+import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.backend.ord.exceptions.REST.BadRequestException
-import com.backend.ord.repositories.LanguageProficiencyRepository
 import org.springframework.stereotype.Service
 import java.util.*
 

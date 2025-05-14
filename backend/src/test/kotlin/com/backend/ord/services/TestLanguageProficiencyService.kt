@@ -2,11 +2,11 @@ package com.backend.ord.services
 
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.bases.ControllerTestBase
-import com.backend.ord.core.user.UserRepository
-import com.backend.ord.core.user.model.UserMapper
+import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.service.LanguageProficiencyService
-import com.backend.ord.repositories.LanguageProficiencyRepository
+import com.backend.ord.core.user.UserRepository
+import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertNotNull

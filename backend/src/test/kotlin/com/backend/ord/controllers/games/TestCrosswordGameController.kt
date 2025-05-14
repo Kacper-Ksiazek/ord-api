@@ -7,6 +7,7 @@ import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.games.bases.GameControllerTestBase
+import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserMapper
@@ -21,7 +22,10 @@ import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.GameGrade
 import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
-import com.backend.ord.repositories.*
+import com.backend.ord.repositories.FinishedGameRepository
+import com.backend.ord.repositories.OngoingGameRepository
+import com.backend.ord.repositories.UserActivityLogRepository
+import com.backend.ord.repositories.WordRepository
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.WordMockFactory

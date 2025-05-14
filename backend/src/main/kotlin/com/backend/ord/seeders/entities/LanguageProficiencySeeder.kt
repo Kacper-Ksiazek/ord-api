@@ -1,10 +1,10 @@
 package com.backend.ord.seeders.entities
 
+import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.repositories.LanguageProficiencyRepository
 import com.backend.ord.seeders.factories.LanguageProficiencyMockFactory
 import org.springframework.stereotype.Component
 
