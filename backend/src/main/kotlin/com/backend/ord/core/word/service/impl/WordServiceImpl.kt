@@ -1,4 +1,4 @@
-package com.backend.ord.services.impl
+package com.backend.ord.core.word.service.impl
 
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
@@ -9,18 +9,18 @@ import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.WordDTO
+import com.backend.ord.core.word.model.WordMapper
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.core.word.repository.WordRepository
+import com.backend.ord.core.word.service.WordService
 import com.backend.ord.domain.infrastructure.CountingSummary
-import com.backend.ord.domain.persistence.dto.WordDTO
 import com.backend.ord.domain.persistence.entities.UserActivityLog
-import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.exceptions.REST.NotFoundException
-import com.backend.ord.repositories.WordRepository
 import com.backend.ord.services.UserActivityLogService
-import com.backend.ord.services.WordService
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service

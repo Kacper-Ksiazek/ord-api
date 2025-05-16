@@ -3,9 +3,9 @@ package com.backend.ord.api.requests.word.data
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.word.UpdateWordRequest
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.core.word.model.json.ExampleSentence
 import com.backend.ord.validators.annotations.ValidStringSet
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size

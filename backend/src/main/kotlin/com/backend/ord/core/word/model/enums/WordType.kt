@@ -1,4 +1,4 @@
-package com.backend.ord.enums.persistence.word
+package com.backend.ord.core.word.model.enums
 
 enum class WordType {
     NOUN,

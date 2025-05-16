@@ -1,10 +1,11 @@
-package com.backend.ord.domain.persistence.dto
+package com.backend.ord.core.word.model
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
-import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.core.word.model.json.ExampleSentence
+import com.backend.ord.domain.persistence.dto.BankDTO
 import java.time.Instant
 import java.util.*
 

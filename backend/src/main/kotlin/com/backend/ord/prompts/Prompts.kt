@@ -3,11 +3,11 @@ package com.backend.ord.prompts
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
 import com.backend.ord.enums.persistence.game.getNumberOfWordsForWordsTypingGame
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.prompts.dto.games.SentencesWritingMultipleTopicProperAnswerForAI
 import com.backend.ord.prompts.internal_tools.GenerateGamePromptData
 import com.backend.ord.prompts.internal_tools.prepareGamePrompt

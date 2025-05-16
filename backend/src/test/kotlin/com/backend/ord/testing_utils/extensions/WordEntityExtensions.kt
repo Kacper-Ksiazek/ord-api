@@ -2,7 +2,7 @@ package com.backend.ord.testing_utils.extensions
 
 import com.backend.ord.api.requests.word.UpdateWordRequest
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
-import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.core.word.model.Word
 import com.backend.ord.testing_utils.api_requests_factories.data.WordDataChanges
 import io.kotest.matchers.shouldBe
 

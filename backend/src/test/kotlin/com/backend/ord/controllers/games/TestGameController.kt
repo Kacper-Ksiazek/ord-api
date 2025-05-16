@@ -5,6 +5,7 @@ import com.backend.ord.controllers.games.bases.GameControllerTestBase
 import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserMapper
+import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.enums.persistence.UserActivityType
@@ -12,7 +13,6 @@ import com.backend.ord.enums.persistence.game.GameResult
 import com.backend.ord.repositories.FinishedGameRepository
 import com.backend.ord.repositories.OngoingGameRepository
 import com.backend.ord.repositories.UserActivityLogRepository
-import com.backend.ord.repositories.WordRepository
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.mocks.games.CrosswordGameMocker

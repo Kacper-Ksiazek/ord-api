@@ -2,8 +2,8 @@ package com.backend.ord.api.responses.words
 
 import com.backend.ord.api.responses.words.embedded.BankCompact
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
 import java.time.Instant
 import java.util.*
 

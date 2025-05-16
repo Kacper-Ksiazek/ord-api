@@ -1,17 +1,15 @@
-package com.backend.ord.domain.persistence.mappers.impl
+package com.backend.ord.core.word.model
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.dto.WordDTO
-import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.mappers.BankMapper
-import com.backend.ord.domain.persistence.mappers.WordMapper
+import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 
 @Component
-class WordMapperImpl(
+class WordMapper(
     private val userMapper: UserMapper,
     private val bankMapper: BankMapper
-) : WordMapper {
+) : MapperBase<Word, WordDTO> {
     override fun toEntity(dto: WordDTO): Word {
         return Word(
             id = dto.id,

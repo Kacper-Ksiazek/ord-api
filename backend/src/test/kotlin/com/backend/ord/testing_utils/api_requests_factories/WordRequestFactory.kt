@@ -5,11 +5,11 @@ import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
-import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.domain.persistence.jsons.ExampleSentence
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.core.word.model.json.ExampleSentence
 import com.backend.ord.testing_utils.api_requests_factories.data.CreateWordData
 import com.backend.ord.testing_utils.api_requests_factories.data.UpdateWordData
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser

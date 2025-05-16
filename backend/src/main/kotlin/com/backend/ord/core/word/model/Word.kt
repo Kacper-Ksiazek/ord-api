@@ -1,10 +1,11 @@
-package com.backend.ord.domain.persistence.entities
+package com.backend.ord.core.word.model
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.core.word.model.json.ExampleSentence
+import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.persistence.Table
@@ -99,4 +100,3 @@ data class Word(
         bankGroupId = bank?.bankGroupId
     }
 }
-

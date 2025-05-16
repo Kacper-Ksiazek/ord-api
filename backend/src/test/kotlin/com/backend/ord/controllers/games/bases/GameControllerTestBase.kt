@@ -5,10 +5,10 @@ import com.backend.ord.controllers.bases.ControllerTestBase
 import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserMapper
+import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.repositories.FinishedGameRepository
 import com.backend.ord.repositories.OngoingGameRepository
-import com.backend.ord.repositories.WordRepository
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc

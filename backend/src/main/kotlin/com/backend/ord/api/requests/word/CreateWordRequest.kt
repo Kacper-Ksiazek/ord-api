@@ -2,9 +2,9 @@ package com.backend.ord.api.requests.word
 
 import com.backend.ord.api.requests.bank.CreateBankRequest
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.core.word.model.json.ExampleSentence
 import java.util.*
 
 interface CreateWordRequest : UpdateWordRequest {

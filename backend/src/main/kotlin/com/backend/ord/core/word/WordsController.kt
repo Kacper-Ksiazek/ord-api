@@ -1,4 +1,4 @@
-package com.backend.ord.controllers
+package com.backend.ord.core.word
 
 import com.backend.ord.api.requests.bank.data.CreateBankRequestData
 import com.backend.ord.api.requests.word.data.*
@@ -9,15 +9,15 @@ import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.dto.WordDTO
+import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.WordDTO
+import com.backend.ord.core.word.model.WordMapper
+import com.backend.ord.core.word.service.WordService
 import com.backend.ord.domain.persistence.entities.Bank
-import com.backend.ord.domain.persistence.entities.Word
 import com.backend.ord.domain.persistence.mappers.BankMapper
-import com.backend.ord.domain.persistence.mappers.WordMapper
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.extensions.convertToSetExplicitly
 import com.backend.ord.services.BankService
-import com.backend.ord.services.WordService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.dao.DataIntegrityViolationException

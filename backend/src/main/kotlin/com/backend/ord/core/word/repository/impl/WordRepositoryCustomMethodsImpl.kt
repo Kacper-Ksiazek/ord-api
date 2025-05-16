@@ -1,6 +1,4 @@
-@file:Suppress("UNCHECKED_CAST")
-
-package com.backend.ord.repositories.impl
+package com.backend.ord.core.word.repository.impl
 
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.enums.isDesc
@@ -14,14 +12,14 @@ import com.backend.ord.api.responses.words.embedded.BankCompact
 import com.backend.ord.api.responses.words.embedded.BankGroupCompact
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.core.word.model.json.ExampleSentence
+import com.backend.ord.core.word.repository.WordRepositoryCustomMethods
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.BankGroup
-import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.exceptions.REST.NotFoundException
-import com.backend.ord.repositories.WordRepositoryCustomMethods
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
 import jakarta.persistence.TypedQuery
@@ -418,4 +416,3 @@ class WordRepositoryCustomMethodsImpl(
         query.where(*predicates.toTypedArray())
     }
 }
-

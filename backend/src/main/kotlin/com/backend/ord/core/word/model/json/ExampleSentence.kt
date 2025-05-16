@@ -1,4 +1,4 @@
-package com.backend.ord.domain.persistence.jsons
+package com.backend.ord.core.word.model.json
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size

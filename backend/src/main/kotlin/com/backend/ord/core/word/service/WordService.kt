@@ -1,4 +1,4 @@
-package com.backend.ord.services
+package com.backend.ord.core.word.service
 
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
@@ -8,14 +8,13 @@ import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.WordDTO
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.domain.infrastructure.CountingSummary
-import com.backend.ord.domain.persistence.dto.WordDTO
-import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
 import com.backend.ord.shared.services.UserResourceService
 import java.util.*
-
 
 interface WordService : UserResourceService<Word> {
     fun changeBankForSingleWord(

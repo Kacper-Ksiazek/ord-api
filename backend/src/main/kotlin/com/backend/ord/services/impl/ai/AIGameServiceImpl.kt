@@ -7,6 +7,7 @@ import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.service.WordService
 import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
 import com.backend.ord.domain.persistence.jsons.game_proper_answers.CrosswordProperAnswers
 import com.backend.ord.enums.persistence.game.GameDifficulty
@@ -16,7 +17,6 @@ import com.backend.ord.enums.persistence.game.getNumberOfWordsForWordsTypingGame
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.prompts.Prompts
-import com.backend.ord.services.WordService
 import com.backend.ord.services.ai.AIGameService
 import com.backend.ord.services.ai.OpenAIAPIClientService
 import com.backend.ord.services.ai.dto.ai_responses.games.AIGeneratedCrosswordData
