@@ -1,6 +1,6 @@
-package com.backend.ord.api.requests.word.data
+package com.backend.ord.core.word.api.requests.dto
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequest
+import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
 import jakarta.validation.Valid
 import java.util.*
 

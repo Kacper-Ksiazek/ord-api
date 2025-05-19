@@ -1,13 +1,7 @@
 package com.backend.ord.controllers
 
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequest
-import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
-import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
-import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.bases.ControllerTestBase
 import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
@@ -15,6 +9,10 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
+import com.backend.ord.core.word.api.requests.enums.GetAllWordsSortOptions
+import com.backend.ord.core.word.api.requests.enums.WordToggleableProperty
+import com.backend.ord.core.word.api.responses.dto.SingleWordResponse
+import com.backend.ord.core.word.api.responses.dto.WordListItem
 import com.backend.ord.core.word.model.WordDTO
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.WordMapper
@@ -24,6 +22,7 @@ import com.backend.ord.core.word.model.json.ExampleSentence
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.core.word.service.WordService
 import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
@@ -31,6 +30,7 @@ import com.backend.ord.seeders.entities.WordSeeder
 import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.services.BankService
+import com.backend.ord.shared.enums.SortDirection
 import com.backend.ord.testing_utils.api_requests_factories.WordRequestFactory
 import com.backend.ord.testing_utils.api_requests_factories.data.WordDataChanges
 import com.backend.ord.testing_utils.api_requests_factories.data.compareWithDefaultCreateWordData

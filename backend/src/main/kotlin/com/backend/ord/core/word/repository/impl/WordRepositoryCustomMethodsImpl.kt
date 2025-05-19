@@ -1,17 +1,13 @@
 package com.backend.ord.core.word.repository.impl
 
-import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.enums.isDesc
-import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
-import com.backend.ord.api.requests.word.enums.toSQLColumnName
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.api.responses.PaginationData
-import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordListItem
-import com.backend.ord.api.responses.words.embedded.BankCompact
-import com.backend.ord.api.responses.words.embedded.BankGroupCompact
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.api.requests.enums.GetAllWordsSortOptions
+import com.backend.ord.core.word.api.requests.enums.toSQLColumnName
+import com.backend.ord.core.word.api.responses.dto.SingleWordResponse
+import com.backend.ord.core.word.api.responses.dto.WordListItem
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
@@ -20,6 +16,10 @@ import com.backend.ord.core.word.repository.WordRepositoryCustomMethods
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.BankGroup
 import com.backend.ord.exceptions.REST.NotFoundException
+import com.backend.ord.features.bank.dto.BankCompact
+import com.backend.ord.features.bank_group.dto.BankGroupCompact
+import com.backend.ord.shared.enums.SortDirection
+import com.backend.ord.shared.enums.isDesc
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
 import jakarta.persistence.TypedQuery

@@ -1,7 +1,7 @@
 package com.backend.ord.testing_utils.api_requests_factories.data
 
-import com.backend.ord.api.requests.word.data.UpdateWordRequest
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.word.api.requests.dto.UpdateWordRequest
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType

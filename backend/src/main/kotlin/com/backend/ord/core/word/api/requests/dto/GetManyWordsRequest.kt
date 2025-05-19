@@ -1,10 +1,10 @@
-package com.backend.ord.api.requests.word.data
+package com.backend.ord.core.word.api.requests.dto
 
-import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.shared.enums.SortDirection
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull

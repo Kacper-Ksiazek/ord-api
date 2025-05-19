@@ -1,4 +1,4 @@
-package com.backend.ord.api.requests.word.enums
+package com.backend.ord.core.word.api.requests.enums
 
 enum class GetAllWordsSortOptions {
     CREATED_AT,

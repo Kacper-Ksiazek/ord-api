@@ -1,14 +1,13 @@
 package com.backend.ord.core.word
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequest
-import com.backend.ord.api.requests.word.data.*
-import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
-import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
+import com.backend.ord.core.word.api.requests.dto.*
+import com.backend.ord.core.word.api.requests.enums.WordToggleableProperty
+import com.backend.ord.core.word.api.responses.dto.SingleWordResponse
+import com.backend.ord.core.word.api.responses.dto.WordListItem
 import com.backend.ord.core.word.model.WordDTO
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.WordMapper
@@ -17,6 +16,7 @@ import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.mappers.BankMapper
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.extensions.convertToSetExplicitly
+import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.backend.ord.services.BankService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid

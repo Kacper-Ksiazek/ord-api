@@ -1,14 +1,13 @@
 package com.backend.ord.core.word.service.impl
 
-import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
-import com.backend.ord.api.requests.word.enums.WordToggleableProperty
-import com.backend.ord.api.requests.word.enums.toggleProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
-import com.backend.ord.api.responses.words.SingleWordResponse
-import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.api.requests.enums.GetAllWordsSortOptions
+import com.backend.ord.core.word.api.requests.enums.WordToggleableProperty
+import com.backend.ord.core.word.api.requests.enums.toggleProperty
+import com.backend.ord.core.word.api.responses.dto.SingleWordResponse
+import com.backend.ord.core.word.api.responses.dto.WordListItem
 import com.backend.ord.core.word.model.WordDTO
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.WordMapper
@@ -21,6 +20,7 @@ import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.services.UserActivityLogService
+import com.backend.ord.shared.enums.SortDirection
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service

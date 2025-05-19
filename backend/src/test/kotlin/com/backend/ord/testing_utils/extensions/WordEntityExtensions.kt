@@ -1,6 +1,6 @@
 package com.backend.ord.testing_utils.extensions
 
-import com.backend.ord.api.requests.word.data.UpdateWordRequest
+import com.backend.ord.core.word.api.requests.dto.UpdateWordRequest
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.testing_utils.api_requests_factories.data.WordDataChanges
 import io.kotest.matchers.shouldBe

@@ -1,4 +1,4 @@
-package com.backend.ord.api.requests.bank.data
+package com.backend.ord.features.bank.api.requests.dto
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size

@@ -1,15 +1,15 @@
 package com.backend.ord.testing_utils.api_requests_factories
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequest
-import com.backend.ord.api.requests.enums.SortDirection
-import com.backend.ord.api.requests.word.data.*
-import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
-import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.word.api.requests.dto.*
+import com.backend.ord.core.word.api.requests.enums.GetAllWordsSortOptions
+import com.backend.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
+import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
+import com.backend.ord.shared.enums.SortDirection
 import com.backend.ord.testing_utils.api_requests_factories.data.CreateWordData
 import com.backend.ord.testing_utils.api_requests_factories.data.UpdateWordData
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser

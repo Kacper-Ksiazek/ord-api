@@ -1,6 +1,6 @@
-package com.backend.ord.api.responses.words.embedded
+package com.backend.ord.features.bank_group.dto
 
-import java.util.UUID
+import java.util.*
 
 data class BankGroupCompact(
     val id: UUID,

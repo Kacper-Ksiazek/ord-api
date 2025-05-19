@@ -1,10 +1,10 @@
-package com.backend.ord.api.requests.word.data
+package com.backend.ord.core.word.api.requests.dto
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequest
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
+import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.backend.ord.validators.annotations.ValidStringSet
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank

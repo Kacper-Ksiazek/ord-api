@@ -1,10 +1,10 @@
 package com.backend.ord.services.impl
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequest
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.exceptions.REST.NotFoundException
+import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.backend.ord.services.BankService
 import com.backend.ord.shared.repositories.UserResourceRepository
 import org.springframework.stereotype.Service
