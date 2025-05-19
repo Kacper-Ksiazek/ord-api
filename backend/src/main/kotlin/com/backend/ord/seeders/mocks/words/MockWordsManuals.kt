@@ -2,7 +2,7 @@ package com.backend.ord.seeders.mocks.words
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
@@ -15,7 +15,7 @@ import kotlin.random.Random
 class MockWordsManuals(
     override val repository: WordRepository
 ) : MocksFromJsonFileHandler<
-        Word,
+        WordEntity,
         List<AIGeneratedWordManualInJSON>,
         AIGeneratedWordManualInJSON
         > {
@@ -29,10 +29,10 @@ class MockWordsManuals(
     override fun convertToEntity(
         jsonData: AIGeneratedWordManualInJSON,
         user: UserEntity
-    ): Word {
+    ): WordEntity {
         val bank: Bank? = getRandomBank()
 
-        return Word(
+        return WordEntity(
             origin = jsonData.originalWord,
             definition = jsonData.definition,
             translation = jsonData.translation,
@@ -59,7 +59,7 @@ class MockWordsManuals(
     fun seedFromJSONFile(
         user: UserEntity,
         banks: List<Bank>
-    ): List<Word> {
+    ): List<WordEntity> {
         this.availableBanks = banks
 
         return seedFromJSONFile(user)

@@ -4,7 +4,7 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.seeders.factories.WordMockFactory
@@ -16,8 +16,8 @@ class WordSeeder(
     private val userMapper: UserMapper,
     private val wordMockFactory: WordMockFactory,
     private val wordRepository: WordRepository
-) : SeederInterface<Word> {
-    override fun seedOneEntity(data: Word?): Word {
+) : SeederInterface<WordEntity> {
+    override fun seedOneEntity(data: WordEntity?): WordEntity {
         return wordRepository.save(data ?: wordMockFactory.mockEntity())
     }
 
@@ -25,7 +25,7 @@ class WordSeeder(
         wordRepository.deleteAll()
     }
 
-    fun saveMany(entities: List<Word>): List<Word> {
+    fun saveMany(entities: List<WordEntity>): List<WordEntity> {
         return wordRepository.saveAll(entities)
     }
 
@@ -33,8 +33,8 @@ class WordSeeder(
         user: UserEntity,
         bank: Optional<Bank?> = Optional(null, false),
         language: LanguageName = LanguageName.ENGLISH
-    ): Word {
-        val mockEntity: Word = wordMockFactory.mockEntity(user = user)
+    ): WordEntity {
+        val mockEntity: WordEntity = wordMockFactory.mockEntity(user = user)
         mockEntity.translatedFrom = language
 
         if (bank.isPresent) mockEntity.bank = bank.value
@@ -45,7 +45,7 @@ class WordSeeder(
     fun seedOneEntityForUser(
         user: UserDTO,
         bank: Optional<Bank?> = Optional(null, false)
-    ): Word {
+    ): WordEntity {
         return seedOneEntityForUser(
             user = userMapper.toEntity(user),
             bank = bank
@@ -57,11 +57,11 @@ class WordSeeder(
         amount: Int = 5,
         bank: Optional<Bank?> = Optional(null, false),
         language: LanguageName = LanguageName.ENGLISH
-    ): List<Word> {
-        val words = mutableListOf<Word>()
+    ): List<WordEntity> {
+        val wordEntities = mutableListOf<WordEntity>()
 
         repeat(amount) {
-            words.add(
+            wordEntities.add(
                 wordMockFactory.mockEntity(
                     user = user,
                     bank = if (bank.isPresent) bank.value else null,
@@ -70,7 +70,7 @@ class WordSeeder(
             )
         }
 
-        return wordRepository.saveAll(words)
+        return wordRepository.saveAll(wordEntities)
     }
 
     fun seedMultipleEntitiesForUser(
@@ -78,7 +78,7 @@ class WordSeeder(
         amount: Int = 5,
         bank: Optional<Bank?> = Optional(null, false),
         language: LanguageName = LanguageName.ENGLISH
-    ): List<Word> {
+    ): List<WordEntity> {
         return seedMultipleEntitiesForUser(
             user = userMapper.toEntity(user),
             amount = amount,

@@ -9,8 +9,8 @@ import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.core.word.model.Word
 import com.backend.ord.core.word.model.WordDTO
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.WordMapper
 import com.backend.ord.core.word.service.WordService
 import com.backend.ord.domain.persistence.entities.Bank
@@ -131,7 +131,7 @@ class WordController(
             user = user
         )
 
-        val result: Word = wordService.save(
+        val result: WordEntity = wordService.save(
             wordMapper.toEntity(
                 WordDTO(
                     id = id,

@@ -5,7 +5,7 @@ import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.core.word.service.WordService
 import com.backend.ord.domain.persistence.entities.UserActivityLog
@@ -54,7 +54,7 @@ class GameReviewServiceImpl(
         language: LanguageName,
         reviewedQuestions: Set<IdentifiableProperAnswer>
     ) {
-        val wordsToSave: MutableSet<Word> = mutableSetOf()
+        val wordsToSave: MutableSet<WordEntity> = mutableSetOf()
         val userActivityLogsToSave: MutableSet<UserActivityLog> = mutableSetOf()
 
         wordRepository.findAllWordByTheirOrigins(

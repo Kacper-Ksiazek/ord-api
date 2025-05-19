@@ -16,7 +16,7 @@ import java.util.*
 
 @Entity
 @Table(name = "words")
-data class Word(
+data class WordEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

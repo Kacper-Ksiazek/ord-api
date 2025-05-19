@@ -2,7 +2,7 @@ package com.backend.ord.testing_utils.dto.resources.db_rows
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
@@ -21,8 +21,8 @@ data class WordDBExportedRow(
     val translatedFrom: LanguageName,
     val translatedTo: LanguageName
 ) {
-    fun convertIntoWordEntity(user: UserEntity): Word {
-        return Word(
+    fun convertIntoWordEntity(user: UserEntity): WordEntity {
+        return WordEntity(
             type = type,
             extraMark = extraMark,
             origin = origin,

@@ -2,7 +2,7 @@ package com.backend.ord.testing_utils.api_requests_factories.data
 
 import com.backend.ord.api.requests.word.data.UpdateWordRequestData
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
@@ -34,7 +34,7 @@ val CreateWordData = UpdateWordRequestData(
     bankToCreate = null
 )
 
-fun Word.compareWithDefaultCreateWordData(
+fun WordEntity.compareWithDefaultCreateWordData(
     differences: WordDataChanges = WordDataChanges()
 ) {
     detectChanges(

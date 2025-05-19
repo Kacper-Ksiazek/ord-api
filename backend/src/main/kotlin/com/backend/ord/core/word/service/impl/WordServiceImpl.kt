@@ -9,8 +9,8 @@ import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.core.word.model.Word
 import com.backend.ord.core.word.model.WordDTO
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.WordMapper
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
@@ -154,12 +154,12 @@ class WordServiceImpl(
         wordId: UUID,
         userId: UUID,
         property: WordToggleableProperty
-    ): Word {
-        val word: Word = repository.findOneForUser(id = wordId, userId = userId)
+    ): WordEntity {
+        val wordEntity: WordEntity = repository.findOneForUser(id = wordId, userId = userId)
             ?: throw NotFoundException("Word with id $wordId not found")
 
         return repository.save(
-            word.toggleProperty(property)
+            wordEntity.toggleProperty(property)
         )
     }
 
@@ -167,7 +167,7 @@ class WordServiceImpl(
         wordIds: Set<UUID>,
         userId: UUID,
         property: WordToggleableProperty
-    ): List<Word> {
+    ): List<WordEntity> {
         val words = repository.findAllForUser(ids = wordIds, userId = userId)
 
         // Handle partial save

@@ -6,7 +6,7 @@ import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
@@ -324,13 +324,13 @@ class WordRequestFactory(
     fun changeBankForMultipleWords(
         authenticatedUser: MockedAuthenticatedUser? = null,
 
-        wordIds: List<Word>,
+        wordEntityIds: List<WordEntity>,
         bankId: UUID? = null,
         bankToCreate: CreateBankRequestData? = null,
     ): MockHttpServletRequestBuilder {
         return changeBankForMultipleWords(
             authenticatedUser = authenticatedUser,
-            wordIds = wordIds.map { it.id },
+            wordIds = wordEntityIds.map { it.id },
             bankId = bankId,
             bankToCreate = bankToCreate
         )
@@ -386,10 +386,10 @@ class WordRequestFactory(
      */
     fun togglePropertyForMultipleWordsRequest(
         authenticatedUser: MockedAuthenticatedUser? = null,
-        words: List<Word>? = null,
+        wordEntities: List<WordEntity>? = null,
         property: WordToggleableProperty? = null
     ): MockHttpServletRequestBuilder {
-        val wordIds = words?.map { it.id }
+        val wordIds = wordEntities?.map { it.id }
 
         return MockMvcRequestBuilders
             .post("$BASE_URL/toggle-property-for-multiple-words")

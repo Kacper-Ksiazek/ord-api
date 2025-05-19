@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component
 class WordMapper(
     private val userMapper: UserMapper,
     private val bankMapper: BankMapper
-) : MapperBase<Word, WordDTO> {
-    override fun toEntity(dto: WordDTO): Word {
-        return Word(
+) : MapperBase<WordEntity, WordDTO> {
+    override fun toEntity(dto: WordDTO): WordEntity {
+        return WordEntity(
             id = dto.id,
 
             type = dto.type,
@@ -39,7 +39,7 @@ class WordMapper(
         )
     }
 
-    override fun toDTO(entity: Word): WordDTO {
+    override fun toDTO(entity: WordEntity): WordDTO {
         return WordDTO(
             id = entity.id,
 

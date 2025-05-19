@@ -12,7 +12,7 @@ import com.backend.ord.api.responses.words.embedded.BankCompact
 import com.backend.ord.api.responses.words.embedded.BankGroupCompact
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.core.word.model.Word
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
@@ -43,8 +43,8 @@ class WordRepositoryCustomMethodsImpl(
     ): SingleWordResponse {
         val criteriaQuery = criteriaBuilder.createTupleQuery()
 
-        val root = criteriaQuery.from(Word::class.java)
-        val bankJoin = root.join<Word, Bank>("bank", JoinType.LEFT)
+        val root = criteriaQuery.from(WordEntity::class.java)
+        val bankJoin = root.join<WordEntity, Bank>("bank", JoinType.LEFT)
         val bankGroupJoin = bankJoin.join<Bank, BankGroup>("bankGroup", JoinType.LEFT)
 
         criteriaQuery.multiselect(
@@ -164,8 +164,8 @@ class WordRepositoryCustomMethodsImpl(
         // ---
         // 2. Prepare root and joins
         // ---
-        val root = criteriaQuery.from(Word::class.java)
-        val bankJoin = root.join<Word, Bank>("bank", JoinType.LEFT)
+        val root = criteriaQuery.from(WordEntity::class.java)
+        val bankJoin = root.join<WordEntity, Bank>("bank", JoinType.LEFT)
         val bankGroupJoin = bankJoin.join<Bank, BankGroup>("bankGroup", JoinType.LEFT)
 
         // ---
@@ -203,7 +203,7 @@ class WordRepositoryCustomMethodsImpl(
         // 5. Count total amount of results and calculate total amount of pages
         // ---
         val countCriteriaQuery = criteriaBuilder.createQuery(Long::class.java)
-        val countRoot = countCriteriaQuery.from(Word::class.java)
+        val countRoot = countCriteriaQuery.from(WordEntity::class.java)
         countCriteriaQuery.select(criteriaBuilder.count(countRoot))
 
         applyPredicatesToQuery<Long>(
@@ -340,7 +340,7 @@ class WordRepositoryCustomMethodsImpl(
 
     private fun <T> applyPredicatesToQuery(
         query: CriteriaQuery<T>,
-        root: Root<Word>,
+        root: Root<WordEntity>,
 
         userId: UUID,
         language: LanguageName,

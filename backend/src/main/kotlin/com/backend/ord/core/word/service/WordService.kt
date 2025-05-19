@@ -8,15 +8,15 @@ import com.backend.ord.api.responses.words.SingleWordResponse
 import com.backend.ord.api.responses.words.WordListItem
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.core.word.model.Word
 import com.backend.ord.core.word.model.WordDTO
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.domain.infrastructure.CountingSummary
 import com.backend.ord.shared.services.UserResourceService
 import java.util.*
 
-interface WordService : UserResourceService<Word> {
+interface WordService : UserResourceService<WordEntity> {
     fun changeBankForSingleWord(
         wordId: UUID,
         bankId: UUID?,
@@ -69,13 +69,13 @@ interface WordService : UserResourceService<Word> {
         wordId: UUID,
         userId: UUID,
         property: WordToggleableProperty
-    ): Word
+    ): WordEntity
 
     fun togglePropertyForManyWords(
         wordIds: Set<UUID>,
         userId: UUID,
         property: WordToggleableProperty
-    ): List<Word>
+    ): List<WordEntity>
 
     fun saveNewWord(
         word: WordDTO,
