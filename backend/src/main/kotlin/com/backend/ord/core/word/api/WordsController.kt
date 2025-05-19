@@ -1,4 +1,4 @@
-package com.backend.ord.core.word
+package com.backend.ord.core.word.api
 
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.core.auth.jwt.JwtService

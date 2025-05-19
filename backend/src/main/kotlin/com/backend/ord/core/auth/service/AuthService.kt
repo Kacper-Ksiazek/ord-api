@@ -1,7 +1,7 @@
 package com.backend.ord.core.auth.service
 
-import com.backend.ord.api.requests.LoginRequest
-import com.backend.ord.api.requests.RegisterRequest
+import com.backend.ord.core.auth.api.requests.dto.LoginRequest
+import com.backend.ord.core.auth.api.requests.dto.RegisterRequest
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.exceptions.ForbiddenException
 import com.backend.ord.exceptions.UserNotFoundException

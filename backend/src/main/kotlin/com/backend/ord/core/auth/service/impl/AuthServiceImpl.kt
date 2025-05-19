@@ -1,8 +1,8 @@
 package com.backend.ord.core.auth.service.impl
 
-import com.backend.ord.api.requests.LoginRequest
-import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.core.auth.api.requests.dto.LoginRequest
+import com.backend.ord.core.auth.api.requests.dto.RegisterRequest
 import com.backend.ord.core.auth.jwt.JwtFactory
 import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.core.auth.service.AuthService

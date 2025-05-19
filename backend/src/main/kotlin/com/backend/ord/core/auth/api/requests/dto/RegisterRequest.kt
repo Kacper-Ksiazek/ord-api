@@ -1,4 +1,4 @@
-package com.backend.ord.api.requests
+package com.backend.ord.core.auth.api.requests.dto
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 

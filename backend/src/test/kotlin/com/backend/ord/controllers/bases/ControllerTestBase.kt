@@ -1,7 +1,7 @@
 package com.backend.ord.controllers.bases
 
-import com.backend.ord.api.requests.RegisterRequest
 import com.backend.ord.config.properties.JwtProperties
+import com.backend.ord.core.auth.api.requests.dto.RegisterRequest
 import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
