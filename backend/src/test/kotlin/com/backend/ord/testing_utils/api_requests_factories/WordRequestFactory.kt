@@ -1,6 +1,6 @@
 package com.backend.ord.testing_utils.api_requests_factories
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.api.requests.bank.data.CreateBankRequest
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
@@ -66,7 +66,7 @@ class WordRequestFactory(
             }
             .content(
                 objectMapper.writeValueAsString(
-                    GetManyWordsRequestData(
+                    GetManyWordsRequest(
                         language = language,
 
                         page = page,
@@ -118,7 +118,7 @@ class WordRequestFactory(
             }
             .content(
                 objectMapper.writeValueAsString(
-                    UnsafeGetManyWordsRequestData(
+                    UnsafeGetManyWordsRequest(
                         language = language,
 
                         page = page,
@@ -160,14 +160,14 @@ class WordRequestFactory(
         exampleSentences: Set<ExampleSentence> = CreateWordData.exampleSentences!!,
 
         bankId: UUID? = CreateWordData.bankId,
-        bankToCreate: CreateBankRequestData? = CreateWordData.bankToCreate
+        bankToCreate: CreateBankRequest? = CreateWordData.bankToCreate
     ): MockHttpServletRequestBuilder {
         return MockMvcRequestBuilders.post(BASE_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .content(
                 objectMapper.writeValueAsString(
-                    CreateWordRequestData(
+                    CreateWordRequest(
                         origin = origin,
                         translation = translation,
                         translatedFrom = translatedFrom,
@@ -206,14 +206,14 @@ class WordRequestFactory(
         exampleSentences: Set<ExampleSentence>? = UpdateWordData.exampleSentences,
 
         bankId: UUID? = UpdateWordData.bankId,
-        bankToCreate: CreateBankRequestData? = UpdateWordData.bankToCreate
+        bankToCreate: CreateBankRequest? = UpdateWordData.bankToCreate
     ): MockHttpServletRequestBuilder {
         return MockMvcRequestBuilders.patch("$BASE_URL/$wordId")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .content(
                 objectMapper.writeValueAsString(
-                    UpdateWordRequestData(
+                    UpdateWordRequest(
                         origin = origin,
                         translation = translation,
                         translatedFrom = translatedFrom,
@@ -252,14 +252,14 @@ class WordRequestFactory(
         exampleSentences: Set<ExampleSentence>? = null,
 
         bankId: UUID? = null,
-        bankToCreate: CreateBankRequestData? = null
+        bankToCreate: CreateBankRequest? = null
     ): MockHttpServletRequestBuilder {
         return MockMvcRequestBuilders.patch("$BASE_URL/$wordId")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .content(
                 objectMapper.writeValueAsString(
-                    UpdateWordRequestData(
+                    UpdateWordRequest(
                         origin = origin,
                         translation = translation,
                         translatedFrom = translatedFrom,
@@ -298,7 +298,7 @@ class WordRequestFactory(
         authenticatedUser: MockedAuthenticatedUser? = null,
 
         bankId: UUID? = null,
-        bankToCreate: CreateBankRequestData? = null,
+        bankToCreate: CreateBankRequest? = null,
     ): MockHttpServletRequestBuilder {
         return MockMvcRequestBuilders
             .post("$BASE_URL/$wordId/change-bank")
@@ -306,7 +306,7 @@ class WordRequestFactory(
             .contentType(MediaType.APPLICATION_JSON)
             .content(
                 objectMapper.writeValueAsString(
-                    ChangeBankForSingleWordRequestData(
+                    ChangeBankForSingleWordRequest(
                         bankId = bankId,
                         bankToCreate = bankToCreate
                     )
@@ -326,7 +326,7 @@ class WordRequestFactory(
 
         wordEntityIds: List<WordEntity>,
         bankId: UUID? = null,
-        bankToCreate: CreateBankRequestData? = null,
+        bankToCreate: CreateBankRequest? = null,
     ): MockHttpServletRequestBuilder {
         return changeBankForMultipleWords(
             authenticatedUser = authenticatedUser,
@@ -345,7 +345,7 @@ class WordRequestFactory(
 
         wordIds: List<UUID>,
         bankId: UUID? = null,
-        bankToCreate: CreateBankRequestData? = null,
+        bankToCreate: CreateBankRequest? = null,
     ): MockHttpServletRequestBuilder {
         return MockMvcRequestBuilders
             .post("$BASE_URL/change-bank-for-multiple-words")
@@ -353,7 +353,7 @@ class WordRequestFactory(
             .contentType(MediaType.APPLICATION_JSON)
             .content(
                 objectMapper.writeValueAsString(
-                    ChangeBankForMultipleWordsRequestData(
+                    ChangeBankForMultipleWordsRequest(
                         wordIds = wordIds,
                         bankId = bankId,
                         bankToCreate = bankToCreate
@@ -403,7 +403,7 @@ class WordRequestFactory(
                 objectMapper.writeValueAsString(
                     when (wordIds) {
                         null -> null
-                        else -> WordBulkActionRequestData(ids = wordIds)
+                        else -> WordBulkActionRequest(ids = wordIds)
                     }
                 )
             )

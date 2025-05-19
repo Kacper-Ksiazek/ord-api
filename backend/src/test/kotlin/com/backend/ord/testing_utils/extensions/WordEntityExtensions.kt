@@ -1,7 +1,6 @@
 package com.backend.ord.testing_utils.extensions
 
-import com.backend.ord.api.requests.word.UpdateWordRequest
-import com.backend.ord.api.requests.word.data.UpdateWordRequestData
+import com.backend.ord.api.requests.word.data.UpdateWordRequest
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.testing_utils.api_requests_factories.data.WordDataChanges
 import io.kotest.matchers.shouldBe
@@ -24,7 +23,7 @@ fun WordEntity.detectChanges(
 ) {
     detectChanges(
         changes = changes,
-        before = UpdateWordRequestData(
+        before = UpdateWordRequest(
             origin = before.origin,
             translation = before.translation,
             definition = before.definition,

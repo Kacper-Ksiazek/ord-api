@@ -1,18 +1,17 @@
 package com.backend.ord.api.requests.bank.data
 
-import com.backend.ord.api.requests.bank.CreateBankRequest
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
-import java.util.UUID
+import java.util.*
 
-data class CreateBankRequestData(
+data class CreateBankRequest(
     @field:NotBlank(message = "Bank name cannot be blank")
     @field:Size(min = 2, max = 165, message = "Bank name must be between 1 and 64 characters")
-    override val name: String,
+    val name: String,
 
     @field:NotBlank(message = "Bank description cannot be blank")
     @field:Size(min = 1, max = 255, message = "Bank description must be between 1 and 255 characters")
-    override val description: String,
+    val description: String,
 
-    override val groupId: UUID? = null
-) : CreateBankRequest
+    val groupId: UUID? = null
+)

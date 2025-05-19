@@ -1,6 +1,6 @@
 package com.backend.ord.core.word
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.api.requests.bank.data.CreateBankRequest
 import com.backend.ord.api.requests.word.data.*
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
 import com.backend.ord.api.responses.PaginatedDataResponse
@@ -39,7 +39,7 @@ class WordController(
     @PostMapping("/get-many-words")
     fun getAllWords(
         request: HttpServletRequest,
-        @RequestBody @Valid requestBody: GetManyWordsRequestData,
+        @RequestBody @Valid requestBody: GetManyWordsRequest,
     ): ResponseEntity<PaginatedDataResponse<WordListItem>> {
         val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
@@ -85,7 +85,7 @@ class WordController(
     @PostMapping("/")
     fun createWord(
         request: HttpServletRequest,
-        @Valid @RequestBody body: CreateWordRequestData
+        @Valid @RequestBody body: CreateWordRequest
     ): ResponseEntity<WordDTO> {
         val user: UserEntity = jwtService.getAuthenticatedUser(request)!!
 
@@ -119,7 +119,7 @@ class WordController(
     fun updateWord(
         request: HttpServletRequest,
         @PathVariable id: UUID,
-        @Valid @RequestBody body: UpdateWordRequestData
+        @Valid @RequestBody body: UpdateWordRequest
     ): ResponseEntity<WordDTO> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
@@ -158,7 +158,7 @@ class WordController(
     fun changeWordBank(
         request: HttpServletRequest,
         @PathVariable id: UUID,
-        @Valid @RequestBody body: ChangeBankForSingleWordRequestData
+        @Valid @RequestBody body: ChangeBankForSingleWordRequest
     ): ResponseEntity<Unit> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
@@ -180,7 +180,7 @@ class WordController(
     @PostMapping("/change-bank-for-multiple-words")
     fun changeBankForMultipleWords(
         request: HttpServletRequest,
-        @Valid @RequestBody body: ChangeBankForMultipleWordsRequestData
+        @Valid @RequestBody body: ChangeBankForMultipleWordsRequest
     ): ResponseEntity<Unit> {
         val user = jwtService.getAuthenticatedUser(request)!!
 
@@ -220,7 +220,7 @@ class WordController(
     fun togglePropertyForManyWords(
         request: HttpServletRequest,
         @RequestParam(required = false) property: WordToggleableProperty,
-        @Valid @RequestBody body: WordBulkActionRequestData
+        @Valid @RequestBody body: WordBulkActionRequest
     ): ResponseEntity<Unit> {
         val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
@@ -250,7 +250,7 @@ class WordController(
 
     private fun getBankFromRequest(
         bankId: UUID?,
-        bankToCreate: CreateBankRequestData?,
+        bankToCreate: CreateBankRequest?,
         user: UserEntity
     ): Bank {
         if (bankToCreate == null && bankId == null) {
@@ -274,7 +274,7 @@ class WordController(
 
     private fun getBankFromRequestOrNull(
         bankId: UUID?,
-        bankToCreate: CreateBankRequestData?,
+        bankToCreate: CreateBankRequest?,
         user: UserEntity
     ): Bank? {
         if (bankToCreate != null && bankId != null) {

@@ -1,6 +1,6 @@
 package com.backend.ord.seeders.factories
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.api.requests.bank.data.CreateBankRequest
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.BankGroup
@@ -30,8 +30,8 @@ class BankMockFactory(
         name: String = faker.name().fullName(),
         description: String = faker.lorem().sentence(),
         groupId: UUID? = null
-    ): CreateBankRequestData {
-        return CreateBankRequestData(
+    ): CreateBankRequest {
+        return CreateBankRequest(
             name = name,
             description = description,
             groupId = groupId

@@ -1,7 +1,7 @@
 package com.backend.ord.controllers
 
 
-import com.backend.ord.api.requests.bank.data.CreateBankRequestData
+import com.backend.ord.api.requests.bank.data.CreateBankRequest
 import com.backend.ord.api.requests.enums.SortDirection
 import com.backend.ord.api.requests.word.enums.GetAllWordsSortOptions
 import com.backend.ord.api.requests.word.enums.WordToggleableProperty
@@ -1513,7 +1513,7 @@ class TestWordsController @Autowired constructor(
                 val request = wordRequestFactory.changeBankForSingleWord(
                     authenticatedUser = authenticatedUser,
                     wordId = wordEntity.id,
-                    bankToCreate = CreateBankRequestData(
+                    bankToCreate = CreateBankRequest(
                         name = newBankName,
                         description = "x".repeat(64)
                     )
@@ -1579,7 +1579,7 @@ class TestWordsController @Autowired constructor(
                 val request = wordRequestFactory.changeBankForSingleWord(
                     authenticatedUser = authenticatedUser,
                     wordId = wordEntity.id,
-                    bankToCreate = CreateBankRequestData(
+                    bankToCreate = CreateBankRequest(
                         name = newBankName,
                         description = "x".repeat(64)
                     )
@@ -1855,7 +1855,7 @@ class TestWordsController @Autowired constructor(
                 val request = wordRequestFactory.changeBankForMultipleWords(
                     authenticatedUser = authenticatedUser,
                     wordEntityIds = wordEntities,
-                    bankToCreate = CreateBankRequestData(
+                    bankToCreate = CreateBankRequest(
                         name = bankName,
                         description = "x".repeat(64)
                     )
@@ -1931,7 +1931,7 @@ class TestWordsController @Autowired constructor(
                 val request = wordRequestFactory.changeBankForMultipleWords(
                     authenticatedUser = authenticatedUser,
                     wordEntityIds = wordEntities,
-                    bankToCreate = CreateBankRequestData(
+                    bankToCreate = CreateBankRequest(
                         name = newBankName,
                         description = "x".repeat(64)
                     )
