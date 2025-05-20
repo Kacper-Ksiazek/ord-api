@@ -1,16 +1,16 @@
 package com.backend.ord.testing_utils.mocks.games
 
-import com.backend.ord.api.responses.games.bases.StartedGameResponse
 import com.backend.ord.controllers.bases.ControllerTestBase
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.domain.persistence.dto.OngoingGameDTO
-import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
-import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.repositories.OngoingGameRepository
+import com.backend.ord.features.ongoing_game.model.OngoingGameDTO
+import com.backend.ord.features.ongoing_game.model.OngoingGameMapper
+import com.backend.ord.features.ongoing_game.model.enums.GameDifficulty
+import com.backend.ord.features.ongoing_game.model.enums.GameType
+import com.backend.ord.features.ongoing_game.repository.OngoingGameRepository
+import com.backend.ord.features.ongoing_game.variants.shared.dto.api_responses.StartedGameResponseBase
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.seeders.mocks.bases.ResourceJSONFileReader
 import com.backend.ord.seeders.mocks.bases.RootDir
@@ -29,7 +29,7 @@ interface GameMockerBase<
         TJSONDataModelType : GameInJson<TGameInstruction, *>,        // eg. CrosswordInJson
         TOngoingGameDTO : OngoingGameDTO<*>,                         // eg. OngoingCrosswordGameDTO
         TGameInstruction,                                            // eg. CrosswordInstruction
-        TAPIResponseDTO : StartedGameResponse<TGameInstruction, *>   // eg. StartedCrosswordGameResponse
+        TAPIResponseDTO : StartedGameResponseBase<TGameInstruction, *>   // eg. StartedCrosswordGameResponse
         > : ResourceJSONFileReader<List<TJSONDataModelType>, TJSONDataModelType> {
     override val root: RootDir
         get() = RootDir.TEST_RESOURCES

@@ -6,8 +6,8 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.enums.application.UserActivityFrequency
 import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.enums.persistence.game.GameDifficulty
 import com.backend.ord.exceptions.REST.NotFoundException
+import com.backend.ord.features.ongoing_game.model.enums.GameDifficulty
 import com.backend.ord.repositories.UserActivityLogRepository
 import com.backend.ord.services.UserActivityLogService
 import org.springframework.data.repository.findByIdOrNull

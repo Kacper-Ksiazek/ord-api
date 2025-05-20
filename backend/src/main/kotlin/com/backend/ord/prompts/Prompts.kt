@@ -5,9 +5,9 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
-import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.enums.persistence.game.getNumberOfWordsForCrossword
-import com.backend.ord.enums.persistence.game.getNumberOfWordsForWordsTypingGame
+import com.backend.ord.features.ongoing_game.model.enums.GameDifficulty
+import com.backend.ord.features.ongoing_game.model.enums.getNumberOfWordsForCrossword
+import com.backend.ord.features.ongoing_game.model.enums.getNumberOfWordsForWordsTypingGame
 import com.backend.ord.prompts.dto.games.SentencesWritingMultipleTopicProperAnswerForAI
 import com.backend.ord.prompts.internal_tools.GenerateGamePromptData
 import com.backend.ord.prompts.internal_tools.prepareGamePrompt

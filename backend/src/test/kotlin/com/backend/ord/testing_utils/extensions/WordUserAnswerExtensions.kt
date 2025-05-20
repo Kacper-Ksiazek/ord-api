@@ -1,7 +1,7 @@
 package com.backend.ord.testing_utils.extensions
 
-import com.backend.ord.api.requests.games.utils.WordUserAnswer
-import com.backend.ord.enums.application.game.AnswerScore
+import com.backend.ord.features.ongoing_game.variants.shared.dto.api_requests.helpers.WordUserAnswer
+import com.backend.ord.features.ongoing_game.variants.shared.enums.AnswerScore
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import jakarta.validation.constraints.Min
 

@@ -1,8 +1,8 @@
 package com.backend.ord.services
 
-import com.backend.ord.domain.persistence.dto.OngoingGameDTO
 import com.backend.ord.domain.persistence.entities.FinishedGame
-import com.backend.ord.domain.persistence.entities.OngoingGame
+import com.backend.ord.features.ongoing_game.model.OngoingGame
+import com.backend.ord.features.ongoing_game.model.OngoingGameDTO
 import java.util.*
 
 interface GameService {

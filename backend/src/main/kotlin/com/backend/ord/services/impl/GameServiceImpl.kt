@@ -1,18 +1,18 @@
 package com.backend.ord.services.impl
 
-import com.backend.ord.domain.persistence.dto.OngoingGameDTO
 import com.backend.ord.domain.persistence.entities.FinishedGame
-import com.backend.ord.domain.persistence.entities.OngoingGame
-import com.backend.ord.domain.persistence.entities.finish
-import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
 import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.enums.persistence.game.GameGrade
-import com.backend.ord.enums.persistence.game.GameResult
-import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.exceptions.REST.NotFoundException
+import com.backend.ord.features.ongoing_game.model.OngoingGame
+import com.backend.ord.features.ongoing_game.model.OngoingGameDTO
+import com.backend.ord.features.ongoing_game.model.OngoingGameMapper
+import com.backend.ord.features.ongoing_game.model.enums.GameGrade
+import com.backend.ord.features.ongoing_game.model.enums.GameResult
+import com.backend.ord.features.ongoing_game.model.enums.GameType
+import com.backend.ord.features.ongoing_game.model.finish
+import com.backend.ord.features.ongoing_game.service.OngoingGameService
 import com.backend.ord.services.FinishedGameService
 import com.backend.ord.services.GameService
-import com.backend.ord.services.OngoingGameService
 import com.backend.ord.services.UserActivityLogService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

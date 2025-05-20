@@ -1,10 +1,10 @@
 package com.backend.ord.testing_utils.dto.resources.mocks
 
-import com.backend.ord.domain.application.games.words_typing.WordsTypingInstruction
-import com.backend.ord.domain.persistence.jsons.game_proper_answers.WordsTypingProperAnswers
-import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.features.ongoing_game.model.enums.GameDifficulty
+import com.backend.ord.features.ongoing_game.model.enums.GameType
+import com.backend.ord.features.ongoing_game.model.json.WordsTypingProperAnswers
+import com.backend.ord.features.ongoing_game.variants.words_typing.dto.WordsTypingInstruction
 
 data class WordsTypingGameInJson(
     override val type: GameType = GameType.WORDS_TYPING,

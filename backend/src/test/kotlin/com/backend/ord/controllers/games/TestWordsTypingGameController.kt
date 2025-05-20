@@ -1,8 +1,5 @@
 package com.backend.ord.controllers.games
 
-import com.backend.ord.api.requests.games.utils.WordUserAnswer
-import com.backend.ord.api.responses.games.FinishedWordsTypingGameResponse
-import com.backend.ord.api.responses.games.bases.StartedWordsTypingGameResponse
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.games.bases.GameControllerTestBase
@@ -12,16 +9,19 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiency
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
-import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
-import com.backend.ord.enums.application.game.AnswerScore
 import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.enums.persistence.game.GameGrade
-import com.backend.ord.enums.persistence.game.GameType
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
+import com.backend.ord.features.ongoing_game.model.OngoingGameMapper
+import com.backend.ord.features.ongoing_game.model.OngoingWordsTypingGameDTO
+import com.backend.ord.features.ongoing_game.model.enums.GameDifficulty
+import com.backend.ord.features.ongoing_game.model.enums.GameGrade
+import com.backend.ord.features.ongoing_game.model.enums.GameType
+import com.backend.ord.features.ongoing_game.repository.OngoingGameRepository
+import com.backend.ord.features.ongoing_game.variants.shared.dto.api_requests.helpers.WordUserAnswer
+import com.backend.ord.features.ongoing_game.variants.shared.enums.AnswerScore
+import com.backend.ord.features.ongoing_game.variants.words_typing.dto.api_responses.FinishedWordsTypingGameResponse
+import com.backend.ord.features.ongoing_game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
 import com.backend.ord.repositories.FinishedGameRepository
-import com.backend.ord.repositories.OngoingGameRepository
 import com.backend.ord.repositories.UserActivityLogRepository
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder

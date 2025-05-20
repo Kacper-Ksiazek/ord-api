@@ -1,14 +1,14 @@
 package com.backend.ord.testing_utils.mocks.games
 
-import com.backend.ord.api.responses.games.bases.StartedCrosswordGameResponse
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.domain.application.games.crossword.CrosswordInstruction
-import com.backend.ord.domain.persistence.dto.OngoingCrosswordGameDTO
-import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
-import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.repositories.OngoingGameRepository
+import com.backend.ord.features.ongoing_game.model.OngoingCrosswordGameDTO
+import com.backend.ord.features.ongoing_game.model.OngoingGameMapper
+import com.backend.ord.features.ongoing_game.model.enums.GameType
+import com.backend.ord.features.ongoing_game.repository.OngoingGameRepository
+import com.backend.ord.features.ongoing_game.variants.crossword.dto.CrosswordInstruction
+import com.backend.ord.features.ongoing_game.variants.crossword.dto.api_responses.StartedCrosswordGameResponse
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.backend.ord.testing_utils.dto.resources.mocks.CrosswordInJson

@@ -3,7 +3,7 @@ package com.backend.ord.domain.persistence.dto
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.enums.persistence.game.GameDifficulty
+import com.backend.ord.features.ongoing_game.model.enums.GameDifficulty
 import java.time.Instant
 import java.util.*
 
