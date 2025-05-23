@@ -1,9 +1,9 @@
-package com.backend.ord.domain.persistence.entities
+package com.backend.ord.features.user_activity_log.model
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.validation.constraints.Min

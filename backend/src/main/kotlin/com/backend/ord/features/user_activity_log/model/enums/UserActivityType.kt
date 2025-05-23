@@ -1,6 +1,4 @@
-package com.backend.ord.enums.persistence
-
-import com.backend.ord.enums.application.UserActivityFrequency
+package com.backend.ord.features.user_activity_log.model.enums
 
 enum class UserActivityType(
     val points: Int,
@@ -19,4 +17,3 @@ enum class UserActivityType(
     WORDS_COMPLETED_IN_ONE_DAY_10(points = 50, frequency = UserActivityFrequency.WEEKLY),
     WORDS_COMPLETED_IN_ONE_WEEK_30(points = 100, frequency = UserActivityFrequency.WEEKLY);
 }
-

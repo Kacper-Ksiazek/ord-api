@@ -16,10 +16,10 @@ import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.core.word.service.WordService
 import com.backend.ord.domain.infrastructure.CountingSummary
-import com.backend.ord.domain.persistence.entities.UserActivityLog
-import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.exceptions.REST.NotFoundException
-import com.backend.ord.services.UserActivityLogService
+import com.backend.ord.features.user_activity_log.model.UserActivityLog
+import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
+import com.backend.ord.features.user_activity_log.service.UserActivityLogService
 import com.backend.ord.shared.enums.SortDirection
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest

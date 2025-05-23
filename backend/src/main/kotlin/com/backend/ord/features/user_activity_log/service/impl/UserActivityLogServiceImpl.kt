@@ -1,15 +1,15 @@
-package com.backend.ord.services.impl
+package com.backend.ord.features.user_activity_log.service.impl
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.UserActivityLog
-import com.backend.ord.enums.application.UserActivityFrequency
-import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
-import com.backend.ord.repositories.UserActivityLogRepository
-import com.backend.ord.services.UserActivityLogService
+import com.backend.ord.features.user_activity_log.model.UserActivityLog
+import com.backend.ord.features.user_activity_log.model.enums.UserActivityFrequency
+import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
+import com.backend.ord.features.user_activity_log.repository.UserActivityLogRepository
+import com.backend.ord.features.user_activity_log.service.UserActivityLogService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*

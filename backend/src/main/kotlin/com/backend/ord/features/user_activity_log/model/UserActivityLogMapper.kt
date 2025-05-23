@@ -1,15 +1,13 @@
-package com.backend.ord.domain.persistence.mappers.impl
+package com.backend.ord.features.user_activity_log.model
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.dto.UserActivityLogDTO
-import com.backend.ord.domain.persistence.entities.UserActivityLog
-import com.backend.ord.domain.persistence.mappers.UserActivityLogMapper
+import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 
 @Component
-class UserActivityLogMapperImpl(
+class UserActivityLogMapper(
     private val userMapper: UserMapper,
-) : UserActivityLogMapper {
+) : MapperBase<UserActivityLog, UserActivityLogDTO> {
     override fun toEntity(dto: UserActivityLogDTO): UserActivityLog {
         return UserActivityLog(
             id = dto.id,

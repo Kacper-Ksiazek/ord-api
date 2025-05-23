@@ -1,6 +1,5 @@
 package com.backend.ord.features.game.services.impl
 
-import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.features.game.model.finished_game.FinishedGame
 import com.backend.ord.features.game.model.finished_game.extensions.getUserActivityType
@@ -12,7 +11,8 @@ import com.backend.ord.features.game.model.ongoing_game.extensions.finish
 import com.backend.ord.features.game.repositories.OngoingGameRepository
 import com.backend.ord.features.game.services.FinishedGameService
 import com.backend.ord.features.game.services.OngoingGameService
-import com.backend.ord.services.UserActivityLogService
+import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
+import com.backend.ord.features.user_activity_log.service.UserActivityLogService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*

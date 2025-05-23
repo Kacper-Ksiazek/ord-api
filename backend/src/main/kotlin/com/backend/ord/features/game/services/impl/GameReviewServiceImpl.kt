@@ -6,14 +6,14 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.core.word.service.WordService
-import com.backend.ord.domain.persistence.entities.UserActivityLog
-import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.services.GameReviewService
 import com.backend.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
 import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
 import com.backend.ord.features.game.variants.shared.enums.AnswerScore
-import com.backend.ord.services.UserActivityLogService
+import com.backend.ord.features.user_activity_log.model.UserActivityLog
+import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
+import com.backend.ord.features.user_activity_log.service.UserActivityLogService
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.*
