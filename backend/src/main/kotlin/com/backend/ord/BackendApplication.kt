@@ -44,6 +44,7 @@ class BackendApplication(
 }
 
 fun main(args: Array<String>) {
+    println("test")
     SpringApplication.run(BackendApplication::class.java, *args)
 }
 
