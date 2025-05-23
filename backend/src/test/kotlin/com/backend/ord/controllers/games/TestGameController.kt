@@ -7,10 +7,10 @@ import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.features.ongoing_game.model.OngoingCrosswordGameDTO
-import com.backend.ord.features.ongoing_game.model.OngoingGameMapper
-import com.backend.ord.features.ongoing_game.model.enums.GameResult
-import com.backend.ord.features.ongoing_game.repository.OngoingGameRepository
+import com.backend.ord.features.game.model.OngoingCrosswordGameDTO
+import com.backend.ord.features.game.model.OngoingGameMapper
+import com.backend.ord.features.game.model.enums.GameResult
+import com.backend.ord.features.game.repositories.OngoingGameRepository
 import com.backend.ord.repositories.FinishedGameRepository
 import com.backend.ord.repositories.UserActivityLogRepository
 import com.backend.ord.seeders.factories.WordMockFactory

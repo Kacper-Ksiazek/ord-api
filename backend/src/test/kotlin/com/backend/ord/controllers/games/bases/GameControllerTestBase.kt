@@ -6,8 +6,8 @@ import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.features.ongoing_game.model.OngoingGameMapper
-import com.backend.ord.features.ongoing_game.repository.OngoingGameRepository
+import com.backend.ord.features.game.model.OngoingGameMapper
+import com.backend.ord.features.game.repositories.OngoingGameRepository
 import com.backend.ord.repositories.FinishedGameRepository
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.fasterxml.jackson.databind.ObjectMapper

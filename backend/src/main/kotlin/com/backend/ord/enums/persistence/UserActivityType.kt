@@ -17,5 +17,6 @@ enum class UserActivityType(
 
     WORD_COMPLETED(points = 10),
     WORDS_COMPLETED_IN_ONE_DAY_10(points = 50, frequency = UserActivityFrequency.WEEKLY),
-    WORDS_COMPLETED_IN_ONE_WEEK_30(points = 100, frequency = UserActivityFrequency.WEEKLY)
+    WORDS_COMPLETED_IN_ONE_WEEK_30(points = 100, frequency = UserActivityFrequency.WEEKLY);
 }
+

@@ -2,10 +2,10 @@ package com.backend.ord.domain.persistence.dto
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
-import com.backend.ord.features.ongoing_game.model.enums.GameDifficulty
-import com.backend.ord.features.ongoing_game.model.enums.GameGrade
-import com.backend.ord.features.ongoing_game.model.enums.GameResult
-import com.backend.ord.features.ongoing_game.model.enums.GameType
+import com.backend.ord.features.game.model.enums.GameDifficulty
+import com.backend.ord.features.game.model.enums.GameGrade
+import com.backend.ord.features.game.model.enums.GameResult
+import com.backend.ord.features.game.model.enums.GameType
 import java.time.Instant
 import java.util.*
 

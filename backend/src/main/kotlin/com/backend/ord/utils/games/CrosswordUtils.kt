@@ -1,7 +1,7 @@
 package com.backend.ord.utils.games
 
-import com.backend.ord.features.ongoing_game.variants.crossword.dto.helpers.board.CrosswordWordDirection
-import com.backend.ord.features.ongoing_game.variants.crossword.dto.helpers.question.CrosswordQuestion
+import com.backend.ord.features.game.variants.crossword.dto.helpers.board.CrosswordWordDirection
+import com.backend.ord.features.game.variants.crossword.dto.helpers.question.CrosswordQuestion
 
 fun MutableList<MutableList<String?>>.updateWord(question: CrosswordQuestion) {
     val position = question.position ?: throw IllegalStateException("The question is not placed on the board yet.")

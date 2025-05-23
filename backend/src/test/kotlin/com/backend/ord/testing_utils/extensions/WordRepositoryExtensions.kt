@@ -2,7 +2,7 @@ package com.backend.ord.testing_utils.extensions
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.features.ongoing_game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
+import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe

@@ -3,8 +3,8 @@ package com.backend.ord.domain.persistence.dto.gpt_tokens_usage
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
-import com.backend.ord.features.ongoing_game.model.enums.GameDifficulty
-import com.backend.ord.features.ongoing_game.model.enums.GameType
+import com.backend.ord.features.game.model.enums.GameDifficulty
+import com.backend.ord.features.game.model.enums.GameType
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.*

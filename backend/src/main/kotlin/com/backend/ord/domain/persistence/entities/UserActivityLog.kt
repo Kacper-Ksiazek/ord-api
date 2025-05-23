@@ -3,7 +3,7 @@ package com.backend.ord.domain.persistence.entities
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.features.ongoing_game.model.enums.GameDifficulty
+import com.backend.ord.features.game.model.enums.GameDifficulty
 import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.validation.constraints.Min

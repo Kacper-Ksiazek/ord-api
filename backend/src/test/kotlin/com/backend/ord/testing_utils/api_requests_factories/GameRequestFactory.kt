@@ -1,11 +1,11 @@
 package com.backend.ord.testing_utils.api_requests_factories
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.backend.ord.features.ongoing_game.model.enums.GameDifficulty
-import com.backend.ord.features.ongoing_game.model.enums.GameType
-import com.backend.ord.features.ongoing_game.variants.shared.dto.api_requests.CancelGameRequest
-import com.backend.ord.features.ongoing_game.variants.shared.dto.api_requests.UnsafeStartGameRequestData
-import com.backend.ord.features.ongoing_game.variants.shared.dto.api_requests.bases.UnsafeFinishGameRequestData
+import com.backend.ord.features.game.model.enums.GameDifficulty
+import com.backend.ord.features.game.model.enums.GameType
+import com.backend.ord.features.game.variants.shared.dto.api_requests.CancelGameRequest
+import com.backend.ord.features.game.variants.shared.dto.api_requests.UnsafeStartGameRequestData
+import com.backend.ord.features.game.variants.shared.dto.api_requests.bases.UnsafeFinishGameRequestData
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType

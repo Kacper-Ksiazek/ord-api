@@ -1,0 +1,28 @@
+package com.backend.ord.features.game.model
+
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.user.model.UserDTO
+import com.backend.ord.features.game.model.enums.GameDifficulty
+import com.backend.ord.features.game.model.enums.GameType
+import com.backend.ord.features.game.model.json.CrosswordProperAnswers
+import com.backend.ord.features.game.model.json.WordsTypingProperAnswers
+import java.time.Instant
+import java.util.*
+
+data class OngoingGameDTO<TProperAnswers>(
+    val id: UUID = UUID.randomUUID(),
+
+    val properAnswers: TProperAnswers,
+
+    val type: GameType,
+    val language: LanguageName,
+    val difficulty: GameDifficulty,
+
+    val user: UserDTO,
+    val userId: UUID = user.id,
+
+    var createdAt: Instant = Instant.now()
+)
+
+typealias OngoingCrosswordGameDTO = OngoingGameDTO<CrosswordProperAnswers>
+typealias OngoingWordsTypingGameDTO = OngoingGameDTO<WordsTypingProperAnswers>

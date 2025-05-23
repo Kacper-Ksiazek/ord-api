@@ -1,7 +1,7 @@
 package com.backend.ord.testing_utils.dto
 
-import com.backend.ord.features.ongoing_game.variants.shared.dto.api_requests.helpers.WordUserAnswer
-import com.backend.ord.features.ongoing_game.variants.shared.enums.AnswerScore
+import com.backend.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
+import com.backend.ord.features.game.variants.shared.enums.AnswerScore
 import java.util.*
 
 data class AlteredWordProperAnswer(
