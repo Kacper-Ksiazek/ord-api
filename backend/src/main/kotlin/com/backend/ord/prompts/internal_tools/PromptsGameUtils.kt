@@ -2,7 +2,7 @@ package com.backend.ord.prompts.internal_tools
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.backend.ord.features.game.model.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 
 internal data class GenerateGamePromptData(
     val language: LanguageName,

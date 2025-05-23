@@ -2,9 +2,9 @@ package com.backend.ord.features.game.api.controllers
 
 import com.backend.ord.config.GamesConfig
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.features.game.model.OngoingCrosswordGameDTO
-import com.backend.ord.features.game.model.OngoingGame
-import com.backend.ord.features.game.model.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
+import com.backend.ord.features.game.model.ongoing_game.OngoingGame
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.features.game.services.GameReviewService
 import com.backend.ord.features.game.variants.crossword.dto.api_responses.FinishedCrosswordGameResponse
 import com.backend.ord.features.game.variants.crossword.dto.api_responses.StartedCrosswordGameResponse

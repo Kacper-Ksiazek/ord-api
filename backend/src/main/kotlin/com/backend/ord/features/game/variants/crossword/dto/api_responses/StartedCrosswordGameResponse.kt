@@ -1,6 +1,6 @@
 package com.backend.ord.features.game.variants.crossword.dto.api_responses
 
-import com.backend.ord.features.game.model.json.CrosswordProperAnswers
+import com.backend.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.backend.ord.features.game.variants.crossword.dto.CrosswordInstruction
 import com.backend.ord.features.game.variants.shared.dto.api_responses.StartedGameResponseBase
 import java.util.*

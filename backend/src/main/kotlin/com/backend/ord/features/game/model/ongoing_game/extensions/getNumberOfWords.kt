@@ -1,10 +1,7 @@
-package com.backend.ord.features.game.model.enums
+package com.backend.ord.features.game.model.ongoing_game.extensions
 
-enum class GameDifficulty {
-    EASY,
-    MEDIUM,
-    HARD
-}
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+
 
 /**
  * Returns the number of words for the crossword based on the difficulty.

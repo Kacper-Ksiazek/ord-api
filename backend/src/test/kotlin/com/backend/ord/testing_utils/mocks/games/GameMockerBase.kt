@@ -5,10 +5,10 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.features.game.model.OngoingGameDTO
-import com.backend.ord.features.game.model.OngoingGameMapper
-import com.backend.ord.features.game.model.enums.GameDifficulty
-import com.backend.ord.features.game.model.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameDTO
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameMapper
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.features.game.repositories.OngoingGameRepository
 import com.backend.ord.features.game.variants.shared.dto.api_responses.StartedGameResponseBase
 import com.backend.ord.seeders.factories.WordMockFactory

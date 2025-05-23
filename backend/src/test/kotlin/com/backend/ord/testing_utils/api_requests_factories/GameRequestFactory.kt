@@ -1,8 +1,8 @@
 package com.backend.ord.testing_utils.api_requests_factories
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.backend.ord.features.game.model.enums.GameDifficulty
-import com.backend.ord.features.game.model.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.features.game.variants.shared.dto.api_requests.CancelGameRequest
 import com.backend.ord.features.game.variants.shared.dto.api_requests.UnsafeStartGameRequestData
 import com.backend.ord.features.game.variants.shared.dto.api_requests.bases.UnsafeFinishGameRequestData

@@ -2,7 +2,7 @@ package com.backend.ord.features.game.services
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.features.game.model.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
 import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
 import com.backend.ord.utils.data_classes.Percentage

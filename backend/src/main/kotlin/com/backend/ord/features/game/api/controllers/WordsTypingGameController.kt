@@ -1,9 +1,9 @@
 package com.backend.ord.features.game.api.controllers
 
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.features.game.model.OngoingGame
-import com.backend.ord.features.game.model.OngoingWordsTypingGameDTO
-import com.backend.ord.features.game.model.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.OngoingGame
+import com.backend.ord.features.game.model.ongoing_game.OngoingWordsTypingGameDTO
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.features.game.variants.crossword.dto.api_requests.FinishWordsTypingGameRequest
 import com.backend.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.computeFinalScore

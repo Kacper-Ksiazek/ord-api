@@ -1,11 +1,11 @@
-package com.backend.ord.domain.persistence.entities
+package com.backend.ord.features.game.model.finished_game
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.features.game.model.enums.GameDifficulty
-import com.backend.ord.features.game.model.enums.GameGrade
-import com.backend.ord.features.game.model.enums.GameResult
-import com.backend.ord.features.game.model.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameGrade
+import com.backend.ord.features.game.model.ongoing_game.enums.GameResult
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp

@@ -5,7 +5,7 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.features.game.ai.generate.dto.GeneratedCrosswordGame
 import com.backend.ord.features.game.ai.generate.dto.GeneratedSentencesWritingGame
 import com.backend.ord.features.game.ai.generate.dto.GeneratedWordsTypingGame
-import com.backend.ord.features.game.model.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 
 interface AIGenerateGameService {
     fun generateCrosswordGame(

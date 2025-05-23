@@ -1,8 +1,8 @@
 package com.backend.ord.features.game.services
 
-import com.backend.ord.domain.persistence.entities.FinishedGame
-import com.backend.ord.features.game.model.OngoingGame
-import com.backend.ord.features.game.model.OngoingGameDTO
+import com.backend.ord.features.game.model.finished_game.FinishedGame
+import com.backend.ord.features.game.model.ongoing_game.OngoingGame
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameDTO
 import com.backend.ord.shared.services.UserResourceService
 import java.util.*
 

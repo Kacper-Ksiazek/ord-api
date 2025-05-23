@@ -1,11 +1,11 @@
-package com.backend.ord.features.game.model
+package com.backend.ord.features.game.model.ongoing_game
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
-import com.backend.ord.features.game.model.enums.GameDifficulty
-import com.backend.ord.features.game.model.enums.GameType
-import com.backend.ord.features.game.model.json.CrosswordProperAnswers
-import com.backend.ord.features.game.model.json.WordsTypingProperAnswers
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
+import com.backend.ord.features.game.model.ongoing_game.json.WordsTypingProperAnswers
 import java.time.Instant
 import java.util.*
 

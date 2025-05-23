@@ -1,4 +1,4 @@
-package com.backend.ord.features.game.model.json
+package com.backend.ord.features.game.model.ongoing_game.json
 
 import java.util.*
 

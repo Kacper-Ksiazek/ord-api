@@ -3,9 +3,9 @@ package com.backend.ord.testing_utils.mocks.games
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.features.game.model.OngoingGameMapper
-import com.backend.ord.features.game.model.OngoingWordsTypingGameDTO
-import com.backend.ord.features.game.model.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameMapper
+import com.backend.ord.features.game.model.ongoing_game.OngoingWordsTypingGameDTO
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.features.game.repositories.OngoingGameRepository
 import com.backend.ord.features.game.variants.words_typing.dto.WordsTypingInstruction
 import com.backend.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse

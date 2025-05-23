@@ -1,9 +1,9 @@
-package com.backend.ord.features.game.model
+package com.backend.ord.features.game.model.ongoing_game
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.features.game.model.enums.GameType
-import com.backend.ord.features.game.model.json.CrosswordProperAnswers
-import com.backend.ord.features.game.model.json.WordsTypingProperAnswers
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
+import com.backend.ord.features.game.model.ongoing_game.json.WordsTypingProperAnswers
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Component

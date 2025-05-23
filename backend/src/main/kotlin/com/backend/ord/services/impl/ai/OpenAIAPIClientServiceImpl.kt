@@ -8,8 +8,8 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadGatewayException
-import com.backend.ord.features.game.model.enums.GameDifficulty
-import com.backend.ord.features.game.model.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.services.ai.OpenAIAPIClientService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.backend.ord.utils.Console

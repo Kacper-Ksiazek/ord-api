@@ -15,11 +15,11 @@ import com.backend.ord.features.game.ai.generate.dto.GeneratedWordsTypingGame
 import com.backend.ord.features.game.ai.generate.llm_api_responses.AIGeneratedCrosswordData
 import com.backend.ord.features.game.ai.generate.llm_api_responses.AIGeneratedWordsTypingData
 import com.backend.ord.features.game.ai.generate.service.AIGenerateGameService
-import com.backend.ord.features.game.model.enums.GameDifficulty
-import com.backend.ord.features.game.model.enums.GameType
-import com.backend.ord.features.game.model.enums.getNumberOfWordsForCrossword
-import com.backend.ord.features.game.model.enums.getNumberOfWordsForWordsTypingGame
-import com.backend.ord.features.game.model.json.CrosswordProperAnswers
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfWordsForCrossword
+import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfWordsForWordsTypingGame
+import com.backend.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.backend.ord.features.game.variants.crossword.dto.CrosswordInstruction
 import com.backend.ord.prompts.Prompts
 import com.backend.ord.services.ai.OpenAIAPIClientService

@@ -1,15 +1,13 @@
-package com.backend.ord.domain.persistence.mappers.impl
+package com.backend.ord.features.game.model.finished_game
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.dto.FinishedGameDTO
-import com.backend.ord.domain.persistence.entities.FinishedGame
-import com.backend.ord.domain.persistence.mappers.FinishedGameMapper
+import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 
 @Component
-class FinishedGameMapperImpl(
+class FinishedGameMapper(
     private val userMapper: UserMapper,
-) : FinishedGameMapper {
+) : MapperBase<FinishedGame, FinishedGameDTO> {
     override fun toDTO(entity: FinishedGame): FinishedGameDTO {
         return FinishedGameDTO(
             id = entity.id,
@@ -45,4 +43,5 @@ class FinishedGameMapperImpl(
             createdAt = dto.createdAt
         )
     }
+
 }

@@ -1,4 +1,4 @@
-package com.backend.ord.features.game.model.enums
+package com.backend.ord.features.game.model.ongoing_game.enums
 
 import com.backend.ord.utils.data_classes.Percentage
 

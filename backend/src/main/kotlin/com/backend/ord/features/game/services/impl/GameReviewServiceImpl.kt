@@ -8,7 +8,7 @@ import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.core.word.service.WordService
 import com.backend.ord.domain.persistence.entities.UserActivityLog
 import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.features.game.model.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.services.GameReviewService
 import com.backend.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
 import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer

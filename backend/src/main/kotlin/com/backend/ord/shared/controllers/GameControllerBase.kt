@@ -2,7 +2,7 @@ package com.backend.ord.shared.controllers
 
 import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.features.game.ai.generate.service.AIGenerateGameService
-import com.backend.ord.features.game.model.OngoingGameMapper
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.backend.ord.features.game.services.GameReviewService
 import com.backend.ord.features.game.services.OngoingGameService
 import com.fasterxml.jackson.databind.ObjectMapper

@@ -1,8 +1,8 @@
 package com.backend.ord.features.game.variants.shared.enums
 
 import com.backend.ord.config.GamesConfig
-import com.backend.ord.features.game.model.enums.GameDifficulty
-import com.backend.ord.features.game.model.enums.getNumberOfAllowedMistakes
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfAllowedMistakes
 
 /**
  * The points that can be assigned to an answer in a game.

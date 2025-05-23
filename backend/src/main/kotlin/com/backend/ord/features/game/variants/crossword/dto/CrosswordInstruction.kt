@@ -1,8 +1,8 @@
 package com.backend.ord.features.game.variants.crossword.dto
 
 import com.backend.ord.features.game.ai.generate.llm_api_responses.AIGeneratedCrosswordData
-import com.backend.ord.features.game.model.enums.GameDifficulty
-import com.backend.ord.features.game.model.enums.getNumberOfLettersToReveal
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfLettersToReveal
 import com.backend.ord.features.game.variants.crossword.dto.helpers.board.Board
 import com.backend.ord.features.game.variants.crossword.dto.helpers.board.Coordinates
 import com.backend.ord.features.game.variants.crossword.dto.helpers.question.CrosswordQuestion

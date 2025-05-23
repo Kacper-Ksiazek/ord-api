@@ -10,11 +10,12 @@ import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
-import com.backend.ord.features.game.model.OngoingCrosswordGameDTO
-import com.backend.ord.features.game.model.OngoingGameMapper
-import com.backend.ord.features.game.model.enums.GameDifficulty
-import com.backend.ord.features.game.model.enums.GameGrade
-import com.backend.ord.features.game.model.enums.GameType
+import com.backend.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameMapper
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameGrade
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
+import com.backend.ord.features.game.repositories.FinishedGameRepository
 import com.backend.ord.features.game.repositories.OngoingGameRepository
 import com.backend.ord.features.game.variants.crossword.dto.api_responses.FinishedCrosswordGameResponse
 import com.backend.ord.features.game.variants.crossword.dto.api_responses.StartedCrosswordGameResponse
@@ -24,7 +25,6 @@ import com.backend.ord.features.game.variants.crossword.dto.helpers.question.get
 import com.backend.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
 import com.backend.ord.features.game.variants.shared.enums.AnswerScore
 import com.backend.ord.features.game.variants.words_typing.dto.api_requests.CrosswordUserAnswers
-import com.backend.ord.repositories.FinishedGameRepository
 import com.backend.ord.repositories.UserActivityLogRepository
 import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder

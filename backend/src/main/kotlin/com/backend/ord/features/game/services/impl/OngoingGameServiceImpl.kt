@@ -1,14 +1,14 @@
 package com.backend.ord.features.game.services.impl
 
-import com.backend.ord.domain.persistence.entities.FinishedGame
 import com.backend.ord.enums.persistence.UserActivityType
 import com.backend.ord.exceptions.REST.NotFoundException
-import com.backend.ord.features.game.model.OngoingGame
-import com.backend.ord.features.game.model.OngoingGameDTO
-import com.backend.ord.features.game.model.OngoingGameMapper
-import com.backend.ord.features.game.model.enums.GameResult
-import com.backend.ord.features.game.model.extensions.finish
+import com.backend.ord.features.game.model.finished_game.FinishedGame
 import com.backend.ord.features.game.model.finished_game.extensions.getUserActivityType
+import com.backend.ord.features.game.model.ongoing_game.OngoingGame
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameDTO
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameMapper
+import com.backend.ord.features.game.model.ongoing_game.enums.GameResult
+import com.backend.ord.features.game.model.ongoing_game.extensions.finish
 import com.backend.ord.features.game.repositories.OngoingGameRepository
 import com.backend.ord.features.game.services.FinishedGameService
 import com.backend.ord.features.game.services.OngoingGameService

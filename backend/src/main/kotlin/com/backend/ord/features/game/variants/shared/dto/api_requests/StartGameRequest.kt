@@ -1,7 +1,7 @@
 package com.backend.ord.features.game.variants.shared.dto.api_requests
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.backend.ord.features.game.model.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 
 data class StartGameRequest(
     val difficulty: GameDifficulty,
