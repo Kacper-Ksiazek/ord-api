@@ -1,4 +1,4 @@
-package com.backend.ord.api.responses.openai
+package com.backend.ord.core.ai_provider.dto
 
 data class OpenAIResponseTokensUsage(
     val input_tokens: Int,

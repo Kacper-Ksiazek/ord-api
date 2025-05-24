@@ -1,8 +1,8 @@
 package com.backend.ord.controllers.ai
 
-import com.backend.ord.api.requests.openai.OpenAIRequestFactory
 import com.backend.ord.api.responses.GenerateWordManualAIResponse
 import com.backend.ord.config.RestClientConfig
+import com.backend.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
 import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName

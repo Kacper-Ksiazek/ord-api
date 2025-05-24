@@ -1,4 +1,4 @@
-package com.backend.ord.services.ai
+package com.backend.ord.core.ai_provider.services
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity

@@ -1,16 +1,16 @@
-package com.backend.ord.services.impl.ai
+package com.backend.ord.core.ai_provider.services.impl
 
-import com.backend.ord.api.requests.openai.OpenAIRequestFactory
-import com.backend.ord.api.responses.openai.OpenAIResponse
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.config.properties.OpenAIProperties
+import com.backend.ord.core.ai_provider.dto.OpenAIResponse
+import com.backend.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
+import com.backend.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadGatewayException
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.model.ongoing_game.enums.GameType
-import com.backend.ord.services.ai.OpenAIAPIClientService
 import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
 import com.backend.ord.utils.Console
 import com.fasterxml.jackson.core.JsonParser
@@ -29,6 +29,7 @@ class OpenAIAPIClientServiceImpl(
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
 
+    // TODO: Move to the GameServiceBase
     override fun <T> makeGameRequest(
         clazz: Class<T>,
         prompt: String,
@@ -43,7 +44,7 @@ class OpenAIAPIClientServiceImpl(
         parseResponseBody: (T) -> T,
         validateResponseBody: (T?) -> Boolean
     ): T {
-        return makeRequest<T>(
+        return makeRequest(
             prompt = prompt,
             validateResponseBody = validateResponseBody,
             parseResponseBody = parseResponseBody,

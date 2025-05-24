@@ -1,6 +1,7 @@
-package com.backend.ord.api.requests.openai
+package com.backend.ord.core.ai_provider.dto.factories
 
 import com.backend.ord.config.properties.OpenAIProperties
+import com.backend.ord.core.ai_provider.dto.OpenAIRequest
 import com.backend.ord.prompts.Prompts
 import org.springframework.stereotype.Component
 
@@ -30,5 +31,3 @@ class OpenAIRequestFactory(
         )
     }
 }
-
-

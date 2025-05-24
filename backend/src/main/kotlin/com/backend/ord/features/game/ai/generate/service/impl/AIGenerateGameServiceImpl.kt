@@ -1,5 +1,6 @@
 package com.backend.ord.features.game.ai.generate.service.impl
 
+import com.backend.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.service.LanguageProficiencyService
@@ -22,7 +23,6 @@ import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfWo
 import com.backend.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.backend.ord.features.game.variants.crossword.dto.CrosswordInstruction
 import com.backend.ord.prompts.Prompts
-import com.backend.ord.services.ai.OpenAIAPIClientService
 import com.backend.ord.shared.enums.SortDirection
 import org.springframework.stereotype.Service
 

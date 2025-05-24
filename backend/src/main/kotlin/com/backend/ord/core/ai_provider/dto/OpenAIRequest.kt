@@ -1,4 +1,4 @@
-package com.backend.ord.api.requests.openai
+package com.backend.ord.core.ai_provider.dto
 
 data class OpenAIRequest(
     val model: String,
