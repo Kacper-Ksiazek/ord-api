@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component
 @Component
 class UserActivityLogMapper(
     private val userMapper: UserMapper,
-) : MapperBase<UserActivityLog, UserActivityLogDTO> {
-    override fun toEntity(dto: UserActivityLogDTO): UserActivityLog {
-        return UserActivityLog(
+) : MapperBase<UserActivityLogEntity, UserActivityLogDTO> {
+    override fun toEntity(dto: UserActivityLogDTO): UserActivityLogEntity {
+        return UserActivityLogEntity(
             id = dto.id,
 
             type = dto.type,
@@ -24,7 +24,7 @@ class UserActivityLogMapper(
         )
     }
 
-    override fun toDTO(entity: UserActivityLog): UserActivityLogDTO {
+    override fun toDTO(entity: UserActivityLogEntity): UserActivityLogDTO {
         return UserActivityLogDTO(
             id = entity.id,
 

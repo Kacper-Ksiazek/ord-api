@@ -5,7 +5,7 @@ import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
-import com.backend.ord.features.user_activity_log.model.UserActivityLog
+import com.backend.ord.features.user_activity_log.model.UserActivityLogEntity
 import com.backend.ord.features.user_activity_log.model.enums.UserActivityFrequency
 import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import com.backend.ord.features.user_activity_log.repository.UserActivityLogRepository
@@ -41,7 +41,7 @@ class UserActivityLogServiceImpl(
     ): Boolean {
         if (checkIfLogCanBeAdded(user.id, type, language)) {
             repository.save(
-                UserActivityLog(
+                UserActivityLogEntity(
                     user = user,
                     type = type,
                     language = language,
@@ -71,9 +71,9 @@ class UserActivityLogServiceImpl(
         )
     }
 
-    override fun logMany(userActivityLogs: Set<UserActivityLog>): Set<UserActivityLog> {
+    override fun logMany(userActivityLogEntities: Set<UserActivityLogEntity>): Set<UserActivityLogEntity> {
         return repository.saveAll(
-            userActivityLogs.filter {
+            userActivityLogEntities.filter {
                 checkIfLogCanBeAdded(
                     userId = it.user.id,
                     type = it.type,

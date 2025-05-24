@@ -16,7 +16,7 @@ import java.util.*
 
 @Entity
 @Table(name = "user_activity_logs")
-data class UserActivityLog(
+data class UserActivityLogEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

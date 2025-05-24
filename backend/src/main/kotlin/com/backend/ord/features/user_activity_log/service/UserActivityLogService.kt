@@ -3,7 +3,7 @@ package com.backend.ord.features.user_activity_log.service
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
-import com.backend.ord.features.user_activity_log.model.UserActivityLog
+import com.backend.ord.features.user_activity_log.model.UserActivityLogEntity
 import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import java.util.*
 
@@ -26,5 +26,5 @@ interface UserActivityLogService {
         difficulty: GameDifficulty? = null
     ): Boolean
 
-    fun logMany(userActivityLogs: Set<UserActivityLog>): Set<UserActivityLog>
+    fun logMany(userActivityLogEntities: Set<UserActivityLogEntity>): Set<UserActivityLogEntity>
 }

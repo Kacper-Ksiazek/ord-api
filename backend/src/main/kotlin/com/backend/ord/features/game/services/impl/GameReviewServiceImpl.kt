@@ -11,7 +11,7 @@ import com.backend.ord.features.game.services.GameReviewService
 import com.backend.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
 import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
 import com.backend.ord.features.game.variants.shared.enums.AnswerScore
-import com.backend.ord.features.user_activity_log.model.UserActivityLog
+import com.backend.ord.features.user_activity_log.model.UserActivityLogEntity
 import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import com.backend.ord.features.user_activity_log.service.UserActivityLogService
 import org.springframework.stereotype.Service
@@ -55,7 +55,7 @@ class GameReviewServiceImpl(
         reviewedQuestions: Set<IdentifiableProperAnswer>
     ) {
         val wordsToSave: MutableSet<WordEntity> = mutableSetOf()
-        val userActivityLogsToSave: MutableSet<UserActivityLog> = mutableSetOf()
+        val userActivityLogsToSaveEntity: MutableSet<UserActivityLogEntity> = mutableSetOf()
 
         wordRepository.findAllWordByTheirOrigins(
             origins = reviewedQuestions.map { it.expectedAnswer }.toSet(),
@@ -73,8 +73,8 @@ class GameReviewServiceImpl(
             if (word.isCompleted && !isWordCompletedBefore) {
                 word.completedAt = Instant.now()
 
-                userActivityLogsToSave.add(
-                    UserActivityLog(
+                userActivityLogsToSaveEntity.add(
+                    UserActivityLogEntity(
                         user = user,
                         type = UserActivityType.WORD_COMPLETED,
                         language = language
@@ -89,8 +89,8 @@ class GameReviewServiceImpl(
 
         wordService.countCompleted(language = language, userId = user.id).let {
             if (it.today >= 10) {
-                userActivityLogsToSave.add(
-                    UserActivityLog(
+                userActivityLogsToSaveEntity.add(
+                    UserActivityLogEntity(
                         user = user,
                         type = UserActivityType.WORDS_COMPLETED_IN_ONE_DAY_10,
                         language = language
@@ -99,8 +99,8 @@ class GameReviewServiceImpl(
             }
 
             if (it.week >= 30) {
-                userActivityLogsToSave.add(
-                    UserActivityLog(
+                userActivityLogsToSaveEntity.add(
+                    UserActivityLogEntity(
                         user = user,
                         type = UserActivityType.WORDS_COMPLETED_IN_ONE_WEEK_30,
                         language = language
@@ -109,7 +109,7 @@ class GameReviewServiceImpl(
             }
         }
 
-        userActivityLogService.logMany(userActivityLogsToSave)
+        userActivityLogService.logMany(userActivityLogsToSaveEntity)
     }
 
 }

@@ -17,7 +17,7 @@ import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.core.word.service.WordService
 import com.backend.ord.domain.infrastructure.CountingSummary
 import com.backend.ord.exceptions.REST.NotFoundException
-import com.backend.ord.features.user_activity_log.model.UserActivityLog
+import com.backend.ord.features.user_activity_log.model.UserActivityLogEntity
 import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import com.backend.ord.features.user_activity_log.service.UserActivityLogService
 import com.backend.ord.shared.enums.SortDirection
@@ -189,12 +189,12 @@ class WordServiceImpl(
         val result = repository.save(wordMapper.toEntity(word))
         val language = word.translatedFrom
 
-        val userActivityLogsToSave: MutableSet<UserActivityLog> = mutableSetOf()
+        val userActivityLogsToSaveEntity: MutableSet<UserActivityLogEntity> = mutableSetOf()
 
         countCreated(language = language, userId = user.id).let {
             if (it.today >= 10) {
-                userActivityLogsToSave.add(
-                    UserActivityLog(
+                userActivityLogsToSaveEntity.add(
+                    UserActivityLogEntity(
                         user = user,
                         type = UserActivityType.WORDS_ADDED_IN_ONE_DAY_10,
                         language = language,
@@ -203,8 +203,8 @@ class WordServiceImpl(
             }
 
             if (it.week >= 50) {
-                userActivityLogsToSave.add(
-                    UserActivityLog(
+                userActivityLogsToSaveEntity.add(
+                    UserActivityLogEntity(
                         user = user,
                         type = UserActivityType.WORDS_ADDED_IN_ONE_WEEK_50,
                         language = language,
