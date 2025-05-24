@@ -1,11 +1,11 @@
-package com.backend.ord.services.impl
+package com.backend.ord.core.auth.services.impl
 
 import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.core.auth.models.UserSessionEntity
+import com.backend.ord.core.auth.repositories.UserSessionRepository
+import com.backend.ord.core.auth.services.UserSessionService
 import com.backend.ord.core.user.service.UserService
 import com.backend.ord.exceptions.UserNotFoundException
-import com.backend.ord.repositories.UserSessionRepository
-import com.backend.ord.services.UserSessionService
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.*

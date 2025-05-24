@@ -1,4 +1,4 @@
-package com.backend.ord.core.auth.service
+package com.backend.ord.core.auth.services
 
 import com.backend.ord.core.auth.api.requests.dto.LoginRequest
 import com.backend.ord.core.auth.api.requests.dto.RegisterRequest

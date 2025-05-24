@@ -1,4 +1,4 @@
-package com.backend.ord.services
+package com.backend.ord.core.auth.services
 
 import com.backend.ord.core.auth.models.UserSessionEntity
 import com.backend.ord.exceptions.UserNotFoundException

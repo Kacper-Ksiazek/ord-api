@@ -1,8 +1,8 @@
 package com.backend.ord.config.security.jwt
 
 import com.backend.ord.core.auth.jwt.JwtService
+import com.backend.ord.core.auth.services.UserSessionService
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException
-import com.backend.ord.services.UserSessionService
 import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component

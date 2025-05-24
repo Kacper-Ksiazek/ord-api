@@ -1,9 +1,9 @@
 package com.backend.ord.core.user.service.impl
 
+import com.backend.ord.core.auth.repositories.UserSessionRepository
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.service.UserService
-import com.backend.ord.repositories.UserSessionRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*

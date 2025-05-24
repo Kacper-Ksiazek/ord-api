@@ -1,4 +1,4 @@
-package com.backend.ord.repositories
+package com.backend.ord.core.auth.repositories
 
 import com.backend.ord.core.auth.models.UserSessionEntity
 import org.springframework.data.jpa.repository.JpaRepository

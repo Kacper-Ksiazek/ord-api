@@ -3,7 +3,7 @@ package com.backend.ord.core.auth.api
 import com.backend.ord.core.auth.api.requests.dto.LoginRequest
 import com.backend.ord.core.auth.api.requests.dto.RegisterRequest
 import com.backend.ord.core.auth.jwt.JwtService
-import com.backend.ord.core.auth.service.AuthService
+import com.backend.ord.core.auth.services.AuthService
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.exceptions.ForbiddenException

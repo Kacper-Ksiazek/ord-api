@@ -3,11 +3,11 @@ package com.backend.ord.config.security.jwt
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.core.auth.jwt.JwtFactory
 import com.backend.ord.core.auth.jwt.JwtService
+import com.backend.ord.core.auth.services.UserSessionService
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.service.UserService
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException
 import com.backend.ord.exceptions.UserNotFoundException
-import com.backend.ord.services.UserSessionService
 import com.backend.ord.utils.CookieUtils
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
