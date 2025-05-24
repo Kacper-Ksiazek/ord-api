@@ -3,8 +3,8 @@ package com.backend.ord.features.game.services.impl
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.features.game.model.finished_game.FinishedGame
 import com.backend.ord.features.game.model.finished_game.extensions.getUserActivityType
-import com.backend.ord.features.game.model.ongoing_game.OngoingGame
 import com.backend.ord.features.game.model.ongoing_game.OngoingGameDTO
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.backend.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.backend.ord.features.game.model.ongoing_game.enums.GameResult
 import com.backend.ord.features.game.model.ongoing_game.extensions.finish
@@ -27,12 +27,12 @@ class OngoingGameServiceImpl(
 
     @Transactional
     override fun completeGame(
-        ongoingGame: OngoingGame,
+        ongoingGameEntity: OngoingGameEntity,
         totalPoints: Int,
         duration: String
     ): FinishedGame {
         return finishedGameService.save(
-            ongoingGame.finish(totalPoints, duration, GameResult.COMPLETED)
+            ongoingGameEntity.finish(totalPoints, duration, GameResult.COMPLETED)
         ).let {
             val userId = it.user.id
 
@@ -43,7 +43,7 @@ class OngoingGameServiceImpl(
                 difficulty = it.difficulty
             )
 
-            this.deleteById(id = ongoingGame.id, userId = userId)
+            this.deleteById(id = ongoingGameEntity.id, userId = userId)
 
             it
         }
@@ -56,7 +56,7 @@ class OngoingGameServiceImpl(
         duration: String
     ) {
         this.completeGame(
-            ongoingGame = ongoingGameMapper.toEntity(ongoingGame),
+            ongoingGameEntity = ongoingGameMapper.toEntity(ongoingGame),
             totalPoints,
             duration
         )

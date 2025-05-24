@@ -14,15 +14,15 @@ class OngoingGameMapper(
 ) {
     val jsonObjectMapper = jacksonObjectMapper()
 
-    fun toCrosswordDTO(entity: OngoingGame): OngoingCrosswordGameDTO {
+    fun toCrosswordDTO(entity: OngoingGameEntity): OngoingCrosswordGameDTO {
         return entity.convertToCertainDTO(object : TypeReference<CrosswordProperAnswers>() {})
     }
 
-    fun toWordsTypingDTO(entity: OngoingGame): OngoingWordsTypingGameDTO {
+    fun toWordsTypingDTO(entity: OngoingGameEntity): OngoingWordsTypingGameDTO {
         return entity.convertToCertainDTO(object : TypeReference<WordsTypingProperAnswers>() {})
     }
 
-    fun toDTO(entity: OngoingGame): OngoingGameDTO<*> {
+    fun toDTO(entity: OngoingGameEntity): OngoingGameDTO<*> {
         return when (entity.type) {
             GameType.CROSSWORD -> toCrosswordDTO(entity)
             GameType.WORDS_TYPING -> toWordsTypingDTO(entity)
@@ -30,8 +30,8 @@ class OngoingGameMapper(
         }
     }
 
-    fun toEntity(dto: OngoingGameDTO<*>): OngoingGame {
-        return OngoingGame(
+    fun toEntity(dto: OngoingGameDTO<*>): OngoingGameEntity {
+        return OngoingGameEntity(
             id = dto.id,
 
             type = dto.type,
@@ -44,7 +44,7 @@ class OngoingGameMapper(
         )
     }
 
-    private fun <T : Any> OngoingGame.convertToCertainDTO(typeReference: TypeReference<T>): OngoingGameDTO<T> {
+    private fun <T : Any> OngoingGameEntity.convertToCertainDTO(typeReference: TypeReference<T>): OngoingGameDTO<T> {
         return OngoingGameDTO(
             id = id,
             properAnswers = jsonObjectMapper.readValue(properAnswers, typeReference),

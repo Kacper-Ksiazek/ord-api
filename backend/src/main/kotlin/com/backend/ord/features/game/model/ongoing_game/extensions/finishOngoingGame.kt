@@ -1,12 +1,12 @@
 package com.backend.ord.features.game.model.ongoing_game.extensions
 
 import com.backend.ord.features.game.model.finished_game.FinishedGame
-import com.backend.ord.features.game.model.ongoing_game.OngoingGame
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.backend.ord.features.game.model.ongoing_game.enums.GameGrade
 import com.backend.ord.features.game.model.ongoing_game.enums.GameResult
 import com.backend.ord.utils.data_classes.Percentage
 
-fun OngoingGame.finish(
+fun OngoingGameEntity.finish(
     finalScore: Int,
     duration: String,
     result: GameResult
