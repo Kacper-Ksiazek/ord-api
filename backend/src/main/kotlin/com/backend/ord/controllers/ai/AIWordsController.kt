@@ -11,8 +11,8 @@ import com.backend.ord.core.langugae_proficiency.service.LanguageProficiencyServ
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
+import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.service.WordTokensUsageService
 import com.backend.ord.prompts.Prompts
-import com.backend.ord.services.gpt_tokens_usage.WordTokensUsageService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue

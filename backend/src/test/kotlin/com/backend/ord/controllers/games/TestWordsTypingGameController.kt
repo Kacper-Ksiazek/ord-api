@@ -21,9 +21,9 @@ import com.backend.ord.features.game.variants.shared.dto.api_requests.helpers.Wo
 import com.backend.ord.features.game.variants.shared.enums.AnswerScore
 import com.backend.ord.features.game.variants.words_typing.dto.api_responses.FinishedWordsTypingGameResponse
 import com.backend.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
+import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository.GameTokensUsageRepository
 import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import com.backend.ord.features.user_activity_log.repository.UserActivityLogRepository
-import com.backend.ord.repositories.gpt_tokens_usage.GameTokensUsageRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory

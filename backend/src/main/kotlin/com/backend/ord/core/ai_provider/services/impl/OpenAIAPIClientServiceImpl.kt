@@ -11,7 +11,7 @@ import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionT
 import com.backend.ord.exceptions.REST.BadGatewayException
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.model.ongoing_game.enums.GameType
-import com.backend.ord.services.gpt_tokens_usage.GameTokensUsageService
+import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.service.GameTokensUsageService
 import com.backend.ord.utils.Console
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.ObjectMapper

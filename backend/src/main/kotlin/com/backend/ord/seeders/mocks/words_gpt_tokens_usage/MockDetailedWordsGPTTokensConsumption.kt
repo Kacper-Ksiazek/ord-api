@@ -2,8 +2,8 @@ package com.backend.ord.seeders.mocks.words_gpt_tokens_usage
 
 import com.backend.ord.api.responses.gpt_tokens_usage.DetailedWordTokensUsage
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.gpt_tokens_usage.WordTokensUsage
-import com.backend.ord.repositories.gpt_tokens_usage.WordTokensUsageRepository
+import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.WordTokensUsage
+import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.repository.WordTokensUsageRepository
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
 import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.stereotype.Component
