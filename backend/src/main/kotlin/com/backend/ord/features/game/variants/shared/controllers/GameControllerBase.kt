@@ -1,4 +1,4 @@
-package com.backend.ord.shared.controllers
+package com.backend.ord.features.game.variants.shared.controllers
 
 import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.features.game.ai.generate.service.AIGenerateGameService

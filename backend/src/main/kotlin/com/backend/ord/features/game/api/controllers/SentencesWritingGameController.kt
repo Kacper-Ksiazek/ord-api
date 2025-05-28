@@ -4,10 +4,10 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.features.game.variants.crossword.dto.api_requests.FinishWordsTypingGameRequest
+import com.backend.ord.features.game.variants.shared.controllers.GameControllerBase
 import com.backend.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.backend.ord.features.game.variants.words_typing.dto.api_responses.FinishedWordsTypingGameResponse
 import com.backend.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
-import com.backend.ord.shared.controllers.GameControllerBase
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity

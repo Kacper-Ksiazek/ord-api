@@ -8,13 +8,13 @@ import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.features.game.services.GameReviewService
 import com.backend.ord.features.game.variants.crossword.dto.api_responses.FinishedCrosswordGameResponse
 import com.backend.ord.features.game.variants.crossword.dto.api_responses.StartedCrosswordGameResponse
+import com.backend.ord.features.game.variants.shared.controllers.GameControllerBase
 import com.backend.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
 import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.ProperAnswer
 import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.computeFinalScore
 import com.backend.ord.features.game.variants.shared.enums.AnswerScore
 import com.backend.ord.features.game.variants.words_typing.dto.api_requests.FinishCrosswordGameRequest
-import com.backend.ord.shared.controllers.GameControllerBase
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
