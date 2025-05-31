@@ -1,7 +1,7 @@
 package com.backend.ord.core.word.api
 
 import com.backend.ord.api.responses.PaginatedDataResponse
-import com.backend.ord.core.auth.jwt.JwtService
+import com.backend.ord.core.auth.security.AuthenticatedUser
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.api.requests.dto.*
@@ -18,7 +18,6 @@ import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.extensions.convertToSetExplicitly
 import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.backend.ord.services.BankService
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
@@ -29,7 +28,6 @@ import java.util.*
 @RestController
 @RequestMapping("/api/v1/words")
 class WordController(
-    private val jwtService: JwtService,
     private val bankService: BankService,
     private val wordMapper: WordMapper,
     private val userMapper: UserMapper,
@@ -38,11 +36,9 @@ class WordController(
 ) {
     @PostMapping("/get-many-words")
     fun getAllWords(
-        request: HttpServletRequest,
         @RequestBody @Valid requestBody: GetManyWordsRequest,
+        @AuthenticatedUser user: UserEntity
     ): ResponseEntity<PaginatedDataResponse<WordListItem>> {
-        val user = jwtService.getAuthenticatedUserOrThrowForbidden(request)
-
         return ResponseEntity.status(HttpStatus.OK).body(
             wordService.findManyWords(
                 language = requestBody.language,
@@ -68,11 +64,9 @@ class WordController(
 
     @GetMapping("/{id}")
     fun getWord(
-        request: HttpServletRequest,
-        @PathVariable id: UUID
+        @PathVariable id: UUID,
+        @AuthenticatedUser user: UserEntity
     ): ResponseEntity<SingleWordResponse> {
-        val user = jwtService.getAuthenticatedUser(request)!!
-
         return ResponseEntity.status(HttpStatus.OK).body(
             wordService.findOneWord(
                 wordId = id,
@@ -84,11 +78,9 @@ class WordController(
 
     @PostMapping("/")
     fun createWord(
-        request: HttpServletRequest,
+        @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: CreateWordRequest
     ): ResponseEntity<WordDTO> {
-        val user: UserEntity = jwtService.getAuthenticatedUser(request)!!
-
         val bank = getBankFromRequestOrNull(
             bankId = body.bankId,
             bankToCreate = body.bankToCreate,
@@ -117,12 +109,10 @@ class WordController(
 
     @PatchMapping("/{id}")
     fun updateWord(
-        request: HttpServletRequest,
         @PathVariable id: UUID,
+        @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: UpdateWordRequest
     ): ResponseEntity<WordDTO> {
-        val user = jwtService.getAuthenticatedUser(request)!!
-
         val currentWord = wordService.findByIdOrFail(id = id, userId = user.id)
 
         val bank = getBankFromRequestOrNull(
@@ -156,12 +146,10 @@ class WordController(
 
     @PostMapping("/{id}/change-bank")
     fun changeWordBank(
-        request: HttpServletRequest,
         @PathVariable id: UUID,
+        @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: ChangeBankForSingleWordRequest
     ): ResponseEntity<Unit> {
-        val user = jwtService.getAuthenticatedUser(request)!!
-
         val bank = getBankFromRequestOrNull(
             user = user,
             bankId = body.bankId,
@@ -179,11 +167,9 @@ class WordController(
 
     @PostMapping("/change-bank-for-multiple-words")
     fun changeBankForMultipleWords(
-        request: HttpServletRequest,
+        @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: ChangeBankForMultipleWordsRequest
     ): ResponseEntity<Unit> {
-        val user = jwtService.getAuthenticatedUser(request)!!
-
         val bank = getBankFromRequest(
             user = user,
             bankId = body.bankId,
@@ -201,12 +187,10 @@ class WordController(
 
     @PostMapping("/{id}/toggle-property")
     fun togglePropertyForOneWord(
-        request: HttpServletRequest,
         @PathVariable id: UUID,
+        @AuthenticatedUser user: UserEntity,
         @RequestParam(required = false) property: WordToggleableProperty
     ): ResponseEntity<Unit> {
-        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
-
         wordService.toggleProperty(
             wordId = id,
             userId = user.id,
@@ -218,12 +202,10 @@ class WordController(
 
     @PostMapping("/toggle-property-for-multiple-words")
     fun togglePropertyForManyWords(
-        request: HttpServletRequest,
         @RequestParam(required = false) property: WordToggleableProperty,
+        @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: WordBulkActionRequest
     ): ResponseEntity<Unit> {
-        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
-
         wordService.togglePropertyForManyWords(
             wordIds = body.ids.convertToSetExplicitly(paramName = "ids"),
             userId = user.id,
@@ -235,11 +217,9 @@ class WordController(
 
     @DeleteMapping("/{id}")
     fun deleteWord(
-        request: HttpServletRequest,
+        @AuthenticatedUser user: UserEntity,
         @PathVariable id: UUID
     ): ResponseEntity<Unit> {
-        val user = jwtService.getAuthenticatedUser(request)!!
-
         wordService.deleteById(
             id = id,
             userId = user.id
