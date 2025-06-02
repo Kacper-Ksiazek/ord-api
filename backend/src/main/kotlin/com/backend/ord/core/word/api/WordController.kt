@@ -27,7 +27,7 @@ import java.util.*
 class WordController(
     private val bankService: BankService,
     private val wordService: WordService,
-    // ---
+    // ---z
     private val wordCRUDFacade: WordCRUDFacade
 ) {
     @PostMapping("/get-many-words")
