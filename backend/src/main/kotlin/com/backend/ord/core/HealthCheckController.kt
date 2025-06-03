@@ -1,4 +1,4 @@
-package com.backend.ord.controllers
+package com.backend.ord.core
 
 import org.springframework.http.ResponseEntity
 import org.springframework.jdbc.core.JdbcTemplate
