@@ -1,14 +1,14 @@
-package com.backend.ord.controllers.ai
+package com.backend.ord.core.word.api.facades.impl
 
 import com.backend.ord.api.responses.GenerateWordManualAIResponse
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
-import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.api.facades.WordAIFacade
 import com.backend.ord.core.word.api.requests.dto.GenerateWordManualRequest
 import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
@@ -17,32 +17,21 @@ import com.backend.ord.prompts.Prompts
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import jakarta.servlet.http.HttpServletRequest
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.stereotype.Component
 
-
-@RestController
-@RequestMapping("/api/v1/ai/words")
-class AIWordsController(
-    private val jwtService: JwtService,
-    private val restClientConfig: RestClientConfig,
+@Component
+class WordAIFacadeImpl(
     private val openAIRequestFactory: OpenAIRequestFactory,
     private val languageProficiencyService: LanguageProficiencyService,
     private val wordTokensUsageService: WordTokensUsageService,
-) {
+    private val restClientConfig: RestClientConfig,
+) : WordAIFacade {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
-    @PostMapping("/generate-manual")
-    fun generateWordManual(
-        request: HttpServletRequest,
-        @RequestBody body: GenerateWordManualRequest
-    ): ResponseEntity<GenerateWordManualAIResponse> {
-        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
-
+    override fun generateWordManual(
+        body: GenerateWordManualRequest,
+        user: UserEntity
+    ): GenerateWordManualAIResponse {
         val userProficiencyInRequestedLanguage: LanguageProficiencyEntity =
             languageProficiencyService.findUserProficiencyInLanguage(user.id, body.language)
                 ?: throw BadRequestException("User does not have any proficiency in the requested language.")
@@ -85,7 +74,7 @@ class AIWordsController(
                     val result = jsonObjectMapper.readValue<GenerateWordManualAIResponse>(this)
                     result.originalWord = body.word
 
-                    return@with ResponseEntity.ok().body(result)
+                    return@with result
                 }
             }
         }

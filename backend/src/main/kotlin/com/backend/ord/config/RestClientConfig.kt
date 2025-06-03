@@ -11,6 +11,7 @@ import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.web.client.RestTemplate
 
+// TODO: Rename to the OpenAIClientConfig or similar
 @Configuration
 class RestClientConfig(
     private val openAIProperties: OpenAIProperties

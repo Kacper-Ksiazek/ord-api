@@ -24,6 +24,10 @@ class WordController(
     private val wordPropertyToggleFacade: WordPropertyToggleFacade,
     private val wordBankManagementFacade: WordBankManagementFacade,
 ) {
+    // -------
+    // CRUD
+    // -------
+
     @PostMapping("/get-many-words")
     fun getAllWords(
         @RequestBody @Valid requestBody: GetManyWordsRequest,
@@ -77,6 +81,9 @@ class WordController(
         return ResponseEntity.status(HttpStatus.OK).build()
     }
 
+    // -------
+    // Change Bank
+    // -------
 
     @PostMapping("/{id}/change-bank")
     fun changeWordBank(
@@ -98,6 +105,10 @@ class WordController(
 
         return ResponseEntity.status(HttpStatus.OK).build()
     }
+
+    // -------
+    // Toggle properties
+    // -------
 
     @PostMapping("/{id}/toggle-property")
     fun togglePropertyForOneWord(
