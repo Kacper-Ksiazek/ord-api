@@ -1,6 +1,5 @@
 package com.backend.ord.core.word.api.facades.impl
 
-import com.backend.ord.api.responses.GenerateWordManualAIResponse
 import com.backend.ord.config.RestClientConfig
 import com.backend.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
@@ -11,6 +10,7 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.ai.PromptsWords
 import com.backend.ord.core.word.api.facades.WordAIFacade
 import com.backend.ord.core.word.api.requests.dto.GenerateWordManualRequest
+import com.backend.ord.core.word.api.responses.dto.AIGeneratedWordManual
 import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.service.WordTokensUsageService
@@ -31,7 +31,7 @@ class WordAIFacadeImpl(
     override fun generateWordManual(
         body: GenerateWordManualRequest,
         user: UserEntity
-    ): GenerateWordManualAIResponse {
+    ): AIGeneratedWordManual {
         val userProficiencyInRequestedLanguage: LanguageProficiencyEntity =
             languageProficiencyService.findUserProficiencyInLanguage(user.id, body.language)
                 ?: throw BadRequestException("User does not have any proficiency in the requested language.")
@@ -71,7 +71,7 @@ class WordAIFacadeImpl(
                 contains("NON_EXISTENT_WORD") -> throw BadRequestException("The word ${body.word} does not exist in the language ${body.language}.")
 
                 else -> {
-                    val result = jsonObjectMapper.readValue<GenerateWordManualAIResponse>(this)
+                    val result = jsonObjectMapper.readValue<AIGeneratedWordManual>(this)
                     result.originalWord = body.word
 
                     return@with result

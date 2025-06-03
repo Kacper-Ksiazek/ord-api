@@ -1,10 +1,10 @@
 package com.backend.ord.core.word.api
 
-import com.backend.ord.api.responses.GenerateWordManualAIResponse
 import com.backend.ord.core.auth.security.AuthenticatedUser
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.api.facades.WordAIFacade
 import com.backend.ord.core.word.api.requests.dto.GenerateWordManualRequest
+import com.backend.ord.core.word.api.responses.dto.AIGeneratedWordManual
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -22,7 +22,7 @@ class WordAIController(
     fun generateAIManual(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: GenerateWordManualRequest
-    ): ResponseEntity<GenerateWordManualAIResponse> {
+    ): ResponseEntity<AIGeneratedWordManual> {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(wordAIFacade.generateWordManual(body, user))
