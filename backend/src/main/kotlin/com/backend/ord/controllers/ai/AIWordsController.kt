@@ -9,6 +9,7 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.api.requests.dto.GenerateWordManualRequest
 import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.service.WordTokensUsageService
@@ -18,9 +19,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -35,31 +36,27 @@ class AIWordsController(
 ) {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
-    // TODO: Move to the POST
-    @GetMapping("/generate-manual")
+    @PostMapping("/generate-manual")
     fun generateWordManual(
         request: HttpServletRequest,
-        @RequestParam word: String,
-        @RequestParam originalLanguage: LanguageName,
-        @RequestParam(name = "level") receivedProficiencyLevel: LanguageProficiencyLevel?,
-        @RequestParam(name = "translateTo") receivedTranslateToLanguage: LanguageName?
+        @RequestBody body: GenerateWordManualRequest
     ): ResponseEntity<GenerateWordManualAIResponse> {
         val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
 
         val userProficiencyInRequestedLanguage: LanguageProficiencyEntity =
-            languageProficiencyService.findUserProficiencyInLanguage(user.id, originalLanguage)
+            languageProficiencyService.findUserProficiencyInLanguage(user.id, body.language)
                 ?: throw BadRequestException("User does not have any proficiency in the requested language.")
 
         val translateTo: LanguageName =
-            receivedTranslateToLanguage ?: userProficiencyInRequestedLanguage.generativeContentLanguage
+            body.targetLanguage ?: userProficiencyInRequestedLanguage.generativeContentLanguage
         val proficiencyLevel: LanguageProficiencyLevel =
-            receivedProficiencyLevel ?: userProficiencyInRequestedLanguage.proficiency
+            body.proficiencyLevel ?: userProficiencyInRequestedLanguage.proficiency
 
         // Create the request
         val openAIRequest = openAIRequestFactory.createRequest(
             prompt = Prompts.AIWords.generateWordManualPrompt(
-                word = word,
-                wordLanguage = originalLanguage,
+                word = body.word,
+                wordLanguage = body.language,
                 desiredLanguage = translateTo,
                 proficiency = proficiencyLevel,
                 generativeContentLanguage = userProficiencyInRequestedLanguage.generativeContentLanguage
@@ -70,25 +67,25 @@ class AIWordsController(
         val response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
             wordTokensUsageService.save(
                 user = user,
-                word = word,
+                word = body.word,
                 translatedTo = translateTo,
-                translatedFrom = originalLanguage,
+                translatedFrom = body.language,
                 consumptionType = WordsGPTTokensConsumptionType.GENERATE_ENTIRE_MANUAL,
                 inputTokens = it.usage.input_tokens,
                 outputTokens = it.usage.output_tokens,
             )
         }
 
-        with(response.data) {
+        return with(response.data) {
             when {
-                contains("WORD_MISSPELLED") -> throw BadRequestException("The word $word in the language $originalLanguage is misspelled.")
-                contains("NON_EXISTENT_WORD") -> throw BadRequestException("The word $word does not exist in the language $originalLanguage.")
+                contains("WORD_MISSPELLED") -> throw BadRequestException("The word ${body.word} in the language ${body.language} is misspelled.")
+                contains("NON_EXISTENT_WORD") -> throw BadRequestException("The word ${body.word} does not exist in the language ${body.language}.")
 
                 else -> {
                     val result = jsonObjectMapper.readValue<GenerateWordManualAIResponse>(this)
-                    result.originalWord = word
+                    result.originalWord = body.word
 
-                    return ResponseEntity.ok().body(result)
+                    return@with ResponseEntity.ok().body(result)
                 }
             }
         }
