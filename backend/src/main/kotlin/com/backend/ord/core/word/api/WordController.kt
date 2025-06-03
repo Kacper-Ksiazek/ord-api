@@ -3,6 +3,7 @@ package com.backend.ord.core.word.api
 import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.core.auth.security.AuthenticatedUser
 import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.api.facades.WordBankManagementFacade
 import com.backend.ord.core.word.api.facades.WordCRUDFacade
 import com.backend.ord.core.word.api.requests.dto.*
 import com.backend.ord.core.word.api.requests.enums.WordToggleableProperty
@@ -27,8 +28,9 @@ import java.util.*
 class WordController(
     private val bankService: BankService,
     private val wordService: WordService,
-    // ---z
-    private val wordCRUDFacade: WordCRUDFacade
+    // ---
+    private val wordCRUDFacade: WordCRUDFacade,
+    private val wordBankManagementFacade: WordBankManagementFacade,
 ) {
     @PostMapping("/get-many-words")
     fun getAllWords(
@@ -90,17 +92,7 @@ class WordController(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: ChangeBankForSingleWordRequest
     ): ResponseEntity<Unit> {
-        val bank = getBankFromRequestOrNull(
-            user = user,
-            bankId = body.bankId,
-            bankToCreate = body.bankToCreate
-        )
-
-        wordService.changeBankForSingleWord(
-            wordId = id,
-            bankId = bank?.id,
-            userId = user.id
-        )
+        wordBankManagementFacade.changeBankOfOneWord(id, body, user)
 
         return ResponseEntity.status(HttpStatus.OK).build()
     }
@@ -110,17 +102,7 @@ class WordController(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: ChangeBankForMultipleWordsRequest
     ): ResponseEntity<Unit> {
-        val bank = getBankFromRequest(
-            user = user,
-            bankId = body.bankId,
-            bankToCreate = body.bankToCreate
-        )
-
-        wordService.changeBankForMultipleWords(
-            wordIds = body.wordIds,
-            bankId = bank.id,
-            userId = user.id
-        )
+        wordBankManagementFacade.changeBankOfMultipleWords(body, user)
 
         return ResponseEntity.status(HttpStatus.OK).build()
     }
