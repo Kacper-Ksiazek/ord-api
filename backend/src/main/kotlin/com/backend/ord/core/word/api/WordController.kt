@@ -5,19 +5,13 @@ import com.backend.ord.core.auth.security.AuthenticatedUser
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.api.facades.WordBankManagementFacade
 import com.backend.ord.core.word.api.facades.WordCRUDFacade
+import com.backend.ord.core.word.api.facades.WordPropertyToggleFacade
 import com.backend.ord.core.word.api.requests.dto.*
 import com.backend.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.backend.ord.core.word.api.responses.dto.SingleWordResponse
 import com.backend.ord.core.word.api.responses.dto.WordListItem
 import com.backend.ord.core.word.model.WordDTO
-import com.backend.ord.core.word.service.WordService
-import com.backend.ord.domain.persistence.entities.Bank
-import com.backend.ord.exceptions.REST.BadRequestException
-import com.backend.ord.extensions.convertToSetExplicitly
-import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
-import com.backend.ord.services.BankService
 import jakarta.validation.Valid
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -26,10 +20,8 @@ import java.util.*
 @RestController
 @RequestMapping("/api/v1/words")
 class WordController(
-    private val bankService: BankService,
-    private val wordService: WordService,
-    // ---
     private val wordCRUDFacade: WordCRUDFacade,
+    private val wordPropertyToggleFacade: WordPropertyToggleFacade,
     private val wordBankManagementFacade: WordBankManagementFacade,
 ) {
     @PostMapping("/get-many-words")
@@ -113,11 +105,7 @@ class WordController(
         @AuthenticatedUser user: UserEntity,
         @RequestParam(required = false) property: WordToggleableProperty
     ): ResponseEntity<Unit> {
-        wordService.toggleProperty(
-            wordId = id,
-            userId = user.id,
-            property = property
-        )
+        wordPropertyToggleFacade.togglePropertyForOneWord(id, property, user)
 
         return ResponseEntity.status(HttpStatus.OK).build()
     }
@@ -128,56 +116,8 @@ class WordController(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: WordBulkActionRequest
     ): ResponseEntity<Unit> {
-        wordService.togglePropertyForManyWords(
-            wordIds = body.ids.convertToSetExplicitly(paramName = "ids"),
-            userId = user.id,
-            property = property
-        )
+        wordPropertyToggleFacade.togglePropertyForMultipleWords(body, property, user)
 
         return ResponseEntity.status(HttpStatus.OK).build()
-    }
-
-    private fun getBankFromRequest(
-        bankId: UUID?,
-        bankToCreate: CreateBankRequest?,
-        user: UserEntity
-    ): Bank {
-        if (bankToCreate == null && bankId == null) {
-            throw BadRequestException("Either bankToCreate or bankId has to be specifed")
-        }
-
-        if (bankToCreate != null && bankId != null) {
-            throw BadRequestException("You cannot create a new bank and use an existing bank at the same time")
-        }
-
-        return try {
-            bankService.findByIdOrCreate(
-                bankId = bankId,
-                bankToCreate = bankToCreate,
-                user = user
-            )!!
-        } catch (_: DataIntegrityViolationException) {
-            throw BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
-        }
-    }
-
-    private fun getBankFromRequestOrNull(
-        bankId: UUID?,
-        bankToCreate: CreateBankRequest?,
-        user: UserEntity
-    ): Bank? {
-        if (bankToCreate != null && bankId != null) {
-            throw BadRequestException("You cannot create a new bank and use an existing bank at the same time")
-        }
-
-        return try {
-            bankService.findByIdOrCreate(
-                bankId = bankId,
-                bankToCreate = bankToCreate,
-                user = user
-            )
-        } catch (e: DataIntegrityViolationException) {
-            throw BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
-        }
     }
 }
