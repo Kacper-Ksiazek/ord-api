@@ -1,7 +1,7 @@
 package com.backend.ord.exceptions.handlers
 
-import com.backend.ord.api.responses.HTTPErrorResponse
 import com.backend.ord.exceptions.REST.*
+import com.backend.ord.exceptions.dto.api_responses.HTTPErrorResponse
 import com.backend.ord.utils.Console
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus

@@ -1,13 +1,13 @@
 package com.backend.ord.exceptions.handlers
 
-import com.backend.ord.api.responses.FieldError
-import org.springframework.web.bind.MissingServletRequestParameterException
-import com.backend.ord.api.responses.BadRequestResponse
-import com.backend.ord.api.responses.InvalidTypeFieldError
-import com.backend.ord.api.responses.ValidationFieldError
+import com.backend.ord.exceptions.dto.api_responses.BadRequestResponse
+import com.backend.ord.exceptions.dto.api_responses.FieldError
+import com.backend.ord.exceptions.dto.api_responses.InvalidTypeFieldError
+import com.backend.ord.exceptions.dto.api_responses.ValidationFieldError
 import org.springframework.context.support.DefaultMessageSourceResolvable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus

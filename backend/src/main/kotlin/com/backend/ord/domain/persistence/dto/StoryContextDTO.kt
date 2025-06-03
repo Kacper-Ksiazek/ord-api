@@ -1,7 +1,7 @@
 package com.backend.ord.domain.persistence.dto
 
 import com.backend.ord.core.user.model.UserDTO
-import com.backend.ord.enums.persistence.StoryContextType
+import com.backend.ord.features.story.model.enums.StoryContextType
 import java.time.Instant
 import java.util.*
 

@@ -1,6 +1,5 @@
 package com.backend.ord.core.word.api
 
-import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.core.auth.security.AuthenticatedUser
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.api.facades.WordBankManagementFacade
@@ -11,6 +10,7 @@ import com.backend.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.backend.ord.core.word.api.responses.dto.SingleWordResponse
 import com.backend.ord.core.word.api.responses.dto.WordListItem
 import com.backend.ord.core.word.model.WordDTO
+import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

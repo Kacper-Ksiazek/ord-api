@@ -7,10 +7,10 @@ import com.backend.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
 import com.backend.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadGatewayException
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.model.ongoing_game.enums.GameType
+import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.service.GameTokensUsageService
 import com.backend.ord.utils.Console
 import com.fasterxml.jackson.core.JsonParser

@@ -1,6 +1,5 @@
 package com.backend.ord.core.word.service.impl
 
-import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.api.requests.enums.GetAllWordsSortOptions
@@ -15,12 +14,13 @@ import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.core.word.service.WordService
-import com.backend.ord.domain.infrastructure.CountingSummary
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.features.user_activity_log.model.UserActivityLogEntity
 import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import com.backend.ord.features.user_activity_log.service.UserActivityLogService
-import com.backend.ord.shared.enums.SortDirection
+import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
+import com.backend.ord.shared.domain.dto.CountingSummary
+import com.backend.ord.shared.domain.enums.SortDirection
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service

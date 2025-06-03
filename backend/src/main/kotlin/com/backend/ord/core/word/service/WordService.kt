@@ -1,6 +1,5 @@
 package com.backend.ord.core.word.service
 
-import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.api.requests.enums.GetAllWordsSortOptions
@@ -11,8 +10,9 @@ import com.backend.ord.core.word.model.WordDTO
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
-import com.backend.ord.domain.infrastructure.CountingSummary
-import com.backend.ord.shared.enums.SortDirection
+import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
+import com.backend.ord.shared.domain.dto.CountingSummary
+import com.backend.ord.shared.domain.enums.SortDirection
 import com.backend.ord.shared.services.UserResourceService
 import java.util.*
 

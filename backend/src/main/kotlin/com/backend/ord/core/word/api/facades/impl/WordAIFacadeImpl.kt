@@ -11,8 +11,8 @@ import com.backend.ord.core.word.ai.PromptsWords
 import com.backend.ord.core.word.api.facades.WordAIFacade
 import com.backend.ord.core.word.api.requests.dto.GenerateWordManualRequest
 import com.backend.ord.core.word.api.responses.dto.AIGeneratedWordManual
-import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
+import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.enums.WordsGPTTokensConsumptionType
 import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.service.WordTokensUsageService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

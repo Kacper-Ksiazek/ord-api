@@ -1,6 +1,5 @@
 package com.backend.ord.core.word.api.facades.impl
 
-import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.api.facades.WordCRUDFacade
@@ -17,6 +16,7 @@ import com.backend.ord.core.word.service.WordService
 import com.backend.ord.domain.persistence.mappers.BankMapper
 import com.backend.ord.extensions.convertToSetExplicitly
 import com.backend.ord.services.BankService
+import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
 import org.springframework.stereotype.Component
 import java.util.*
 

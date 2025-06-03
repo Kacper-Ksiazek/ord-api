@@ -2,7 +2,7 @@ package com.backend.ord.features.gpt_tokens_usage_log.variants.story_tokens_usag
 
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.Story
-import com.backend.ord.enums.persistence.tokens_usage.StoriesGPTTokensConsumptionType
+import com.backend.ord.features.gpt_tokens_usage_log.variants.story_tokens_usage.model.enums.StoriesGPTTokensConsumptionType
 import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp

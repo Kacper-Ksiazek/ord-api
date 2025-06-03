@@ -1,4 +1,4 @@
-package com.backend.ord.api.responses.gpt_tokens_usage
+package com.backend.ord.features.gpt_tokens_usage_log.api.dto.responses.dto
 
 data class TokensUsageWithinTimePeriod<DataType>(
     /**

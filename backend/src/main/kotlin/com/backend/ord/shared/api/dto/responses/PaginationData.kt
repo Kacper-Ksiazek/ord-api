@@ -1,4 +1,4 @@
-package com.backend.ord.api.responses
+package com.backend.ord.shared.api.dto.responses
 
 data class PaginationData(
     val page: Int,

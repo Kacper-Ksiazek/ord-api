@@ -1,12 +1,12 @@
 package com.backend.ord.features.gpt_tokens_usage_log.api.controllers
 
-import com.backend.ord.api.responses.gpt_tokens_usage.DetailedWordTokensUsage
-import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
-import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageWithinTimePeriod
-import com.backend.ord.api.responses.gpt_tokens_usage.toDetailedWordTokensUsage
 import com.backend.ord.core.auth.jwt.JwtService
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
+import com.backend.ord.features.gpt_tokens_usage_log.api.dto.responses.dto.TokensUsageStatistics
+import com.backend.ord.features.gpt_tokens_usage_log.api.dto.responses.dto.TokensUsageWithinTimePeriod
+import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.dto.api_responses.DetailedWordTokensUsage
+import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.dto.api_responses.toDetailedWordTokensUsage
+import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.enums.WordsGPTTokensConsumptionType
 import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.service.WordTokensUsageService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity

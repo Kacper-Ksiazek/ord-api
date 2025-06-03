@@ -1,6 +1,6 @@
 package com.backend.ord.features.gpt_tokens_usage_log.variants.shared.repository
 
-import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
+import com.backend.ord.features.gpt_tokens_usage_log.api.dto.responses.dto.TokensUsageStatistics
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.NoRepositoryBean
@@ -34,7 +34,7 @@ interface TokensUsageRepository<RepositoryType, ConsumptionType> : JpaRepository
 
     @Query(
         """
-        SELECT new com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics(
+        SELECT new com.backend.ord.features.gpt_tokens_usage_log.api.dto.responses.dto.TokensUsageStatistics(
             w.consumptionType, 
             w.language, 
             COUNT(w.id),

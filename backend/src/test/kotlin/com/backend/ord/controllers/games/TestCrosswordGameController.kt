@@ -8,7 +8,6 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.UserRepository
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
 import com.backend.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
@@ -24,6 +23,7 @@ import com.backend.ord.features.game.variants.crossword.dto.helpers.question.get
 import com.backend.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
 import com.backend.ord.features.game.variants.shared.enums.AnswerScore
 import com.backend.ord.features.game.variants.words_typing.dto.api_requests.CrosswordUserAnswers
+import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository.GameTokensUsageRepository
 import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import com.backend.ord.features.user_activity_log.repository.UserActivityLogRepository

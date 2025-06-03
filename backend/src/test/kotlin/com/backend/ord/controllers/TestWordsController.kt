@@ -1,7 +1,6 @@
 package com.backend.ord.controllers
 
 
-import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.controllers.bases.ControllerTestBase
 import com.backend.ord.core.langugae_proficiency.LanguageProficiencyRepository
@@ -30,7 +29,8 @@ import com.backend.ord.seeders.entities.WordSeeder
 import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.services.BankService
-import com.backend.ord.shared.enums.SortDirection
+import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
+import com.backend.ord.shared.domain.enums.SortDirection
 import com.backend.ord.testing_utils.api_requests_factories.WordRequestFactory
 import com.backend.ord.testing_utils.api_requests_factories.data.WordDataChanges
 import com.backend.ord.testing_utils.api_requests_factories.data.compareWithDefaultCreateWordData

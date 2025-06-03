@@ -9,7 +9,7 @@ import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
 import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
-import com.backend.ord.shared.enums.SortDirection
+import com.backend.ord.shared.domain.enums.SortDirection
 import com.backend.ord.testing_utils.api_requests_factories.data.CreateWordData
 import com.backend.ord.testing_utils.api_requests_factories.data.UpdateWordData
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser

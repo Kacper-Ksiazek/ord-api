@@ -1,4 +1,4 @@
-package com.backend.ord.shared.enums
+package com.backend.ord.shared.domain.enums
 
 enum class SortDirection {
     ASC,

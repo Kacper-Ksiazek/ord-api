@@ -2,7 +2,7 @@ package com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO
-import com.backend.ord.enums.persistence.tokens_usage.WordsGPTTokensConsumptionType
+import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.enums.WordsGPTTokensConsumptionType
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.*

@@ -2,7 +2,7 @@ package com.backend.ord.core.word.repository
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.word.model.WordEntity
-import com.backend.ord.domain.infrastructure.CountingSummaryProjection
+import com.backend.ord.shared.domain.projections.CountingSummaryProjection
 import com.backend.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.Modifying

@@ -1,4 +1,4 @@
-package com.backend.ord.api.responses.gpt_tokens_usage
+package com.backend.ord.features.gpt_tokens_usage_log.api.dto.responses.dto
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import java.math.BigDecimal

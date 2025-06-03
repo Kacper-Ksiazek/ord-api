@@ -1,7 +1,7 @@
 package com.backend.ord.features.gpt_tokens_usage_log.variants.shared.service.impl
 
-import com.backend.ord.api.responses.gpt_tokens_usage.TokensUsageStatistics
 import com.backend.ord.config.properties.OpenAIProperties
+import com.backend.ord.features.gpt_tokens_usage_log.api.dto.responses.dto.TokensUsageStatistics
 import com.backend.ord.features.gpt_tokens_usage_log.variants.shared.repository.TokensUsageRepository
 import com.backend.ord.features.gpt_tokens_usage_log.variants.shared.service.TokensUsageServiceBase
 import com.backend.ord.shared.models.IdentifiableUserResource

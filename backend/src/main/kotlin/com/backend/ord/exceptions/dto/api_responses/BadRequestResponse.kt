@@ -1,4 +1,4 @@
-package com.backend.ord.api.responses
+package com.backend.ord.exceptions.dto.api_responses
 
 open class FieldError(
     open val field: String,

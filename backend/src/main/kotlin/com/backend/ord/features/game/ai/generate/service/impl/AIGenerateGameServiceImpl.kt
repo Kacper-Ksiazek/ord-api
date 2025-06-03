@@ -8,7 +8,6 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.backend.ord.core.word.api.responses.dto.WordListItem
 import com.backend.ord.core.word.service.WordService
-import com.backend.ord.enums.persistence.tokens_usage.GamesGPTTokensConsumptionType
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.features.game.ai.generate.dto.GeneratedCrosswordGame
 import com.backend.ord.features.game.ai.generate.dto.GeneratedSentencesWritingGame
@@ -22,8 +21,9 @@ import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfWo
 import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfWordsForWordsTypingGame
 import com.backend.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.backend.ord.features.game.variants.crossword.dto.CrosswordInstruction
+import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.backend.ord.prompts.Prompts
-import com.backend.ord.shared.enums.SortDirection
+import com.backend.ord.shared.domain.enums.SortDirection
 import org.springframework.stereotype.Service
 
 @Service

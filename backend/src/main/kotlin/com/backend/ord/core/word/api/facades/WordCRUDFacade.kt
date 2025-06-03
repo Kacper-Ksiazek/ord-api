@@ -1,6 +1,5 @@
 package com.backend.ord.core.word.api.facades
 
-import com.backend.ord.api.responses.PaginatedDataResponse
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.api.requests.dto.CreateWordRequest
 import com.backend.ord.core.word.api.requests.dto.GetManyWordsRequest
@@ -8,6 +7,7 @@ import com.backend.ord.core.word.api.requests.dto.UpdateWordRequest
 import com.backend.ord.core.word.api.responses.dto.SingleWordResponse
 import com.backend.ord.core.word.api.responses.dto.WordListItem
 import com.backend.ord.core.word.model.WordDTO
+import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
 import java.util.*
 
 interface WordCRUDFacade {
