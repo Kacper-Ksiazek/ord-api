@@ -5,7 +5,7 @@ import com.backend.ord.core.word.api.facades.WordPropertyToggleFacade
 import com.backend.ord.core.word.api.requests.dto.WordBulkActionRequest
 import com.backend.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.backend.ord.core.word.service.WordService
-import com.backend.ord.extensions.convertToSetExplicitly
+import com.backend.ord.shared.extensions.convertToSetExplicitly
 import org.springframework.stereotype.Component
 import java.util.*
 

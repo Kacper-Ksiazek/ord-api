@@ -1,4 +1,4 @@
-package com.backend.ord.extensions
+package com.backend.ord.shared.extensions
 
 import com.backend.ord.exceptions.REST.BadRequestException
 
