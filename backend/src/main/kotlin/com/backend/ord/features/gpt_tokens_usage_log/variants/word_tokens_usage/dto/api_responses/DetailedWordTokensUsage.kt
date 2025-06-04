@@ -1,7 +1,7 @@
 package com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.dto.api_responses
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.WordTokensUsage
+import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.WordTokensUsageEntity
 import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.enums.WordsGPTTokensConsumptionType
 import java.math.BigDecimal
 import java.time.Instant
@@ -24,7 +24,7 @@ data class DetailedWordTokensUsage(
     val createdAt: Instant,
 )
 
-fun WordTokensUsage.toDetailedWordTokensUsage(): DetailedWordTokensUsage {
+fun WordTokensUsageEntity.toDetailedWordTokensUsage(): DetailedWordTokensUsage {
     return DetailedWordTokensUsage(
         id = id,
 

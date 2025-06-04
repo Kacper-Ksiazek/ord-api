@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component
 class StoryTokensUsageMapper(
     private val userMapper: UserMapper,
     private val storyMapper: StoryMapper
-) : MapperBase<StoryTokensUsage, StoryTokensUsageDTO> {
-    override fun toEntity(dto: StoryTokensUsageDTO): StoryTokensUsage {
-        return StoryTokensUsage(
+) : MapperBase<StoryTokensUsageEntity, StoryTokensUsageDTO> {
+    override fun toEntity(dto: StoryTokensUsageDTO): StoryTokensUsageEntity {
+        return StoryTokensUsageEntity(
             id = dto.id,
             numberOfTokens = dto.numberOfTokens,
             consumptionType = dto.consumptionType,
@@ -24,7 +24,7 @@ class StoryTokensUsageMapper(
         )
     }
 
-    override fun toDTO(entity: StoryTokensUsage): StoryTokensUsageDTO {
+    override fun toDTO(entity: StoryTokensUsageEntity): StoryTokensUsageDTO {
         return StoryTokensUsageDTO(
             id = entity.id,
 

@@ -5,16 +5,16 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.features.gpt_tokens_usage_log.variants.shared.repository.TokensUsageRepository
 import com.backend.ord.features.gpt_tokens_usage_log.variants.shared.service.impl.TokensUsageServiceBaseImpl
-import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.WordTokensUsage
+import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.WordTokensUsageEntity
 import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.enums.WordsGPTTokensConsumptionType
 import com.backend.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.service.WordTokensUsageService
 import org.springframework.stereotype.Service
 
 @Service
 class WordTokensUsageServiceImpl(
-    override val repository: TokensUsageRepository<WordTokensUsage, WordsGPTTokensConsumptionType>,
+    override val repository: TokensUsageRepository<WordTokensUsageEntity, WordsGPTTokensConsumptionType>,
     override val openAIProperties: OpenAIProperties
-) : WordTokensUsageService, TokensUsageServiceBaseImpl<WordTokensUsage, WordsGPTTokensConsumptionType>(
+) : WordTokensUsageService, TokensUsageServiceBaseImpl<WordTokensUsageEntity, WordsGPTTokensConsumptionType>(
     repository = repository,
     openAIProperties = openAIProperties,
 ) {
@@ -26,9 +26,9 @@ class WordTokensUsageServiceImpl(
         consumptionType: WordsGPTTokensConsumptionType,
         inputTokens: Int,
         outputTokens: Int
-    ): WordTokensUsage {
+    ): WordTokensUsageEntity {
         return repository.save(
-            WordTokensUsage(
+            WordTokensUsageEntity(
                 user = user,
                 word = word,
                 translatedTo = translatedTo,

@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component
 @Component
 class WordTokensUsageMapper(
     private val userMapper: UserMapper,
-) : MapperBase<WordTokensUsage, WordTokensUsageDTO> {
-    override fun toEntity(dto: WordTokensUsageDTO): WordTokensUsage {
-        return WordTokensUsage(
+) : MapperBase<WordTokensUsageEntity, WordTokensUsageDTO> {
+    override fun toEntity(dto: WordTokensUsageDTO): WordTokensUsageEntity {
+        return WordTokensUsageEntity(
             id = dto.id,
 
             cost = dto.cost,
@@ -30,7 +30,7 @@ class WordTokensUsageMapper(
         )
     }
 
-    override fun toDTO(entity: WordTokensUsage): WordTokensUsageDTO {
+    override fun toDTO(entity: WordTokensUsageEntity): WordTokensUsageDTO {
         return WordTokensUsageDTO(
             id = entity.id,
 

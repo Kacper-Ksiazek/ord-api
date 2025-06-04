@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component
 @Component
 class GameTokensUsageMapper(
     private val userMapper: UserMapper,
-) : MapperBase<GameTokensUsage, GameTokensUsageDTO> {
-    override fun toEntity(dto: GameTokensUsageDTO): GameTokensUsage {
-        return GameTokensUsage(
+) : MapperBase<GameTokensUsageEntity, GameTokensUsageDTO> {
+    override fun toEntity(dto: GameTokensUsageDTO): GameTokensUsageEntity {
+        return GameTokensUsageEntity(
             id = dto.id,
 
             language = dto.language,
@@ -30,7 +30,7 @@ class GameTokensUsageMapper(
         )
     }
 
-    override fun toDTO(entity: GameTokensUsage): GameTokensUsageDTO {
+    override fun toDTO(entity: GameTokensUsageEntity): GameTokensUsageDTO {
         return GameTokensUsageDTO(
             id = entity.id,
 

@@ -15,7 +15,7 @@ import java.util.*
 
 @Entity
 @Table(name = "word_tokens_usages")
-data class WordTokensUsage(
+data class WordTokensUsageEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override val id: UUID = UUID.randomUUID(),

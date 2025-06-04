@@ -5,7 +5,7 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.model.ongoing_game.enums.GameType
-import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.GameTokensUsage
+import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.GameTokensUsageEntity
 import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.service.GameTokensUsageService
 import com.backend.ord.features.gpt_tokens_usage_log.variants.shared.repository.TokensUsageRepository
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class GameTokensUsageServiceImpl(
-    override val repository: TokensUsageRepository<GameTokensUsage, GamesGPTTokensConsumptionType>,
+    override val repository: TokensUsageRepository<GameTokensUsageEntity, GamesGPTTokensConsumptionType>,
     override val openAIProperties: OpenAIProperties
-) : GameTokensUsageService, TokensUsageServiceBaseImpl<GameTokensUsage, GamesGPTTokensConsumptionType>(
+) : GameTokensUsageService, TokensUsageServiceBaseImpl<GameTokensUsageEntity, GamesGPTTokensConsumptionType>(
     repository = repository,
     openAIProperties = openAIProperties
 ) {
@@ -28,9 +28,9 @@ class GameTokensUsageServiceImpl(
         consumptionType: GamesGPTTokensConsumptionType,
         inputTokens: Int,
         outputTokens: Int
-    ): GameTokensUsage {
+    ): GameTokensUsageEntity {
         return repository.save(
-            GameTokensUsage(
+            GameTokensUsageEntity(
                 user = user,
 
                 language = language,
