@@ -5,21 +5,36 @@ import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfLettersToReveal
 import com.backend.ord.features.game.variants.crossword.dto.helpers.board.Board
 import com.backend.ord.features.game.variants.crossword.dto.helpers.board.Coordinates
+import com.backend.ord.features.game.variants.crossword.dto.helpers.board.CrosswordWordDirection
 import com.backend.ord.features.game.variants.crossword.dto.helpers.question.CrosswordQuestion
 import com.backend.ord.features.game.variants.crossword.dto.helpers.question.addAnswerComponent
 import com.backend.ord.features.game.variants.crossword.dto.helpers.question.removeAnswerComponents
-import com.backend.ord.utils.games.updateWord
 import com.backend.ord.utils.hideLetters
 import com.backend.ord.utils.hideLettersInWord
 import com.backend.ord.utils.isHiddenChar
 import com.backend.ord.utils.isSpecial
 import com.fasterxml.jackson.annotation.JsonIgnore
 
+typealias CrosswordBoard = MutableList<MutableList<String?>>
+
+fun CrosswordBoard.updateWord(question: CrosswordQuestion) {
+    val position = question.position ?: throw IllegalStateException("The question is not placed on the board yet.")
+
+    question.word.forEachIndexed { index, letter ->
+        val (x, y) = position.coordinates.start
+
+        when (position.direction) {
+            CrosswordWordDirection.HORIZONTAL -> this[y][x + index] = letter.toString()
+            CrosswordWordDirection.VERTICAL -> this[y + index][x] = letter.toString()
+        }
+    }
+}
+
 data class CrosswordInstruction(
     val answerExplanation: String,
     val answer: String,
     val questions: Set<CrosswordQuestion>,
-    val board: MutableList<MutableList<String?>>,
+    val board: CrosswordBoard,
 
     @JsonIgnore
     val lettersAreHidden: Boolean = false
