@@ -1,4 +1,4 @@
-package com.backend.ord.domain.persistence.entities
+package com.backend.ord.features.bank_group.model
 
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.shared.models.IdentifiableUserResource
@@ -13,7 +13,7 @@ import java.util.*
 
 @Entity
 @Table(name = "bank_groups")
-data class BankGroup(
+data class BankGroupEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

@@ -3,9 +3,9 @@ package com.backend.ord.seeders.entities
 import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.entities.BankGroup
 import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.features.bank.repository.BankRepository
+import com.backend.ord.features.bank_group.model.BankGroupEntity
 import com.backend.ord.seeders.factories.BankMockFactory
 import org.springframework.stereotype.Component
 
@@ -21,7 +21,7 @@ class BankSeeder(
 
     fun seedOneEntityForUser(
         user: UserEntity,
-        bankGroup: BankGroup? = null
+        bankGroup: BankGroupEntity? = null
     ): BankEntity {
         return bankRepository.save(
             bankMockFactory.mockEntity(
@@ -33,7 +33,7 @@ class BankSeeder(
 
     fun seedOneEntityForUser(
         user: UserDTO,
-        bankGroup: BankGroup? = null
+        bankGroup: BankGroupEntity? = null
     ): BankEntity {
         return seedOneEntityForUser(
             user = userMapper.toEntity(user),

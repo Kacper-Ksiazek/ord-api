@@ -1,7 +1,7 @@
 package com.backend.ord.features.bank.model
 
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.BankGroup
+import com.backend.ord.features.bank_group.model.BankGroupEntity
 import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.validation.constraints.Size
@@ -35,7 +35,7 @@ data class BankEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "group_id")
-    var bankGroup: BankGroup? = null,
+    var bankGroup: BankGroupEntity? = null,
 
     @Column(name = "group_id", nullable = true, insertable = false, updatable = false)
     var bankGroupId: UUID? = bankGroup?.id,

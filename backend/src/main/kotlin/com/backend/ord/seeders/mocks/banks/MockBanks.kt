@@ -1,9 +1,9 @@
 package com.backend.ord.seeders.mocks.banks
 
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.BankGroup
 import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.features.bank.repository.BankRepository
+import com.backend.ord.features.bank_group.model.BankGroupEntity
 import com.backend.ord.seeders.mocks.banks.json_data_models.BankInJSON
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
 import com.fasterxml.jackson.core.type.TypeReference
@@ -17,7 +17,7 @@ class MockBanks(
         List<BankInJSON>,
         BankInJSON
         > {
-    private lateinit var bankGroups: List<BankGroup>
+    private lateinit var bankGroups: List<BankGroupEntity>
 
     override val pathToJsonFile: String = "mocks/banks/banks.json"
 
@@ -41,7 +41,7 @@ class MockBanks(
 
     fun seedFromJSONFile(
         user: UserEntity,
-        bankGroups: List<BankGroup>
+        bankGroups: List<BankGroupEntity>
     ): List<BankEntity> {
         this.bankGroups = bankGroups
 

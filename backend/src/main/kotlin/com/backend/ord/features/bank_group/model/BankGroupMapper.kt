@@ -1,17 +1,15 @@
-package com.backend.ord.domain.persistence.mappers.impl
+package com.backend.ord.features.bank_group.model
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.dto.BankGroupDTO
-import com.backend.ord.domain.persistence.entities.BankGroup
-import com.backend.ord.domain.persistence.mappers.BankGroupMapper
+import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 
 @Component
-class BankGroupMapperImpl(
-    val userMapper: UserMapper
-): BankGroupMapper {
-    override fun toEntity(dto: BankGroupDTO): BankGroup {
-        return BankGroup(
+class BankGroupMapper(
+    private val userMapper: UserMapper
+) : MapperBase<BankGroupEntity, BankGroupDTO> {
+    override fun toEntity(dto: BankGroupDTO): BankGroupEntity {
+        return BankGroupEntity(
             id = dto.id,
 
             name = dto.name,
@@ -24,7 +22,7 @@ class BankGroupMapperImpl(
         )
     }
 
-    override fun toDTO(entity: BankGroup): BankGroupDTO {
+    override fun toDTO(entity: BankGroupEntity): BankGroupDTO {
         return BankGroupDTO(
             id = entity.id,
 

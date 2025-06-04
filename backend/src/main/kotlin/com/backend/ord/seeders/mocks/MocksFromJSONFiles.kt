@@ -1,7 +1,7 @@
 package com.backend.ord.seeders.mocks
 
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.BankGroup
+import com.backend.ord.features.bank_group.model.BankGroupEntity
 import com.backend.ord.seeders.mocks.bank_groups.MockBankGroups
 import com.backend.ord.seeders.mocks.banks.MockBanks
 import com.backend.ord.seeders.mocks.words.MockWordsManuals
@@ -26,7 +26,7 @@ class MocksFromJSONFiles(
     fun run(user: UserEntity): List<MockedEntitySummary> {
         val result = mutableListOf<MockedEntitySummary>()
 
-        val bankGroups: List<BankGroup> = mockBankGroups.seedFromJSONFile(user)
+        val bankGroups: List<BankGroupEntity> = mockBankGroups.seedFromJSONFile(user)
 
         val banks = mockBanks.seedFromJSONFile(
             user = user,

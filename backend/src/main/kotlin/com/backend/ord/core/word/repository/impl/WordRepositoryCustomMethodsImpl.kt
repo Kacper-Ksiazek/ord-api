@@ -11,11 +11,11 @@ import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
 import com.backend.ord.core.word.repository.WordRepositoryCustomMethods
-import com.backend.ord.domain.persistence.entities.BankGroup
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.features.bank.dto.BankCompact
 import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.features.bank_group.dto.BankGroupCompact
+import com.backend.ord.features.bank_group.model.BankGroupEntity
 import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.backend.ord.shared.api.dto.responses.PaginationData
 import com.backend.ord.shared.domain.enums.SortDirection
@@ -45,7 +45,7 @@ class WordRepositoryCustomMethodsImpl(
 
         val root = criteriaQuery.from(WordEntity::class.java)
         val bankJoin = root.join<WordEntity, BankEntity>("bank", JoinType.LEFT)
-        val bankGroupJoin = bankJoin.join<BankEntity, BankGroup>("bankGroup", JoinType.LEFT)
+        val bankGroupJoin = bankJoin.join<BankEntity, BankGroupEntity>("bankGroup", JoinType.LEFT)
 
         criteriaQuery.multiselect(
             root.get<UUID>("id"),                       // 0
@@ -167,7 +167,7 @@ class WordRepositoryCustomMethodsImpl(
         // ---
         val root = criteriaQuery.from(WordEntity::class.java)
         val bankJoin = root.join<WordEntity, BankEntity>("bank", JoinType.LEFT)
-        val bankGroupJoin = bankJoin.join<BankEntity, BankGroup>("bankGroup", JoinType.LEFT)
+        val bankGroupJoin = bankJoin.join<BankEntity, BankGroupEntity>("bankGroup", JoinType.LEFT)
 
 
         // ---
