@@ -16,7 +16,7 @@ import java.util.*
 
 @Entity
 @Table(name = "finished_games")
-data class FinishedGame(
+data class FinishedGameEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

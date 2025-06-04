@@ -1,6 +1,6 @@
 package com.backend.ord.features.game.model.ongoing_game.extensions
 
-import com.backend.ord.features.game.model.finished_game.FinishedGame
+import com.backend.ord.features.game.model.finished_game.FinishedGameEntity
 import com.backend.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.backend.ord.features.game.model.ongoing_game.enums.GameGrade
 import com.backend.ord.features.game.model.ongoing_game.enums.GameResult
@@ -10,13 +10,13 @@ fun OngoingGameEntity.finish(
     finalScore: Int,
     duration: String,
     result: GameResult
-): FinishedGame {
+): FinishedGameEntity {
     val grade = when (result) {
         GameResult.COMPLETED -> GameGrade.fromPercentage(Percentage(finalScore))
         else -> GameGrade.NA
     }
 
-    return FinishedGame(
+    return FinishedGameEntity(
         duration = duration,
         finalScore = finalScore,
 

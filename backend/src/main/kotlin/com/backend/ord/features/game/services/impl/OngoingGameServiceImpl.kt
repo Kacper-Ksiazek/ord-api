@@ -1,7 +1,7 @@
 package com.backend.ord.features.game.services.impl
 
 import com.backend.ord.exceptions.REST.NotFoundException
-import com.backend.ord.features.game.model.finished_game.FinishedGame
+import com.backend.ord.features.game.model.finished_game.FinishedGameEntity
 import com.backend.ord.features.game.model.finished_game.extensions.getUserActivityType
 import com.backend.ord.features.game.model.ongoing_game.OngoingGameDTO
 import com.backend.ord.features.game.model.ongoing_game.OngoingGameEntity
@@ -30,7 +30,7 @@ class OngoingGameServiceImpl(
         ongoingGameEntity: OngoingGameEntity,
         totalPoints: Int,
         duration: String
-    ): FinishedGame {
+    ): FinishedGameEntity {
         return finishedGameService.save(
             ongoingGameEntity.finish(totalPoints, duration, GameResult.COMPLETED)
         ).let {

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component
 @Component
 class FinishedGameMapper(
     private val userMapper: UserMapper,
-) : MapperBase<FinishedGame, FinishedGameDTO> {
-    override fun toDTO(entity: FinishedGame): FinishedGameDTO {
+) : MapperBase<FinishedGameEntity, FinishedGameDTO> {
+    override fun toDTO(entity: FinishedGameEntity): FinishedGameDTO {
         return FinishedGameDTO(
             id = entity.id,
 
@@ -26,8 +26,8 @@ class FinishedGameMapper(
         )
     }
 
-    override fun toEntity(dto: FinishedGameDTO): FinishedGame {
-        return FinishedGame(
+    override fun toEntity(dto: FinishedGameDTO): FinishedGameEntity {
+        return FinishedGameEntity(
             id = dto.id,
 
             duration = dto.duration,
