@@ -1,6 +1,7 @@
-package com.backend.ord.domain.persistence.entities
+package com.backend.ord.features.bank.model
 
 import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.domain.persistence.entities.BankGroup
 import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.validation.constraints.Size

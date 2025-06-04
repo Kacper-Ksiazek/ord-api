@@ -1,6 +1,7 @@
-package com.backend.ord.domain.persistence.dto
+package com.backend.ord.features.bank.model
 
 import com.backend.ord.core.user.model.UserDTO
+import com.backend.ord.domain.persistence.dto.BankGroupDTO
 import java.time.Instant
 import java.util.*
 

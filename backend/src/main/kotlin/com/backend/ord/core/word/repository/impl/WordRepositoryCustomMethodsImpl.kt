@@ -11,10 +11,10 @@ import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
 import com.backend.ord.core.word.repository.WordRepositoryCustomMethods
-import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.BankGroup
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.features.bank.dto.BankCompact
+import com.backend.ord.features.bank.model.Bank
 import com.backend.ord.features.bank_group.dto.BankGroupCompact
 import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.backend.ord.shared.api.dto.responses.PaginationData
@@ -99,6 +99,7 @@ class WordRepositoryCustomMethodsImpl(
         val bankId = result.get(13, UUID::class.java)
         val bankGroupId = result.get(16, UUID::class.java)
 
+        @Suppress("UNCHECKED_CAST")
         return SingleWordResponse(
             id = result.get(0, UUID::class.java),
 
@@ -167,6 +168,7 @@ class WordRepositoryCustomMethodsImpl(
         val root = criteriaQuery.from(WordEntity::class.java)
         val bankJoin = root.join<WordEntity, Bank>("bank", JoinType.LEFT)
         val bankGroupJoin = bankJoin.join<Bank, BankGroup>("bankGroup", JoinType.LEFT)
+
 
         // ---
         // 3. Prepare predicates

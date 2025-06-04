@@ -1,7 +1,7 @@
 package com.backend.ord.core.word.model
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.mappers.BankMapper
+import com.backend.ord.features.bank.model.BankMapper
 import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 

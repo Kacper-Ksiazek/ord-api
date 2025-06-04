@@ -13,8 +13,8 @@ import com.backend.ord.core.word.model.WordDTO
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.WordMapper
 import com.backend.ord.core.word.service.WordService
-import com.backend.ord.domain.persistence.mappers.BankMapper
-import com.backend.ord.services.BankService
+import com.backend.ord.features.bank.model.BankMapper
+import com.backend.ord.features.bank.service.BankService
 import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.backend.ord.shared.extensions.convertToSetExplicitly
 import org.springframework.stereotype.Component

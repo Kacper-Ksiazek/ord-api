@@ -4,7 +4,7 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.features.bank.model.Bank
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
 import com.backend.ord.seeders.mocks.words.json_data_models.AIGeneratedWordManualInJSON
 import com.fasterxml.jackson.core.type.TypeReference

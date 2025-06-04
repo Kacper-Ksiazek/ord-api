@@ -1,10 +1,10 @@
 package com.backend.ord.core.word.api.facades.internal
 
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.exceptions.REST.BadRequestException
 import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
-import com.backend.ord.services.BankService
+import com.backend.ord.features.bank.model.Bank
+import com.backend.ord.features.bank.service.BankService
 import org.springframework.dao.DataIntegrityViolationException
 import java.util.*
 

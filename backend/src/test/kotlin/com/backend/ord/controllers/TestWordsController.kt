@@ -20,15 +20,15 @@ import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.core.word.service.WordService
-import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
+import com.backend.ord.features.bank.model.Bank
+import com.backend.ord.features.bank.service.BankService
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.entities.WordSeeder
 import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.seeders.factories.WordMockFactory
-import com.backend.ord.services.BankService
 import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.backend.ord.shared.domain.enums.SortDirection
 import com.backend.ord.testing_utils.api_requests_factories.WordRequestFactory

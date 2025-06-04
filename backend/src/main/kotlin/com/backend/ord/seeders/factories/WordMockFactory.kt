@@ -6,7 +6,7 @@ import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
-import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.features.bank.model.Bank
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.utils.EnumUtils.getRandomValue
 import com.backend.ord.utils.EnumUtils.getRandomValueOrNull

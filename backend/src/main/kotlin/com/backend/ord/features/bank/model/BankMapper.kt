@@ -1,17 +1,15 @@
-package com.backend.ord.domain.persistence.mappers.impl
+package com.backend.ord.features.bank.model
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.dto.BankDTO
-import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.mappers.BankGroupMapper
-import com.backend.ord.domain.persistence.mappers.BankMapper
+import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 
 @Component
-class BankMapperImpl(
+class BankMapper(
     private val userMapper: UserMapper,
     private val bankGroupMapper: BankGroupMapper
-) : BankMapper {
+) : MapperBase<Bank, BankDTO> {
     override fun toEntity(dto: BankDTO): Bank {
         return Bank(
             id = dto.id,
@@ -45,5 +43,4 @@ class BankMapperImpl(
             updatedAt = entity.updatedAt
         )
     }
-
 }

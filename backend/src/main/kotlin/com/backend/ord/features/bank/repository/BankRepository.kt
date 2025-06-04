@@ -1,6 +1,6 @@
-package com.backend.ord.repositories
+package com.backend.ord.features.bank.repository
 
-import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.features.bank.model.Bank
 import com.backend.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository

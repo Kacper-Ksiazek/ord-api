@@ -1,9 +1,9 @@
 package com.backend.ord.seeders.mocks.banks
 
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.domain.persistence.entities.BankGroup
-import com.backend.ord.repositories.BankRepository
+import com.backend.ord.features.bank.model.Bank
+import com.backend.ord.features.bank.repository.BankRepository
 import com.backend.ord.seeders.mocks.banks.json_data_models.BankInJSON
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
 import com.fasterxml.jackson.core.type.TypeReference

@@ -1,23 +1,33 @@
 package com.backend.ord.utils
 
-import com.backend.ord.enums.infrastructure.ConsoleColor
+
 
 object Console {
+    enum class Color(val ansiCode: String) {
+        Blue("\u001B[34m"),
+        Red("\u001B[31m"),
+        Green("\u001B[32m"),
+        Yellow("\u001B[33m"),
+        Purple("\u001B[35m"),
+        Cyan("\u001B[36m"),
+        Reset("\u001B[0m")
+    }
+
     fun print(message: String?) {
         kotlin.io.print(message)
     }
 
-    fun print(message: String?, color: ConsoleColor) {
-        val msg = "${color.ansiCode}$message${ConsoleColor.Reset.ansiCode}"
+    fun print(message: String?, color: Color) {
+        val msg = "${color.ansiCode}$message${Color.Reset.ansiCode}"
         kotlin.io.print(msg)
     }
 
-    fun printBlue(message: String?) = print(message, ConsoleColor.Blue)
-    fun printRed(message: String?) = print(message, ConsoleColor.Red)
-    fun printGreen(message: String?) = print(message, ConsoleColor.Green)
-    fun printYellow(message: String?) = print(message, ConsoleColor.Yellow)
-    fun printPurple(message: String?) = print(message, ConsoleColor.Purple)
-    fun printCyan(message: String?) = print(message, ConsoleColor.Cyan)
+    fun printBlue(message: String?) = print(message, Color.Blue)
+    fun printRed(message: String?) = print(message, Color.Red)
+    fun printGreen(message: String?) = print(message, Color.Green)
+    fun printYellow(message: String?) = print(message, Color.Yellow)
+    fun printPurple(message: String?) = print(message, Color.Purple)
+    fun printCyan(message: String?) = print(message, Color.Cyan)
 
     fun addBreakLine(lines: Int) {
         repeat(lines) { println() }

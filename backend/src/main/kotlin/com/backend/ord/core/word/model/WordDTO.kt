@@ -5,7 +5,7 @@ import com.backend.ord.core.user.model.UserDTO
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
-import com.backend.ord.domain.persistence.dto.BankDTO
+import com.backend.ord.features.bank.model.BankDTO
 import java.time.Instant
 import java.util.*
 

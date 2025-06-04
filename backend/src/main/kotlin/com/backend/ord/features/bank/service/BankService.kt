@@ -1,8 +1,8 @@
-package com.backend.ord.services
+package com.backend.ord.features.bank.service
 
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.domain.persistence.entities.Bank
 import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
+import com.backend.ord.features.bank.model.Bank
 import com.backend.ord.shared.services.UserResourceService
 import org.springframework.stereotype.Service
 import java.util.*

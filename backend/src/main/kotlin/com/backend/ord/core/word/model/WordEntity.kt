@@ -5,7 +5,7 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
-import com.backend.ord.domain.persistence.entities.Bank
+import com.backend.ord.features.bank.model.Bank
 import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.persistence.Table

@@ -7,7 +7,7 @@ import com.backend.ord.core.word.api.facades.internal.getBankFromRequestOrNull
 import com.backend.ord.core.word.api.requests.dto.ChangeBankForMultipleWordsRequest
 import com.backend.ord.core.word.api.requests.dto.ChangeBankForSingleWordRequest
 import com.backend.ord.core.word.service.WordService
-import com.backend.ord.services.BankService
+import com.backend.ord.features.bank.service.BankService
 import org.springframework.stereotype.Component
 import java.util.*
 
