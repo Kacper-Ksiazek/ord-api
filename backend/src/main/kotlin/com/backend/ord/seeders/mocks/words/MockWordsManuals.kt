@@ -4,7 +4,7 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.features.bank.model.Bank
+import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
 import com.backend.ord.seeders.mocks.words.json_data_models.AIGeneratedWordManualInJSON
 import com.fasterxml.jackson.core.type.TypeReference
@@ -19,7 +19,7 @@ class MockWordsManuals(
         List<AIGeneratedWordManualInJSON>,
         AIGeneratedWordManualInJSON
         > {
-    private lateinit var availableBanks: List<Bank>
+    private lateinit var availableBanks: List<BankEntity>
 
     override val jsonFileContentTypeRef: TypeReference<List<AIGeneratedWordManualInJSON>> =
         object : TypeReference<List<AIGeneratedWordManualInJSON>>() {}
@@ -30,7 +30,7 @@ class MockWordsManuals(
         jsonData: AIGeneratedWordManualInJSON,
         user: UserEntity
     ): WordEntity {
-        val bank: Bank? = getRandomBank()
+        val bank: BankEntity? = getRandomBank()
 
         return WordEntity(
             origin = jsonData.originalWord,
@@ -58,7 +58,7 @@ class MockWordsManuals(
 
     fun seedFromJSONFile(
         user: UserEntity,
-        banks: List<Bank>
+        banks: List<BankEntity>
     ): List<WordEntity> {
         this.availableBanks = banks
 
@@ -67,7 +67,7 @@ class MockWordsManuals(
 
     fun getRandomBank(
         likelihoodOfReturningNull: Int = 25
-    ): Bank? {
+    ): BankEntity? {
         return if (Random.nextInt(100) < likelihoodOfReturningNull) {
             null
         } else {

@@ -5,7 +5,7 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
-import com.backend.ord.features.bank.model.Bank
+import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import jakarta.persistence.Table
@@ -74,7 +74,7 @@ data class WordEntity(
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "bank_id", nullable = true)
-    var bank: Bank? = null,
+    var bank: BankEntity? = null,
 
     @Column(name = "bank_id", nullable = true, insertable = false, updatable = false)
     var bankId: UUID? = bank?.id,

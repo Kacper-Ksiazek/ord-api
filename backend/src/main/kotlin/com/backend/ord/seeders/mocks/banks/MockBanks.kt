@@ -2,7 +2,7 @@ package com.backend.ord.seeders.mocks.banks
 
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.domain.persistence.entities.BankGroup
-import com.backend.ord.features.bank.model.Bank
+import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.features.bank.repository.BankRepository
 import com.backend.ord.seeders.mocks.banks.json_data_models.BankInJSON
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 class MockBanks(
     override val repository: BankRepository
 ) : MocksFromJsonFileHandler<
-        Bank,
+        BankEntity,
         List<BankInJSON>,
         BankInJSON
         > {
@@ -24,9 +24,9 @@ class MockBanks(
     override fun convertToEntity(
         jsonData: BankInJSON,
         user: UserEntity
-    ): Bank {
+    ): BankEntity {
 
-        return Bank(
+        return BankEntity(
             name = jsonData.name,
             description = jsonData.description,
 
@@ -42,7 +42,7 @@ class MockBanks(
     fun seedFromJSONFile(
         user: UserEntity,
         bankGroups: List<BankGroup>
-    ): List<Bank> {
+    ): List<BankEntity> {
         this.bankGroups = bankGroups
 
         return this.seedFromJSONFile(user)

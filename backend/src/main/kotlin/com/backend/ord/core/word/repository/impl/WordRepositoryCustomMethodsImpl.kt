@@ -14,7 +14,7 @@ import com.backend.ord.core.word.repository.WordRepositoryCustomMethods
 import com.backend.ord.domain.persistence.entities.BankGroup
 import com.backend.ord.exceptions.REST.NotFoundException
 import com.backend.ord.features.bank.dto.BankCompact
-import com.backend.ord.features.bank.model.Bank
+import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.features.bank_group.dto.BankGroupCompact
 import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.backend.ord.shared.api.dto.responses.PaginationData
@@ -44,8 +44,8 @@ class WordRepositoryCustomMethodsImpl(
         val criteriaQuery = criteriaBuilder.createTupleQuery()
 
         val root = criteriaQuery.from(WordEntity::class.java)
-        val bankJoin = root.join<WordEntity, Bank>("bank", JoinType.LEFT)
-        val bankGroupJoin = bankJoin.join<Bank, BankGroup>("bankGroup", JoinType.LEFT)
+        val bankJoin = root.join<WordEntity, BankEntity>("bank", JoinType.LEFT)
+        val bankGroupJoin = bankJoin.join<BankEntity, BankGroup>("bankGroup", JoinType.LEFT)
 
         criteriaQuery.multiselect(
             root.get<UUID>("id"),                       // 0
@@ -166,8 +166,8 @@ class WordRepositoryCustomMethodsImpl(
         // 2. Prepare root and joins
         // ---
         val root = criteriaQuery.from(WordEntity::class.java)
-        val bankJoin = root.join<WordEntity, Bank>("bank", JoinType.LEFT)
-        val bankGroupJoin = bankJoin.join<Bank, BankGroup>("bankGroup", JoinType.LEFT)
+        val bankJoin = root.join<WordEntity, BankEntity>("bank", JoinType.LEFT)
+        val bankGroupJoin = bankJoin.join<BankEntity, BankGroup>("bankGroup", JoinType.LEFT)
 
 
         // ---

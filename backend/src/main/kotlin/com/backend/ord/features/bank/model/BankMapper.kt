@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component
 class BankMapper(
     private val userMapper: UserMapper,
     private val bankGroupMapper: BankGroupMapper
-) : MapperBase<Bank, BankDTO> {
-    override fun toEntity(dto: BankDTO): Bank {
-        return Bank(
+) : MapperBase<BankEntity, BankDTO> {
+    override fun toEntity(dto: BankDTO): BankEntity {
+        return BankEntity(
             id = dto.id,
 
             name = dto.name,
@@ -27,7 +27,7 @@ class BankMapper(
         )
     }
 
-    override fun toDTO(entity: Bank): BankDTO {
+    override fun toDTO(entity: BankEntity): BankDTO {
         return BankDTO(
             id = entity.id,
 

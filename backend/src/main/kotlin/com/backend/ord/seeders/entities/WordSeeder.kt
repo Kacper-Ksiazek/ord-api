@@ -6,7 +6,7 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.repository.WordRepository
-import com.backend.ord.features.bank.model.Bank
+import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.utils.Optional
 import org.springframework.stereotype.Component
@@ -31,7 +31,7 @@ class WordSeeder(
 
     fun seedOneEntityForUser(
         user: UserEntity,
-        bank: Optional<Bank?> = Optional(null, false),
+        bank: Optional<BankEntity?> = Optional(null, false),
         language: LanguageName = LanguageName.ENGLISH
     ): WordEntity {
         val mockEntity: WordEntity = wordMockFactory.mockEntity(user = user)
@@ -44,7 +44,7 @@ class WordSeeder(
 
     fun seedOneEntityForUser(
         user: UserDTO,
-        bank: Optional<Bank?> = Optional(null, false)
+        bank: Optional<BankEntity?> = Optional(null, false)
     ): WordEntity {
         return seedOneEntityForUser(
             user = userMapper.toEntity(user),
@@ -55,7 +55,7 @@ class WordSeeder(
     fun seedMultipleEntitiesForUser(
         user: UserEntity,
         amount: Int = 5,
-        bank: Optional<Bank?> = Optional(null, false),
+        bank: Optional<BankEntity?> = Optional(null, false),
         language: LanguageName = LanguageName.ENGLISH
     ): List<WordEntity> {
         val wordEntities = mutableListOf<WordEntity>()
@@ -76,7 +76,7 @@ class WordSeeder(
     fun seedMultipleEntitiesForUser(
         user: UserDTO,
         amount: Int = 5,
-        bank: Optional<Bank?> = Optional(null, false),
+        bank: Optional<BankEntity?> = Optional(null, false),
         language: LanguageName = LanguageName.ENGLISH
     ): List<WordEntity> {
         return seedMultipleEntitiesForUser(

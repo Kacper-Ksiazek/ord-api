@@ -21,7 +21,7 @@ import com.backend.ord.core.word.model.json.ExampleSentence
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.core.word.service.WordService
 import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
-import com.backend.ord.features.bank.model.Bank
+import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.features.bank.service.BankService
 import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
@@ -1471,8 +1471,8 @@ class TestWordsController @Autowired constructor(
         inner class Positive {
             @Test
             fun `200 - Word's bank can be changed`() {
-                val firstBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-                val secondBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                val firstBank: BankEntity = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                val secondBank: BankEntity = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(
                     user = authenticatedUser.userInfo,
@@ -1502,7 +1502,7 @@ class TestWordsController @Autowired constructor(
             fun `200 - Word's bank can be changed to newly created bank`() {
                 val newBankName = "NEW_EXTRA_BANK_NAME"
 
-                val initialBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                val initialBank: BankEntity = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(
                     user = authenticatedUser.userInfo,
                     bank = Optional(initialBank, true)
@@ -1539,7 +1539,7 @@ class TestWordsController @Autowired constructor(
                     user = authenticatedUser.userInfo,
                     bank = Optional(null, true)
                 )
-                val newBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                val newBank: BankEntity = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
 
                 wordService.findByIdOrFail(
                     id = wordEntity.id,
@@ -1600,7 +1600,7 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Word's bank can be unassigned`() {
-                val initialBank: Bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
+                val initialBank: BankEntity = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
                 val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(
                     user = authenticatedUser.userInfo,
                     bank = Optional(initialBank, true)
@@ -1698,7 +1698,7 @@ class TestWordsController @Autowired constructor(
                 val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-                val bank: Bank = bankSeeder.seedOneEntityForUser(anotherUser)
+                val bank: BankEntity = bankSeeder.seedOneEntityForUser(anotherUser)
 
                 val request = wordRequestFactory.changeBankForSingleWord(
                     authenticatedUser = authenticatedUser,
@@ -1714,7 +1714,7 @@ class TestWordsController @Autowired constructor(
             @Test
             fun `400 - Word's bank cannot be changed if both bankId and bankToCreate are specified`() {
                 val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-                val bank: Bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val bank: BankEntity = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.changeBankForSingleWord(
                     authenticatedUser = authenticatedUser,
@@ -1748,7 +1748,7 @@ class TestWordsController @Autowired constructor(
             @Test
             fun `400 - Word's bank cannot be changed if bankToCreate name is identical to already existing bank name`() {
                 val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-                val bank: Bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val bank: BankEntity = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val request = wordRequestFactory.changeBankForSingleWord(
                     authenticatedUser = authenticatedUser,
@@ -2060,7 +2060,7 @@ class TestWordsController @Autowired constructor(
                 val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-                val bankOfAnotherUser: Bank = bankSeeder.seedOneEntityForUser(anotherUser)
+                val bankOfAnotherUser: BankEntity = bankSeeder.seedOneEntityForUser(anotherUser)
 
                 val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
                     user = authenticatedUser.userInfo,
@@ -2606,8 +2606,8 @@ class TestWordsController @Autowired constructor(
     }
 
     private fun assertThatBankActuallyExists(
-        bankToVerify: Bank?,
-    ): Bank {
+        bankToVerify: BankEntity?,
+    ): BankEntity {
         assertNotNull(bankToVerify)
 
         return bankService.findById(id = bankToVerify!!.id).let {

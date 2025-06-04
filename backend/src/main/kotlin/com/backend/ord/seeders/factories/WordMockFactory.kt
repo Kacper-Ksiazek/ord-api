@@ -6,7 +6,7 @@ import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
-import com.backend.ord.features.bank.model.Bank
+import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.utils.EnumUtils.getRandomValue
 import com.backend.ord.utils.EnumUtils.getRandomValueOrNull
@@ -43,7 +43,7 @@ class WordMockFactory(
             }
         },
         user: UserEntity = userSeeder.seedOneEntity(),
-        bank: Bank? = null
+        bank: BankEntity? = null
     ): WordEntity {
         return WordEntity(
             origin = origin,
