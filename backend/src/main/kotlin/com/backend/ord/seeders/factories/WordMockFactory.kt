@@ -8,8 +8,8 @@ import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
 import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.seeders.entities.UserSeeder
-import com.backend.ord.utils.EnumUtils.getRandomValue
-import com.backend.ord.utils.EnumUtils.getRandomValueOrNull
+import com.backend.ord.shared.utils.EnumUtils.getRandomValue
+import com.backend.ord.shared.utils.EnumUtils.getRandomValueOrNull
 import org.springframework.stereotype.Component
 import java.util.*
 

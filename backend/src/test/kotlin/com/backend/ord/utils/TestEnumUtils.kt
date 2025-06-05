@@ -1,7 +1,7 @@
 package com.backend.ord.utils
 
-import com.backend.ord.utils.EnumUtils.getRandomValue
-import com.backend.ord.utils.EnumUtils.joinEnumValues
+import com.backend.ord.shared.utils.EnumUtils.getRandomValue
+import com.backend.ord.shared.utils.EnumUtils.joinEnumValues
 import org.junit.jupiter.api.Test
 
 enum class TestingEnum {

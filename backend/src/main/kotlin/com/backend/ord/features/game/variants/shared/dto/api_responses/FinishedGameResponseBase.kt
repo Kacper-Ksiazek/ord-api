@@ -1,7 +1,7 @@
 package com.backend.ord.features.game.variants.shared.dto.api_responses
 
 import com.backend.ord.features.game.model.ongoing_game.enums.GameGrade
-import com.backend.ord.utils.data_classes.Percentage
+import com.backend.ord.shared.utils.data_classes.Percentage
 
 abstract class FinishedGameResponseBase(
     val finalScore: Double,

@@ -9,10 +9,10 @@ import com.backend.ord.features.game.variants.crossword.dto.helpers.board.Crossw
 import com.backend.ord.features.game.variants.crossword.dto.helpers.question.CrosswordQuestion
 import com.backend.ord.features.game.variants.crossword.dto.helpers.question.addAnswerComponent
 import com.backend.ord.features.game.variants.crossword.dto.helpers.question.removeAnswerComponents
-import com.backend.ord.utils.hideLetters
-import com.backend.ord.utils.hideLettersInWord
-import com.backend.ord.utils.isHiddenChar
-import com.backend.ord.utils.isSpecial
+import com.backend.ord.shared.utils.hideLetters
+import com.backend.ord.shared.utils.hideLettersInWord
+import com.backend.ord.shared.utils.isHiddenChar
+import com.backend.ord.shared.utils.isSpecial
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 typealias CrosswordBoard = MutableList<MutableList<String?>>

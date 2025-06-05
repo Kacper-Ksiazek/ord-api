@@ -1,5 +1,6 @@
 package com.backend.ord.utils
 
+import com.backend.ord.shared.utils.StringUtils
 import org.junit.jupiter.api.Test
 
 class TestStringUtils {

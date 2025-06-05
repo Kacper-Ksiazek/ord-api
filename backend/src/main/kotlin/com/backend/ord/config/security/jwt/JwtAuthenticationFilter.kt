@@ -8,7 +8,7 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.service.UserService
 import com.backend.ord.exceptions.NoCorrespondingUserSessionException
 import com.backend.ord.exceptions.UserNotFoundException
-import com.backend.ord.utils.CookieUtils
+import com.backend.ord.shared.utils.CookieUtils
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException

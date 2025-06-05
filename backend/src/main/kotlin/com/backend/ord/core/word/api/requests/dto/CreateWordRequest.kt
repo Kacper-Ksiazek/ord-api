@@ -5,7 +5,7 @@ import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
 import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
-import com.backend.ord.validators.annotations.ValidStringSet
+import com.backend.ord.shared.validators.annotations.ValidStringSet
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull

@@ -2,7 +2,7 @@ package com.backend.ord.features.game.variants.shared.dto.api_responses.helpers
 
 import com.backend.ord.features.game.services.GameReviewService
 import com.backend.ord.features.game.variants.shared.enums.AnswerScore
-import com.backend.ord.utils.data_classes.Percentage
+import com.backend.ord.shared.utils.data_classes.Percentage
 import java.util.*
 
 data class IdentifiableProperAnswer(

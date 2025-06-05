@@ -1,6 +1,6 @@
-package com.backend.ord.validators.annotations
+package com.backend.ord.shared.validators.annotations
 
-import com.backend.ord.validators.StringSetValidator
+import com.backend.ord.shared.validators.StringSetValidator
 import jakarta.validation.Constraint
 import jakarta.validation.Payload
 import kotlin.reflect.KClass

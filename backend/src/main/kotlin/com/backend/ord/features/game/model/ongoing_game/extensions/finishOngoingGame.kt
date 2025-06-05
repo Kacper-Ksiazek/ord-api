@@ -4,7 +4,7 @@ import com.backend.ord.features.game.model.finished_game.FinishedGameEntity
 import com.backend.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.backend.ord.features.game.model.ongoing_game.enums.GameGrade
 import com.backend.ord.features.game.model.ongoing_game.enums.GameResult
-import com.backend.ord.utils.data_classes.Percentage
+import com.backend.ord.shared.utils.data_classes.Percentage
 
 fun OngoingGameEntity.finish(
     finalScore: Int,

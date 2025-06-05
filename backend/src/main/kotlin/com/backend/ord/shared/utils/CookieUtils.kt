@@ -1,9 +1,8 @@
-package com.backend.ord.utils
+package com.backend.ord.shared.utils
 
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import java.util.*
 
 object CookieUtils {
     private const val HTTP_ONLY = true

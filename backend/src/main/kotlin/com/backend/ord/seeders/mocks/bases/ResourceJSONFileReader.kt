@@ -1,6 +1,6 @@
 package com.backend.ord.seeders.mocks.bases
 
-import com.backend.ord.utils.JsonReader
+import com.backend.ord.shared.utils.JsonReader
 import com.fasterxml.jackson.core.type.TypeReference
 
 enum class RootDir(val path: String) {

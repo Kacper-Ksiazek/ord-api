@@ -4,7 +4,7 @@ import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.service.UserService
 import com.backend.ord.exceptions.REST.ForbiddenException
-import com.backend.ord.utils.CookieUtils
+import com.backend.ord.shared.utils.CookieUtils
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts

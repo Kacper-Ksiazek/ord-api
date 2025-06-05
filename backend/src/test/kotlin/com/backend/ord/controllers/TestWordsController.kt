@@ -31,6 +31,7 @@ import com.backend.ord.seeders.factories.BankMockFactory
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.backend.ord.shared.domain.enums.SortDirection
+import com.backend.ord.shared.utils.data_classes.Optional
 import com.backend.ord.testing_utils.api_requests_factories.WordRequestFactory
 import com.backend.ord.testing_utils.api_requests_factories.data.WordDataChanges
 import com.backend.ord.testing_utils.api_requests_factories.data.compareWithDefaultCreateWordData
@@ -38,7 +39,6 @@ import com.backend.ord.testing_utils.api_requests_factories.data.compareWithDefa
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.extensions.compareWith
 import com.backend.ord.testing_utils.extensions.detectChanges
-import com.backend.ord.utils.Optional
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe

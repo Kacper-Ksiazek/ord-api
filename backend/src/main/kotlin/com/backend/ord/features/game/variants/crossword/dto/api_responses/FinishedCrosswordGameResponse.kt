@@ -3,7 +3,7 @@ package com.backend.ord.features.game.variants.crossword.dto.api_responses
 import com.backend.ord.features.game.variants.shared.dto.api_responses.FinishedGameResponseBase
 import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
 import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.ProperAnswer
-import com.backend.ord.utils.data_classes.Percentage
+import com.backend.ord.shared.utils.data_classes.Percentage
 
 class FinishedCrosswordGameResponse(
     finalScore: Double,

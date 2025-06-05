@@ -4,7 +4,7 @@ import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.seeders.EnumValuesGenerator
-import com.backend.ord.utils.EnumUtils.getRandomValue
+import com.backend.ord.shared.utils.EnumUtils.getRandomValue
 import org.springframework.stereotype.Component
 
 @Component

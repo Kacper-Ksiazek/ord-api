@@ -12,7 +12,7 @@ import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.service.GameTokensUsageService
-import com.backend.ord.utils.Console
+import com.backend.ord.shared.utils.Console
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

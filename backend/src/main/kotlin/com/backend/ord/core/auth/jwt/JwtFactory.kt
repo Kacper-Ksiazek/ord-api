@@ -4,7 +4,7 @@ import com.backend.ord.config.properties.JwtProperties
 import com.backend.ord.core.auth.services.UserSessionService
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.exceptions.UserNotFoundException
-import com.backend.ord.utils.CookieUtils
+import com.backend.ord.shared.utils.CookieUtils
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Component
 

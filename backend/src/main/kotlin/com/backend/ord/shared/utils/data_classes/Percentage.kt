@@ -1,4 +1,4 @@
-package com.backend.ord.utils.data_classes
+package com.backend.ord.shared.utils.data_classes
 
 class Percentage(
     /** Value of the percentage. It must be between 0.0 and 100.0 */

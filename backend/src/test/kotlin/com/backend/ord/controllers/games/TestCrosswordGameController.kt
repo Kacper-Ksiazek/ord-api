@@ -29,6 +29,7 @@ import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import com.backend.ord.features.user_activity_log.repository.UserActivityLogRepository
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.shared.utils.HIDDEN_CHARACTER
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -36,7 +37,6 @@ import com.backend.ord.testing_utils.dto.toRequestBody
 import com.backend.ord.testing_utils.extensions.*
 import com.backend.ord.testing_utils.mocks.games.CrosswordGameMocker
 import com.backend.ord.testing_utils.mocks.games.GameMockerBase
-import com.backend.ord.utils.HIDDEN_CHARACTER
 import com.backend.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.collections.shouldHaveSize

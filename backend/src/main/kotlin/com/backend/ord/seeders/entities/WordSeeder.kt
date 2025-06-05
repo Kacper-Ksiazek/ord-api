@@ -8,7 +8,7 @@ import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.seeders.factories.WordMockFactory
-import com.backend.ord.utils.Optional
+import com.backend.ord.shared.utils.data_classes.Optional
 import org.springframework.stereotype.Component
 
 @Component

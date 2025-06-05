@@ -4,7 +4,7 @@ import com.backend.ord.config.properties.OpenAIProperties
 import com.backend.ord.core.ai_provider.dto.OpenAIRequest
 import com.backend.ord.core.ai_provider.dto.OpenAIResponse
 import com.backend.ord.exceptions.OpenAIResponseIsNullException
-import com.backend.ord.utils.Console
+import com.backend.ord.shared.utils.Console
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution

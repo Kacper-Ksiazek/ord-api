@@ -4,7 +4,7 @@ import com.backend.ord.features.game.ai.generate.llm_api_responses.AIGeneratedWo
 import com.backend.ord.features.game.model.ongoing_game.json.WordsTypingProperAnswers
 import com.backend.ord.features.game.variants.words_typing.dto.WordsTypingInstruction
 import com.backend.ord.features.game.variants.words_typing.dto.WordsTypingQuestion
-import com.backend.ord.utils.hideLetters
+import com.backend.ord.shared.utils.hideLetters
 import java.util.*
 
 typealias GeneratedWordsTypingGame = GeneratedGameBase<WordsTypingInstruction, WordsTypingProperAnswers>

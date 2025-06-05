@@ -9,10 +9,10 @@ import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.LanguageProficiencyMockFactory
 import com.backend.ord.seeders.mocks.MockedEntitySummary
 import com.backend.ord.seeders.mocks.MocksFromJSONFiles
-import com.backend.ord.utils.Console
-import com.backend.ord.utils.Console.addBreakLine
-import com.backend.ord.utils.Console.ensureFunctionSuccess
-import com.backend.ord.utils.Console.printCyan
+import com.backend.ord.shared.utils.Console
+import com.backend.ord.shared.utils.Console.addBreakLine
+import com.backend.ord.shared.utils.Console.ensureFunctionSuccess
+import com.backend.ord.shared.utils.Console.printCyan
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Profile

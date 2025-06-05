@@ -1,6 +1,6 @@
-package com.backend.ord.validators
+package com.backend.ord.shared.validators
 
-import com.backend.ord.validators.annotations.ValidStringSet
+import com.backend.ord.shared.validators.annotations.ValidStringSet
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 

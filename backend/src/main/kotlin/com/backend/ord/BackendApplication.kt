@@ -1,6 +1,6 @@
 package com.backend.ord
 
-import com.backend.ord.utils.Console
+import com.backend.ord.shared.utils.Console
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication

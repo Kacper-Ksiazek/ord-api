@@ -1,6 +1,6 @@
 package com.backend.ord.features.game.model.ongoing_game.enums
 
-import com.backend.ord.utils.data_classes.Percentage
+import com.backend.ord.shared.utils.data_classes.Percentage
 
 enum class GameGrade(val threshold: Double) {
     /** Excellent, flawless performance. */

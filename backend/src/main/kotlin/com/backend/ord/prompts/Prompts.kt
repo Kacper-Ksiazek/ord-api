@@ -2,10 +2,10 @@ package com.backend.ord.prompts
 
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.features.game.ai.review.llm_api_requests.SentencesWritingMultipleTopicProperAnswerForAI
 import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfWordsForCrossword
 import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfWordsForWordsTypingGame
-import com.backend.ord.prompts.dto.games.SentencesWritingMultipleTopicProperAnswerForAI
 import com.backend.ord.prompts.internal_tools.GenerateGamePromptData
 import com.backend.ord.prompts.internal_tools.prepareGamePrompt
 
@@ -101,13 +101,12 @@ object Prompts {
             answers: Set<SentencesWritingMultipleTopicProperAnswerForAI>
         ): String {
             val serializedAnswers = answers
-                .associate { it.word to it.topic }
-                .entries
                 .joinToString(separator = ", ") {
                     """
                         {
-                        "word": "${it.key}",
-                        "topic": "${it.value}"
+                        "word": "${it.word}",
+                        "topic": "${it.topic}"
+                        "answer": "${it.answer}"
                         }
                     """.trimIndent()
                 }

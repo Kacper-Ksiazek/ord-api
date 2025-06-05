@@ -4,7 +4,7 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
 import com.backend.ord.core.word.model.json.ExampleSentence
-import com.backend.ord.utils.Optional
+import com.backend.ord.shared.utils.data_classes.Optional
 
 data class WordDataChanges(
     val origin: Optional<String?> = Optional(null),

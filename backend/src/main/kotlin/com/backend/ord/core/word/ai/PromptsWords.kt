@@ -4,7 +4,7 @@ import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.core.word.model.enums.WordExtraMark
 import com.backend.ord.core.word.model.enums.WordType
-import com.backend.ord.utils.EnumUtils.joinEnumValues
+import com.backend.ord.shared.utils.EnumUtils.joinEnumValues
 
 object PromptsWords {
     fun generateWordManualPrompt(

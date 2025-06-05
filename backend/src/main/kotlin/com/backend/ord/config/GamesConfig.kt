@@ -1,6 +1,6 @@
 package com.backend.ord.config
 
-import com.backend.ord.utils.data_classes.Percentage
+import com.backend.ord.shared.utils.data_classes.Percentage
 
 object GamesConfig {
     /**

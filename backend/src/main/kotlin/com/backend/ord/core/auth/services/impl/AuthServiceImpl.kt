@@ -12,7 +12,7 @@ import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.core.user.model.enums.UserRole
 import com.backend.ord.exceptions.ForbiddenException
 import com.backend.ord.exceptions.UserNotFoundException
-import com.backend.ord.utils.CookieUtils
+import com.backend.ord.shared.utils.CookieUtils
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.AuthenticationManager

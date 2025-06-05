@@ -1,4 +1,4 @@
-package com.backend.ord.utils
+package com.backend.ord.shared.utils.data_classes
 
 data class Optional<T>(
     val value: T?,

@@ -1,4 +1,4 @@
-package com.backend.ord.utils
+package com.backend.ord.shared.utils
 
 object StringUtils {
     fun addAsteriskAroundWordInText(text: String, word: String): String = wrapWordWith(

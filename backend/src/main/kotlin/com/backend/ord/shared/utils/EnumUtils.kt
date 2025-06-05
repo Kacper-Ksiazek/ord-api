@@ -1,4 +1,4 @@
-package com.backend.ord.utils
+package com.backend.ord.shared.utils
 
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min

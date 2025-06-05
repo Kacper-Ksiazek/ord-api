@@ -1,4 +1,4 @@
-package com.backend.ord.utils
+package com.backend.ord.shared.utils
 
 import kotlin.math.max
 
