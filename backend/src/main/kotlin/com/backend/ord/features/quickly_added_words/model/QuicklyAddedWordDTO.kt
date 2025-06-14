@@ -1,4 +1,4 @@
-package com.backend.ord.domain.persistence.dto
+package com.backend.ord.features.quickly_added_words.model
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserDTO

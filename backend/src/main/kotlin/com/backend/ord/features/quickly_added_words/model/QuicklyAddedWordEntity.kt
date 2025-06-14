@@ -1,4 +1,4 @@
-package com.backend.ord.domain.persistence.entities
+package com.backend.ord.features.quickly_added_words.model
 
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.backend.ord.core.user.model.UserEntity
@@ -11,7 +11,7 @@ import java.util.*
 
 @Entity
 @Table(name = "quickly_added_words")
-data class QuicklyAddedWord(
+data class QuicklyAddedWordEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),

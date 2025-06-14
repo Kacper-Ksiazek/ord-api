@@ -1,17 +1,15 @@
-package com.backend.ord.domain.persistence.mappers.impl
+package com.backend.ord.features.quickly_added_words.model
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.dto.QuicklyAddedWordDTO
-import com.backend.ord.domain.persistence.entities.QuicklyAddedWord
-import com.backend.ord.domain.persistence.mappers.QuicklyAddedWordMapper
+import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 
 @Component
-class QuicklyAddedWordMapperImpl(
+class QuicklyAddedWordMapper(
     private val userMapper: UserMapper
-) : QuicklyAddedWordMapper {
-    override fun toEntity(dto: QuicklyAddedWordDTO): QuicklyAddedWord {
-        return QuicklyAddedWord(
+): MapperBase<QuicklyAddedWordEntity, QuicklyAddedWordDTO> {
+    override fun toEntity(dto: QuicklyAddedWordDTO): QuicklyAddedWordEntity {
+        return QuicklyAddedWordEntity(
             id = dto.id,
 
             word = dto.word,
@@ -23,7 +21,7 @@ class QuicklyAddedWordMapperImpl(
         )
     }
 
-    override fun toDTO(entity: QuicklyAddedWord): QuicklyAddedWordDTO {
+    override fun toDTO(entity: QuicklyAddedWordEntity): QuicklyAddedWordDTO {
         return QuicklyAddedWordDTO(
             id = entity.id,
 
@@ -34,5 +32,4 @@ class QuicklyAddedWordMapperImpl(
             updatedAt = entity.updatedAt
         )
     }
-
 }
