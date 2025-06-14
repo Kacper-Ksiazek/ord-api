@@ -9,6 +9,7 @@ import com.backend.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.backend.ord.core.word.api.responses.dto.WordListItem
 import com.backend.ord.core.word.service.WordService
 import com.backend.ord.exceptions.REST.BadRequestException
+import com.backend.ord.features.game.ai.generate.GenerateGamePrompts
 import com.backend.ord.features.game.ai.generate.dto.GeneratedCrosswordGame
 import com.backend.ord.features.game.ai.generate.dto.GeneratedSentencesWritingGame
 import com.backend.ord.features.game.ai.generate.dto.GeneratedWordsTypingGame
@@ -22,13 +23,11 @@ import com.backend.ord.features.game.model.ongoing_game.extensions.getNumberOfWo
 import com.backend.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.backend.ord.features.game.variants.crossword.dto.CrosswordInstruction
 import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
-import com.backend.ord.prompts.Prompts
 import com.backend.ord.shared.domain.enums.SortDirection
 import org.springframework.stereotype.Service
 
 @Service
 class AIGenerateGameServiceImpl(
-    // Services:
     private val wordService: WordService,
     private val openAIAPIClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService,
@@ -45,7 +44,7 @@ class AIGenerateGameServiceImpl(
     ): GeneratedCrosswordGame {
         val languageProficiency: LanguageProficiencyEntity = user.getProficiencyInLanguage(language)
 
-        val prompt: String = Prompts.Games.generateCrosswordQuestionsPrompt(
+        val prompt: String = GenerateGamePrompts.generateCrosswordQuestionsPrompt(
             language = language,
             difficulty = difficulty,
             languageProficiency = languageProficiency,
@@ -115,7 +114,7 @@ class AIGenerateGameServiceImpl(
             n = amountOfQuestion
         ).map { it.origin }
 
-        val prompt: String = Prompts.Games.generateWordsTypingGamePrompt(
+        val prompt: String = GenerateGamePrompts.generateWordsTypingGamePrompt(
             language = language,
             difficulty = difficulty,
             languageProficiency = languageProficiency,
@@ -158,7 +157,6 @@ class AIGenerateGameServiceImpl(
     ): GeneratedSentencesWritingGame {
         TODO("Not yet implemented")
     }
-
 
     private fun getWordsForGame(
         user: UserEntity,
