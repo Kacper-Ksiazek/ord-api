@@ -1,6 +1,5 @@
 package com.backend.ord.exceptions
 
-import jakarta.validation.constraints.Email
 import java.util.*
 
 class UserNotFoundException(
