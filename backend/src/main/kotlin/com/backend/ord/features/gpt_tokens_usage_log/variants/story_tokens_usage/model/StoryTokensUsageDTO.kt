@@ -1,7 +1,7 @@
 package com.backend.ord.features.gpt_tokens_usage_log.variants.story_tokens_usage.model
 
 import com.backend.ord.core.user.model.UserDTO
-import com.backend.ord.domain.persistence.dto.StoryDTO
+import com.backend.ord.features.story.models.dto.StoryDTO
 import com.backend.ord.features.gpt_tokens_usage_log.variants.story_tokens_usage.model.enums.StoriesGPTTokensConsumptionType
 import java.time.Instant
 import java.util.*

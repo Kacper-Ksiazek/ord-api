@@ -1,4 +1,4 @@
-package com.backend.ord.domain.persistence.entities
+package com.backend.ord.features.story.models.entities
 
 import com.backend.ord.core.user.model.UserEntity
 import com.backend.ord.shared.models.IdentifiableUserResource

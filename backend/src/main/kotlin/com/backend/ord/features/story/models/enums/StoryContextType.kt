@@ -1,4 +1,4 @@
-package com.backend.ord.features.story.model.enums
+package com.backend.ord.features.story.models.enums
 
 enum class StoryContextType {
     EDUCATIONAL,

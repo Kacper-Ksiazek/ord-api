@@ -1,4 +1,4 @@
-package com.backend.ord.domain.persistence.dto
+package com.backend.ord.features.story.models.dto
 
 import com.backend.ord.core.user.model.UserDTO
 import java.time.Instant

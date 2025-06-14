@@ -1,7 +1,7 @@
 package com.backend.ord.features.gpt_tokens_usage_log.variants.story_tokens_usage.model
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.mappers.StoryMapper
+import com.backend.ord.features.story.models.mappers.StoryMapper
 import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 

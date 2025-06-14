@@ -1,17 +1,16 @@
-package com.backend.ord.domain.persistence.mappers.impl
+package com.backend.ord.features.story.models.mappers
 
 import com.backend.ord.core.user.model.UserMapper
-import com.backend.ord.domain.persistence.dto.StoryDTO
-import com.backend.ord.domain.persistence.entities.Story
-import com.backend.ord.domain.persistence.mappers.StoryContextMapper
-import com.backend.ord.domain.persistence.mappers.StoryMapper
+import com.backend.ord.features.story.models.dto.StoryDTO
+import com.backend.ord.features.story.models.entities.Story
+import com.backend.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 
 @Component
-class StoryMapperImpl(
+class StoryMapper(
     private val userMapper: UserMapper,
     private val storyContextMapper: StoryContextMapper
-) : StoryMapper {
+) : MapperBase<Story, StoryDTO> {
     override fun toEntity(dto: StoryDTO): Story {
         return Story(
             id = dto.id,
@@ -43,5 +42,4 @@ class StoryMapperImpl(
             updatedAt = entity.updatedAt
         )
     }
-
 }
