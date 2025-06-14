@@ -1,10 +1,10 @@
 package com.backend.ord.utils.resource_readers
 
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.repositories.WordRepository
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.model.WordEntity
+import com.backend.ord.core.word.repository.WordRepository
+import com.backend.ord.shared.utils.JsonReader
 import com.backend.ord.testing_utils.dto.resources.db_rows.WordDBExportedRow
-import com.backend.ord.utils.JsonReader
 import com.fasterxml.jackson.core.type.TypeReference
 
 private const val ROOT = "./src/test/resources/db_rows"
@@ -22,11 +22,11 @@ private fun getAbsolutePath(path: String): String {
  * The file contains 12 rows of words.
  */
 fun loadWordsFromResourceFile(
-    user: User,
+    user: UserEntity,
     wordsRepository: WordRepository? = null,
     /** If null, all words will be loaded */
     numberOfWordsToLoad: Int? = null
-): List<Word> {
+): List<WordEntity> {
     val path = getAbsolutePath("/words_24_rows.json")
     val typeReference = object : TypeReference<List<WordDBExportedRow>>() {}
 

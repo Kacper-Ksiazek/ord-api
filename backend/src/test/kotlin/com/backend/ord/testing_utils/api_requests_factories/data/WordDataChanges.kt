@@ -1,10 +1,10 @@
 package com.backend.ord.testing_utils.api_requests_factories.data
 
-import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
-import com.backend.ord.utils.Optional
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.core.word.model.json.ExampleSentence
+import com.backend.ord.shared.utils.data_classes.Optional
 
 data class WordDataChanges(
     val origin: Optional<String?> = Optional(null),

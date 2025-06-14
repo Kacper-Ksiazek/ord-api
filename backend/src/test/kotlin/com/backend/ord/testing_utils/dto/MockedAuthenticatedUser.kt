@@ -1,6 +1,6 @@
 package com.backend.ord.testing_utils.dto
 
-import com.backend.ord.domain.persistence.dto.UserDTO
+import com.backend.ord.core.user.model.UserDTO
 import jakarta.servlet.http.Cookie
 
 data class MockedAuthenticatedUser(

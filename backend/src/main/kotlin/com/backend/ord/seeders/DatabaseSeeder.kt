@@ -1,18 +1,18 @@
 package com.backend.ord.seeders
 
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.enums.persistence.UserRole
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.language.LanguageProficiencyLevel
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.user.model.enums.UserRole
 import com.backend.ord.seeders.entities.LanguageProficiencySeeder
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.factories.LanguageProficiencyMockFactory
 import com.backend.ord.seeders.mocks.MockedEntitySummary
 import com.backend.ord.seeders.mocks.MocksFromJSONFiles
-import com.backend.ord.utils.Console
-import com.backend.ord.utils.Console.addBreakLine
-import com.backend.ord.utils.Console.ensureFunctionSuccess
-import com.backend.ord.utils.Console.printCyan
+import com.backend.ord.shared.utils.Console
+import com.backend.ord.shared.utils.Console.addBreakLine
+import com.backend.ord.shared.utils.Console.ensureFunctionSuccess
+import com.backend.ord.shared.utils.Console.printCyan
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Profile
@@ -82,7 +82,7 @@ class DatabaseSeeder(
     private fun createMyUser(): String {
         // 1. Create a user
         val kacper = userSeeder.seedOneEntity(
-            User(
+            UserEntity(
                 name = "Kacper Książek",
                 email = "kacper.b.ksiazek@gmail.com",
                 password = passwordEncoder.encode("zaq1"),
