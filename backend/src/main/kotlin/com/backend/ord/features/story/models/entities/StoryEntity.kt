@@ -12,7 +12,7 @@ import java.util.*
 
 @Entity
 @Table(name = "stories")
-data class Story(
+data class StoryEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),
@@ -37,7 +37,7 @@ data class Story(
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "story_context_id")
-    var storyContext: StoryContext,
+    var storyContext: StoryContextEntity,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

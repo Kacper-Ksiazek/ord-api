@@ -1,7 +1,7 @@
 package com.backend.ord.features.gpt_tokens_usage_log.variants.story_tokens_usage.model
 
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.features.story.models.entities.Story
+import com.backend.ord.features.story.models.entities.StoryEntity
 import com.backend.ord.features.gpt_tokens_usage_log.variants.story_tokens_usage.model.enums.StoriesGPTTokensConsumptionType
 import com.backend.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
@@ -34,7 +34,7 @@ data class StoryTokensUsageEntity(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "story_id")
-    var story: Story,
+    var story: StoryEntity,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
