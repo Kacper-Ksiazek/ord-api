@@ -1,7 +1,7 @@
 package com.backend.ord.testing_utils.extensions
 
-import com.backend.ord.api.requests.games.utils.WordUserAnswer
-import com.backend.ord.api.responses.games.utils.IdentifiableProperAnswer
+import com.backend.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
+import com.backend.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
 import io.kotest.matchers.shouldBe
 import java.util.*

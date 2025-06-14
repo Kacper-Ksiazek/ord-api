@@ -1,11 +1,11 @@
 package com.backend.ord.testing_utils.dto.resources.db_rows
 
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.model.WordEntity
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.core.word.model.json.ExampleSentence
 
 data class WordDBExportedRow(
     val type: WordType,
@@ -21,8 +21,8 @@ data class WordDBExportedRow(
     val translatedFrom: LanguageName,
     val translatedTo: LanguageName
 ) {
-    fun convertIntoWordEntity(user: User): Word {
-        return Word(
+    fun convertIntoWordEntity(user: UserEntity): WordEntity {
+        return WordEntity(
             type = type,
             extraMark = extraMark,
             origin = origin,

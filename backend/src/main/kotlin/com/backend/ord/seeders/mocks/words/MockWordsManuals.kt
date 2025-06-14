@@ -1,10 +1,10 @@
 package com.backend.ord.seeders.mocks.words
 
-import com.backend.ord.domain.persistence.entities.Bank
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.repositories.WordRepository
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.model.WordEntity
+import com.backend.ord.core.word.repository.WordRepository
+import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.seeders.mocks.bases.MocksFromJsonFileHandler
 import com.backend.ord.seeders.mocks.words.json_data_models.AIGeneratedWordManualInJSON
 import com.fasterxml.jackson.core.type.TypeReference
@@ -15,11 +15,11 @@ import kotlin.random.Random
 class MockWordsManuals(
     override val repository: WordRepository
 ) : MocksFromJsonFileHandler<
-        Word,
+        WordEntity,
         List<AIGeneratedWordManualInJSON>,
         AIGeneratedWordManualInJSON
         > {
-    private lateinit var availableBanks: List<Bank>
+    private lateinit var availableBanks: List<BankEntity>
 
     override val jsonFileContentTypeRef: TypeReference<List<AIGeneratedWordManualInJSON>> =
         object : TypeReference<List<AIGeneratedWordManualInJSON>>() {}
@@ -28,11 +28,11 @@ class MockWordsManuals(
 
     override fun convertToEntity(
         jsonData: AIGeneratedWordManualInJSON,
-        user: User
-    ): Word {
-        val bank: Bank? = getRandomBank()
+        user: UserEntity
+    ): WordEntity {
+        val bank: BankEntity? = getRandomBank()
 
-        return Word(
+        return WordEntity(
             origin = jsonData.originalWord,
             definition = jsonData.definition,
             translation = jsonData.translation,
@@ -57,9 +57,9 @@ class MockWordsManuals(
     }
 
     fun seedFromJSONFile(
-        user: User,
-        banks: List<Bank>
-    ): List<Word> {
+        user: UserEntity,
+        banks: List<BankEntity>
+    ): List<WordEntity> {
         this.availableBanks = banks
 
         return seedFromJSONFile(user)
@@ -67,7 +67,7 @@ class MockWordsManuals(
 
     fun getRandomBank(
         likelihoodOfReturningNull: Int = 25
-    ): Bank? {
+    ): BankEntity? {
         return if (Random.nextInt(100) < likelihoodOfReturningNull) {
             null
         } else {

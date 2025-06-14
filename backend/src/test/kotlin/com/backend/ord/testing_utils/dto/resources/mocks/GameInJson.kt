@@ -1,8 +1,8 @@
 package com.backend.ord.testing_utils.dto.resources.mocks
 
-import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.enums.persistence.language.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 
 interface GameInJson<TGameInstruction, TGameProperAnswers> {
     val type: GameType

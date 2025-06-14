@@ -1,15 +1,15 @@
 package com.backend.ord.seeders.factories
 
-import com.backend.ord.domain.persistence.entities.Bank
-import com.backend.ord.domain.persistence.entities.User
-import com.backend.ord.domain.persistence.entities.Word
-import com.backend.ord.domain.persistence.jsons.ExampleSentence
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.enums.persistence.word.WordExtraMark
-import com.backend.ord.enums.persistence.word.WordType
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.user.model.UserEntity
+import com.backend.ord.core.word.model.WordEntity
+import com.backend.ord.core.word.model.enums.WordExtraMark
+import com.backend.ord.core.word.model.enums.WordType
+import com.backend.ord.core.word.model.json.ExampleSentence
+import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.seeders.entities.UserSeeder
-import com.backend.ord.utils.EnumUtils.getRandomValue
-import com.backend.ord.utils.EnumUtils.getRandomValueOrNull
+import com.backend.ord.shared.utils.EnumUtils.getRandomValue
+import com.backend.ord.shared.utils.EnumUtils.getRandomValueOrNull
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -42,10 +42,10 @@ class WordMockFactory(
                 )
             }
         },
-        user: User = userSeeder.seedOneEntity(),
-        bank: Bank? = null
-    ): Word {
-        return Word(
+        user: UserEntity = userSeeder.seedOneEntity(),
+        bank: BankEntity? = null
+    ): WordEntity {
+        return WordEntity(
             origin = origin,
             translation = translation,
             definition = definition,

@@ -1,6 +1,6 @@
 package com.backend.ord.config
 
-import com.backend.ord.repositories.UserRepository
+import com.backend.ord.core.user.UserRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

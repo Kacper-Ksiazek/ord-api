@@ -1,9 +1,9 @@
 package com.backend.ord.testing_utils.extensions
 
-import com.backend.ord.enums.persistence.UserActivityType
-import com.backend.ord.enums.persistence.game.GameDifficulty
-import com.backend.ord.enums.persistence.language.LanguageName
-import com.backend.ord.repositories.UserActivityLogRepository
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
+import com.backend.ord.features.user_activity_log.repository.UserActivityLogRepository
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import java.util.*

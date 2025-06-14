@@ -1,12 +1,11 @@
 package com.backend.ord.testing_utils.extensions
 
-import com.backend.ord.api.requests.word.UpdateWordRequest
-import com.backend.ord.api.requests.word.data.UpdateWordRequestData
-import com.backend.ord.domain.persistence.entities.Word
+import com.backend.ord.core.word.api.requests.dto.UpdateWordRequest
+import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.testing_utils.api_requests_factories.data.WordDataChanges
 import io.kotest.matchers.shouldBe
 
-fun Word.compareWith(anotherEntity: Word) {
+fun WordEntity.compareWith(anotherEntity: WordEntity) {
     origin shouldBe anotherEntity.origin
     translatedTo shouldBe anotherEntity.translatedTo
     translatedFrom shouldBe anotherEntity.translatedFrom
@@ -18,13 +17,13 @@ fun Word.compareWith(anotherEntity: Word) {
     useCases shouldBe anotherEntity.useCases
 }
 
-fun Word.detectChanges(
-    before: Word,
+fun WordEntity.detectChanges(
+    before: WordEntity,
     changes: WordDataChanges = WordDataChanges()
 ) {
     detectChanges(
         changes = changes,
-        before = UpdateWordRequestData(
+        before = UpdateWordRequest(
             origin = before.origin,
             translation = before.translation,
             definition = before.definition,
@@ -40,7 +39,7 @@ fun Word.detectChanges(
     )
 }
 
-fun Word.detectChanges(
+fun WordEntity.detectChanges(
     before: UpdateWordRequest,
     changes: WordDataChanges = WordDataChanges()
 ) {

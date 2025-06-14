@@ -1,14 +1,14 @@
 package com.backend.ord.testing_utils.mocks.games
 
-import com.backend.ord.api.responses.games.bases.StartedWordsTypingGameResponse
-import com.backend.ord.domain.application.games.words_typing.WordsTypingInstruction
-import com.backend.ord.domain.persistence.dto.OngoingWordsTypingGameDTO
-import com.backend.ord.domain.persistence.dto.UserDTO
-import com.backend.ord.domain.persistence.mappers.OngoingGameMapper
-import com.backend.ord.domain.persistence.mappers.UserMapper
-import com.backend.ord.enums.persistence.game.GameType
-import com.backend.ord.repositories.OngoingGameRepository
-import com.backend.ord.repositories.WordRepository
+import com.backend.ord.core.user.model.UserDTO
+import com.backend.ord.core.user.model.UserMapper
+import com.backend.ord.core.word.repository.WordRepository
+import com.backend.ord.features.game.model.ongoing_game.OngoingGameMapper
+import com.backend.ord.features.game.model.ongoing_game.OngoingWordsTypingGameDTO
+import com.backend.ord.features.game.model.ongoing_game.enums.GameType
+import com.backend.ord.features.game.repositories.OngoingGameRepository
+import com.backend.ord.features.game.variants.words_typing.dto.WordsTypingInstruction
+import com.backend.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
 import com.backend.ord.seeders.factories.WordMockFactory
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.backend.ord.testing_utils.dto.resources.mocks.WordsTypingGameInJson
