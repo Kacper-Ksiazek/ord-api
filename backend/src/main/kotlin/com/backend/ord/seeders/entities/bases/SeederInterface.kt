@@ -1,4 +1,4 @@
-package com.backend.ord.seeders.entities
+package com.backend.ord.seeders.entities.bases
 
 interface SeederInterface<T> {
     /**

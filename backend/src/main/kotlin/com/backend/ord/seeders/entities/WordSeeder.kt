@@ -7,14 +7,15 @@ import com.backend.ord.core.user.model.UserMapper
 import com.backend.ord.core.word.model.WordEntity
 import com.backend.ord.core.word.repository.WordRepository
 import com.backend.ord.features.bank.model.BankEntity
-import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.seeders.entities.bases.SeederInterface
+import com.backend.ord.seeders.factories.WordFactory
 import com.backend.ord.shared.utils.data_classes.Optional
 import org.springframework.stereotype.Component
 
 @Component
 class WordSeeder(
     private val userMapper: UserMapper,
-    private val wordMockFactory: WordMockFactory,
+    private val wordMockFactory: WordFactory,
     private val wordRepository: WordRepository
 ) : SeederInterface<WordEntity> {
     override fun seedOneEntity(data: WordEntity?): WordEntity {
