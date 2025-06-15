@@ -31,7 +31,7 @@ abstract class ControllerTestBase(
     val languageProficiencyRepository: LanguageProficiencyRepository,
     val userMapper: UserMapper,
     val userRepository: UserRepository
-) {
+): TestcontainersConfig() {
     val faker = Faker()
 
     companion object {
@@ -124,7 +124,7 @@ abstract class ControllerTestBase(
         )
     }
 
-    inline fun <reified T> getResponseBody(source: Any): T {
+    final inline fun <reified T> getResponseBody(source: Any): T {
         return getResponseBody(objectMapper, source)
     }
 

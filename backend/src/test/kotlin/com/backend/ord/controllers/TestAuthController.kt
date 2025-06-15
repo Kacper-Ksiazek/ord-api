@@ -52,7 +52,7 @@ class TestAuthController @Autowired constructor(
     languageProficiencyRepository = languageProficiencyRepository,
     userMapper = userMapper,
     userRepository = userRepository
-) {
+){
     private val PASSWORD = "123456"
     private val EMAIL = "test@test.com"
     private val BASE_URL = "/api/v1/auth"
