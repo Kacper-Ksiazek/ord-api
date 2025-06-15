@@ -80,4 +80,40 @@ object EnumUtils {
             this.java.enumConstants.random()
         }
     }
+
+    /**
+     * Returns a list containing `n` unique random enum constants from the specified enum class.
+     *
+     * This extension function is applied to a `KClass` representing an enum type.
+     * It randomly selects `n` distinct enum constants from the enum and returns them as a list.
+     *
+     * The function ensures that:
+     * - The number of values requested (`n`) is between 1 and the total number of enum constants (inclusive).
+     * - The returned values are unique (no duplicates).
+     * - The values are randomly selected and their order is randomized.
+     *
+     * @return A list of `n` unique random enum constants.
+     *
+     * @param n The number of unique enum values to return. Must be between 1 and the total number of enum constants.
+     *
+     * @param T The type of the enum class.
+     *
+     * @throws IllegalArgumentException If `n` is less than 1 or greater than the number of enum constants.
+     *
+     * @sample
+     * enum class Direction { NORTH, EAST, SOUTH, WEST }
+     *
+     * val directions = Direction::class.getNRandomUniqueValuesFromEnum(2)
+     * // directions: could be [EAST, SOUTH], [WEST, NORTH], etc., with no duplicates
+     */
+    fun <T : Enum<T>> KClass<T>.getNRandomUniqueValues(n: Int): List<T> {
+        // Get the values of the enum
+        val enumConstants = this.java.enumConstants
+
+        // Validate N
+        require(n in 1..enumConstants.size) { "N must be greater than 0 and less than or equal to the number of elements in the enum" }
+
+        // Return a shuffled sublist of the first N elements
+        return enumConstants.toList().shuffled().take(n)
+    }
 }
