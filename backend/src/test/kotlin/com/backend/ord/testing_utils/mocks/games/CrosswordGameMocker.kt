@@ -9,7 +9,7 @@ import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.features.game.repositories.OngoingGameRepository
 import com.backend.ord.features.game.variants.crossword.dto.CrosswordInstruction
 import com.backend.ord.features.game.variants.crossword.dto.api_responses.StartedCrosswordGameResponse
-import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.seeders.factories.WordFactory
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.backend.ord.testing_utils.dto.resources.mocks.CrosswordInJson
 import com.fasterxml.jackson.core.type.TypeReference
@@ -23,7 +23,7 @@ class CrosswordGameMocker(
     override val wordRepository: WordRepository,
     override val ongoingGameMapper: OngoingGameMapper,
     override val ongoingGameRepository: OngoingGameRepository,
-    override val wordMockFactory: WordMockFactory,
+    override val wordMockFactory: WordFactory,
 ) : GameMockerBase<
         CrosswordInJson,
         OngoingCrosswordGameDTO,

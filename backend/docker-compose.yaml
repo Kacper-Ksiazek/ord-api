@@ -12,7 +12,7 @@ services:
       - SERVER_PORT=${PORT}
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE}
 
-      # Database (Spring Boot interpretuje to automatycznie)
+      # Database
       - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
       - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
@@ -24,7 +24,7 @@ services:
       # OpenAI
       - OPEN_AI_KEY=${OPEN_AI_KEY}
 
-      # Test property
+      # Health Check prop
       - ENV_TEST_PROPERTY=${ENV_TEST_PROPERTY}
 
   db:

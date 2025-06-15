@@ -11,7 +11,7 @@ import com.backend.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.backend.ord.features.game.model.ongoing_game.enums.GameType
 import com.backend.ord.features.game.repositories.OngoingGameRepository
 import com.backend.ord.features.game.variants.shared.dto.api_responses.StartedGameResponseBase
-import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.seeders.factories.WordFactory
 import com.backend.ord.seeders.mocks.bases.ResourceJSONFileReader
 import com.backend.ord.seeders.mocks.bases.RootDir
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
@@ -45,7 +45,7 @@ interface GameMockerBase<
     val userMapper: UserMapper
     val objectMapper: ObjectMapper
     val wordRepository: WordRepository
-    val wordMockFactory: WordMockFactory
+    val wordMockFactory: WordFactory
     val ongoingGameMapper: OngoingGameMapper
     val gameRequestFactory: GameRequestFactory
     val ongoingGameRepository: OngoingGameRepository

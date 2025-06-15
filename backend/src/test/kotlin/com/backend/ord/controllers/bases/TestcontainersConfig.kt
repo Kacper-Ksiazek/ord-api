@@ -18,7 +18,6 @@ abstract class TestcontainersConfig {
         init {
             Flyway.configure()
                 .dataSource(container.jdbcUrl, container.username, container.password)
-                .locations("filesystem:flyway/sql")
                 .load()
                 .migrate()
         }

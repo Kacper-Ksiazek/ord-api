@@ -27,8 +27,8 @@ import com.backend.ord.seeders.entities.BankGroupSeeder
 import com.backend.ord.seeders.entities.BankSeeder
 import com.backend.ord.seeders.entities.UserSeeder
 import com.backend.ord.seeders.entities.WordSeeder
-import com.backend.ord.seeders.factories.BankMockFactory
-import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.seeders.factories.BankFactory
+import com.backend.ord.seeders.factories.WordFactory
 import com.backend.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.backend.ord.shared.domain.enums.SortDirection
 import com.backend.ord.shared.utils.data_classes.Optional
@@ -72,13 +72,13 @@ class TestWordsController @Autowired constructor(
     private val wordService: WordService,
     private val wordRepository: WordRepository,
     private val bankSeeder: BankSeeder,
-    private val bankMockFactory: BankMockFactory,
+    private val bankMockFactory: BankFactory,
     private val bankService: BankService,
     private val userSeeder: UserSeeder,
     private val wordSeeder: WordSeeder,
     private val wordMapper: WordMapper,
     private val bankGroupSeeder: BankGroupSeeder,
-    private var wordMockFactory: WordMockFactory,
+    private var wordMockFactory: WordFactory,
 
     objectMapper: ObjectMapper,
     mockMvc: MockMvc,

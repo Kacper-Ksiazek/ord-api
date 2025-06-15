@@ -13,7 +13,7 @@ import com.backend.ord.features.game.repositories.FinishedGameRepository
 import com.backend.ord.features.game.repositories.OngoingGameRepository
 import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import com.backend.ord.features.user_activity_log.repository.UserActivityLogRepository
-import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.seeders.factories.WordFactory
 import com.backend.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.backend.ord.testing_utils.mocks.games.CrosswordGameMocker
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -37,7 +37,7 @@ import org.springframework.test.web.servlet.MockMvc
 @DisplayName("- GameController")
 class TestGameController @Autowired constructor(
     private val userActivityLogRepository: UserActivityLogRepository,
-    private val wordMockFactory: WordMockFactory,
+    private val wordMockFactory: WordFactory,
 
     objectMapper: ObjectMapper,
     mockMvc: MockMvc,

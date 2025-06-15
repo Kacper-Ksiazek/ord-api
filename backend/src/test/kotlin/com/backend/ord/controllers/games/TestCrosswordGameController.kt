@@ -28,7 +28,7 @@ import com.backend.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.
 import com.backend.ord.features.user_activity_log.model.enums.UserActivityType
 import com.backend.ord.features.user_activity_log.repository.UserActivityLogRepository
 import com.backend.ord.seeders.entities.UserSeeder
-import com.backend.ord.seeders.factories.WordMockFactory
+import com.backend.ord.seeders.factories.WordFactory
 import com.backend.ord.shared.utils.HIDDEN_CHARACTER
 import com.backend.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.backend.ord.testing_utils.dto.AlteredWordProperAnswer
@@ -68,7 +68,7 @@ class TestCrosswordGameController @Autowired constructor(
     private val gameTokensUsageRepository: GameTokensUsageRepository,
     private val userActivityLogRepository: UserActivityLogRepository,
     private val userSeeder: UserSeeder,
-    private val wordMockFactory: WordMockFactory,
+    private val wordMockFactory: WordFactory,
 
     objectMapper: ObjectMapper,
     mockMvc: MockMvc,
