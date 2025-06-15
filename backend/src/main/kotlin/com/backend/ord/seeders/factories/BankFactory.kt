@@ -5,13 +5,14 @@ import com.backend.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.backend.ord.features.bank.model.BankEntity
 import com.backend.ord.features.bank_group.model.BankGroupEntity
 import com.backend.ord.seeders.entities.UserSeeder
+import com.backend.ord.seeders.factories.bases.FactoryBase
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class BankMockFactory(
+class BankFactory(
     private val userSeeder: UserSeeder,
-) : AbstractFactory() {
+) : FactoryBase() {
     fun mockEntity(
         name: String = faker.name().fullName(),
         description: String = faker.lorem().sentence(),

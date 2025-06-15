@@ -2,17 +2,19 @@ package com.backend.ord.seeders.factories
 
 import com.backend.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.backend.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.backend.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.backend.ord.core.user.model.UserEntity
-import com.backend.ord.seeders.EnumValuesGenerator
+import com.backend.ord.seeders.factories.bases.FactoryBase
+import com.backend.ord.shared.utils.EnumUtils.getNRandomUniqueValues
 import com.backend.ord.shared.utils.EnumUtils.getRandomValue
 import org.springframework.stereotype.Component
 
 @Component
-class LanguageProficiencyMockFactory(
-    val userMockFactory: UserMockFactory
-) : AbstractFactory() {
+class LanguageProficiencyFactory(
+    val userMockFactory: UserFactory
+) : FactoryBase() {
     fun mockUniqueLanguages(n: Int): List<LanguageName> {
-        return EnumValuesGenerator.getNRandomUniqueValuesFromEnum<LanguageName>(n)
+        return LanguageName::class.getNRandomUniqueValues(n)
     }
 
     fun mockEntity(
@@ -20,8 +22,8 @@ class LanguageProficiencyMockFactory(
     ): LanguageProficiencyEntity {
         // Return a new language proficiency entity
         return LanguageProficiencyEntity(
-            language = EnumValuesGenerator.mockLanguageName(),
-            proficiency = EnumValuesGenerator.mockProficiencyLevel(),
+            language = LanguageName::class.getRandomValue(),
+            proficiency = LanguageProficiencyLevel::class.getRandomValue(),
             user = user,
             generativeContentLanguage = LanguageName::class.getRandomValue()
         )
