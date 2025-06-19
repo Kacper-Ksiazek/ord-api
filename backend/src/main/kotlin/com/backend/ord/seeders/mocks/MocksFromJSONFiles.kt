@@ -16,6 +16,8 @@ data class MockedEntitySummary(
     val amount: Int
 )
 
+// TODO: To archive
+
 @Component
 class MocksFromJSONFiles(
     private val mockWordsManuals: MockWordsManuals,
