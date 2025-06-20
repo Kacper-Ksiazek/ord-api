@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.core.env.Environment
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import java.net.URI
 
 @SpringBootApplication
 @EnableTransactionManagement
@@ -43,7 +44,26 @@ class BackendApplication(
     }
 }
 
+fun convertHerokuDatabaseUrl() {
+     val databaseUrl = System.getenv("DATABASE_URL")
+        ?: throw IllegalStateException("❌ Missing environment variable DATABASE_URL. Please make sure it is set!")
+
+    try {
+        val uri = URI(databaseUrl.replace("postgres://", "postgresql://"))
+        val (username, password) = uri.userInfo.split(":")
+        val jdbcUrl = "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}"
+
+        System.setProperty("JDBC_DATABASE_URL", jdbcUrl)
+        System.setProperty("JDBC_DATABASE_USERNAME", username)
+        System.setProperty("JDBC_DATABASE_PASSWORD", password)
+    } catch (e: Exception) {
+        throw IllegalStateException("❌ Failed to parse DATABASE_URL: $databaseUrl", e)
+    }
+}
+
 fun main(args: Array<String>) {
+    convertHerokuDatabaseUrl()
+
     SpringApplication.run(BackendApplication::class.java, *args)
 }
 
