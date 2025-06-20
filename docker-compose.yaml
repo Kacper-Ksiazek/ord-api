@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   app:
     build:
@@ -9,7 +7,7 @@ services:
       - "${APP_PORT}:8080"
     environment:
       # Spring
-      - SERVER_PORT=${PORT}
+      - SERVER_PORT=${APP_PORT}
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE}
 
       # Database
