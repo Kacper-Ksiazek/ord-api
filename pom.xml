@@ -8,11 +8,11 @@
         <version>3.2.3</version>
         <relativePath/>
     </parent>
-    <groupId>com.backend</groupId>
+    <groupId>com.ord</groupId>
     <artifactId>ord-api</artifactId>
     <version>0.1.0</version>
     <name>ord-api</name>
-    <description>backend</description>
+    <description>ord</description>
     <properties>
         <java.version>24</java.version>
         <kotlin.version>2.1.21</kotlin.version>

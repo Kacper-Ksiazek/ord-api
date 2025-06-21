@@ -1,0 +1,18 @@
+package com.ord.features.quickly_added_words.model
+
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.user.model.UserDTO
+import java.time.Instant
+import java.util.*
+
+data class QuicklyAddedWordDTO(
+    val id: UUID = UUID.randomUUID(),
+
+    var word: String,
+    var language: LanguageName,
+
+    var user: UserDTO,
+
+    val createdAt: Instant = Instant.now(),
+    var updatedAt: Instant = Instant.now(),
+)
