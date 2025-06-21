@@ -1,0 +1,40 @@
+services:
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "${APP_PORT}:8080"
+#    environment:
+#      # Spring
+#      - SERVER_PORT=${APP_PORT}
+#      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE}
+#
+#      # Database
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://${ggDB_HOST}:${DB_PORT}/${DB_NAME}
+#      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+#      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+#
+#      # JWT
+#      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+#      - JWT_EXPIRATION_TIME=${JWT_EXPIRATION_TIME}
+#
+#      # OpenAI
+#      - OPEN_AI_KEY=${OPEN_AI_KEY}
+#
+#      # Health Check prop
+#      - ENV_TEST_PROPERTY=${ENV_TEST_PROPERTY}
+
+  db:
+    image: postgres:16.3
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
