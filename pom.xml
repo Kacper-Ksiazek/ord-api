@@ -9,9 +9,9 @@
         <relativePath/>
     </parent>
     <groupId>com.backend</groupId>
-    <artifactId>ord</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>backend</name>
+    <artifactId>ord-api</artifactId>
+    <version>0.1.0</version>
+    <name>ord-api</name>
     <description>backend</description>
     <properties>
         <java.version>24</java.version>
@@ -188,6 +188,7 @@
     </repositories>
 
     <build>
+        <finalName>ord-api</finalName>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
