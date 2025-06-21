@@ -27,6 +27,10 @@ jobs:
       - name: 🧪 Run tests with Maven
         run: |
           mvn -Dtest=com.ord.AllTestsSuite test
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
+          OPEN_AI_KEY: ${{ secrets.OPEN_AI_KEY }}
 
       - name: 🔨 Package app
         run: mvn clean package -DskipTests
