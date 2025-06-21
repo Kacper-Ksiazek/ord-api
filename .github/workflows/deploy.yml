@@ -32,6 +32,8 @@ jobs:
           JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
           OPEN_AI_KEY: ${{ secrets.OPEN_AI_KEY }}
           SPRING_PROFILE: 'test'
+          ENV_TEST_PROPERTY: '1test1'
+
 
       - name: 🔨 Package app
         run: mvn clean package -DskipTests
