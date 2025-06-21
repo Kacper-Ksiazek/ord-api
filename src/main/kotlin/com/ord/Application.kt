@@ -56,10 +56,6 @@ fun convertHerokuDatabaseUrl() {
         System.setProperty("JDBC_DATABASE_URL", jdbcUrl)
         System.setProperty("JDBC_DATABASE_USERNAME", username)
         System.setProperty("JDBC_DATABASE_PASSWORD", password)
-
-        println("url: $jdbcUrl")
-        println("username: $username")
-        println("password: $password")
     } catch (e: Exception) {
         throw IllegalStateException("❌ Failed to parse DATABASE_URL: $databaseUrl", e)
     }
