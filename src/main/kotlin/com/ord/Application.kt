@@ -11,7 +11,7 @@ import java.net.URI
 
 @SpringBootApplication
 @EnableTransactionManagement
-class BackendApplication(
+class Application(
     private val environment: Environment,
     private val jdbcTemplate: JdbcTemplate
 ) : CommandLineRunner {
@@ -56,6 +56,10 @@ fun convertHerokuDatabaseUrl() {
         System.setProperty("JDBC_DATABASE_URL", jdbcUrl)
         System.setProperty("JDBC_DATABASE_USERNAME", username)
         System.setProperty("JDBC_DATABASE_PASSWORD", password)
+
+        println("url: $jdbcUrl")
+        println("username: $username")
+        println("password: $password")
     } catch (e: Exception) {
         throw IllegalStateException("❌ Failed to parse DATABASE_URL: $databaseUrl", e)
     }
@@ -64,6 +68,6 @@ fun convertHerokuDatabaseUrl() {
 fun main(args: Array<String>) {
     convertHerokuDatabaseUrl()
 
-    SpringApplication.run(BackendApplication::class.java, *args)
+    SpringApplication.run(Application::class.java, *args)
 }
 
