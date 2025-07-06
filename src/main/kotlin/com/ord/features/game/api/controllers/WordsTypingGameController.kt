@@ -1,16 +1,12 @@
 package com.ord.features.game.api.controllers
 
+import com.ord.core.auth.security.AuthenticatedUser
 import com.ord.core.user.model.UserEntity
-import com.ord.features.game.model.ongoing_game.OngoingGameEntity
-import com.ord.features.game.model.ongoing_game.OngoingWordsTypingGameDTO
-import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.variants.crossword.dto.api_requests.FinishWordsTypingGameRequest
-import com.ord.features.game.variants.shared.api.GameControllerBase
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
-import com.ord.features.game.variants.shared.dto.api_responses.helpers.computeFinalScore
+import com.ord.features.game.variants.words_typing.api.WordsTypingGameFacade
 import com.ord.features.game.variants.words_typing.dto.api_responses.FinishedWordsTypingGameResponse
 import com.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,73 +16,18 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/games/words-typing")
-class WordsTypingGameController : GameControllerBase() {
-
+class WordsTypingGameController(
+    private val wordsTypingGameFacade: WordsTypingGameFacade
+) {
     @PostMapping("/start")
     fun startWordsTypingGame(
-        request: HttpServletRequest,
+        @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: StartGameRequest
-    ): ResponseEntity<StartedWordsTypingGameResponse> {
-        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
-
-        val (instruction, properAnswers) = aiGameService.generateWordsTypingGame(
-            user = user,
-            language = body.language,
-            difficulty = body.difficulty
-        )
-
-        val savedGame: OngoingGameEntity = ongoingGameService.save(
-            OngoingGameEntity(
-                user = user,
-                type = GameType.WORDS_TYPING,
-
-                language = body.language,
-                difficulty = body.difficulty,
-                properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
-            )
-        )
-
-        return ResponseEntity.ok(
-            StartedWordsTypingGameResponse(
-                gameId = savedGame.id,
-                instruction = instruction,
-                properAnswers = properAnswers
-            )
-        )
-    }
+    ): ResponseEntity<StartedWordsTypingGameResponse> = wordsTypingGameFacade.startGame(user = user, body = body)
 
     @PostMapping("/finish")
     fun finishWordsTypingGame(
-        request: HttpServletRequest,
+        @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: FinishWordsTypingGameRequest
-    ): ResponseEntity<FinishedWordsTypingGameResponse> {
-        val user: UserEntity = jwtService.getAuthenticatedUserOrThrowForbidden(request)
-
-        val game: OngoingWordsTypingGameDTO = ongoingGameMapper.toWordsTypingDTO(
-            entity = ongoingGameService.findByIdOrFail(id = body.gameId, userId = user.id)
-        )
-
-        val reviewedQuestions = gameReviewService.reviewUserAnswersAndUpdateDBPoints(
-            user = user,
-            language = game.language,
-            difficulty = game.difficulty,
-            expectedAnswers = game.properAnswers,
-            userAnswers = body.answers
-        )
-
-        val totalPoints = reviewedQuestions.computeFinalScore()
-
-        ongoingGameService.completeGame(
-            ongoingGame = game,
-            totalPoints = totalPoints,
-            duration = body.duration
-        )
-
-        return ResponseEntity.ok(
-            FinishedWordsTypingGameResponse(
-                totalPoints = totalPoints,
-                properAnswers = reviewedQuestions
-            )
-        )
-    }
+    ): ResponseEntity<FinishedWordsTypingGameResponse> = wordsTypingGameFacade.finishGame(user, body)
 }
