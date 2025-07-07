@@ -24,6 +24,9 @@ import com.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.ord.features.game.variants.crossword.dto.CrosswordInstruction
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.ord.shared.domain.enums.SortDirection
+import com.ord.shared.prompts.AvailablePrompts
+import com.ord.shared.prompts.Prompt
+import com.ord.shared.prompts.toParamString
 import org.springframework.stereotype.Service
 
 @Service
@@ -43,20 +46,24 @@ class AIGenerateGameServiceImpl(
         difficulty: GameDifficulty
     ): GeneratedCrosswordGame {
         val languageProficiency: LanguageProficiencyEntity = user.getProficiencyInLanguage(language)
-
-        val prompt: String = GenerateGamePrompts.generateCrosswordQuestionsPrompt(
-            language = language,
-            difficulty = difficulty,
-            languageProficiency = languageProficiency,
-            wordsToUse = getWordsForGame(
-                user = user,
-                language = language,
-                difficulty.getNumberOfWordsForCrossword(),
-                maximumWordLength = 18
-            ).map { it.origin },
-        )
-
         val amountOfQuestion: Int = difficulty.getNumberOfWordsForCrossword()
+
+        val prompt = Prompt(
+            variant = AvailablePrompts.GAMES_GENERATE_CROSSWORD,
+            params = mapOf(
+                "language" to language.name,
+                "difficulty" to difficulty.name,
+                "proficiency" to languageProficiency.proficiency.name,
+                "words" to getWordsForGame(
+                    user = user,
+                    language = language,
+                    difficulty.getNumberOfWordsForCrossword(),
+                    maximumWordLength = 18
+                ).map { it.origin }.toParamString(tabulated = true),
+                "amountOfQuestions" to amountOfQuestion.toString(),
+            )
+        ).toString()
+
 
         val aiGeneratedCrossword = openAIAPIClientService.makeGameRequest<AIGeneratedCrosswordData>(
             clazz = AIGeneratedCrosswordData::class.java,
@@ -118,9 +125,8 @@ class AIGenerateGameServiceImpl(
             language = language,
             difficulty = difficulty,
             languageProficiency = languageProficiency,
-            wordsToUse = wordsToUse
+            wordsToUse = wordsToUse,
         )
-
 
         val aiGeneratedWordsTypingGame = openAIAPIClientService.makeGameRequest<AIGeneratedWordsTypingData>(
             clazz = AIGeneratedWordsTypingData::class.java,
