@@ -9,7 +9,6 @@ import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.services.GameReviewService
 import com.ord.features.game.services.OngoingGameService
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
-import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 

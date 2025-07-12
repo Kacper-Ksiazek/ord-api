@@ -1,23 +1,9 @@
 Create a word typing game designed for practicing vocabulary in a foreign language.
 The game difficulty is set to **%%difficulty%%**, and the foreign language is **%%language%%** at **%%proficiency%%** level.
 
-Your response must adhere to this TS interface
-
-`Map<string, string>` where each key is a word from the provided list,
-and the corresponding value is a clue that describes the word without including the word itself.
-
-The clues should be in **%%generativeContentLanguage%%**
-You will generate **%%amountOfQuestions%%** such pairs.
-
-Output the result in the following format:
-
-```json
-{ 
-    "word1": "Clue for 1st word in the specified language", 
-    "word2": "Clue for 2nd word", 
-    "wordN": "Clue for n-th word"
-} 
-```
+Your answer must adhere to this structure: `Map<String, String>`, where the keys are words, and the values are their corresponding clues.
+The clues should be in **%%generativeContentLanguage%%** language. Do not include the word itself in the clue, but provide a clear and concise hint that helps the user guess the word.
+Generate **%%amountOfQuestions%%** such pairs.
 
 Words for you to use:
 **%%words%%**

@@ -9,8 +9,7 @@ import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.responses.dto.WordListItem
 import com.ord.core.word.service.WordService
 import com.ord.exceptions.REST.BadRequestException
-import com.ord.features.game.ai.generate.GenerateGamePrompts
-import com.ord.features.game.ai.generate.dto.GeneratedCrosswordGame
+import com.ord.features.game.variants.crossword.ai.dto.GeneratedCrosswordGame
 import com.ord.features.game.ai.generate.dto.GeneratedSentencesWritingGame
 import com.ord.features.game.ai.generate.dto.GeneratedWordsTypingGame
 import com.ord.features.game.ai.generate.llm_api_responses.AIGeneratedCrosswordData
