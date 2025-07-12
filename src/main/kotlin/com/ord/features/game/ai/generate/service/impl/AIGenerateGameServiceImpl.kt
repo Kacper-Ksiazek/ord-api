@@ -48,18 +48,20 @@ class AIGenerateGameServiceImpl(
         val languageProficiency: LanguageProficiencyEntity = user.getProficiencyInLanguage(language)
         val amountOfQuestion: Int = difficulty.getNumberOfWordsForCrossword()
 
+        val words = getWordsForGame(
+            user = user,
+            language = language,
+            difficulty.getNumberOfWordsForCrossword(),
+            maximumWordLength = 18
+        ).map { it.origin }
+
         val prompt = Prompt(
             variant = AvailablePrompts.GAMES_GENERATE_CROSSWORD,
             params = mapOf(
                 "language" to language.name,
                 "difficulty" to difficulty.name,
                 "proficiency" to languageProficiency.proficiency.name,
-                "words" to getWordsForGame(
-                    user = user,
-                    language = language,
-                    difficulty.getNumberOfWordsForCrossword(),
-                    maximumWordLength = 18
-                ).map { it.origin }.toParamString(tabulated = true),
+                "words" to words.toParamString(tabulated = true),
                 "amountOfQuestions" to amountOfQuestion.toString(),
             )
         ).toString()
@@ -112,21 +114,25 @@ class AIGenerateGameServiceImpl(
         difficulty: GameDifficulty
     ): GeneratedWordsTypingGame {
         val languageProficiency: LanguageProficiencyEntity = user.getProficiencyInLanguage(language)
-
         val amountOfQuestion: Int = difficulty.getNumberOfWordsForWordsTypingGame()
 
-        val wordsToUse = getWordsForGame(
+        val words = getWordsForGame(
             user = user,
             language = language,
             n = amountOfQuestion
         ).map { it.origin }
 
-        val prompt: String = GenerateGamePrompts.generateWordsTypingGamePrompt(
-            language = language,
-            difficulty = difficulty,
-            languageProficiency = languageProficiency,
-            wordsToUse = wordsToUse,
-        )
+        val prompt = Prompt(
+            variant = AvailablePrompts.GAMES_GENERATE_WORDS_TYPING,
+            params = mapOf(
+                "language" to language.name,
+                "difficulty" to difficulty.name,
+                "proficiency" to languageProficiency.proficiency.name,
+                "words" to words.toParamString(tabulated = true),
+                "amountOfQuestions" to amountOfQuestion.toString(),
+                "generativeContentLanguage" to languageProficiency.generativeContentLanguage.toString(),
+            )
+        ).toString()
 
         val aiGeneratedWordsTypingGame = openAIAPIClientService.makeGameRequest<AIGeneratedWordsTypingData>(
             clazz = AIGeneratedWordsTypingData::class.java,
@@ -142,11 +148,11 @@ class AIGenerateGameServiceImpl(
             validateResponseBody = { parsedResponseBody ->
                 parsedResponseBody?.values?.size == amountOfQuestion &&
                         parsedResponseBody.keys.distinct().size == amountOfQuestion &&
-                        wordsToUse.all { parsedResponseBody.keys.contains(it) }
+                        words.all { parsedResponseBody.keys.contains(it) }
             },
 
             parseResponseBody = { rawResponseBody ->
-                wordsToUse.associateWith {
+                words.associateWith {
                     (rawResponseBody[it] ?: throw BadRequestException("AI response is not valid! $it not found"))
                 }
             }

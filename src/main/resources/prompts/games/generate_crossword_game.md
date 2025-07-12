@@ -16,4 +16,4 @@ Your response must adhere to this TS interface
 Words for you to use: 
 **%%words%%**
 
-Do not add any additional words to the list! All words in the list are actual words in the ${details.language} language do not correct them.
+Do not add any additional words to the list! All words in the list are actual words in the **%%language%%** language do not correct them.
