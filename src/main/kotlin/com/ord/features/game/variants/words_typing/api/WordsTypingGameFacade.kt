@@ -8,13 +8,16 @@ import com.ord.features.game.variants.crossword.dto.api_requests.FinishWordsTypi
 import com.ord.features.game.variants.shared.api.GameFacadeBase
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.computeFinalScore
+import com.ord.features.game.variants.words_typing.ai.WordsTypingAIGenerateService
 import com.ord.features.game.variants.words_typing.dto.api_responses.FinishedWordsTypingGameResponse
 import com.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
-class WordsTypingGameFacade : GameFacadeBase<
+class WordsTypingGameFacade(
+    private val wordsTypingAIGenerateService: WordsTypingAIGenerateService
+): GameFacadeBase<
         StartedWordsTypingGameResponse,
         FinishWordsTypingGameRequest,
         FinishedWordsTypingGameResponse
@@ -23,7 +26,7 @@ class WordsTypingGameFacade : GameFacadeBase<
         user: UserEntity,
         body: StartGameRequest
     ): ResponseEntity<StartedWordsTypingGameResponse> {
-        val (instruction, properAnswers) = aiGameService.generateWordsTypingGame(
+        val (instruction, properAnswers) = wordsTypingAIGenerateService.generate(
             user = user,
             language = body.language,
             difficulty = body.difficulty

@@ -3,7 +3,7 @@ package com.ord.features.game.variants.crossword.ai
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
-import com.ord.features.game.ai.generate.llm_api_responses.AIGeneratedCrosswordData
+import com.ord.features.game.variants.crossword.ai.dto.AIGeneratedCrosswordData
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.extensions.getNumberOfWordsForCrossword

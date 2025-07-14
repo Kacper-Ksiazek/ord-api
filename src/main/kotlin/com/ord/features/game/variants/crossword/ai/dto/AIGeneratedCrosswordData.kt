@@ -1,4 +1,4 @@
-package com.ord.features.game.ai.generate.llm_api_responses
+package com.ord.features.game.variants.crossword.ai.dto
 
 import com.ord.features.game.variants.crossword.dto.helpers.question.CrosswordQuestion
 

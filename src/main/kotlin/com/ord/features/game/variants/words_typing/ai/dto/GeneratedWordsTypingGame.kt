@@ -1,7 +1,7 @@
-package com.ord.features.game.ai.generate.dto
+package com.ord.features.game.variants.words_typing.ai.dto
 
-import com.ord.features.game.ai.generate.llm_api_responses.AIGeneratedWordsTypingData
 import com.ord.features.game.model.ongoing_game.json.WordsTypingProperAnswers
+import com.ord.features.game.variants.shared.ai.GeneratedGameBase
 import com.ord.features.game.variants.words_typing.dto.WordsTypingInstruction
 import com.ord.features.game.variants.words_typing.dto.WordsTypingQuestion
 import com.ord.shared.utils.hideLetters

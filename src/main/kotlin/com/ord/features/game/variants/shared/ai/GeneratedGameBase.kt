@@ -1,4 +1,4 @@
-package com.ord.features.game.ai.generate.dto
+package com.ord.features.game.variants.shared.ai
 
 data class GeneratedGameBase<GameInstruction, ProperAnswers>(
     val instruction: GameInstruction,
