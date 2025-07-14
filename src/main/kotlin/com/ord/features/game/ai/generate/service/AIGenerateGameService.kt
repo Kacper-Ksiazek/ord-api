@@ -8,12 +8,6 @@ import com.ord.features.game.ai.generate.dto.GeneratedWordsTypingGame
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 
 interface AIGenerateGameService {
-    fun generateCrosswordGame(
-        user: UserEntity,
-        language: LanguageName,
-        difficulty: GameDifficulty
-    ): GeneratedCrosswordGame
-
     fun generateWordsTypingGame(
         user: UserEntity,
         language: LanguageName,

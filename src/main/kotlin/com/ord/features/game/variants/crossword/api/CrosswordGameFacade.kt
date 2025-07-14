@@ -6,6 +6,7 @@ import com.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.services.GameReviewService
+import com.ord.features.game.variants.crossword.ai.CrosswordAIGenerateService
 import com.ord.features.game.variants.crossword.dto.api_responses.FinishedCrosswordGameResponse
 import com.ord.features.game.variants.crossword.dto.api_responses.StartedCrosswordGameResponse
 import com.ord.features.game.variants.shared.api.GameFacadeBase
@@ -19,7 +20,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
-class CrosswordGameFacade : GameFacadeBase<
+class CrosswordGameFacade(
+    private val crosswordAIGenerateGameService: CrosswordAIGenerateService,
+) : GameFacadeBase<
         StartedCrosswordGameResponse,
         FinishCrosswordGameRequest,
         FinishedCrosswordGameResponse>() {
@@ -27,7 +30,7 @@ class CrosswordGameFacade : GameFacadeBase<
         user: UserEntity,
         body: StartGameRequest
     ): ResponseEntity<StartedCrosswordGameResponse> {
-        val (instruction, properAnswers) = aiGameService.generateCrosswordGame(
+        val (instruction, properAnswers) = crosswordAIGenerateGameService.generate(
             user = user,
             language = body.language,
             difficulty = body.difficulty
