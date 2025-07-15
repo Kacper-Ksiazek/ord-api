@@ -27,11 +27,6 @@ class Prompt(
 
             params.entries.forEach { (key, value) ->
                 val param = "**%%$key%%**"
-
-                if (!content.contains(param)) {
-                    throw Exception("Unnecessary prompt param: $key`")
-                }
-
                 content = content.replace(param, value)
             }
 
