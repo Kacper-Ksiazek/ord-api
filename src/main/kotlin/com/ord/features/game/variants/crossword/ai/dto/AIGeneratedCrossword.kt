@@ -17,7 +17,7 @@ import com.ord.features.game.variants.crossword.dto.helpers.question.CrosswordQu
  * @property questions
  *   The list of questions that make up the crossword board.
  */
-data class AIGeneratedCrosswordData(
+data class AIGeneratedCrossword(
     var answer: String,
     val answerExplanation: String,
 
