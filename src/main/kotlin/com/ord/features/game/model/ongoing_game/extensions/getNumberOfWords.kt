@@ -1,7 +1,15 @@
 package com.ord.features.game.model.ongoing_game.extensions
 
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
+import com.ord.features.game.model.ongoing_game.enums.GameType
 
+fun GameDifficulty.getNumberOfQuestions(gameType: GameType): Int = when (gameType) {
+    GameType.CROSSWORD -> getNumberOfWordsForCrossword()
+    GameType.WORDS_TYPING -> getNumberOfWordsForWordsTypingGame()
+    GameType.SENTENCES_WRITING -> getNumberOfSentencesForSentencesWritingGame()
+
+    else -> throw IllegalArgumentException("Unsupported game type: $gameType")
+}
 
 /**
  * Returns the number of words for the crossword based on the difficulty.
