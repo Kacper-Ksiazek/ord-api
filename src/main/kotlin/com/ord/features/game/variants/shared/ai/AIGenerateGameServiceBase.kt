@@ -54,18 +54,19 @@ abstract class AIGenerateGameServiceBase<
         val generativeContentLanguage = languageProficiency.generativeContentLanguage
         val userLanguageProficiency = languageProficiency.proficiency
 
+        val words = getWordsForGame(
+            user = user,
+            language = language,
+            n = amountOfQuestion
+        )
+
         val context = GameContext(
             language = language,
             difficulty = difficulty,
             amountOfQuestion = amountOfQuestion,
             userLanguageProficiency = userLanguageProficiency,
-            generativeContentLanguage = generativeContentLanguage
-        )
-
-        val words = getWordsForGame(
-            user = user,
-            language = language,
-            n = amountOfQuestion
+            generativeContentLanguage = generativeContentLanguage,
+            words = words
         )
 
         val prompt = Prompt(

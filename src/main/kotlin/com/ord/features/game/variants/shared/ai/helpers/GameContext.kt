@@ -15,4 +15,5 @@ data class GameContext(
     val amountOfQuestion: Int,
     val generativeContentLanguage: LanguageName,
     val userLanguageProficiency: LanguageProficiencyLevel,
+    val words: List<String>
 )
