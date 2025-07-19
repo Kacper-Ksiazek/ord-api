@@ -1,8 +1,6 @@
 package com.ord.features.game.variants.crossword.ai
 
 import com.ord.features.game.model.ongoing_game.enums.GameType
-import com.ord.features.game.model.ongoing_game.extensions.getNumberOfQuestions
-import com.ord.features.game.model.ongoing_game.extensions.getNumberOfWordsForCrossword
 import com.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.ord.features.game.variants.crossword.ai.dto.AIGeneratedCrossword
 import com.ord.features.game.variants.crossword.ai.dto.GeneratedCrosswordGame

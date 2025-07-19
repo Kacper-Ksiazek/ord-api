@@ -1,12 +1,13 @@
 package com.ord.features.game.variants.sentences_writing.dto
 
+import com.ord.features.game.variants.sentences_writing.ai.dto.AIGeneratedSentencesWritingGame
 import com.ord.features.game.variants.sentences_writing.dto.helpers.SentencesWritingTopic
 import java.util.*
 
 typealias SentencesWritingInstruction = List<SentencesWritingTopic>
 
-fun Map<String, String>.convertToSentencesWritingInstruction(): SentencesWritingInstruction {
-    return this.map { (word, topic) ->
+fun SentencesWritingInstruction(aiResponse: AIGeneratedSentencesWritingGame): SentencesWritingInstruction {
+    return aiResponse.map { (word, topic) ->
         SentencesWritingTopic(
             id = UUID.randomUUID(),
             word = word,
