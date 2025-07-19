@@ -10,8 +10,8 @@ services:
 #      - SERVER_PORT=${PORT}
 #      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE}
 #
-#      # Database
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://${ggDB_HOST}:${DB_PORT}/${DB_NAME}
+#      # Database TODO: Fix this
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
 #      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
 #      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
 #
