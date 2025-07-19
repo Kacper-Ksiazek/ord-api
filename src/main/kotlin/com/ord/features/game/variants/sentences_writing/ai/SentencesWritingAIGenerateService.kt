@@ -3,8 +3,8 @@ package com.ord.features.game.variants.sentences_writing.ai
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.json.SentencesWritingProperAnswers
-import com.ord.features.game.variants.sentences_writing.ai.dto.AIGeneratedSentencesWritingGame
-import com.ord.features.game.variants.sentences_writing.ai.dto.GeneratedSentencesWritingGame
+import com.ord.features.game.variants.sentences_writing.ai.dto.generate.AIGeneratedSentencesWritingGame
+import com.ord.features.game.variants.sentences_writing.ai.dto.generate.GeneratedSentencesWritingGame
 import com.ord.features.game.variants.sentences_writing.dto.SentencesWritingInstruction
 import com.ord.features.game.variants.shared.ai.AIGenerateGameServiceBase
 import com.ord.features.game.variants.shared.ai.helpers.GameContext
