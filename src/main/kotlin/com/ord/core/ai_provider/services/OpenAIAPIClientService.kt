@@ -1,5 +1,6 @@
 package com.ord.core.ai_provider.services
 
+import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
@@ -21,5 +22,15 @@ interface OpenAIAPIClientService {
 
         parseResponseBody: (responseBody: T) -> T = { it },
         validateResponseBody: (parsedResponseBody: T?) -> Boolean,
+    ): T
+
+    fun <T> makeRequest(
+        clazz: Class<T>,
+
+        prompt: String,
+
+        saveLog: (openAIResponse: OpenAIResponse) -> Unit,
+        validateResponseBody: (parsedResponseBody: T?) -> Boolean,
+        parseResponseBody: (responseBody: T) -> T = { it }
     ): T
 }

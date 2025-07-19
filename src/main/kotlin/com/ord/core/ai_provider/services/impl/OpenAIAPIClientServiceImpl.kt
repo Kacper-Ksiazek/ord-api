@@ -66,14 +66,14 @@ class OpenAIAPIClientServiceImpl(
         )
     }
 
-    private fun <T> makeRequest(
+    override fun <T> makeRequest(
         clazz: Class<T>,
 
         prompt: String,
 
         saveLog: (openAIResponse: OpenAIResponse) -> Unit,
         validateResponseBody: (parsedResponseBody: T?) -> Boolean,
-        parseResponseBody: (responseBody: T) -> T = { it }
+        parseResponseBody: (responseBody: T) -> T
     ): T {
         val openAIRequest = openAIRequestFactory.createRequest(prompt)
 
