@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.auth.jwt.JwtService
 import com.ord.core.user.model.UserEntity
-import com.ord.features.game.ai.generate.service.AIGenerateGameService
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.services.GameReviewService
 import com.ord.features.game.services.OngoingGameService
@@ -36,9 +35,6 @@ abstract class GameFacadeBase<TCreatedGameResponse, TFinishGameRequest, TFinishe
         user: UserEntity,
         body: TFinishGameRequest
     ): ResponseEntity<TFinishedGameResponse>
-
-    @Autowired
-    protected lateinit var aiGameService: AIGenerateGameService
 
     @Autowired
     protected lateinit var jwtService: JwtService
