@@ -4,7 +4,7 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
-import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
+import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
 import com.ord.shared.utils.data_classes.Percentage
 import java.util.*
 
@@ -15,7 +15,7 @@ interface GameReviewService {
         difficulty: GameDifficulty,
         user: UserEntity,
         language: LanguageName
-    ): Set<IdentifiableProperAnswer> {
+    ): Set<IdentifiableReviewedWordAnswer> {
         val reviewedQuestions = reviewUserAnswers(
             expectedAnswers = expectedAnswers,
             userAnswers = userAnswers,
@@ -35,24 +35,40 @@ interface GameReviewService {
         expectedAnswers: Map<UUID, String>,
         userAnswers: Set<WordUserAnswer>,
         difficulty: GameDifficulty
-    ): Set<IdentifiableProperAnswer>
+    ): Set<IdentifiableReviewedWordAnswer>
 
     fun updateDBPointsForManyWords(
         user: UserEntity,
         language: LanguageName,
-        reviewedQuestions: Set<IdentifiableProperAnswer>
+        reviewedQuestions: Set<IdentifiableReviewedWordAnswer>
     )
 
     companion object {
-        fun computeFinalScoreComponent(
-            receivedPoints: Double,
-            maxPoints: Double,
-            moduleRatio: Percentage = Percentage(100),
-            totalPointsForAllModules: Int = 100
+        /**
+         * Calculated the weighted score for a module.
+         * SCORE =/= POINTS
+         *
+         * Score - the score that is saved in the database. Represent a number which is appealing to the end user and makes
+         * comparison between different games easier.
+         *
+         * Points - is the metric solely for algorithmic calculations. It is used to calculate the score of the module in the
+         * most straightforward way.
+         *
+         * @param earnedPoints The total points earned by the user in the module.
+         * @param pointsToEarn The total points that could be earned in the module.
+         * @param moduleWeight The weight of the module as a percentage.
+         * @param gameMaxScore The maximum score for the game. This is saved in the database.
+         */
+        fun calculatedWeightedModuleScore(
+            earnedPoints: Double,
+            pointsToEarn: Double,
+            moduleWeight: Percentage,
+            gameMaxScore: Int,
         ): Int {
-            val points: Double = (receivedPoints / maxPoints) * totalPointsForAllModules
+            val moduleMaxPoints = moduleWeight * gameMaxScore;
+            val pointsRatio = earnedPoints / (pointsToEarn);
 
-            return (moduleRatio * points).toInt()
+            return (pointsRatio * moduleMaxPoints).toInt()
         }
     }
 }

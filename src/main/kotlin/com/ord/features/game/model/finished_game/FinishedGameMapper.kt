@@ -12,8 +12,9 @@ class FinishedGameMapper(
         return FinishedGameDTO(
             id = entity.id,
 
+            score = entity.score,
             duration = entity.duration,
-            finalScore = entity.finalScore,
+            accuracy = entity.accuracy,
 
             type = entity.type,
             grade = entity.grade,
@@ -30,8 +31,9 @@ class FinishedGameMapper(
         return FinishedGameEntity(
             id = dto.id,
 
+            score = dto.score,
             duration = dto.duration,
-            finalScore = dto.finalScore,
+            accuracy = dto.accuracy,
 
             type = dto.type,
             grade = dto.grade,

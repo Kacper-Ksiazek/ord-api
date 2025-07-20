@@ -12,9 +12,9 @@ enum class AnswerScore(
     val wage: Double,
     val dbPoints: Int
 ) {
-    CORRECT(wage = 1.0, dbPoints = GamesConfig.Points.DatabaseValues.CORRECT_ANSWER),
-    HALF_CORRECT(wage = 0.5, dbPoints = GamesConfig.Points.DatabaseValues.HALF_CORRECT_ANSWER),
-    INCORRECT(wage = 0.0, dbPoints = GamesConfig.Points.DatabaseValues.INCORRECT_ANSWER);
+    CORRECT(wage = 1.0, dbPoints = GamesConfig.WordPoints.DatabaseValues.CORRECT_ANSWER),
+    HALF_CORRECT(wage = 0.5, dbPoints = GamesConfig.WordPoints.DatabaseValues.HALF_CORRECT_ANSWER),
+    INCORRECT(wage = 0.0, dbPoints = GamesConfig.WordPoints.DatabaseValues.INCORRECT_ANSWER);
 
     companion object {
         /**

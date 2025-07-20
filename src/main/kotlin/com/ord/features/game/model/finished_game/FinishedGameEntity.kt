@@ -24,8 +24,11 @@ data class FinishedGameEntity(
     @Column(name = "duration", nullable = false)
     var duration: String,
 
-    @Column(name = "final_score", nullable = false)
-    var finalScore: Int,
+    @Column(name = "score", nullable = false)
+    var score: Int,
+
+    @Column(name = "accuracy", nullable = false)
+    var accuracy: Float,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", columnDefinition = "game_type(0, 0) not null", nullable = false)

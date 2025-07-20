@@ -605,7 +605,7 @@ class TestCrosswordGameController @Autowired constructor(
                 response: FinishedCrosswordGameResponse,
                 alteredAnswers: Set<AlteredWordProperAnswer>
             ) {
-                response.properQuestionsAnswers.assertPointsForMistakesWereAssignedProperly(alteredAnswers)
+                response.reviewedAnswers.questions.assertPointsForMistakesWereAssignedProperly(alteredAnswers)
             }
 
             private fun assertDBPointsWereUpdatedProperly(
@@ -616,7 +616,7 @@ class TestCrosswordGameController @Autowired constructor(
                     words = crosswordSavedInDb.properAnswers.questions.values.toSet(),
                     language = crosswordSavedInDb.language,
                     userId = authenticatedUser.userInfo.id,
-                    properAnswers = response.properQuestionsAnswers,
+                    properAnswers = response.reviewedAnswers.questions,
                     alteredAnswers = alteredAnswers
                 )
             }
@@ -652,7 +652,7 @@ class TestCrosswordGameController @Autowired constructor(
             fun `200 - Grade can be achieved - S`() {
                 val response = finishCrosswordGame()
 
-                response.finalScore shouldBe 100.0
+                response.score shouldBe GamesConfig.GameScoring.MaxScore.CROSSWORD
                 response.grade shouldBe GameGrade.S
             }
 
@@ -717,9 +717,9 @@ class TestCrosswordGameController @Autowired constructor(
                     finalWord = alteredFinalAnswer
                 )
 
-                response.properFinalWord.expectedAnswer shouldBe crosswordSavedInDb.properAnswers.finalWord
-                response.properFinalWord.userAnswer shouldBe alteredFinalAnswer
-                response.properFinalWord.score shouldBe AnswerScore.INCORRECT
+                response.reviewedAnswers.finalWord.expectedAnswer shouldBe crosswordSavedInDb.properAnswers.finalWord
+                response.reviewedAnswers.finalWord.userAnswer shouldBe alteredFinalAnswer
+                response.reviewedAnswers.finalWord.score shouldBe AnswerScore.INCORRECT
             }
 
             @Test
@@ -798,7 +798,7 @@ class TestCrosswordGameController @Autowired constructor(
                 wordRepository.saveAll(
                     wordRepository.findAllForUser(authenticatedUser.userInfo.id).map {
                         it.copy(
-                            points = GamesConfig.Points.COMPLETE_WORD_THRESHOLD - 1
+                            points = GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD - 1
                         )
                     }
                 )
@@ -821,7 +821,7 @@ class TestCrosswordGameController @Autowired constructor(
                     .findAllForUser(authenticatedUser.userInfo.id)
                     .filter { it.origin in wordsUsedInGame }
                     .forEach {
-                        it.points shouldBeGreaterThanOrEqual GamesConfig.Points.COMPLETE_WORD_THRESHOLD
+                        it.points shouldBeGreaterThanOrEqual GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
                         it.isCompleted shouldBe true
                     }
             }

@@ -1,7 +1,7 @@
 package com.ord.testing_utils.extensions
 
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
-import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
+import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
 import com.ord.testing_utils.dto.AlteredWordProperAnswer
 import io.kotest.matchers.shouldBe
 import java.util.*
@@ -22,7 +22,7 @@ fun Map<UUID, String>.getPerfectAnswersForQuestions(
     }.toSet()
 }
 
-fun Set<IdentifiableProperAnswer>.assertPointsForMistakesWereAssignedProperly(
+fun Set<IdentifiableReviewedWordAnswer>.assertPointsForMistakesWereAssignedProperly(
     alteredAnswers: Set<AlteredWordProperAnswer>
 ) {
     this.forEach { properAnswer ->

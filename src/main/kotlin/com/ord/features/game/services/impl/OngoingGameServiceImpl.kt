@@ -7,6 +7,7 @@ import com.ord.features.game.model.ongoing_game.OngoingGameDTO
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.enums.GameResult
+import com.ord.features.game.model.ongoing_game.extensions.cancel
 import com.ord.features.game.model.ongoing_game.extensions.finish
 import com.ord.features.game.repositories.OngoingGameRepository
 import com.ord.features.game.services.FinishedGameService
@@ -28,36 +29,36 @@ class OngoingGameServiceImpl(
     @Transactional
     override fun completeGame(
         ongoingGameEntity: OngoingGameEntity,
-        totalPoints: Int,
+        score: Int,
         duration: String
     ): FinishedGameEntity {
-        return finishedGameService.save(
-            ongoingGameEntity.finish(totalPoints, duration, GameResult.COMPLETED)
-        ).let {
-            val userId = it.user.id
+        return finishedGameService
+            .save(ongoingGameEntity.finish(score, duration))
+            .let {
+                val userId = it.user.id
 
-            userActivityLogService.log(
-                userId = userId,
-                type = it.getUserActivityType(),
-                language = it.language,
-                difficulty = it.difficulty
-            )
+                userActivityLogService.log(
+                    userId = userId,
+                    type = it.getUserActivityType(),
+                    language = it.language,
+                    difficulty = it.difficulty
+                )
 
-            this.deleteById(id = ongoingGameEntity.id, userId = userId)
+                this.deleteById(id = ongoingGameEntity.id, userId = userId)
 
-            it
-        }
+                it
+            }
     }
 
     @Transactional
     override fun completeGame(
         ongoingGame: OngoingGameDTO<*>,
-        totalPoints: Int,
+        score: Int,
         duration: String
     ) {
         this.completeGame(
             ongoingGameEntity = ongoingGameMapper.toEntity(ongoingGame),
-            totalPoints,
+            score,
             duration
         )
     }
@@ -74,9 +75,7 @@ class OngoingGameServiceImpl(
                     throw NotFoundException("Ongoing game with ID $ongoingGameId not found for the current user")
                 }
 
-                finishedGameService.save(
-                    it.finish(finalScore = 0, duration, result = GameResult.CANCELLED)
-                )
+                finishedGameService.save(it.cancel(duration))
 
                 userActivityLogService.log(
                     userId = userId,

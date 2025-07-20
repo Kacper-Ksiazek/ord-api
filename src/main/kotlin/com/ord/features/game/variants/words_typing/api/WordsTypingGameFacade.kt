@@ -1,5 +1,6 @@
 package com.ord.features.game.variants.words_typing.api
 
+import com.ord.config.GamesConfig
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingWordsTypingGameDTO
@@ -7,17 +8,18 @@ import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.variants.crossword.dto.api_requests.FinishWordsTypingGameRequest
 import com.ord.features.game.variants.shared.api.GameFacadeBase
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
-import com.ord.features.game.variants.shared.dto.api_responses.helpers.computeFinalScore
+import com.ord.features.game.variants.shared.dto.api_responses.helpers.calculatedWeightedModuleScore
 import com.ord.features.game.variants.words_typing.ai.WordsTypingAIGenerateService
 import com.ord.features.game.variants.words_typing.dto.api_responses.FinishedWordsTypingGameResponse
 import com.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
+import com.ord.shared.utils.data_classes.Percentage
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
 class WordsTypingGameFacade(
     private val wordsTypingAIGenerateService: WordsTypingAIGenerateService
-): GameFacadeBase<
+) : GameFacadeBase<
         StartedWordsTypingGameResponse,
         FinishWordsTypingGameRequest,
         FinishedWordsTypingGameResponse
@@ -68,18 +70,22 @@ class WordsTypingGameFacade(
             userAnswers = body.answers
         )
 
-        val totalPoints = reviewedQuestions.computeFinalScore()
+        val score = reviewedQuestions.calculatedWeightedModuleScore(
+            gameMaxScore = GamesConfig.GameScoring.MaxScore.WORDS_TYPING,
+            moduleWeight = Percentage(100.0)
+        )
 
         ongoingGameService.completeGame(
             ongoingGame = game,
-            totalPoints = totalPoints,
+            score = score,
             duration = body.duration
         )
 
         return ResponseEntity.ok(
             FinishedWordsTypingGameResponse(
-                totalPoints = totalPoints,
-                properAnswers = reviewedQuestions
+                score = score,
+                maxScore = GamesConfig.GameScoring.MaxScore.WORDS_TYPING,
+                reviewedAnswers = reviewedQuestions
             )
         )
     }

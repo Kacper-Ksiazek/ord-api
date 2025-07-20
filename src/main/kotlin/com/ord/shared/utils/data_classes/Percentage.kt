@@ -11,7 +11,7 @@ class Percentage(
     }
 
     override fun toString(): String {
-        return "$value%"
+        return "%.2f%%".format(value)
     }
 
     operator fun plus(other: Percentage): Percentage {

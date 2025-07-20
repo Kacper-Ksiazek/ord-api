@@ -427,7 +427,7 @@ class TestWordsTypingGameController @Autowired constructor(
                 response: FinishedWordsTypingGameResponse,
                 alteredAnswers: Set<AlteredWordProperAnswer>
             ) {
-                response.properAnswers.assertPointsForMistakesWereAssignedProperly(alteredAnswers)
+                response.reviewedAnswers.assertPointsForMistakesWereAssignedProperly(alteredAnswers)
             }
 
             private fun assertDBPointsWereUpdatedProperly(
@@ -438,7 +438,7 @@ class TestWordsTypingGameController @Autowired constructor(
                     words = gameSavedInDb.properAnswers.values.toSet(),
                     language = gameSavedInDb.language,
                     userId = authenticatedUser.userInfo.id,
-                    properAnswers = response.properAnswers,
+                    properAnswers = response.reviewedAnswers,
                     alteredAnswers = alteredAnswers
                 )
             }
@@ -474,7 +474,7 @@ class TestWordsTypingGameController @Autowired constructor(
             fun `200 - Grade can be achieved - S`() {
                 val response = finishWordsTypingGame()
 
-                response.finalScore shouldBe 100.0
+                response.score shouldBe GamesConfig.GameScoring.MaxScore.WORDS_TYPING
                 response.grade shouldBe GameGrade.S
             }
 
@@ -605,7 +605,7 @@ class TestWordsTypingGameController @Autowired constructor(
                 wordRepository.saveAll(
                     wordRepository.findAllForUser(authenticatedUser.userInfo.id).map {
                         it.copy(
-                            points = GamesConfig.Points.COMPLETE_WORD_THRESHOLD - 1
+                            points = GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD - 1
                         )
                     }
                 )
@@ -628,7 +628,7 @@ class TestWordsTypingGameController @Autowired constructor(
                     .findAllForUser(authenticatedUser.userInfo.id)
                     .filter { it.origin in wordsUsedInGame }
                     .forEach {
-                        it.points shouldBeGreaterThanOrEqual GamesConfig.Points.COMPLETE_WORD_THRESHOLD
+                        it.points shouldBeGreaterThanOrEqual GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
                         it.isCompleted shouldBe true
                     }
             }

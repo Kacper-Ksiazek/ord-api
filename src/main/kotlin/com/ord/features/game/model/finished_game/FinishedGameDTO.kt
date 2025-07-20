@@ -13,7 +13,8 @@ data class FinishedGameDTO(
     val id: UUID = UUID.randomUUID(),
 
     val duration: String,
-    val finalScore: Int,
+    val score: Int,
+    val accuracy: Float,
 
     val type: GameType,
     val grade: GameGrade,

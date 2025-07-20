@@ -1,6 +1,6 @@
 package com.ord.features.game.variants.sentences_writing.dto
 
-import com.ord.features.game.variants.sentences_writing.ai.dto.AIGeneratedSentencesWritingGame
+import com.ord.features.game.variants.sentences_writing.ai.dto.generate.AIGeneratedSentencesWritingGame
 import com.ord.features.game.variants.sentences_writing.dto.helpers.SentencesWritingTopic
 import java.util.*
 
