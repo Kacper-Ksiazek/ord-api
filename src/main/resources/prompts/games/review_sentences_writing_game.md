@@ -22,13 +22,13 @@ interface ScoringCriteria {
     comment?: string // If clarification is NOT needed, then do not add this field at all
 }
 
-interface ExpectedResult {
-    word: string,
+type ExpectedResult = {
+    topicId: string, // UUID of the topic
     evaluationCriteria: {
         "answerLength": ScoringCriteria,
         "vocabulary": ScoringCriteria,
         "correctWordUsage": ScoringCriteria
     },
-    suggestedCorrectAnswer: string | null // If user answer is valid, then leave this as null
-}
+    suggestedCorrectAnswer: string | null // If user answer is 100% correct, then leave this as null
+}[]
 ```

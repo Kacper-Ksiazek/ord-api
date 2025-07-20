@@ -4,6 +4,7 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.variants.sentences_writing.ai.SentencesWritingAIGenerateService
+import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameRequest
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.StartedSentencesWritingGameResponse
 import com.ord.features.game.variants.shared.api.GameFacadeBase
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
@@ -15,7 +16,7 @@ class SentencesWritingGameFacade(
     private val sentencesWritingAIGenerateService: SentencesWritingAIGenerateService
 ) : GameFacadeBase<
         StartedSentencesWritingGameResponse,
-        Int,
+        FinishSentencesWritingGameRequest,
         Int>(
 ) {
     override fun startGame(
@@ -50,7 +51,7 @@ class SentencesWritingGameFacade(
 
     override fun finishGame(
         user: UserEntity,
-        body: Int
+        body: FinishSentencesWritingGameRequest
     ): ResponseEntity<Int> {
         TODO("Not yet implemented")
     }

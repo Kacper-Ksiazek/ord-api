@@ -4,7 +4,7 @@ import com.ord.features.game.variants.shared.dto.api_responses.FinishedGameRespo
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.ReviewedWordAnswer
 
-class CrosswordReviewedAnswers(
+data class CrosswordReviewedAnswers(
     val finalWord: ReviewedWordAnswer,
     val questions: Set<IdentifiableReviewedWordAnswer>
 )
