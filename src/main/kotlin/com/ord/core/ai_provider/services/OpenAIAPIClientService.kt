@@ -8,22 +8,6 @@ import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 
 interface OpenAIAPIClientService {
-    fun <T> makeGameRequest(
-        clazz: Class<T>,
-
-        prompt: String,
-
-        gameType: GameType,
-        language: LanguageName,
-        difficulty: GameDifficulty,
-        consumptionType: GamesGPTTokensConsumptionType,
-
-        user: UserEntity,
-
-        parseResponseBody: (responseBody: T) -> T = { it },
-        validateResponseBody: (parsedResponseBody: T?) -> Boolean,
-    ): T
-
     fun <T> makeRequest(
         clazz: Class<T>,
 

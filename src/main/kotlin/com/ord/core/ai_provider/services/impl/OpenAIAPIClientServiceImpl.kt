@@ -23,48 +23,10 @@ class OpenAIAPIClientServiceImpl(
     private val openAIRequestFactory: OpenAIRequestFactory,
     private val restClientConfig: RestClientConfig,
     private val openAIProperties: OpenAIProperties,
-    private val gameTokensUsageService: GameTokensUsageService,
 ) : OpenAIAPIClientService {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
-
-    // TODO: Move to the GameServiceBase
-    override fun <T> makeGameRequest(
-        clazz: Class<T>,
-        prompt: String,
-
-        gameType: GameType,
-        language: LanguageName,
-        difficulty: GameDifficulty,
-        consumptionType: GamesGPTTokensConsumptionType,
-
-        user: UserEntity,
-
-        parseResponseBody: (T) -> T,
-        validateResponseBody: (T?) -> Boolean
-    ): T {
-        return makeRequest(
-            prompt = prompt,
-            validateResponseBody = validateResponseBody,
-            parseResponseBody = parseResponseBody,
-            clazz = clazz,
-            saveLog = {
-                gameTokensUsageService.save(
-                    user = user,
-
-                    gameDifficulty = difficulty,
-                    language = language,
-
-                    gameType = gameType,
-                    consumptionType = consumptionType,
-
-                    inputTokens = it.usage.input_tokens,
-                    outputTokens = it.usage.output_tokens
-                )
-            },
-        )
-    }
 
     override fun <T> makeRequest(
         clazz: Class<T>,
