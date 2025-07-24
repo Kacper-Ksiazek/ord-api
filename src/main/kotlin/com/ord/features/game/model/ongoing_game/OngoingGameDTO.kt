@@ -5,6 +5,7 @@ import com.ord.core.user.model.UserDTO
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
+import com.ord.features.game.model.ongoing_game.json.SentencesWritingProperAnswers
 import com.ord.features.game.model.ongoing_game.json.WordsTypingProperAnswers
 import java.time.Instant
 import java.util.*
@@ -26,3 +27,4 @@ data class OngoingGameDTO<TProperAnswers>(
 
 typealias OngoingCrosswordGameDTO = OngoingGameDTO<CrosswordProperAnswers>
 typealias OngoingWordsTypingGameDTO = OngoingGameDTO<WordsTypingProperAnswers>
+typealias OngoingSentencesWritingGameDTO = OngoingGameDTO<SentencesWritingProperAnswers>
