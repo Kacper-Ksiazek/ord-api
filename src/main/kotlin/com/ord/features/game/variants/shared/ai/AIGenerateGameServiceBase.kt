@@ -1,6 +1,5 @@
 package com.ord.features.game.variants.shared.ai
 
-import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
@@ -28,7 +27,13 @@ abstract class AIGenerateGameServiceBase<
     private val prompt: AvailablePrompts,
     private val aiResponseClazz: KClass<TAIResponse>,
     private val promptExtraParams: Map<String, String> = emptyMap()
-) {
+) : AIGameServiceBase() {
+    @Autowired
+    protected lateinit var wordService: WordService
+
+    @Autowired
+    protected lateinit var languageProficiencyService: LanguageProficiencyService
+
     abstract fun parseAIResponse(
         responseBody: TAIResponse,
         context: GameContext
@@ -49,10 +54,12 @@ abstract class AIGenerateGameServiceBase<
         language: LanguageName,
         difficulty: GameDifficulty,
     ): TGeneratedGame {
-        val languageProficiency: LanguageProficiencyEntity = user.getProficiencyInLanguage(language)
         val amountOfQuestion: Int = difficulty.getNumberOfQuestions(gameType)
-        val generativeContentLanguage = languageProficiency.generativeContentLanguage
+        val languageProficiency: LanguageProficiencyEntity =
+            languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, language)
+
         val userLanguageProficiency = languageProficiency.proficiency
+        val generativeContentLanguage = languageProficiency.generativeContentLanguage
 
         val words = getWordsForGame(
             user = user,
@@ -81,7 +88,7 @@ abstract class AIGenerateGameServiceBase<
             ) + promptExtraParams
         )
 
-        val aiResponse = openAIAPIClientService.makeGameRequest<TAIResponse>(
+        val aiResponse = makeGameAIRequest<TAIResponse>(
             clazz = aiResponseClazz.java,
 
             user = user,
@@ -97,20 +104,6 @@ abstract class AIGenerateGameServiceBase<
         )
 
         return refineAIResponse(aiResponse, context)
-    }
-
-    @Autowired
-    protected lateinit var wordService: WordService
-
-    @Autowired
-    protected lateinit var openAIAPIClientService: OpenAIAPIClientService
-
-    @Autowired
-    protected lateinit var languageProficiencyService: LanguageProficiencyService
-
-    protected fun UserEntity.getProficiencyInLanguage(language: LanguageName): LanguageProficiencyEntity {
-        return languageProficiencyService
-            .findUserProficiencyInLanguageOrThrow(this.id, language)
     }
 
     protected fun getWordsForGame(
