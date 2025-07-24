@@ -6,10 +6,12 @@ import java.util.UUID
 
 data class ReviewedSentencesWritingSingleTopic(
     val id: UUID,
-    val evaluationCriteria: SentencesWritingEvaluationCriteria,
-    val points: Int,
-    val maxPoints: Int,
-    val suggestedCorrectAnswer: String?
+    val word: String,
+    val topic: String,
+    val score: Int,
+    val maxScore: Int,
+    val suggestedCorrectAnswer: String?,
+    val evaluationCriteria: SentencesWritingEvaluationCriteria
 )
 
-typealias FinishSentencesWritingGameResponse = FinishedGameResponse<Set<ReviewedSentencesWritingSingleTopic>>
+typealias FinishedSentencesWritingGameResponse = FinishedGameResponse<Set<ReviewedSentencesWritingSingleTopic>>

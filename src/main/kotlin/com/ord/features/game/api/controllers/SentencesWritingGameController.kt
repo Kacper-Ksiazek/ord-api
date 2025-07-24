@@ -3,6 +3,7 @@ package com.ord.features.game.api.controllers
 import com.ord.core.auth.security.AuthenticatedUser
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.variants.sentences_writing.api.SentencesWritingGameFacade
+import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameRequest
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.StartedSentencesWritingGameResponse
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import jakarta.validation.Valid
@@ -27,6 +28,6 @@ class SentencesWritingGameController(
     @PostMapping("/finish")
     fun finishWordsTypingGame(
         @AuthenticatedUser user: UserEntity,
-        @Valid @RequestBody body: Int
+        @Valid @RequestBody body: FinishSentencesWritingGameRequest
     ): ResponseEntity<Int> = sentencesWritingGameFacade.finishGame(user, body)
 }

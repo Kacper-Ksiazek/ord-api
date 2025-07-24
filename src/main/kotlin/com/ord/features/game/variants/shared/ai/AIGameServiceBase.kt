@@ -27,7 +27,7 @@ abstract class AIGameServiceBase {
 
         user: UserEntity,
 
-        parseResponseBody: (T) -> T,
+        parseResponseBody: (T) -> T = { it },
         validateResponseBody: (T?) -> Boolean
     ): T {
         return openAIAPIClientService.makeRequest(

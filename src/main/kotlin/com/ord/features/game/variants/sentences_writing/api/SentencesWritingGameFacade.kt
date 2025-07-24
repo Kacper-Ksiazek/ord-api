@@ -3,7 +3,9 @@ package com.ord.features.game.variants.sentences_writing.api
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.enums.GameType
+import com.ord.features.game.services.GameReviewService
 import com.ord.features.game.variants.sentences_writing.ai.SentencesWritingAIGenerateService
+import com.ord.features.game.variants.sentences_writing.ai.SentencesWritingAIReviewService
 import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameRequest
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.StartedSentencesWritingGameResponse
 import com.ord.features.game.variants.shared.api.GameFacadeBase
@@ -13,7 +15,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class SentencesWritingGameFacade(
-    private val sentencesWritingAIGenerateService: SentencesWritingAIGenerateService
+    private val sentencesWritingAIReviewService: SentencesWritingAIReviewService,
+    private val sentencesWritingAIGenerateService: SentencesWritingAIGenerateService,
 ) : GameFacadeBase<
         StartedSentencesWritingGameResponse,
         FinishSentencesWritingGameRequest,
@@ -53,6 +56,8 @@ class SentencesWritingGameFacade(
         user: UserEntity,
         body: FinishSentencesWritingGameRequest
     ): ResponseEntity<Int> {
-        TODO("Not yet implemented")
+        val response = sentencesWritingAIReviewService.review(user, body)
+
+        return ResponseEntity.ok().build()
     }
 }
