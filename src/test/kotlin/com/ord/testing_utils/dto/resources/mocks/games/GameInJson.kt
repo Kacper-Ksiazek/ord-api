@@ -1,4 +1,4 @@
-package com.ord.testing_utils.dto.resources.mocks
+package com.ord.testing_utils.dto.resources.mocks.games
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
