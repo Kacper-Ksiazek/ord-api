@@ -33,7 +33,7 @@ class SentencesWritingAIReviewService(
     fun review(
         user: UserEntity,
         body: FinishSentencesWritingGameRequest
-    ): ResponseEntity<FinishedSentencesWritingGameResponse> {
+    ): FinishedSentencesWritingGameResponse {
         val ongoingGame: OngoingSentencesWritingGameDTO = ongoingGameMapper.toSentencesWritingDTO(
             ongoingGameService.findByIdOrFail(body.gameId, user.id)
         )
@@ -93,13 +93,10 @@ class SentencesWritingAIReviewService(
         val gameReviewUrl =
             "${serverProperties.servlet.contextPath}/api/v1/games/sentences-writing/review/${ongoingGame.id}"
 
-        return ResponseEntity.ok(
-            FinishedSentencesWritingGameResponse(
-                score = totalScore,
-                maxScore = GamesConfig.GameScoring.MaxScore.SENTENCES_WRITING,
-
-                reviewedAnswers = reviewedAnswers,
-            )
+        return FinishedSentencesWritingGameResponse(
+            score = totalScore,
+            maxScore = GamesConfig.GameScoring.MaxScore.SENTENCES_WRITING,
+            reviewedAnswers = reviewedAnswers
         )
     }
 

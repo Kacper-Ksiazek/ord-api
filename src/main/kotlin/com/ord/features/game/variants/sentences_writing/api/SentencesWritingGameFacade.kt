@@ -7,6 +7,7 @@ import com.ord.features.game.services.GameReviewService
 import com.ord.features.game.variants.sentences_writing.ai.SentencesWritingAIGenerateService
 import com.ord.features.game.variants.sentences_writing.ai.SentencesWritingAIReviewService
 import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameRequest
+import com.ord.features.game.variants.sentences_writing.dto.api_responses.FinishedSentencesWritingGameResponse
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.StartedSentencesWritingGameResponse
 import com.ord.features.game.variants.shared.api.GameFacadeBase
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
@@ -20,7 +21,8 @@ class SentencesWritingGameFacade(
 ) : GameFacadeBase<
         StartedSentencesWritingGameResponse,
         FinishSentencesWritingGameRequest,
-        Int>(
+        FinishedSentencesWritingGameResponse
+        >(
 ) {
     override fun startGame(
         user: UserEntity,
@@ -55,9 +57,9 @@ class SentencesWritingGameFacade(
     override fun finishGame(
         user: UserEntity,
         body: FinishSentencesWritingGameRequest
-    ): ResponseEntity<Int> {
-        val response = sentencesWritingAIReviewService.review(user, body)
-
-        return ResponseEntity.ok().build()
+    ): ResponseEntity<FinishedSentencesWritingGameResponse> {
+        return ResponseEntity.ok(
+            sentencesWritingAIReviewService.review(user, body)
+        )
     }
 }
