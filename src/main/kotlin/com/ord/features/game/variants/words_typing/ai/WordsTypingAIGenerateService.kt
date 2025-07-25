@@ -1,5 +1,6 @@
 package com.ord.features.game.variants.words_typing.ai
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.variants.shared.ai.AIGenerateGameServiceBase
@@ -16,7 +17,7 @@ class WordsTypingAIGenerateService : AIGenerateGameServiceBase<
         >(
     gameType = GameType.WORDS_TYPING,
     prompt = AvailablePrompts.GAMES_GENERATE_WORDS_TYPING,
-    aiResponseClazz = AIGeneratedWordsTypingData::class
+    aiResponseTypeReference = object : TypeReference<AIGeneratedWordsTypingData>() {},
 ) {
     override fun parseAIResponse(
         responseBody: AIGeneratedWordsTypingData,

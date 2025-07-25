@@ -1,5 +1,6 @@
 package com.ord.core.ai_provider.services
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
@@ -9,7 +10,7 @@ import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.en
 
 interface OpenAIAPIClientService {
     fun <T> makeRequest(
-        clazz: Class<T>,
+        aiResponseTypeReference: TypeReference<T>,
 
         prompt: String,
 

@@ -1,5 +1,6 @@
 package com.ord.features.game.variants.shared.ai
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
@@ -25,7 +26,7 @@ abstract class AIGenerateGameServiceBase<
         >(
     private val gameType: GameType,
     private val prompt: AvailablePrompts,
-    private val aiResponseClazz: KClass<TAIResponse>,
+    private val aiResponseTypeReference: TypeReference<TAIResponse>,
     private val promptExtraParams: Map<String, String> = emptyMap()
 ) : AIGameServiceBase() {
     @Autowired
@@ -89,7 +90,7 @@ abstract class AIGenerateGameServiceBase<
         )
 
         val aiResponse = makeGameAIRequest<TAIResponse>(
-            clazz = aiResponseClazz.java,
+            aiResponseTypeReference = aiResponseTypeReference,
 
             user = user,
             prompt = prompt.toString(),

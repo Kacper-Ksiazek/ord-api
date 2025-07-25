@@ -1,5 +1,6 @@
 package com.ord.features.game.variants.shared.ai
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
@@ -17,7 +18,7 @@ abstract class AIGameServiceBase {
     protected lateinit var openAIAPIClientService: OpenAIAPIClientService
 
     fun <T> makeGameAIRequest(
-        clazz: Class<T>,
+        aiResponseTypeReference: TypeReference<T>,
         prompt: String,
 
         gameType: GameType,
@@ -34,7 +35,7 @@ abstract class AIGameServiceBase {
             prompt = prompt,
             validateResponseBody = validateResponseBody,
             parseResponseBody = parseResponseBody,
-            clazz = clazz,
+            aiResponseTypeReference = aiResponseTypeReference,
             saveLog = {
                 gameTokensUsageService.save(
                     user = user,

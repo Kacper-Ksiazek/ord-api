@@ -1,5 +1,6 @@
 package com.ord.features.game.variants.crossword.ai
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.ord.features.game.variants.crossword.ai.dto.AIGeneratedCrossword
@@ -17,7 +18,7 @@ class CrosswordAIGenerateService() : AIGenerateGameServiceBase<
         >(
     gameType = GameType.CROSSWORD,
     prompt = AvailablePrompts.GAMES_GENERATE_CROSSWORD,
-    aiResponseClazz = AIGeneratedCrossword::class
+    aiResponseTypeReference = object : TypeReference<AIGeneratedCrossword>() {},
 ) {
     override fun parseAIResponse(responseBody: AIGeneratedCrossword, context: GameContext): AIGeneratedCrossword {
         val expectedNumberOfQuestions = context.amountOfQuestion

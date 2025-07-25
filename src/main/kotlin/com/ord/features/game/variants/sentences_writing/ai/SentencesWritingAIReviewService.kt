@@ -1,5 +1,6 @@
 package com.ord.features.game.variants.sentences_writing.ai
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.config.GamesConfig
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
@@ -54,7 +55,7 @@ class SentencesWritingAIReviewService(
         )
 
         val aiReviewedGame: AIReviewedSentencesWritingGame = makeGameAIRequest(
-            clazz = AIReviewedSentencesWritingGame::class.java,
+            aiResponseTypeReference = object : TypeReference<AIReviewedSentencesWritingGame>() {},
             prompt = prompt.toString(),
 
             gameType = GameType.SENTENCES_WRITING,

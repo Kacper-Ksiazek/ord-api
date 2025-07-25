@@ -1,5 +1,6 @@
 package com.ord.features.game.variants.sentences_writing.ai
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.json.SentencesWritingProperAnswers
@@ -18,7 +19,7 @@ class SentencesWritingAIGenerateService() : AIGenerateGameServiceBase<
         >(
     gameType = GameType.SENTENCES_WRITING,
     prompt = AvailablePrompts.GAMES_GENERATE_SENTENCES_WRITING,
-    aiResponseClazz = AIGeneratedSentencesWritingGame::class,
+    aiResponseTypeReference = object : TypeReference<AIGeneratedSentencesWritingGame>() {},
 ) {
     override fun parseAIResponse(
         responseBody: AIGeneratedSentencesWritingGame,

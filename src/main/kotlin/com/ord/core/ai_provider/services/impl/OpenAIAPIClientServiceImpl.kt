@@ -14,6 +14,7 @@ import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.en
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.service.GameTokensUsageService
 import com.ord.shared.utils.Console
 import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Service
@@ -29,7 +30,7 @@ class OpenAIAPIClientServiceImpl(
 
 
     override fun <T> makeRequest(
-        clazz: Class<T>,
+        aiResponseTypeReference: TypeReference<T>,
 
         prompt: String,
 
@@ -52,7 +53,7 @@ class OpenAIAPIClientServiceImpl(
             }
 
             parsedResponseBody = try {
-                parseResponseBody(jsonObjectMapper.readValue(response.data, clazz))
+                parseResponseBody(jsonObjectMapper.readValue(response.data, aiResponseTypeReference))
             } catch (e: Exception) {
                 // TODO: Hide behind "debug" feature flag
                 Console.printRed("\n\uD83D\uDEA8 [OPENAI REQUEST PARSING ERROR] Exception: ${e.message}")
