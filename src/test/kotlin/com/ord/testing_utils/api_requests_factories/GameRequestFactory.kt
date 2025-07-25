@@ -17,7 +17,9 @@ private fun GameType.getSlugName(): String {
     return when (this) {
         GameType.CROSSWORD -> "crossword"
         GameType.WORDS_TYPING -> "words-typing"
-        else -> throw UnsupportedOperationException()
+        GameType.SENTENCES_WRITING -> "sentences-writing"
+
+        else -> throw UnsupportedOperationException("No slug name defined for game type: $this")
     }
 }
 
