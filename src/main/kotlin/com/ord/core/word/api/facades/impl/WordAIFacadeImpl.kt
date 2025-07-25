@@ -1,5 +1,8 @@
 package com.ord.core.word.api.facades.impl
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ord.config.RestClientConfig
 import com.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
@@ -7,16 +10,17 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.user.model.UserEntity
-import com.ord.core.word.ai.PromptsWords
 import com.ord.core.word.api.facades.WordAIFacade
 import com.ord.core.word.api.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.responses.dto.AIGeneratedWordManual
+import com.ord.core.word.model.enums.WordExtraMark
+import com.ord.core.word.model.enums.WordType
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.enums.WordsGPTTokensConsumptionType
 import com.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.service.WordTokensUsageService
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.ord.shared.prompts.AvailablePrompts
+import com.ord.shared.prompts.Prompt
+import com.ord.shared.utils.EnumUtils.joinEnumValues
 import org.springframework.stereotype.Component
 
 @Component
@@ -41,16 +45,22 @@ class WordAIFacadeImpl(
         val proficiencyLevel: LanguageProficiencyLevel =
             body.proficiencyLevel ?: userProficiencyInRequestedLanguage.proficiency
 
-        // Create the request
-        val openAIRequest = openAIRequestFactory.createRequest(
-            prompt = PromptsWords.generateWordManualPrompt(
-                word = body.word,
-                wordLanguage = body.language,
-                desiredLanguage = translateTo,
-                proficiency = proficiencyLevel,
-                generativeContentLanguage = userProficiencyInRequestedLanguage.generativeContentLanguage
+        val prompt = Prompt(
+            variant = AvailablePrompts.WORDS_GENERATE_MANUAL,
+            params = mapOf(
+                "word" to body.word,
+                "wordLanguage" to body.language.toString(),
+                "desiredLanguage" to translateTo.toString(),
+                "proficiency" to proficiencyLevel.toString(),
+                "generativeContentLanguage" to userProficiencyInRequestedLanguage.generativeContentLanguage.toString(),
+
+                "wordTypes" to WordType::class.joinEnumValues(separator = " | "),
+                "wordExtraMarks" to WordExtraMark::class.joinEnumValues(separator = " | ")
             )
-        )
+        ).toString()
+
+        // Create the request
+        val openAIRequest = openAIRequestFactory.createRequest(prompt)
 
         // Send the request to OpenAI
         val response = restClientConfig.makeOpenAIPostRequest(openAIRequest).also {
