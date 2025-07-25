@@ -8,9 +8,12 @@ data class FinishedGameResponse<TReviewedAnswers>(
     val maxScore: Int,
     val reviewedAnswers: TReviewedAnswers
 ) {
-    val accuracy
-        get() = Percentage(100 * score.toDouble() / maxScore.toDouble())
-
     val grade: GameGrade
-        get() = GameGrade.Companion.fromPercentage(accuracy)
+        get() = GameGrade.Companion.fromPercentage(accuracyAsPercentage)
+
+    val accuracy: String
+        get() = accuracyAsPercentage.toString()
+
+    private val accuracyAsPercentage
+        get() = Percentage(100 * score.toDouble() / maxScore.toDouble())
 }
