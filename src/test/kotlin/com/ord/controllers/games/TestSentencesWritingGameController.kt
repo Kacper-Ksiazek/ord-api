@@ -45,6 +45,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
@@ -86,6 +87,8 @@ class TestSentencesWritingGameController @Autowired constructor(
     ongoingGameRepository = ongoingGameRepository,
     finishedGameRepository = finishedGameRepository
 ) {
+    @Autowired
+    private lateinit var authenticationManager: AuthenticationManager
     val sentencesWritingGameMocker = SentencesWritingGameMocker(
         objectMapper = objectMapper,
         userMapper = userMapper,
@@ -409,7 +412,73 @@ class TestSentencesWritingGameController @Autowired constructor(
         @Nested
         @DisplayName("Negative")
         inner class Negative {
-            // Placeholders for negative test methods
+            internal fun GameRequestFactory.finishGameRequest(
+                gameId: UUID,
+                authenticatedUser: MockedAuthenticatedUser?,
+                answers: Map<UUID, String> = mapOf(UUID.randomUUID() to "answer"),
+                duration: String = "00:01:00"
+            ): MockHttpServletRequestBuilder {
+                return finishGameRequest(
+                    gameType = GameType.SENTENCES_WRITING,
+                    authenticatedUser = authenticatedUser,
+                    gameId = gameId,
+                    answers = answers
+                )
+            }
+
+            @Test
+            fun `403 - Anonymous user cannot finish a sentences writing game`() {
+                val request = gameRequestFactory.finishGameRequest(
+                    authenticatedUser = null,
+                    gameId = UUID.randomUUID(),
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `404 - User cannot finish a game that does not belong to them`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val sentencesWritingSavedInDb = sentencesWritingGameMocker.mockFromJsonSource(
+                    userDTO = userMapper.toDTO(userSeeder.seedOneEntity()),
+                    difficulty = GameDifficulty.MEDIUM
+                ).first
+
+                val request = gameRequestFactory.finishGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = sentencesWritingSavedInDb.id,
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - Sentences writing cannot be finished with user answer to single sentence over 1024 characters long`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val sentencesWritingSavedInDb = sentencesWritingGameMocker.mockFromJsonSource(
+                    userDTO = authenticatedUser.userInfo,
+                    difficulty = GameDifficulty.MEDIUM
+                ).first
+
+                val request = gameRequestFactory.finishGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = sentencesWritingSavedInDb.id,
+                    answers = mapOf(UUID.randomUUID() to "x".repeat(1025))
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
         }
     }
 }
