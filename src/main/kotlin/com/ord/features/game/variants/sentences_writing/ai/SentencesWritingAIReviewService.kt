@@ -11,6 +11,7 @@ import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.json.SentencesWritingProperAnswers
 import com.ord.features.game.services.OngoingGameService
 import com.ord.features.game.variants.sentences_writing.ai.dto.review.AIReviewedSentencesWritingGame
+import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameAnswers
 import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameRequest
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.FinishedSentencesWritingGameResponse
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.ReviewedSentencesWritingSingleTopic
@@ -32,12 +33,9 @@ class SentencesWritingAIReviewService(
 ) : AIGameServiceBase() {
     fun review(
         user: UserEntity,
-        body: FinishSentencesWritingGameRequest
+        ongoingGame: OngoingSentencesWritingGameDTO,
+        userAnswers: FinishSentencesWritingGameAnswers
     ): FinishedSentencesWritingGameResponse {
-        val ongoingGame: OngoingSentencesWritingGameDTO = ongoingGameMapper.toSentencesWritingDTO(
-            ongoingGameService.findByIdOrFail(body.gameId, user.id)
-        )
-
         val languageProficiency: LanguageProficiencyEntity =
             languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, ongoingGame.language)
 
@@ -48,7 +46,7 @@ class SentencesWritingAIReviewService(
                 "difficulty" to ongoingGame.difficulty.toString(),
                 "proficiency" to languageProficiency.proficiency.toString(),
                 "serializedAnswers" to serializeUserAnswers(
-                    userAnswers = body.answers,
+                    userAnswers = userAnswers,
                     instruction = ongoingGame.properAnswers
                 ),
             )
@@ -136,6 +134,10 @@ class SentencesWritingAIReviewService(
         val maxScoringPerTopic = GamesConfig.GameScoring.MaxScore.SENTENCES_WRITING / aiReviewedGame.size;
 
         val scoringPerTopic = aiReviewedGame.associate {
+            if (!it.evaluationCriteria.fitsTopic || it.evaluationCriteria.correctWordUsage.score == 0) {
+                return@associate it.topicId to 0
+            }
+
             val lengthRating = it.evaluationCriteria.answerLength.score.toDouble() / 10.0;
             val vocabularyRating = it.evaluationCriteria.vocabulary.score.toDouble() / 10.0;
             val wordUsageRating = it.evaluationCriteria.correctWordUsage.score.toDouble() / 10.0;

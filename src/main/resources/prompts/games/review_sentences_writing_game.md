@@ -24,6 +24,7 @@ interface ScoringCriteria {
 type ExpectedResult = {
     topicId: string, // UUID of the topic
     evaluationCriteria: {
+        "fitsTopic": boolean // Don't be too harsh here, if the sentence is related to the topic set it to true
         "answerLength": ScoringCriteria,
         "vocabulary": ScoringCriteria,
         "correctWordUsage": ScoringCriteria
