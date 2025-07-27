@@ -3,6 +3,8 @@ package com.ord.features.game.variants.shared.enums
 import com.ord.config.GamesConfig
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.extensions.getNumberOfAllowedMistakes
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 
 /**
  * The points that can be assigned to an answer in a game.
@@ -41,5 +43,12 @@ enum class WordAnswerScore(
             }
         }
 
+        fun fromDouble(@Min(0) @Max(1) accuracy: Double): WordAnswerScore {
+            return when {
+                accuracy >= 0.9 -> CORRECT
+                accuracy >= 0.5 -> HALF_CORRECT
+                else -> INCORRECT
+            }
+        }
     }
 }

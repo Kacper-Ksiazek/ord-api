@@ -7,6 +7,7 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserMapper
+import com.ord.core.word.model.WordEntity
 import com.ord.core.word.repository.WordRepository
 import com.ord.features.game.model.finished_game.FinishedGameDTO
 import com.ord.features.game.model.finished_game.FinishedGameMapper
@@ -18,6 +19,7 @@ import com.ord.features.game.repositories.FinishedGameRepository
 import com.ord.features.game.repositories.OngoingGameRepository
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.FinishedSentencesWritingGameResponse
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.StartedSentencesWritingGameResponse
+import com.ord.features.game.variants.shared.enums.WordAnswerScore
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository.GameTokensUsageRepository
 import com.ord.features.user_activity_log.model.enums.UserActivityType
@@ -32,6 +34,8 @@ import com.ord.testing_utils.mocks.games.sentences_writing.SentencesWritingGameM
 import com.ord.utils.resource_readers.loadWordsFromResourceFile
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotHaveSize
+import io.kotest.matchers.comparables.shouldBeGreaterThan
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
@@ -336,11 +340,36 @@ class TestSentencesWritingGameController @Autowired constructor(
             }
 
             @Test
-            fun `User receives correct score and feedback`() {
-                println("Finished game response: $finishedGameResponse")
-                // TODO: Replace with actual assertions for score and feedback
-                // response.score shouldBe ...
-                // response.feedback shouldBe ...
+            fun `Criteria should be evaluated`() {
+                finishedGameResponse.reviewedAnswers.forEach {
+                    val accuracy = it.score.toDouble() / it.maxScore.toDouble()
+                    accuracy shouldBeGreaterThan 0.6
+
+                    it.evaluationCriteria.fitsTopic shouldBe true
+
+                    it.evaluationCriteria.answerLength.score shouldBeGreaterThan 5
+                    it.evaluationCriteria.vocabulary.score shouldBeGreaterThan 5
+                    it.evaluationCriteria.correctWordUsage.score shouldBeGreaterThan 5
+                }
+            }
+
+            @Test
+            fun `Word points are updated in the DB`() {
+                val words = wordRepository.findAllForUser(authenticatedUser.userInfo.id)
+
+                val wordsUsedInGame: List<String> = finishedGameResponse.reviewedAnswers.map { it.word }
+                val usedWordEntities: List<WordEntity> =
+                    words.filter { it.translatedFrom == finishedGameInDb?.language && it.origin in wordsUsedInGame }
+
+                finishedGameResponse.reviewedAnswers.forEach { reviewedTopic ->
+                    val wordEntity = usedWordEntities.firstOrNull { it.origin == reviewedTopic.word }
+                    wordEntity shouldNotBe null
+
+                    val accuracy = reviewedTopic.score.toDouble() / reviewedTopic.maxScore.toDouble()
+                    val expectedGrade = WordAnswerScore.fromDouble(accuracy)
+
+                    wordEntity?.points shouldBe expectedGrade.dbPoints
+                }
             }
 
             @Test

@@ -4,6 +4,7 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.toSentencesWritingDTO
+import com.ord.features.game.services.GameReviewService
 import com.ord.features.game.variants.sentences_writing.ai.SentencesWritingAIGenerateService
 import com.ord.features.game.variants.sentences_writing.ai.SentencesWritingAIReviewService
 import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameRequest
@@ -11,13 +12,15 @@ import com.ord.features.game.variants.sentences_writing.dto.api_responses.Finish
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.StartedSentencesWritingGameResponse
 import com.ord.features.game.variants.shared.api.GameFacadeBase
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
+import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
+import com.ord.features.game.variants.shared.enums.WordAnswerScore
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
 class SentencesWritingGameFacade(
     private val sentencesWritingAIReviewService: SentencesWritingAIReviewService,
-    private val sentencesWritingAIGenerateService: SentencesWritingAIGenerateService
+    private val sentencesWritingAIGenerateService: SentencesWritingAIGenerateService,
 ) : GameFacadeBase<
         StartedSentencesWritingGameResponse,
         FinishSentencesWritingGameRequest,
@@ -69,6 +72,16 @@ class SentencesWritingGameFacade(
             user = user,
             ongoingGame = ongoingGame,
             userAnswers = body.answers
+        )
+
+        gameReviewService.updateDBPointsForManyWords(
+            user = user,
+            language = ongoingGame.language,
+            ratedWords = review.reviewedAnswers.associate {
+                val accuracy = it.score.toDouble() / it.maxScore.toDouble()
+
+                it.word to WordAnswerScore.fromDouble(accuracy)
+            }
         )
 
         ongoingGameService.completeGame(
