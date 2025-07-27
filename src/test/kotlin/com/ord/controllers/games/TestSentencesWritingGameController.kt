@@ -8,38 +8,44 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserMapper
 import com.ord.core.word.repository.WordRepository
+import com.ord.features.game.model.finished_game.FinishedGameDTO
+import com.ord.features.game.model.finished_game.FinishedGameMapper
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.OngoingSentencesWritingGameDTO
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.repositories.FinishedGameRepository
 import com.ord.features.game.repositories.OngoingGameRepository
+import com.ord.features.game.variants.sentences_writing.dto.api_responses.FinishedSentencesWritingGameResponse
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.StartedSentencesWritingGameResponse
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository.GameTokensUsageRepository
+import com.ord.features.user_activity_log.model.enums.UserActivityType
 import com.ord.features.user_activity_log.repository.UserActivityLogRepository
 import com.ord.seeders.entities.UserSeeder
 import com.ord.seeders.factories.WordFactory
 import com.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.ord.testing_utils.mocks.games.GameMockerBase
-import com.ord.testing_utils.mocks.games.SentencesWritingGameMocker
+import com.ord.testing_utils.mocks.games.sentences_writing.SentencesWritingAnswersMockLoader
+import com.ord.testing_utils.mocks.games.sentences_writing.SentencesWritingGameMocker
 import com.ord.utils.resource_readers.loadWordsFromResourceFile
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotHaveSize
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import io.kotest.matchers.shouldNotBe
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import java.util.UUID
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -50,6 +56,7 @@ class TestSentencesWritingGameController @Autowired constructor(
     private val userActivityLogRepository: UserActivityLogRepository,
     private val userSeeder: UserSeeder,
     private val wordMockFactory: WordFactory,
+    private val finishedGameMapper: FinishedGameMapper,
 
     objectMapper: ObjectMapper,
     mockMvc: MockMvc,
@@ -170,7 +177,7 @@ class TestSentencesWritingGameController @Autowired constructor(
                 )
 
                 mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe org.springframework.http.HttpStatus.FORBIDDEN.value()
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
                 }
             }
 
@@ -182,7 +189,7 @@ class TestSentencesWritingGameController @Autowired constructor(
                 )
 
                 mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe org.springframework.http.HttpStatus.BAD_REQUEST.value()
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                 }
             }
 
@@ -202,13 +209,13 @@ class TestSentencesWritingGameController @Autowired constructor(
                 )
 
                 mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe org.springframework.http.HttpStatus.BAD_REQUEST.value()
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                 }
             }
 
             @Test
             fun `400 - User with no proficiency in the language cannot start a sentences writing game`() {
-                val unknownForUserLanguage = com.ord.core.langugae_proficiency.model.enums.LanguageName.ITALIAN
+                val unknownForUserLanguage = LanguageName.ITALIAN
                 val authenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
@@ -222,14 +229,14 @@ class TestSentencesWritingGameController @Autowired constructor(
                 )
 
                 mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe org.springframework.http.HttpStatus.BAD_REQUEST.value()
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                 }
             }
 
             @Test
             fun `400 - Cannot start a game without providing difficulty`() {
                 val authenticatedUser = mockAuthenticatedUser()
-                com.ord.utils.resource_readers.loadWordsFromResourceFile(
+                loadWordsFromResourceFile(
                     user = userMapper.toEntity(authenticatedUser.userInfo),
                     wordsRepository = wordRepository
                 )
@@ -238,7 +245,7 @@ class TestSentencesWritingGameController @Autowired constructor(
                     authenticatedUser = authenticatedUser,
                 )
                 mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe org.springframework.http.HttpStatus.BAD_REQUEST.value()
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                 }
             }
 
@@ -256,7 +263,7 @@ class TestSentencesWritingGameController @Autowired constructor(
                     authenticatedUser = authenticatedUser,
                 )
                 mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe org.springframework.http.HttpStatus.BAD_REQUEST.value()
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
                 }
             }
         }
@@ -270,7 +277,104 @@ class TestSentencesWritingGameController @Autowired constructor(
         @TestInstance(TestInstance.Lifecycle.PER_CLASS)
         @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Positive {
-            // Placeholders for positive test methods
+            var finishedGameInDb: FinishedGameDTO? = null
+            lateinit var completedOngoingGameId: UUID
+            lateinit var authenticatedUser: MockedAuthenticatedUser
+            lateinit var finishedGameResponse: FinishedSentencesWritingGameResponse
+
+            val gameAnswerLoader = SentencesWritingAnswersMockLoader()
+
+            private fun finishSentencesWritingGame(game: OngoingSentencesWritingGameDTO): FinishedSentencesWritingGameResponse {
+                val request = gameRequestFactory.finishGameRequest(
+                    gameType = GameType.SENTENCES_WRITING,
+                    authenticatedUser = authenticatedUser,
+                    gameId = game.id,
+                    answers = gameAnswerLoader.mockAnswers(game.difficulty),
+                )
+
+                val response: FinishedSentencesWritingGameResponse = with(
+                    mockMvc
+                        .perform(request)
+                        .andReturn()
+                        .let {
+                            it.response.status shouldBe HttpStatus.OK.value()
+                            it.response
+                        }) {
+                    getResponseBody(this)
+                }
+
+                finishedGameInDb = with(
+                    finishedGameRepository
+                        .findAllForUser(authenticatedUser.userInfo.id)
+                        .firstOrNull()
+                ) {
+                    finishedGameMapper.toDTOOrNull(this)
+                }
+
+                return response
+            }
+
+
+            @BeforeAll
+            fun beforeAll() {
+                authenticatedUser = mockAuthenticatedUser()
+
+                val ongoingGame: OngoingSentencesWritingGameDTO = sentencesWritingGameMocker
+                    .mockFromJsonSource(authenticatedUser.userInfo)
+                    .first
+                    .apply {
+                        completedOngoingGameId = this.id
+                    }
+
+                finishedGameResponse = finishSentencesWritingGame(ongoingGame)
+            }
+
+
+            @Test
+            fun `Game is finished and marked as finished in the DB`() {
+                finishedGameInDb shouldNotBe null
+            }
+
+            @Test
+            fun `User receives correct score and feedback`() {
+                println("Finished game response: $finishedGameResponse")
+                // TODO: Replace with actual assertions for score and feedback
+                // response.score shouldBe ...
+                // response.feedback shouldBe ...
+            }
+
+            @Test
+            fun `Ongoing game record is deleted upon finish`() {
+                ongoingGameRepository.findByIdOrNull(completedOngoingGameId) shouldBe null
+            }
+
+            @Test
+            fun `GPT use logs are updated after finishing the game`() {
+                val logs = gameTokensUsageRepository
+                    .findAllForUser(
+                        userId = authenticatedUser.userInfo.id
+                    ).filter {
+                        it.consumptionType == GamesGPTTokensConsumptionType.REVIEW
+                                && it.gameType == GameType.SENTENCES_WRITING
+                                && it.language == GameMockerBase.Companion.DefaultParams.language
+                                && it.gameDifficulty == GameMockerBase.Companion.DefaultParams.difficulty
+                    }
+
+                logs shouldHaveSize 1
+            }
+
+            @Test
+            fun `User activity log is created after finishing the game`() {
+                val userActivityLogs = userActivityLogRepository
+                    .findAllForUser(authenticatedUser.userInfo.id)
+                    .filter {
+                        it.type == UserActivityType.SENTENCES_WRITING_GAME_COMPLETED_FLAWLESSLY ||
+                                it.type == UserActivityType.SENTENCES_WRITING_GAME_COMPLETED_WITH_MISTAKES
+
+                    }
+
+                userActivityLogs shouldHaveSize 1
+            }
         }
 
         @Nested
