@@ -2,6 +2,7 @@ package com.ord.features.game.api.controllers
 
 import com.ord.core.auth.security.AuthenticatedUser
 import com.ord.core.user.model.UserEntity
+import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.game.variants.sentences_writing.api.SentencesWritingGameFacade
 import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameRequest
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.FinishedSentencesWritingGameResponse
@@ -30,5 +31,13 @@ class SentencesWritingGameController(
     fun finishWordsTypingGame(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: FinishSentencesWritingGameRequest
-    ): ResponseEntity<FinishedSentencesWritingGameResponse> = sentencesWritingGameFacade.finishGame(user, body)
+    ): ResponseEntity<FinishedSentencesWritingGameResponse> {
+        body.answers.forEach {
+            if (it.value.length > 1024) {
+                throw BadRequestException("Each sentence answer must up to 1024 characters, but got ${it.value.length} characters.")
+            }
+        }
+
+        return sentencesWritingGameFacade.finishGame(user, body)
+    }
 }

@@ -1,12 +1,15 @@
 package com.ord.features.game.variants.sentences_writing.dto.api_requests
 
 import com.ord.features.game.variants.shared.dto.api_requests.bases.FinishGameRequestDataBase
-import java.util.UUID
+import jakarta.validation.constraints.Pattern
+import java.util.*
 
 typealias FinishSentencesWritingGameAnswers = Map<UUID, String>
 
 data class FinishSentencesWritingGameRequest(
     override val gameId: UUID,
+
+    @field:Pattern(regexp = """^\d{2}:\d{2}:\d{2}$""", message = "Duration must be in format hh:mm:ss")
     override val duration: String,
     /**
      * Map where:
