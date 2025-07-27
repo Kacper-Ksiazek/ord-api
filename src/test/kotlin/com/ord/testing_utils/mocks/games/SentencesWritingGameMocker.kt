@@ -31,8 +31,8 @@ class SentencesWritingGameMocker(
         StartedSentencesWritingGameResponse
         > {
     // Properties:
-    override val mockingGameType: GameType = GameType.WORDS_TYPING
-    override val pathToJsonFile: String = "mocks/games/words_typing.json"
+    override val mockingGameType: GameType = GameType.SENTENCES_WRITING
+    override val pathToJsonFile: String = "mocks/games/sentences_writing.json"
 
     // Classes & type references:
     override val apiResponseTypeRef: TypeReference<StartedSentencesWritingGameResponse> =

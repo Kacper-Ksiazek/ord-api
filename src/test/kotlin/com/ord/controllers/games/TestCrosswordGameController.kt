@@ -241,12 +241,9 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             @Test
-            fun `Game returned in response is the game saved in the DB`() {
-                crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
-            }
-
-            @Test
             fun `Game is properly saved in the DB`() {
+                crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
+
                 crosswordSavedInDb.type shouldBe GameType.CROSSWORD
                 crosswordSavedInDb.language shouldBe GameMockerBase.Companion.DefaultParams.language
                 crosswordSavedInDb.difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
