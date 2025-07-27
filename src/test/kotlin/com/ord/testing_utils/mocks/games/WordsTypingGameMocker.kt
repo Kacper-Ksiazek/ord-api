@@ -51,7 +51,7 @@ class WordsTypingGameMocker(
     ): OngoingWordsTypingGameDTO {
         return OngoingWordsTypingGameDTO(
             properAnswers = jsonData.properAnswers,
-            type = GameType.WORDS_TYPING,
+            type = mockingGameType,
             language = jsonData.language,
             difficulty = jsonData.difficulty,
             user = userDTO

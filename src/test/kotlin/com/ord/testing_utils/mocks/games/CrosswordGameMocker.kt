@@ -50,7 +50,7 @@ class CrosswordGameMocker(
     ): OngoingCrosswordGameDTO {
         return OngoingCrosswordGameDTO(
             properAnswers = jsonData.properAnswers,
-            type = GameType.CROSSWORD,
+            type = mockingGameType,
             language = jsonData.language,
             difficulty = jsonData.difficulty,
             user = userDTO
