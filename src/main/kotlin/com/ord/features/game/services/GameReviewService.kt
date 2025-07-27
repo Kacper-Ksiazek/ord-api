@@ -5,8 +5,10 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
+import com.ord.features.game.variants.shared.enums.WordAnswerScore
 import com.ord.shared.utils.data_classes.Percentage
 import java.util.*
+import kotlin.collections.Set
 
 interface GameReviewService {
     fun reviewUserAnswersAndUpdateDBPoints(
@@ -25,7 +27,9 @@ interface GameReviewService {
         updateDBPointsForManyWords(
             user = user,
             language = language,
-            reviewedQuestions = reviewedQuestions
+            ratedWords = reviewedQuestions.associate {
+                it.expectedAnswer to it.score
+            }
         )
 
         return reviewedQuestions
@@ -40,7 +44,11 @@ interface GameReviewService {
     fun updateDBPointsForManyWords(
         user: UserEntity,
         language: LanguageName,
-        reviewedQuestions: Set<IdentifiableReviewedWordAnswer>
+        /**
+         * Map of word identifiers (as Strings) to their corresponding review scores.
+         * Each entry represents a word answered by the user and the score it received after review.
+         */
+        ratedWords: Map<String, WordAnswerScore>
     )
 
     companion object {
