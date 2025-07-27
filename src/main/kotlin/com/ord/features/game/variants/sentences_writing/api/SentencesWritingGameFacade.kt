@@ -3,7 +3,7 @@ package com.ord.features.game.variants.sentences_writing.api
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.enums.GameType
-import com.ord.features.game.services.GameReviewService
+import com.ord.features.game.model.ongoing_game.toSentencesWritingDTO
 import com.ord.features.game.variants.sentences_writing.ai.SentencesWritingAIGenerateService
 import com.ord.features.game.variants.sentences_writing.ai.SentencesWritingAIReviewService
 import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameRequest
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 @Service
 class SentencesWritingGameFacade(
     private val sentencesWritingAIReviewService: SentencesWritingAIReviewService,
-    private val sentencesWritingAIGenerateService: SentencesWritingAIGenerateService,
+    private val sentencesWritingAIGenerateService: SentencesWritingAIGenerateService
 ) : GameFacadeBase<
         StartedSentencesWritingGameResponse,
         FinishSentencesWritingGameRequest,
@@ -58,8 +58,25 @@ class SentencesWritingGameFacade(
         user: UserEntity,
         body: FinishSentencesWritingGameRequest
     ): ResponseEntity<FinishedSentencesWritingGameResponse> {
-        return ResponseEntity.ok(
-            sentencesWritingAIReviewService.review(user, body)
+        val ongoingGame = ongoingGameService
+            .findByIdOrFail(
+                id = body.gameId,
+                userId = user.id
+            )
+            .toSentencesWritingDTO(ongoingGameMapper)
+
+        val review = sentencesWritingAIReviewService.review(
+            user = user,
+            ongoingGame = ongoingGame,
+            userAnswers = body.answers
         )
+
+        ongoingGameService.completeGame(
+            ongoingGame = ongoingGame,
+            duration = body.duration,
+            score = review.score
+        )
+
+        return ResponseEntity.ok(review)
     }
 }

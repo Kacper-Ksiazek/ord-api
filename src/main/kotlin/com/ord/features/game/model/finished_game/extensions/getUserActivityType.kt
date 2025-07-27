@@ -17,6 +17,11 @@ fun FinishedGameEntity.getUserActivityType(): UserActivityType {
             else -> UserActivityType.WORDS_TYPING_GAME_COMPLETED_WITH_MISTAKES
         }
 
+        GameType.SENTENCES_WRITING -> when (grade) {
+            GameGrade.S -> UserActivityType.SENTENCES_WRITING_GAME_COMPLETED_FLAWLESSLY
+            else -> UserActivityType.SENTENCES_WRITING_GAME_COMPLETED_WITH_MISTAKES
+        }
+
         else -> throw UnsupportedOperationException()
     }
 }

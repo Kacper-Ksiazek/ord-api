@@ -9,6 +9,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.features.game.model.ongoing_game.json.SentencesWritingProperAnswers
 import org.springframework.stereotype.Component
 
+fun OngoingGameEntity.toSentencesWritingDTO(ongoingGameMapper: OngoingGameMapper): OngoingSentencesWritingGameDTO {
+    if (this.type != GameType.SENTENCES_WRITING) {
+        throw IllegalArgumentException("Entity type is not SENTENCES_WRITING")
+    }
+
+    return ongoingGameMapper.toSentencesWritingDTO(this)
+}
+
 @Component
 class OngoingGameMapper(
     private val userMapper: UserMapper,
