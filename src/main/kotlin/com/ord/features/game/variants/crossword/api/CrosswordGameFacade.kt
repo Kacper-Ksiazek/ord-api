@@ -15,7 +15,7 @@ import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.ReviewedWordAnswer
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.calculatedWeightedModuleScore
-import com.ord.features.game.variants.shared.enums.AnswerScore
+import com.ord.features.game.variants.shared.enums.WordAnswerScore
 import com.ord.features.game.variants.words_typing.dto.api_requests.FinishCrosswordGameRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -79,7 +79,7 @@ class CrosswordGameFacade(
             gameMaxScore = GamesConfig.GameScoring.MaxScore.CROSSWORD
         )
 
-        val reviewedFinalAnswer: AnswerScore = AnswerScore.Companion.reviewUserAnswer(
+        val reviewedFinalAnswer: WordAnswerScore = WordAnswerScore.Companion.reviewUserAnswer(
             userAnswer = body.answers.finalWord,
             expectedAnswer = game.properAnswers.finalWord,
             difficulty = game.difficulty
@@ -87,7 +87,7 @@ class CrosswordGameFacade(
 
         val scoreForFinalWord: Int = GameReviewService.Companion.calculatedWeightedModuleScore(
             earnedPoints = reviewedFinalAnswer.wage,
-            pointsToEarn = AnswerScore.CORRECT.wage,
+            pointsToEarn = WordAnswerScore.CORRECT.wage,
             moduleWeight = GamesConfig.GameScoring.ModulesWeights.Crossword.FINAL_WORD,
             gameMaxScore = GamesConfig.GameScoring.MaxScore.CROSSWORD
         )

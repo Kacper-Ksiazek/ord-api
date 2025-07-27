@@ -21,7 +21,7 @@ import com.ord.features.game.variants.crossword.dto.helpers.board.Coordinates
 import com.ord.features.game.variants.crossword.dto.helpers.board.CrosswordWordDirection
 import com.ord.features.game.variants.crossword.dto.helpers.question.getCoordinatesOfLetterAtIndex
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
-import com.ord.features.game.variants.shared.enums.AnswerScore
+import com.ord.features.game.variants.shared.enums.WordAnswerScore
 import com.ord.features.game.variants.words_typing.dto.api_requests.CrosswordUserAnswers
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository.GameTokensUsageRepository
@@ -695,7 +695,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.INCORRECT to 3,
+                        WordAnswerScore.INCORRECT to 3,
                     )
                 )
 
@@ -716,7 +716,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 response.reviewedAnswers.finalWord.expectedAnswer shouldBe crosswordSavedInDb.properAnswers.finalWord
                 response.reviewedAnswers.finalWord.userAnswer shouldBe alteredFinalAnswer
-                response.reviewedAnswers.finalWord.score shouldBe AnswerScore.INCORRECT
+                response.reviewedAnswers.finalWord.score shouldBe WordAnswerScore.INCORRECT
             }
 
             @Test
@@ -732,7 +732,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.HALF_CORRECT to 3,
+                        WordAnswerScore.HALF_CORRECT to 3,
                     )
                 )
 
@@ -751,7 +751,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.INCORRECT to 3,
+                        WordAnswerScore.INCORRECT to 3,
                     )
                 )
 
@@ -773,8 +773,8 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.HALF_CORRECT to 3,
-                        AnswerScore.INCORRECT to 3,
+                        WordAnswerScore.HALF_CORRECT to 3,
+                        WordAnswerScore.INCORRECT to 3,
                     )
                 )
 
@@ -804,7 +804,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.HALF_CORRECT to 3,
+                        WordAnswerScore.HALF_CORRECT to 3,
                     )
                 )
 

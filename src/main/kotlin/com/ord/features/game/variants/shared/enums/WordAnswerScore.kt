@@ -8,7 +8,7 @@ import com.ord.features.game.model.ongoing_game.extensions.getNumberOfAllowedMis
  * The points that can be assigned to an answer in a game.
  * These points are further used to compute the score of a game in percentage, therefore they cannot be negative.
  */
-enum class AnswerScore(
+enum class WordAnswerScore(
     val wage: Double,
     val dbPoints: Int
 ) {
@@ -25,7 +25,7 @@ enum class AnswerScore(
             userAnswer: String?,
             expectedAnswer: String,
             difficulty: GameDifficulty
-        ): AnswerScore {
+        ): WordAnswerScore {
             if (userAnswer == null) {
                 return INCORRECT
             }

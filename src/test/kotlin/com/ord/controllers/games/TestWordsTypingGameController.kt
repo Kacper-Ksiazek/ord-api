@@ -17,7 +17,7 @@ import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.repositories.FinishedGameRepository
 import com.ord.features.game.repositories.OngoingGameRepository
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
-import com.ord.features.game.variants.shared.enums.AnswerScore
+import com.ord.features.game.variants.shared.enums.WordAnswerScore
 import com.ord.features.game.variants.words_typing.dto.api_responses.FinishedWordsTypingGameResponse
 import com.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
@@ -520,7 +520,7 @@ class TestWordsTypingGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.INCORRECT to 3,
+                        WordAnswerScore.INCORRECT to 3,
                     )
                 )
 
@@ -544,7 +544,7 @@ class TestWordsTypingGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.HALF_CORRECT to 3,
+                        WordAnswerScore.HALF_CORRECT to 3,
                     )
                 )
 
@@ -561,7 +561,7 @@ class TestWordsTypingGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.INCORRECT to 3,
+                        WordAnswerScore.INCORRECT to 3,
                     )
                 )
 
@@ -583,8 +583,8 @@ class TestWordsTypingGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.HALF_CORRECT to 3,
-                        AnswerScore.INCORRECT to 3,
+                        WordAnswerScore.HALF_CORRECT to 3,
+                        WordAnswerScore.INCORRECT to 3,
                     )
                 )
 
@@ -614,7 +614,7 @@ class TestWordsTypingGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.HALF_CORRECT to 3,
+                        WordAnswerScore.HALF_CORRECT to 3,
                     )
                 )
 
