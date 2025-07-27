@@ -22,7 +22,7 @@ import com.ord.features.game.variants.crossword.dto.helpers.board.CrosswordWordD
 import com.ord.features.game.variants.crossword.dto.helpers.question.getCoordinatesOfLetterAtIndex
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
 import com.ord.features.game.variants.shared.enums.WordAnswerScore
-import com.ord.features.game.variants.words_typing.dto.api_requests.CrosswordUserAnswers
+import com.ord.features.game.variants.crossword.dto.api_requests.CrosswordUserAnswers
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository.GameTokensUsageRepository
 import com.ord.features.user_activity_log.model.enums.UserActivityType
@@ -896,6 +896,32 @@ class TestCrosswordGameController @Autowired constructor(
                                 answer = "x".repeat(256)
                             )
                         )
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun ` 400 - Crossword cannot be finished with duration not in a proper format`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val crosswordSavedInDb = crosswordGameMocker.mockFromJsonSource(
+                    userDTO = userMapper.toDTO(userSeeder.seedOneEntity()),
+                    difficulty = GameDifficulty.MEDIUM
+                ).first
+
+                val request = gameRequestFactory.finishGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = crosswordSavedInDb.id,
+                    duration = "invalid_duration_format",
+                    gameType = GameType.CROSSWORD,
+                    answers = CrosswordUserAnswers(
+                        finalWord = "answer",
+                        questions = emptySet()
                     )
                 )
 

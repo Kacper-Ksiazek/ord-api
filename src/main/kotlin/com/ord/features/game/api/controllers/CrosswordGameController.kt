@@ -6,7 +6,7 @@ import com.ord.features.game.variants.crossword.api.CrosswordGameFacade
 import com.ord.features.game.variants.crossword.dto.api_responses.FinishedCrosswordGameResponse
 import com.ord.features.game.variants.crossword.dto.api_responses.StartedCrosswordGameResponse
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
-import com.ord.features.game.variants.words_typing.dto.api_requests.FinishCrosswordGameRequest
+import com.ord.features.game.variants.crossword.dto.api_requests.FinishCrosswordGameRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping

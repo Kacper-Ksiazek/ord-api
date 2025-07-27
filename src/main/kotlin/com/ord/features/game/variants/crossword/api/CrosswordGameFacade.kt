@@ -16,7 +16,7 @@ import com.ord.features.game.variants.shared.dto.api_responses.helpers.Identifia
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.ReviewedWordAnswer
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.calculatedWeightedModuleScore
 import com.ord.features.game.variants.shared.enums.WordAnswerScore
-import com.ord.features.game.variants.words_typing.dto.api_requests.FinishCrosswordGameRequest
+import com.ord.features.game.variants.crossword.dto.api_requests.FinishCrosswordGameRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 

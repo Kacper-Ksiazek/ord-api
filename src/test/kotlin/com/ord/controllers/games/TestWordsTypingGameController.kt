@@ -709,6 +709,34 @@ class TestWordsTypingGameController @Autowired constructor(
                     it.response
                 }
             }
+
+            @Test
+            fun `400 - Words typing game cannot be finished with duration not in a proper format`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(
+                    userDTO = userMapper.toDTO(userSeeder.seedOneEntity()),
+                    difficulty = GameDifficulty.MEDIUM
+                ).first
+
+                val request = gameRequestFactory.finishGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = gameSavedInDb.id,
+                    duration = "not a number",
+                    gameType = GameType.WORDS_TYPING,
+                    answers = setOf(
+                        WordUserAnswer(
+                            id = UUID.randomUUID(),
+                            answer = "test"
+                        )
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
         }
     }
 }

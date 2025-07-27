@@ -5,7 +5,7 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingWordsTypingGameDTO
 import com.ord.features.game.model.ongoing_game.enums.GameType
-import com.ord.features.game.variants.crossword.dto.api_requests.FinishWordsTypingGameRequest
+import com.ord.features.game.variants.words_typing.dto.api_requests.FinishWordsTypingGameRequest
 import com.ord.features.game.variants.shared.api.GameFacadeBase
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.calculatedWeightedModuleScore

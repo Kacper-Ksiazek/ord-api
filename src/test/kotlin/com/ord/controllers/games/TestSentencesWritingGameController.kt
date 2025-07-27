@@ -422,7 +422,8 @@ class TestSentencesWritingGameController @Autowired constructor(
                     gameType = GameType.SENTENCES_WRITING,
                     authenticatedUser = authenticatedUser,
                     gameId = gameId,
-                    answers = answers
+                    answers = answers,
+                    duration = duration
                 )
             }
 
@@ -472,6 +473,27 @@ class TestSentencesWritingGameController @Autowired constructor(
                     authenticatedUser = authenticatedUser,
                     gameId = sentencesWritingSavedInDb.id,
                     answers = mapOf(UUID.randomUUID() to "x".repeat(1025))
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun `400 - Duration must be in format hh mm ss`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val sentencesWritingSavedInDb = sentencesWritingGameMocker.mockFromJsonSource(
+                    userDTO = authenticatedUser.userInfo,
+                    difficulty = GameDifficulty.MEDIUM
+                ).first
+
+                val request = gameRequestFactory.finishGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = sentencesWritingSavedInDb.id,
+                    duration = "invalid duration format",
                 )
 
                 mockMvc.perform(request).andReturn().let {

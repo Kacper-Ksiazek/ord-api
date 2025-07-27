@@ -2,7 +2,7 @@ package com.ord.features.game.api.controllers
 
 import com.ord.core.auth.security.AuthenticatedUser
 import com.ord.core.user.model.UserEntity
-import com.ord.features.game.variants.crossword.dto.api_requests.FinishWordsTypingGameRequest
+import com.ord.features.game.variants.words_typing.dto.api_requests.FinishWordsTypingGameRequest
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.ord.features.game.variants.words_typing.api.WordsTypingGameFacade
 import com.ord.features.game.variants.words_typing.dto.api_responses.FinishedWordsTypingGameResponse
