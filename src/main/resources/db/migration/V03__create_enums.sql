@@ -157,4 +157,49 @@ CALL create_enum_type(
      );
 
 
+--- +---------------------+
+--- |    CONVERSATIONS    |
+--- +---------------------+
 
+---  ConversationMessageSender
+CALL create_enum_type(
+        'conversation_message_sender',
+        ARRAY ['AI', 'USER']
+     );
+
+---  ConversationGoal
+CALL create_enum_type(
+        'conversation_goal',
+        ARRAY [
+            'SMALL_TALK', -- Light and casual practice
+            'GRAMMAR_FOCUS', -- Exercises designed to trigger known grammar issues
+            'VOCABULARY_PRACTICE', -- Uses as many target words as possible
+            'SCENARIO_ROLEPLAY', -- Role-based: doctor visit, interview, travel
+            'EXAM_PRACTICE', -- More academic/formal conversation, useful for test prep
+            'TOPIC_EXPLORATION', -- Discussing a specific topic in depth (e.g., culture, history, etc.
+            'OXFORD_DEBATE' -- Structured debate with pros/cons, great for advanced learners
+            ]
+     );
+
+---  ConversationTone
+CALL create_enum_type(
+        'conversation_tone',
+        ARRAY [
+            'FRIENDLY', -- Casual, upbeat, like a friend
+            'FORMAL', -- Polite and structured, like a teacher
+            'HUMOROUS', -- Light sarcasm and jokes (mild)
+            'NEUTRAL', -- Straightforward and balanced tone
+            'ENCOURAGING', -- Motivational and supportive, great for shy learners
+            'CHALLENGING' -- Pushes the user with harder questions and fewer hints
+            ]
+     );
+
+---  ConversationAiResponseLength
+CALL create_enum_type(
+        'conversation_ai_response_length',
+        ARRAY [
+            'BRIEF',    -- Short and to the point
+            'NORMAL',   -- Default
+            'DETAILED'  -- Longer replies, good for immersive practice
+        ]
+     );
