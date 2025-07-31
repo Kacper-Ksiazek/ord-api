@@ -53,6 +53,7 @@ class SecurityConfiguration(
             "/api/v1/auth/current-user-info",
             "/api/v1/openai/**",
             "/api/v1/words/**",
+            "/api/v1/games/**",
             "/users/"
         )
     }

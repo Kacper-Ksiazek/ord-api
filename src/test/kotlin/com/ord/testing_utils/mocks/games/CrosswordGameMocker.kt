@@ -11,7 +11,7 @@ import com.ord.features.game.variants.crossword.dto.CrosswordInstruction
 import com.ord.features.game.variants.crossword.dto.api_responses.StartedCrosswordGameResponse
 import com.ord.seeders.factories.WordFactory
 import com.ord.testing_utils.api_requests_factories.GameRequestFactory
-import com.ord.testing_utils.dto.resources.mocks.CrosswordInJson
+import com.ord.testing_utils.dto.resources.mocks.games.CrosswordInJson
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.test.web.servlet.MockMvc
@@ -50,7 +50,7 @@ class CrosswordGameMocker(
     ): OngoingCrosswordGameDTO {
         return OngoingCrosswordGameDTO(
             properAnswers = jsonData.properAnswers,
-            type = GameType.CROSSWORD,
+            type = mockingGameType,
             language = jsonData.language,
             difficulty = jsonData.difficulty,
             user = userDTO

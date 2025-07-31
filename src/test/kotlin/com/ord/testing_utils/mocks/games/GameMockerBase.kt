@@ -16,7 +16,7 @@ import com.ord.seeders.mocks.bases.ResourceJSONFileReader
 import com.ord.seeders.mocks.bases.RootDir
 import com.ord.testing_utils.api_requests_factories.GameRequestFactory
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
-import com.ord.testing_utils.dto.resources.mocks.GameInJson
+import com.ord.testing_utils.dto.resources.mocks.games.GameInJson
 import com.ord.utils.resource_readers.loadWordsFromResourceFile
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper

@@ -3,16 +3,17 @@ package com.ord.features.game.variants.shared.dto.api_responses
 import com.ord.features.game.model.ongoing_game.enums.GameGrade
 import com.ord.shared.utils.data_classes.Percentage
 
-abstract class FinishedGameResponseBase(
-    val finalScore: Double,
+data class FinishedGameResponse<TReviewedAnswers>(
+    val score: Int,
+    val maxScore: Int,
+    val reviewedAnswers: TReviewedAnswers
 ) {
-    private val _finalScore: Percentage
-        get() = Percentage(finalScore)
-
     val grade: GameGrade
-        get() = GameGrade.Companion.fromPercentage(_finalScore)
+        get() = GameGrade.Companion.fromPercentage(accuracyAsPercentage)
 
-    constructor(totalPoints: Int) : this(
-        finalScore = Percentage(totalPoints).value,
-    )
+    val accuracy: String
+        get() = accuracyAsPercentage.toString()
+
+    private val accuracyAsPercentage
+        get() = Percentage(100 * score.toDouble() / maxScore.toDouble())
 }

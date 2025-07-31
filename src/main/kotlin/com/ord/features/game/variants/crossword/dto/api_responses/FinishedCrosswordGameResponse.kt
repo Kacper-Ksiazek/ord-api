@@ -1,24 +1,12 @@
 package com.ord.features.game.variants.crossword.dto.api_responses
 
-import com.ord.features.game.variants.shared.dto.api_responses.FinishedGameResponseBase
-import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
-import com.ord.features.game.variants.shared.dto.api_responses.helpers.ProperAnswer
-import com.ord.shared.utils.data_classes.Percentage
+import com.ord.features.game.variants.shared.dto.api_responses.FinishedGameResponse
+import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
+import com.ord.features.game.variants.shared.dto.api_responses.helpers.ReviewedWordAnswer
 
-class FinishedCrosswordGameResponse(
-    finalScore: Double,
+data class CrosswordReviewedAnswers(
+    val finalWord: ReviewedWordAnswer,
+    val questions: Set<IdentifiableReviewedWordAnswer>
+)
 
-    val properFinalWord: ProperAnswer,
-    val properQuestionsAnswers: Set<IdentifiableProperAnswer>,
-) : FinishedGameResponseBase(finalScore) {
-
-    constructor(
-        totalPoints: Int,
-        properFinalWord: ProperAnswer,
-        properQuestionsAnswers: Set<IdentifiableProperAnswer>
-    ) : this(
-        finalScore = Percentage(totalPoints).value,
-        properFinalWord = properFinalWord,
-        properQuestionsAnswers = properQuestionsAnswers
-    )
-}
+typealias FinishedCrosswordGameResponse = FinishedGameResponse<CrosswordReviewedAnswers>

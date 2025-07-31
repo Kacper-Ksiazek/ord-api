@@ -26,7 +26,7 @@ abstract class GameControllerTestBase(
     val wordRepository: WordRepository,
     val ongoingGameMapper: OngoingGameMapper,
     val ongoingGameRepository: OngoingGameRepository,
-    val finishedGameRepository: FinishedGameRepository
+    val finishedGameRepository: FinishedGameRepository,
 ) : ControllerTestBase(
     objectMapper = objectMapper,
     mockMvc = mockMvc,

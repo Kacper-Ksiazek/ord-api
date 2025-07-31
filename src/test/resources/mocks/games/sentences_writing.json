@@ -1,0 +1,179 @@
+[
+  {
+    "difficulty": "HARD",
+    "language": "ENGLISH",
+    "type": "SENTENCES_WRITING",
+    "instruction": [
+      {
+        "id": "5f6f3295-476c-4c10-a2b5-78a695070121",
+        "word": "transient",
+        "topic": "Describe a situation where changes happen quickly and do not last long."
+      },
+      {
+        "id": "196663a9-0d31-4d61-8e38-b36047e22d78",
+        "word": "vocational school",
+        "topic": "Explain the benefits of attending a place that focuses on practical job skills."
+      },
+      {
+        "id": "6d205a16-61a1-4e1b-99d6-8a503eddc54d",
+        "word": "mingle",
+        "topic": "Write about a time when people casually interacted at a social event."
+      },
+      {
+        "id": "1add75f0-e2f9-4ee3-8ab1-21343657b303",
+        "word": "boardwalk",
+        "topic": "Describe a popular place by the sea where people enjoy walking and relaxing."
+      },
+      {
+        "id": "83d1a7c4-0079-45ea-94ee-b7d3a76c81e3",
+        "word": "take-it-or-leave-it",
+        "topic": "Imagine being offered a deal with no room for negotiation; describe your response."
+      },
+      {
+        "id": "e550b127-dad6-490e-862a-925ccda4817a",
+        "word": "infringe",
+        "topic": "Talk about what happens when someone's rights or rules are violated."
+      },
+      {
+        "id": "f8211bf9-ac76-40eb-9087-ed2c2a38b013",
+        "word": "well-to-do",
+        "topic": "Describe the lifestyle of people who are financially comfortable and affluent."
+      }
+    ],
+    "properAnswers": [
+      {
+        "id": "5f6f3295-476c-4c10-a2b5-78a695070121",
+        "word": "transient",
+        "topic": "Describe a situation where changes happen quickly and do not last long."
+      },
+      {
+        "id": "196663a9-0d31-4d61-8e38-b36047e22d78",
+        "word": "vocational school",
+        "topic": "Explain the benefits of attending a place that focuses on practical job skills."
+      },
+      {
+        "id": "6d205a16-61a1-4e1b-99d6-8a503eddc54d",
+        "word": "mingle",
+        "topic": "Write about a time when people casually interacted at a social event."
+      },
+      {
+        "id": "1add75f0-e2f9-4ee3-8ab1-21343657b303",
+        "word": "boardwalk",
+        "topic": "Describe a popular place by the sea where people enjoy walking and relaxing."
+      },
+      {
+        "id": "83d1a7c4-0079-45ea-94ee-b7d3a76c81e3",
+        "word": "take-it-or-leave-it",
+        "topic": "Imagine being offered a deal with no room for negotiation; describe your response."
+      },
+      {
+        "id": "e550b127-dad6-490e-862a-925ccda4817a",
+        "word": "infringe",
+        "topic": "Talk about what happens when someone's rights or rules are violated."
+      },
+      {
+        "id": "f8211bf9-ac76-40eb-9087-ed2c2a38b013",
+        "word": "well-to-do",
+        "topic": "Describe the lifestyle of people who are financially comfortable and affluent."
+      }
+    ]
+  },
+  {
+    "difficulty": "MEDIUM",
+    "language": "ENGLISH",
+    "type": "SENTENCES_WRITING",
+    "instruction": [
+      {
+        "id": "a81d5b43-0d39-40d7-ac5e-e67d95e3549a",
+        "word": "larger-than-life",
+        "topic": "Describe a person you know who has an unforgettable and impressive personality."
+      },
+      {
+        "id": "53658ed1-41eb-4936-8ea0-cac10a3fd13f",
+        "word": "hover",
+        "topic": "Explain a situation where something or someone stays in one place in the air."
+      },
+      {
+        "id": "86a1ed26-ce86-4584-bcfc-26a5b6ff8988",
+        "word": "off-the-cuff",
+        "topic": "Share an example of a remark or decision made spontaneously without preparation."
+      },
+      {
+        "id": "ec2e868b-c101-4d4c-876a-70d5909a9c57",
+        "word": "out of the blue",
+        "topic": "Talk about a surprising event or news that happened unexpectedly."
+      },
+      {
+        "id": "a81a5810-4f78-4699-8260-c3c130cd5133",
+        "word": "firm",
+        "topic": "Describe a situation where someone shows strong determination or a solid stance on an issue."
+      }
+    ],
+    "properAnswers": [
+      {
+        "id": "a81d5b43-0d39-40d7-ac5e-e67d95e3549a",
+        "word": "larger-than-life",
+        "topic": "Describe a person you know who has an unforgettable and impressive personality."
+      },
+      {
+        "id": "53658ed1-41eb-4936-8ea0-cac10a3fd13f",
+        "word": "hover",
+        "topic": "Explain a situation where something or someone stays in one place in the air."
+      },
+      {
+        "id": "86a1ed26-ce86-4584-bcfc-26a5b6ff8988",
+        "word": "off-the-cuff",
+        "topic": "Share an example of a remark or decision made spontaneously without preparation."
+      },
+      {
+        "id": "ec2e868b-c101-4d4c-876a-70d5909a9c57",
+        "word": "out of the blue",
+        "topic": "Talk about a surprising event or news that happened unexpectedly."
+      },
+      {
+        "id": "a81a5810-4f78-4699-8260-c3c130cd5133",
+        "word": "firm",
+        "topic": "Describe a situation where someone shows strong determination or a solid stance on an issue."
+      }
+    ]
+  },
+  {
+    "difficulty": "EASY",
+    "language": "ENGLISH",
+    "type": "SENTENCES_WRITING",
+    "instruction": [
+      {
+        "id": "29a35f39-e403-4103-874b-202aa8211e14",
+        "word": "brick-and-mortar",
+        "topic": "Describe a type of business that has a physical location where customers can visit."
+      },
+      {
+        "id": "05747687-9ec2-4fdb-8a54-ef8d24511ccd",
+        "word": "pick someone's brain",
+        "topic": "Write about a situation where you would ask someone knowledgeable for advice or ideas."
+      },
+      {
+        "id": "8d6ea74d-233b-4732-95ff-21e13232d6f2",
+        "word": "infringe",
+        "topic": "Explain a scenario where someone might violate legal rights or rules."
+      }
+    ],
+    "properAnswers": [
+      {
+        "id": "29a35f39-e403-4103-874b-202aa8211e14",
+        "word": "brick-and-mortar",
+        "topic": "Describe a type of business that has a physical location where customers can visit."
+      },
+      {
+        "id": "05747687-9ec2-4fdb-8a54-ef8d24511ccd",
+        "word": "pick someone's brain",
+        "topic": "Write about a situation where you would ask someone knowledgeable for advice or ideas."
+      },
+      {
+        "id": "8d6ea74d-233b-4732-95ff-21e13232d6f2",
+        "word": "infringe",
+        "topic": "Explain a scenario where someone might violate legal rights or rules."
+      }
+    ]
+  }
+]

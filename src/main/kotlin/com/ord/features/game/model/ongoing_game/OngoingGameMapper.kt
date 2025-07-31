@@ -6,7 +6,16 @@ import com.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.ord.features.game.model.ongoing_game.json.WordsTypingProperAnswers
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ord.features.game.model.ongoing_game.json.SentencesWritingProperAnswers
 import org.springframework.stereotype.Component
+
+fun OngoingGameEntity.toSentencesWritingDTO(ongoingGameMapper: OngoingGameMapper): OngoingSentencesWritingGameDTO {
+    if (this.type != GameType.SENTENCES_WRITING) {
+        throw IllegalArgumentException("Entity type is not SENTENCES_WRITING")
+    }
+
+    return ongoingGameMapper.toSentencesWritingDTO(this)
+}
 
 @Component
 class OngoingGameMapper(
@@ -22,10 +31,15 @@ class OngoingGameMapper(
         return entity.convertToCertainDTO(object : TypeReference<WordsTypingProperAnswers>() {})
     }
 
+    fun toSentencesWritingDTO(entity: OngoingGameEntity): OngoingSentencesWritingGameDTO {
+        return entity.convertToCertainDTO(object : TypeReference<SentencesWritingProperAnswers>() {})
+    }
+
     fun toDTO(entity: OngoingGameEntity): OngoingGameDTO<*> {
         return when (entity.type) {
             GameType.CROSSWORD -> toCrosswordDTO(entity)
             GameType.WORDS_TYPING -> toWordsTypingDTO(entity)
+            GameType.SENTENCES_WRITING -> toSentencesWritingDTO(entity)
             else -> throw IllegalArgumentException("Invalid game type")
         }
     }

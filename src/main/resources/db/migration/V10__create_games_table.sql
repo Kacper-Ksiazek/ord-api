@@ -15,19 +15,20 @@ CREATE TABLE IF NOT EXISTS ongoing_games
 
 CREATE TABLE IF NOT EXISTS finished_games
 (
-    id          UUID PRIMARY KEY,
+    id         UUID PRIMARY KEY,
 
-    duration    varchar(8)      NOT NULL,
-    final_score INTEGER         NOT NULL CHECK ( final_score >= 0 AND final_score <= 100),
+    duration   varchar(8)      NOT NULL,
+    accuracy   REAL            NOT NULL CHECK ( accuracy >= 0 AND accuracy <= 1 ),
+    score      INTEGER         NOT NULL,
 
-    type        game_type       NOT NULL,
-    language    language_name   NOT NULL,
-    difficulty  game_difficulty NOT NULL,
-    result      game_result     NOT NULL,
-    grade       game_grade      NOT NULL,
+    type       game_type       NOT NULL,
+    language   language_name   NOT NULL,
+    difficulty game_difficulty NOT NULL,
+    result     game_result     NOT NULL,
+    grade      game_grade      NOT NULL,
 
-    user_id     UUID            NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    user_id    UUID            NOT NULL REFERENCES users (id) ON DELETE CASCADE,
 
-    created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

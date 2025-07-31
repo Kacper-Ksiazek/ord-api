@@ -1,20 +1,6 @@
 package com.ord.features.game.variants.words_typing.dto.api_responses
 
-import com.ord.features.game.variants.shared.dto.api_responses.FinishedGameResponseBase
-import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableProperAnswer
-import com.ord.shared.utils.data_classes.Percentage
+import com.ord.features.game.variants.shared.dto.api_responses.FinishedGameResponse
+import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
 
-class FinishedWordsTypingGameResponse(
-    finalScore: Double,
-
-    val properAnswers: Set<IdentifiableProperAnswer>,
-) : FinishedGameResponseBase(finalScore) {
-
-    constructor(
-        totalPoints: Int,
-        properAnswers: Set<IdentifiableProperAnswer>
-    ) : this(
-        finalScore = Percentage(totalPoints).value,
-        properAnswers = properAnswers
-    )
-}
+typealias FinishedWordsTypingGameResponse = FinishedGameResponse<Set<IdentifiableReviewedWordAnswer>>

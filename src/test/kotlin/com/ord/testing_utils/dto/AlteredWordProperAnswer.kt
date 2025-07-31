@@ -1,7 +1,7 @@
 package com.ord.testing_utils.dto
 
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
-import com.ord.features.game.variants.shared.enums.AnswerScore
+import com.ord.features.game.variants.shared.enums.WordAnswerScore
 import java.util.*
 
 data class AlteredWordProperAnswer(
@@ -9,7 +9,7 @@ data class AlteredWordProperAnswer(
     val originalAnswer: String,
     val alteredAnswer: String,
 
-    val desiredScore: AnswerScore
+    val desiredScore: WordAnswerScore
 )
 
 fun Set<AlteredWordProperAnswer>.toRequestBody(perfectAnswers: Set<WordUserAnswer>): Set<WordUserAnswer> {

@@ -21,8 +21,8 @@ import com.ord.features.game.variants.crossword.dto.helpers.board.Coordinates
 import com.ord.features.game.variants.crossword.dto.helpers.board.CrosswordWordDirection
 import com.ord.features.game.variants.crossword.dto.helpers.question.getCoordinatesOfLetterAtIndex
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
-import com.ord.features.game.variants.shared.enums.AnswerScore
-import com.ord.features.game.variants.words_typing.dto.api_requests.CrosswordUserAnswers
+import com.ord.features.game.variants.shared.enums.WordAnswerScore
+import com.ord.features.game.variants.crossword.dto.api_requests.CrosswordUserAnswers
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository.GameTokensUsageRepository
 import com.ord.features.user_activity_log.model.enums.UserActivityType
@@ -241,12 +241,9 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             @Test
-            fun `Game returned in response is the game saved in the DB`() {
-                crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
-            }
-
-            @Test
             fun `Game is properly saved in the DB`() {
+                crosswordSavedInDb.id shouldBe crosswordSentToUser.gameId
+
                 crosswordSavedInDb.type shouldBe GameType.CROSSWORD
                 crosswordSavedInDb.language shouldBe GameMockerBase.Companion.DefaultParams.language
                 crosswordSavedInDb.difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
@@ -605,7 +602,7 @@ class TestCrosswordGameController @Autowired constructor(
                 response: FinishedCrosswordGameResponse,
                 alteredAnswers: Set<AlteredWordProperAnswer>
             ) {
-                response.properQuestionsAnswers.assertPointsForMistakesWereAssignedProperly(alteredAnswers)
+                response.reviewedAnswers.questions.assertPointsForMistakesWereAssignedProperly(alteredAnswers)
             }
 
             private fun assertDBPointsWereUpdatedProperly(
@@ -616,7 +613,7 @@ class TestCrosswordGameController @Autowired constructor(
                     words = crosswordSavedInDb.properAnswers.questions.values.toSet(),
                     language = crosswordSavedInDb.language,
                     userId = authenticatedUser.userInfo.id,
-                    properAnswers = response.properQuestionsAnswers,
+                    properAnswers = response.reviewedAnswers.questions,
                     alteredAnswers = alteredAnswers
                 )
             }
@@ -652,7 +649,7 @@ class TestCrosswordGameController @Autowired constructor(
             fun `200 - Grade can be achieved - S`() {
                 val response = finishCrosswordGame()
 
-                response.finalScore shouldBe 100.0
+                response.score shouldBe GamesConfig.GameScoring.MaxScore.CROSSWORD
                 response.grade shouldBe GameGrade.S
             }
 
@@ -698,7 +695,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.INCORRECT to 3,
+                        WordAnswerScore.INCORRECT to 3,
                     )
                 )
 
@@ -717,9 +714,9 @@ class TestCrosswordGameController @Autowired constructor(
                     finalWord = alteredFinalAnswer
                 )
 
-                response.properFinalWord.expectedAnswer shouldBe crosswordSavedInDb.properAnswers.finalWord
-                response.properFinalWord.userAnswer shouldBe alteredFinalAnswer
-                response.properFinalWord.score shouldBe AnswerScore.INCORRECT
+                response.reviewedAnswers.finalWord.expectedAnswer shouldBe crosswordSavedInDb.properAnswers.finalWord
+                response.reviewedAnswers.finalWord.userAnswer shouldBe alteredFinalAnswer
+                response.reviewedAnswers.finalWord.score shouldBe WordAnswerScore.INCORRECT
             }
 
             @Test
@@ -735,7 +732,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.HALF_CORRECT to 3,
+                        WordAnswerScore.HALF_CORRECT to 3,
                     )
                 )
 
@@ -754,7 +751,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.INCORRECT to 3,
+                        WordAnswerScore.INCORRECT to 3,
                     )
                 )
 
@@ -776,8 +773,8 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.HALF_CORRECT to 3,
-                        AnswerScore.INCORRECT to 3,
+                        WordAnswerScore.HALF_CORRECT to 3,
+                        WordAnswerScore.INCORRECT to 3,
                     )
                 )
 
@@ -798,7 +795,7 @@ class TestCrosswordGameController @Autowired constructor(
                 wordRepository.saveAll(
                     wordRepository.findAllForUser(authenticatedUser.userInfo.id).map {
                         it.copy(
-                            points = GamesConfig.Points.COMPLETE_WORD_THRESHOLD - 1
+                            points = GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD - 1
                         )
                     }
                 )
@@ -807,7 +804,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
-                        AnswerScore.HALF_CORRECT to 3,
+                        WordAnswerScore.HALF_CORRECT to 3,
                     )
                 )
 
@@ -821,7 +818,7 @@ class TestCrosswordGameController @Autowired constructor(
                     .findAllForUser(authenticatedUser.userInfo.id)
                     .filter { it.origin in wordsUsedInGame }
                     .forEach {
-                        it.points shouldBeGreaterThanOrEqual GamesConfig.Points.COMPLETE_WORD_THRESHOLD
+                        it.points shouldBeGreaterThanOrEqual GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
                         it.isCompleted shouldBe true
                     }
             }
@@ -899,6 +896,32 @@ class TestCrosswordGameController @Autowired constructor(
                                 answer = "x".repeat(256)
                             )
                         )
+                    )
+                )
+
+                mockMvc.perform(request).andReturn().let {
+                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
+                    it.response
+                }
+            }
+
+            @Test
+            fun ` 400 - Crossword cannot be finished with duration not in a proper format`() {
+                val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+
+                val crosswordSavedInDb = crosswordGameMocker.mockFromJsonSource(
+                    userDTO = userMapper.toDTO(userSeeder.seedOneEntity()),
+                    difficulty = GameDifficulty.MEDIUM
+                ).first
+
+                val request = gameRequestFactory.finishGameRequest(
+                    authenticatedUser = authenticatedUser,
+                    gameId = crosswordSavedInDb.id,
+                    duration = "invalid_duration_format",
+                    gameType = GameType.CROSSWORD,
+                    answers = CrosswordUserAnswers(
+                        finalWord = "answer",
+                        questions = emptySet()
                     )
                 )
 

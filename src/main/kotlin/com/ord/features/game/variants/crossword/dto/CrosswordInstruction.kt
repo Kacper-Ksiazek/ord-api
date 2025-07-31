@@ -1,6 +1,6 @@
 package com.ord.features.game.variants.crossword.dto
 
-import com.ord.features.game.ai.generate.llm_api_responses.AIGeneratedCrosswordData
+import com.ord.features.game.variants.crossword.ai.dto.AIGeneratedCrossword
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.extensions.getNumberOfLettersToReveal
 import com.ord.features.game.variants.crossword.dto.helpers.board.Board
@@ -46,7 +46,7 @@ data class CrosswordInstruction(
          * A factory method to construct a crossword instruction from AI-generated questions.
          */
         fun construct(
-            aiGeneratedQuestions: AIGeneratedCrosswordData,
+            aiGeneratedQuestions: AIGeneratedCrossword,
             boardDimension: Coordinates = Coordinates(x = 32, y = 24),
             firstWordStart: Coordinates = Coordinates(x = 5, y = 5),
             difficulty: GameDifficulty? = null

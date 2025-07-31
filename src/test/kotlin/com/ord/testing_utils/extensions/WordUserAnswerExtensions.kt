@@ -1,14 +1,14 @@
 package com.ord.testing_utils.extensions
 
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
-import com.ord.features.game.variants.shared.enums.AnswerScore
+import com.ord.features.game.variants.shared.enums.WordAnswerScore
 import com.ord.testing_utils.dto.AlteredWordProperAnswer
 import jakarta.validation.constraints.Min
 
-private fun WordUserAnswer.makeArtificialMistake(desiredResult: AnswerScore): AlteredWordProperAnswer {
+private fun WordUserAnswer.makeArtificialMistake(desiredResult: WordAnswerScore): AlteredWordProperAnswer {
     val alteredAnswer = when (desiredResult) {
-        AnswerScore.INCORRECT -> "x".repeat(answer.length)
-        AnswerScore.HALF_CORRECT -> "x${answer.drop(1)}"
+        WordAnswerScore.INCORRECT -> "x".repeat(answer.length)
+        WordAnswerScore.HALF_CORRECT -> "x${answer.drop(1)}"
         else -> {
             throw IllegalArgumentException("desiredResult must to be either INCORRECT or HALF_CORRECT")
         }
@@ -23,7 +23,7 @@ private fun WordUserAnswer.makeArtificialMistake(desiredResult: AnswerScore): Al
 }
 
 fun Set<WordUserAnswer>.mockAnswersWithMistakes(
-    mistakes: Map<AnswerScore, @Min(0) Int>
+    mistakes: Map<WordAnswerScore, @Min(0) Int>
 ): Set<AlteredWordProperAnswer> {
     if (mistakes.isEmpty()) {
         throw IllegalArgumentException("Mistakes set cannot be empty")

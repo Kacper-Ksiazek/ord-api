@@ -28,6 +28,5 @@ object JsonReader {
         } catch (e: Exception) {
             throw Exception("An error occurred while reading the JSON file: $pathToJSONFile", e)
         }
-
     }
 }
