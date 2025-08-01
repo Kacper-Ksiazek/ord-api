@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS conversation
+CREATE TABLE IF NOT EXISTS conversations
 (
     id                 UUID PRIMARY KEY,
 
@@ -9,27 +9,29 @@ CREATE TABLE IF NOT EXISTS conversation
     ai_tone            conversation_tone               NOT NULL,
     ai_response_length conversation_ai_response_length NOT NULL,
 
+    user_id            UUID                            NOT NULL,
+
     created_at         TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at         TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    user_id            UUID                            NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS conversation_message
+CREATE TABLE IF NOT EXISTS conversation_messages
 (
     id              UUID PRIMARY KEY,
 
     sender          conversation_message_sender NOT NULL,
     content         TEXT                        NOT NULL,
 
+    user_id         UUID                        NOT NULL,
+    conversation_id UUID                        NOT NULL,
+
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    user_id         UUID                        NOT NULL,
-    conversation_id UUID                        NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (conversation_id) REFERENCES conversation (id) ON DELETE CASCADE
+    FOREIGN KEY (conversation_id) REFERENCES conversations (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
@@ -40,9 +42,10 @@ CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
     comment      TEXT,
     correct_form TEXT,
 
+    message_id   UUID NOT NULL,
+
     created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    message_id   UUID NOT NULL,
-    FOREIGN KEY (message_id) REFERENCES conversation_message (id) ON DELETE CASCADE
+    FOREIGN KEY (message_id) REFERENCES conversation_messages (id) ON DELETE CASCADE
 );
