@@ -19,5 +19,5 @@ interface OngoingConversationFacade {
      * Performs a grammar and style review of a single user message, independently
      * of the current conversation context.
      */
-    fun reviewUserMessage()
+    fun saveUserMessageAndGetFeedback()
 }
