@@ -172,8 +172,6 @@ CALL create_enum_type(
         'conversation_goal',
         ARRAY [
             'SMALL_TALK', -- Light and casual practice
-            'GRAMMAR_FOCUS', -- Exercises designed to trigger known grammar issues
-            'VOCABULARY_PRACTICE', -- Uses as many target words as possible
             'SCENARIO_ROLEPLAY', -- Role-based: doctor visit, interview, travel
             'EXAM_PRACTICE', -- More academic/formal conversation, useful for test prep
             'TOPIC_EXPLORATION', -- Discussing a specific topic in depth (e.g., culture, history, etc.
@@ -198,8 +196,8 @@ CALL create_enum_type(
 CALL create_enum_type(
         'conversation_ai_response_length',
         ARRAY [
-            'BRIEF',    -- Short and to the point
-            'NORMAL',   -- Default
-            'DETAILED'  -- Longer replies, good for immersive practice
-        ]
+            'BRIEF', -- Short and to the point
+            'NORMAL', -- Default
+            'DETAILED' -- Longer replies, good for immersive practice
+            ]
      );
