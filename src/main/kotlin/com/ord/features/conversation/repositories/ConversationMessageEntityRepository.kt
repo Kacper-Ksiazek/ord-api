@@ -1,0 +1,6 @@
+package com.ord.features.conversation.repositories
+
+import com.ord.features.conversation.models.entities.ConversationMessageEntity
+import com.ord.shared.repositories.UserResourceRepository
+
+interface ConversationMessageEntityRepository : UserResourceRepository<ConversationMessageEntity>
