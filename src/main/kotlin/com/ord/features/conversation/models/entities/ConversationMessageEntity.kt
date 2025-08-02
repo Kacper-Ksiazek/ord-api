@@ -1,8 +1,12 @@
 package com.ord.features.conversation.models.entities
 
+import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
+import com.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import java.util.*
@@ -12,7 +16,7 @@ import java.util.*
 data class ConversationMessageEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID = UUID.randomUUID(),
+    override var id: UUID = UUID.randomUUID(),
 
     @Column(name = "sender", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -21,8 +25,13 @@ data class ConversationMessageEntity(
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     var content: String,
 
-    @Column(name = "user_id", nullable = false)
-    var userId: UUID,
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id", nullable = false)
+    override var user: UserEntity,
+
+    @Column(name = "user_id", insertable = false, updatable = false)
+    var userId: UUID = user.id,
 
     @Column(name = "conversation_id", nullable = false)
     var conversationId: UUID,
@@ -37,5 +46,9 @@ data class ConversationMessageEntity(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-)
-
+) : IdentifiableUserResource {
+    @PostLoad
+    fun populateUserId() {
+        userId = user.id
+    }
+}

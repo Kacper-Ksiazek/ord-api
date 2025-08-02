@@ -6,6 +6,7 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.models.enums.ConversationAIResponseLength
 import com.ord.features.conversation.models.enums.ConversationGoal
 import com.ord.features.conversation.models.enums.ConversationTone
+import com.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.OnDelete
@@ -19,7 +20,7 @@ import java.util.*
 data class ConversationEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID = UUID.randomUUID(),
+    override var id: UUID = UUID.randomUUID(),
 
     @Column(name = "language", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -44,7 +45,7 @@ data class ConversationEntity(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
-    var user: UserEntity,
+    override var user: UserEntity,
 
     @Column(name = "user_id", insertable = false, updatable = false)
     var userId: UUID = user.id,
@@ -56,10 +57,9 @@ data class ConversationEntity(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-) {
+) : IdentifiableUserResource {
     @PostLoad
     fun populateUserId() {
         userId = user.id
     }
 }
-
