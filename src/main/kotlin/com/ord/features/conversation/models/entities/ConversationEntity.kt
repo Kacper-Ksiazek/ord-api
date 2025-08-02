@@ -49,13 +49,6 @@ data class ConversationEntity(
     @Column(name = "user_id", insertable = false, updatable = false)
     var userId: UUID = user.id,
 
-      @OneToMany(
-        mappedBy = "conversation",
-        fetch = FetchType.LAZY,
-        orphanRemoval = true
-    )
-    var messages: List<ConversationMessageEntity> = emptyList(),
-
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     var createdAt: Instant = Instant.now(),

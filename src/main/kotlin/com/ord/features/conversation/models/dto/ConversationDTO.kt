@@ -22,8 +22,6 @@ data class ConversationDTO(
     val user: UserDTO,
     val userId: UUID = user.id,
 
-    val messages: List<ConversationMessageDTO> = emptyList(),
-
     val createdAt: Instant = Instant.now(),
     val updatedAt: Instant = Instant.now()
 )
