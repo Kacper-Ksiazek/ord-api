@@ -22,6 +22,9 @@ data class ConversationEntity(
     @GeneratedValue(strategy = GenerationType.UUID)
     override var id: UUID = UUID.randomUUID(),
 
+    @Column(name = "title", nullable = false)
+    var title: String,
+
     @Column(name = "language", nullable = false)
     @Enumerated(EnumType.STRING)
     var language: LanguageName,

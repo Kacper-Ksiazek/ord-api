@@ -12,6 +12,8 @@ import java.util.*
 data class ConversationDTO(
     val id: UUID = UUID.randomUUID(),
 
+    val title: String,
+
     val language: LanguageName,
     val proficiencyLevel: LanguageProficiencyLevel,
 
