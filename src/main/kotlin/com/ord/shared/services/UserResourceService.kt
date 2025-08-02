@@ -7,17 +7,17 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
-interface UserResourceService<T : IdentifiableUserResource> {
-    val repository: UserResourceRepository<T>
+interface UserResourceService<TEntity : IdentifiableUserResource> {
+    val repository: UserResourceRepository<TEntity>
 
-    fun save(t: T): T {
+    fun save(t: TEntity): TEntity {
         return repository.save(t)
     }
 
     fun update(
-        t: T,
+        t: TEntity,
         userId: UUID,
-    ): T {
+    ): TEntity {
         // Verify that user is the owner of the entity
         this.findByIdOrFail(t.id, userId).let {
             if (it.user.id != userId) throw NotFoundException("Entity not found")
@@ -39,7 +39,7 @@ interface UserResourceService<T : IdentifiableUserResource> {
     fun findById(
         id: UUID,
         userId: UUID? = null
-    ): T? {
+    ): TEntity? {
         if (userId == null) {
             return repository.findByIdOrNull(id)
         }
@@ -51,11 +51,11 @@ interface UserResourceService<T : IdentifiableUserResource> {
         id: UUID,
         userId: UUID? = null,
         message: String = "Entity not found"
-    ): T {
+    ): TEntity {
         return this.findById(id, userId) ?: throw NotFoundException(message)
     }
 
-    fun findAll(userId: UUID? = null): List<T> {
+    fun findAll(userId: UUID? = null): List<TEntity> {
         if (userId == null) {
             return repository.findAll()
         }
