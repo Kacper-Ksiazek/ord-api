@@ -12,9 +12,9 @@ class ConversationMessageMapper(
     override fun toEntity(dto: ConversationMessageDTO): ConversationMessageEntity {
         return ConversationMessageEntity(
             id = dto.id,
+            messageOrder = dto.messageOrder,
             sender = dto.sender,
             content = dto.content,
-            userId = dto.userId,
             conversationId = dto.conversationId,
             feedback = conversationUserMessageFeedbackMapper.toEntityOrNull(dto.feedback),
             createdAt = dto.createdAt,
@@ -25,9 +25,9 @@ class ConversationMessageMapper(
     override fun toDTO(entity: ConversationMessageEntity): ConversationMessageDTO {
         return ConversationMessageDTO(
             id = entity.id,
+            messageOrder = entity.messageOrder,
             sender = entity.sender,
             content = entity.content,
-            userId = entity.userId,
             conversationId = entity.conversationId,
             feedback = conversationUserMessageFeedbackMapper.toDTOOrNull(entity.feedback),
             createdAt = entity.createdAt,
@@ -35,4 +35,3 @@ class ConversationMessageMapper(
         )
     }
 }
-

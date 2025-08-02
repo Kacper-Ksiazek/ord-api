@@ -1,11 +1,7 @@
 package com.ord.features.conversation.models.entities
 
-import com.ord.core.user.model.UserEntity
-import com.ord.shared.models.IdentifiableUserResource
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import java.util.*
@@ -15,24 +11,19 @@ import java.util.*
 data class ConversationUserMessageFeedbackEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    override var id: UUID = UUID.randomUUID(),
+    var id: UUID = UUID.randomUUID(),
 
-    @Column(name = "rating", nullable = false)
-    var rating: Int,
+    @Column(name = "grammar", nullable = false)
+    var grammar: Int,
 
-    @Column(name = "comment", columnDefinition = "TEXT")
-    var comment: String? = null,
+    @Column(name = "vocabulary", nullable = false)
+    var vocabulary: Int,
 
-    @Column(name = "correct_form", columnDefinition = "TEXT")
-    var correctForm: String? = null,
+    @Column(name = "answer_length", nullable = false)
+    var answerLength: Int,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id", nullable = false)
-    override var user: UserEntity,
-
-    @Column(name = "user_id", insertable = false, updatable = false)
-    var userId: UUID = user.id,
+    @Column(name = "suggested_answer", columnDefinition = "TEXT")
+    var suggestedAnswer: String? = null,
 
     @Column(name = "message_id", nullable = false)
     var messageId: UUID,
@@ -44,9 +35,4 @@ data class ConversationUserMessageFeedbackEntity(
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     var updatedAt: Instant = Instant.now()
-) : IdentifiableUserResource {
-    @PostLoad
-    fun populateUserId() {
-        userId = user.id
-    }
-}
+)

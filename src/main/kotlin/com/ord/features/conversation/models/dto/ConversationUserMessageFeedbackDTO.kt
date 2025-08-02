@@ -6,13 +6,13 @@ import java.util.UUID
 data class ConversationUserMessageFeedbackDTO(
     val id: UUID = UUID.randomUUID(),
 
-    val rating: Int,
-    val comment: String? = null,
-    val correctForm: String? = null,
+    val grammar: Int,
+    val vocabulary: Int,
+    val answerLength: Int,
+    val suggestedAnswer: String? = null,
 
     val messageId: UUID,
 
     val createdAt: Instant = Instant.now(),
     val updatedAt: Instant = Instant.now()
 )
-
