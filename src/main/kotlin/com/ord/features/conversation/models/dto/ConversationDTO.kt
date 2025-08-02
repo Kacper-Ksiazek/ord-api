@@ -21,10 +21,11 @@ data class ConversationDTO(
     val aiTone: ConversationTone,
     val aiResponseLength: ConversationAIResponseLength,
 
+    val additionalContext: String,
+
     val user: UserDTO,
     val userId: UUID = user.id,
 
     val createdAt: Instant = Instant.now(),
     val updatedAt: Instant = Instant.now()
 )
-

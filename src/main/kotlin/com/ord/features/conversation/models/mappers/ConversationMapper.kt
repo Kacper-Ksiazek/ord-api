@@ -20,6 +20,7 @@ class ConversationMapper(
             goal = dto.goal,
             aiTone = dto.aiTone,
             aiResponseLength = dto.aiResponseLength,
+            additionalContext = dto.additionalContext,
 
             user = userMapper.toEntity(dto.user),
             userId = dto.userId,
@@ -38,6 +39,7 @@ class ConversationMapper(
             goal = entity.goal,
             aiTone = entity.aiTone,
             aiResponseLength = entity.aiResponseLength,
+            additionalContext = entity.additionalContext,
 
             user = userMapper.toDTO(entity.user),
             userId = entity.userId,
@@ -47,4 +49,3 @@ class ConversationMapper(
         )
     }
 }
-

@@ -45,6 +45,9 @@ data class ConversationEntity(
     @Enumerated(EnumType.STRING)
     var aiResponseLength: ConversationAIResponseLength,
 
+    @Column(name = "additional_context", nullable = false, columnDefinition = "TEXT")
+    var additionalContext: String,
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)

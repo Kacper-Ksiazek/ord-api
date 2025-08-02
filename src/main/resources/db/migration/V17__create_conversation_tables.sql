@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS conversations
 (
     id                 UUID PRIMARY KEY,
 
-    topic              VARCHAR(255)                    NOT NULL,
+    topic              TEXT                            NOT NULL,
+    additional_context TEXT                     DEFAULT NULL,
 
     language           language_name                   NOT NULL,
     proficiency_level  language_proficiency            NOT NULL,
