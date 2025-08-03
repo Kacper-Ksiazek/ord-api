@@ -1,6 +1,7 @@
 package com.ord.features.conversation.repositories
 
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
-import com.ord.shared.repositories.UserResourceRepository
+import org.springframework.data.jpa.repository.JpaRepository
+import java.util.*
 
-interface ConversationMessageRepository : UserResourceRepository<ConversationMessageEntity>
+interface ConversationMessageRepository : JpaRepository<ConversationMessageEntity, UUID>
