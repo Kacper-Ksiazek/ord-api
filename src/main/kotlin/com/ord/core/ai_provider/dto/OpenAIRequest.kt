@@ -5,6 +5,7 @@ data class OpenAIRequest(
     val input: String,
     val instructions: String? = null,
     val temperature: Float,
+    val stream: Boolean = false,
 
     val max_output_tokens: Int,
 )
