@@ -37,18 +37,18 @@ CREATE TABLE IF NOT EXISTS conversation_messages
 
 CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
 (
-    id              UUID PRIMARY KEY,
+    id               UUID PRIMARY KEY,
 
-    grammar         INT  NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
-    vocabulary      INT  NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),
-    answerLength    INT  NOT NULL CHECK (answerLength >= 0 AND answerLength <= 10),
+    grammar          INT  NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
+    vocabulary       INT  NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),
+    answer_length    INT  NOT NULL CHECK (answer_length >= 0 AND answer_length <= 10),
 
-    suggestedAnswer TEXT                     DEFAULT NULL,
+    suggested_answer TEXT                     DEFAULT NULL,
 
-    message_id      UUID NOT NULL UNIQUE,
+    message_id       UUID NOT NULL UNIQUE,
 
-    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (message_id) REFERENCES conversation_messages (id) ON DELETE CASCADE
 );

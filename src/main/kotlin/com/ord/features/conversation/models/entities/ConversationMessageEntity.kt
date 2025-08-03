@@ -27,7 +27,7 @@ data class ConversationMessageEntity(
     @Column(name = "conversation_id", nullable = false)
     var conversationId: UUID,
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "message", optional = true)
+    @OneToOne(mappedBy = "message", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], optional = true)
     var feedback: ConversationUserMessageFeedbackEntity? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)

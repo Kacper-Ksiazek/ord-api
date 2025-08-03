@@ -1,34 +1,35 @@
 package com.ord.features.conversation.models.mappers
 
 import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
+import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
-import com.ord.shared.models.mappers.MapperBase
 import org.springframework.stereotype.Component
 
 @Component
-class ConversationUserMessageFeedbackMapper : MapperBase<ConversationUserMessageFeedbackEntity, ConversationUserMessageFeedbackDTO> {
-
-    override fun toEntity(dto: ConversationUserMessageFeedbackDTO): ConversationUserMessageFeedbackEntity {
+class ConversationUserMessageFeedbackMapper {
+    fun toEntity(
+        dto: ConversationUserMessageFeedbackDTO,
+        messageEntity: ConversationMessageEntity
+    ): ConversationUserMessageFeedbackEntity {
         return ConversationUserMessageFeedbackEntity(
             id = dto.id,
             grammar = dto.grammar,
             vocabulary = dto.vocabulary,
             answerLength = dto.answerLength,
             suggestedAnswer = dto.suggestedAnswer,
-            messageId = dto.messageId,
+            message = messageEntity,
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt
         )
     }
 
-    override fun toDTO(entity: ConversationUserMessageFeedbackEntity): ConversationUserMessageFeedbackDTO {
+    fun toDTO(entity: ConversationUserMessageFeedbackEntity): ConversationUserMessageFeedbackDTO {
         return ConversationUserMessageFeedbackDTO(
             id = entity.id,
             grammar = entity.grammar,
             vocabulary = entity.vocabulary,
             answerLength = entity.answerLength,
             suggestedAnswer = entity.suggestedAnswer,
-            messageId = entity.messageId,
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
         )

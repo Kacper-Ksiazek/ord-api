@@ -14,7 +14,7 @@ class ConversationMapper(
     override fun toEntity(dto: ConversationDTO): ConversationEntity {
         return ConversationEntity(
             id = dto.id,
-            title = dto.title,
+            topic = dto.topic,
             language = dto.language,
             proficiencyLevel = dto.proficiencyLevel,
             goal = dto.goal,
@@ -33,7 +33,7 @@ class ConversationMapper(
     override fun toDTO(entity: ConversationEntity): ConversationDTO {
         return ConversationDTO(
             id = entity.id,
-            title = entity.title,
+            topic = entity.topic,
             language = entity.language,
             proficiencyLevel = entity.proficiencyLevel,
             goal = entity.goal,

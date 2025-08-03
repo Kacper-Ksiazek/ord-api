@@ -11,8 +11,6 @@ data class ConversationUserMessageFeedbackDTO(
     val answerLength: Int,
     val suggestedAnswer: String? = null,
 
-    val messageId: UUID,
-
     val createdAt: Instant = Instant.now(),
     val updatedAt: Instant = Instant.now()
 )
