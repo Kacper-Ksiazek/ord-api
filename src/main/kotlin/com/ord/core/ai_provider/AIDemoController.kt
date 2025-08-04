@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/demo")
@@ -16,25 +17,15 @@ class AIDemoController(
 ) {
     @GetMapping("/stream", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun streamResponse(@RequestParam prompt: String): Flux<String> {
-        val emitter = Sinks.many().unicast().onBackpressureBuffer<String>()
+        val prompt = "Give me a completely random fun fact. Be creative and make it interesting! "
 
-        val prompt = "Tell me a joke about polish people"
-
-        openAIStreamClientService.openStream(
+        val emitter = openAIStreamClientService.openStream(
             prompt = prompt,
             onChunkReceived = { chunk ->
-                println(chunk)
-                // TODO: Next steps - create an enum of possible chunk response types and handle each separately
-                // TODO 2: Learn what is `"response.content_part.done"` and `"response.output_item.added"`
-                // TODO 3: Create a generic handler for all types of chunks
-
-                emitter.tryEmitNext(chunk)
+//                println(chunk)
             },
-            onComplete = {
-                emitter.tryEmitComplete()
-            },
-            onError = { error ->
-                emitter.tryEmitError(error)
+            onComplete = { result ->
+                println("Stream completed with result: $result")
             }
         )
 

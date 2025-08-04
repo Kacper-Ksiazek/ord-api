@@ -8,6 +8,7 @@ import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.ord.shared.prompts.Prompt
+import reactor.core.publisher.Sinks
 
 interface OpenAIAPIClientService {
     fun <T> makeRequest(
@@ -22,9 +23,8 @@ interface OpenAIAPIClientService {
 
     fun openStream(
         prompt: String,
-
-        onComplete: () -> Unit,
-        onError: (Throwable) -> Unit,
-        onChunkReceived: (String) -> Unit
-    )
+        onComplete: (String) -> Unit,
+        onChunkReceived: (String) -> Unit,
+        onError: (Throwable) -> Unit = { throw it },
+    ): Sinks.Many<String>
 }

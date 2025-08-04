@@ -5,22 +5,18 @@ import com.ord.config.properties.OpenAIProperties
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserEntity
 import com.ord.exceptions.REST.BadGatewayException
-import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
-import com.ord.features.game.model.ongoing_game.enums.GameType
-import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
-import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.service.GameTokensUsageService
 import com.ord.shared.utils.Console
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ord.shared.prompts.Prompt
+import com.ord.core.ai_provider.enums.StreamedOpenAIResponseType
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Sinks
 
 @Service
 class OpenAIAPIClientServiceImpl(
@@ -29,7 +25,7 @@ class OpenAIAPIClientServiceImpl(
     private val openAIProperties: OpenAIProperties,
     private val webClient: WebClient,
 ) : OpenAIAPIClientService {
-    private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
+    private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
 
@@ -57,7 +53,7 @@ class OpenAIAPIClientServiceImpl(
                 .also { saveLog(it) }
 
             parsedResponseBody = try {
-                parseResponseBody(jsonObjectMapper.readValue(response.data, aiResponseTypeReference))
+                parseResponseBody(objectMapper.readValue(response.data, aiResponseTypeReference))
             } catch (e: Exception) {
                 // TODO: Hide behind "debug" feature flag
                 Console.printRed("\n\uD83D\uDEA8 [OPENAI REQUEST PARSING ERROR] Exception: ${e.message}")
@@ -71,25 +67,59 @@ class OpenAIAPIClientServiceImpl(
 
     override fun openStream(
         prompt: String,
-        onComplete: () -> Unit,
-        onError: (Throwable) -> Unit,
-        onChunkReceived: (String) -> Unit
-    ) {
+        onComplete: (String) -> Unit,
+        onChunkReceived: (String) -> Unit,
+        onError: (Throwable) -> Unit
+    ): Sinks.Many<String> {
+        val emitter = Sinks.many().unicast().onBackpressureBuffer<String>()
+
         val request = openAIRequestFactory.createRequest(
             prompt = prompt,
-            stream = true
+            stream = true,
+            context = "Return a plain text"
         )
+
+        var test: String = "";
 
         webClient.post()
             .uri(openAIProperties.apiUrl)
             .bodyValue(request)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.TEXT_EVENT_STREAM)
             .retrieve()
             .bodyToFlux(String::class.java)
-            .doOnError(onError)
-            .doOnComplete(onComplete)
-            .doOnNext(onChunkReceived)
+            .doOnError { error ->
+                onError(error)
+                emitter.tryEmitError(error)
+            }
+            .doOnNext { chunk ->
+                try {
+                    val jsonNode = objectMapper.readTree(chunk)
+                    val type = StreamedOpenAIResponseType.fromRawType(jsonNode["type"]?.asText()!!)
+                    val content = type.extractRelevantValue(jsonNode)
+
+                    if (content != null) {
+                        emitter.tryEmitNext(content)
+
+                        // TODO: Call proper functions here
+
+                        test += content;
+
+                        println(test)
+                    }
+                } catch (_: Exception) {
+                    println("Failed to parse OpenAI stream chunk: $chunk")
+                    emitter.tryEmitError(BadGatewayException("Failed to parse OpenAI stream chunk: $chunk"))
+                    return@doOnNext
+                }
+
+            }
+            .doOnComplete {
+                emitter.tryEmitComplete()
+            }
             .subscribe()
+
+        return emitter
     }
 
     private fun trackOpenAIAPIRequestAttempt(attempt: Int) {
