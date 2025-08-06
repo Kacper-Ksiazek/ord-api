@@ -10,6 +10,7 @@ import com.ord.shared.utils.Console
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.ai_provider.enums.StreamedOpenAIResponseType
 import org.springframework.http.HttpHeaders
@@ -96,16 +97,35 @@ class OpenAIAPIClientServiceImpl(
                 try {
                     val jsonNode = objectMapper.readTree(chunk)
                     val type = StreamedOpenAIResponseType.fromRawType(jsonNode["type"]?.asText()!!)
-                    val content = type.extractRelevantValue(jsonNode)
 
-                    if (content != null) {
-                        emitter.tryEmitNext(content)
+                    when (type) {
+                        StreamedOpenAIResponseType.RESPONSE_OUTPUT_TEXT_DELTA -> {
+                            val delta = jsonNode.get("delta")?.asText()
 
-                        // TODO: Call proper functions here
+                            if (delta != null) {
+                                emitter.tryEmitNext(delta)
+                            }
+                        }
 
-                        test += content;
+                        StreamedOpenAIResponseType.RESPONSE_COMPLETED -> {
+                            val finalContent =
+                                jsonNode
+                                    .get("response")
+                                    .get("output")
+                                    .firstOrNull()
+                                    ?.get("content")
+                                    ?.firstOrNull()
+                                    ?.get("text")
+                                    ?.textValue()
 
-                        println(test)
+                            println("Full OpenAI response")
+                            println(finalContent)
+                        }
+
+                        StreamedOpenAIResponseType.RESPONSE_ERROR -> throw Exception()
+
+                        else -> {}
+
                     }
                 } catch (_: Exception) {
                     println("Failed to parse OpenAI stream chunk: $chunk")
