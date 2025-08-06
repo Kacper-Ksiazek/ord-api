@@ -24,8 +24,8 @@ class AIDemoController(
             onChunkReceived = { chunk ->
 //                println(chunk)
             },
-            onComplete = { result ->
-                println("Stream completed with result: $result")
+            onComplete = { payload ->
+                println("Stream completed with result: ${payload.finalContent}")
             }
         )
 

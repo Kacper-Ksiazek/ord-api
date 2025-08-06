@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
 import com.ord.core.ai_provider.enums.StreamedOpenAIResponseType
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -68,9 +69,9 @@ class OpenAIAPIClientServiceImpl(
 
     override fun openStream(
         prompt: String,
-        onComplete: (String) -> Unit,
         onChunkReceived: (String) -> Unit,
-        onError: (Throwable) -> Unit
+        onError: (Throwable) -> Unit,
+        onComplete: (StreamCompletedPayload) -> Unit
     ): Sinks.Many<String> {
         val emitter = Sinks.many().unicast().onBackpressureBuffer<String>()
 
@@ -79,8 +80,6 @@ class OpenAIAPIClientServiceImpl(
             stream = true,
             context = "Return a plain text"
         )
-
-        var test: String = "";
 
         webClient.post()
             .uri(openAIProperties.apiUrl)
@@ -100,7 +99,7 @@ class OpenAIAPIClientServiceImpl(
 
                     when (type) {
                         StreamedOpenAIResponseType.RESPONSE_OUTPUT_TEXT_DELTA -> {
-                            val delta = jsonNode.get("delta")?.asText()
+                            val delta = type.extractRelevantValue(jsonNode)
 
                             if (delta != null) {
                                 emitter.tryEmitNext(delta)
@@ -108,18 +107,15 @@ class OpenAIAPIClientServiceImpl(
                         }
 
                         StreamedOpenAIResponseType.RESPONSE_COMPLETED -> {
-                            val finalContent =
-                                jsonNode
-                                    .get("response")
-                                    .get("output")
-                                    .firstOrNull()
-                                    ?.get("content")
-                                    ?.firstOrNull()
-                                    ?.get("text")
-                                    ?.textValue()
+                            val usage = jsonNode.get("response")?.get("usage")
 
-                            println("Full OpenAI response")
-                            println(finalContent)
+                            onComplete(
+                                StreamCompletedPayload(
+                                    finalContent = type.extractRelevantValue(jsonNode) ?: "",
+                                    inputTokens = usage?.get("input_tokens")?.asInt() ?: 0,
+                                    outputTokens = usage?.get("output_tokens")?.asInt() ?: 0
+                                )
+                            )
                         }
 
                         StreamedOpenAIResponseType.RESPONSE_ERROR -> throw Exception()

@@ -2,6 +2,7 @@ package com.ord.core.ai_provider.services
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.dto.OpenAIResponse
+import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
@@ -23,8 +24,8 @@ interface OpenAIAPIClientService {
 
     fun openStream(
         prompt: String,
-        onComplete: (String) -> Unit,
         onChunkReceived: (String) -> Unit,
         onError: (Throwable) -> Unit = { throw it },
+        onComplete: (StreamCompletedPayload) -> Unit,
     ): Sinks.Many<String>
 }
