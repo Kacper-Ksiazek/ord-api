@@ -67,13 +67,73 @@ class OpenAIAPIClientServiceImpl(
         return parsedResponseBody
     }
 
-    override fun openStream(
+    override fun openSimpleStringStream(
         prompt: String,
         onChunkReceived: (String) -> Unit,
         onError: (Throwable) -> Unit,
-        onComplete: (StreamCompletedPayload) -> Unit
+        onComplete: (StreamCompletedPayload<String>) -> Unit
     ): Sinks.Many<String> {
-        val emitter = Sinks.many().unicast().onBackpressureBuffer<String>()
+        return makeStreamedRequest(
+            prompt = prompt,
+            onError = onError,
+//            onComplete = onComplete,
+            onDeltaReceived = { (delta, emitter) ->
+                emitter.tryEmitNext(delta)
+            }
+        )
+    }
+
+    override fun <TStreamedItem> openStructuredArrayStream(
+        prompt: String,
+        streamedItemTypeReference: TypeReference<TStreamedItem>,
+        onItemReceived: (TStreamedItem) -> Unit,
+        onError: (Throwable) -> Unit,
+        onComplete: (StreamCompletedPayload<String>) -> Unit
+    ): Sinks.Many<TStreamedItem> {
+        var parsingItemBuffer: String = "";
+
+        val separator = "[[BREAK]]";
+
+        return makeStreamedRequest<TStreamedItem>(
+            prompt = prompt,
+            onError = onError,
+//            onComplete = onComplete,
+            onDeltaReceived = { (delta, emitter) ->
+                parsingItemBuffer += delta
+
+                if (parsingItemBuffer.contains(separator)) {
+                    val parsedItem = objectMapper.readValue(
+                        parsingItemBuffer
+                            .replace(separator, "")
+                            .trim(),
+                        streamedItemTypeReference
+                    )
+
+
+                    if (parsedItem != null) {
+                        onItemReceived(parsedItem)
+                        emitter.tryEmitNext(parsedItem)
+                    }
+
+                    parsingItemBuffer = ""
+                }
+            }
+        )
+    }
+
+    private fun trackOpenAIAPIRequestAttempt(attempt: Int) {
+        if (attempt > openAIProperties.maximumNumberOfOpenAIAPIRequestAttempts) {
+            throw BadGatewayException("AI service could not generate a valid response after $attempt attempts. Please try again.")
+        }
+    }
+
+    private fun <T> makeStreamedRequest(
+        prompt: String,
+        onDeltaReceived: (Pair<String, Sinks.Many<T>>) -> Unit,
+        onError: (Throwable) -> Unit,
+//        onComplete: (StreamCompletedPayload<T>) -> Unit
+    ): Sinks.Many<T> {
+        val emitter = Sinks.many().unicast().onBackpressureBuffer<T>()
 
         val request = openAIRequestFactory.createRequest(
             prompt = prompt,
@@ -102,20 +162,21 @@ class OpenAIAPIClientServiceImpl(
                             val delta = type.extractRelevantValue(jsonNode)
 
                             if (delta != null) {
-                                emitter.tryEmitNext(delta)
+                                onDeltaReceived(Pair(delta, emitter))
                             }
                         }
 
                         StreamedOpenAIResponseType.RESPONSE_COMPLETED -> {
                             val usage = jsonNode.get("response")?.get("usage")
 
-                            onComplete(
-                                StreamCompletedPayload(
-                                    finalContent = type.extractRelevantValue(jsonNode) ?: "",
-                                    inputTokens = usage?.get("input_tokens")?.asInt() ?: 0,
-                                    outputTokens = usage?.get("output_tokens")?.asInt() ?: 0
-                                )
-                            )
+//                            onComplete(
+//                                StreamCompletedPayload<T>(
+////                                    finalContent = type.extractRelevantValue(jsonNode) ?: "",
+//                                    finalContent= "TODO",
+//                                    inputTokens = usage?.get("input_tokens")?.asInt() ?: 0,
+//                                    outputTokens = usage?.get("output_tokens")?.asInt() ?: 0
+//                                )
+//                            )
                         }
 
                         StreamedOpenAIResponseType.RESPONSE_ERROR -> throw Exception()
@@ -123,9 +184,9 @@ class OpenAIAPIClientServiceImpl(
                         else -> {}
 
                     }
-                } catch (_: Exception) {
-                    println("Failed to parse OpenAI stream chunk: $chunk")
-                    emitter.tryEmitError(BadGatewayException("Failed to parse OpenAI stream chunk: $chunk"))
+                } catch (exception: Exception) {
+                    println(exception)
+                    emitter.tryEmitError(exception)
                     return@doOnNext
                 }
 
@@ -136,11 +197,5 @@ class OpenAIAPIClientServiceImpl(
             .subscribe()
 
         return emitter
-    }
-
-    private fun trackOpenAIAPIRequestAttempt(attempt: Int) {
-        if (attempt > openAIProperties.maximumNumberOfOpenAIAPIRequestAttempts) {
-            throw BadGatewayException("AI service could not generate a valid response after $attempt attempts. Please try again.")
-        }
     }
 }

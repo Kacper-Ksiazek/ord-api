@@ -22,10 +22,18 @@ interface OpenAIAPIClientService {
         parseResponseBody: (responseBody: T) -> T = { it }
     ): T
 
-    fun openStream(
+    fun openSimpleStringStream(
         prompt: String,
         onChunkReceived: (String) -> Unit,
         onError: (Throwable) -> Unit = { throw it },
-        onComplete: (StreamCompletedPayload) -> Unit,
+        onComplete: (StreamCompletedPayload<String>) -> Unit,
     ): Sinks.Many<String>
+
+    fun <TStreamedItem> openStructuredArrayStream(
+        prompt: String,
+        streamedItemTypeReference: TypeReference<TStreamedItem>,
+        onItemReceived: (TStreamedItem) -> Unit,
+        onError: (Throwable) -> Unit = { throw it },
+        onComplete: (StreamCompletedPayload<String>) -> Unit,
+    ): Sinks.Many<TStreamedItem>
 }
