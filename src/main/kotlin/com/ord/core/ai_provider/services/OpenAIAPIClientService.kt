@@ -11,6 +11,8 @@ import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.en
 import com.ord.shared.prompts.Prompt
 import reactor.core.publisher.Sinks
 
+typealias Emitter = Sinks.Many<String>
+
 interface OpenAIAPIClientService {
     fun <T> makeRequest(
         aiResponseTypeReference: TypeReference<T>,
@@ -24,16 +26,16 @@ interface OpenAIAPIClientService {
 
     fun openSimpleStringStream(
         prompt: String,
-        onChunkReceived: (String) -> Unit,
+        onChunkReceived: (String) -> Unit = {},
         onError: (Throwable) -> Unit = { throw it },
-        onComplete: (StreamCompletedPayload<String>) -> Unit,
-    ): Sinks.Many<String>
+        onComplete: (Pair<StreamCompletedPayload<String>, Emitter>) -> Unit,
+    ): Emitter
 
     fun <TStreamedItem> openStructuredArrayStream(
         prompt: String,
         streamedItemTypeReference: TypeReference<TStreamedItem>,
-        onItemReceived: (TStreamedItem) -> Unit,
+        onItemReceived: (TStreamedItem) -> Unit = {},
         onError: (Throwable) -> Unit = { throw it },
-        onComplete: (StreamCompletedPayload<String>) -> Unit,
-    ): Sinks.Many<TStreamedItem>
+        onComplete: (Pair<StreamCompletedPayload<List<TStreamedItem>>, Emitter>) -> Unit,
+    ): Emitter
 }

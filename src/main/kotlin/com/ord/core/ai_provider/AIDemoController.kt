@@ -1,11 +1,13 @@
 package com.ord.core.ai_provider
 
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 
@@ -14,18 +16,22 @@ import reactor.core.publisher.Flux
 class AIDemoController(
     private val openAIStreamClientService: OpenAIAPIClientService
 ) {
+    private val objectMapper: ObjectMapper = jacksonObjectMapper()
+        .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
+
     @GetMapping("/stream-string", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun streamStringResponse(): Flux<String> {
         val prompt = "Generate 5 random ice breaker questions. Start each with a separate numbered point"
 
         val emitter = openAIStreamClientService.openSimpleStringStream(
             prompt = prompt,
-            onChunkReceived = { chunk ->
-//                println(chunk)
-            },
-            onComplete = { payload ->
+            onComplete = { (payload, emitter) ->
                 // TODO: Add gpt tokens usage log here - when the system will be redesigned
-                println("Stream completed with result: ${payload.finalContent}")
+                emitter.tryEmitNext(
+                    objectMapper.writeValueAsString(
+                        payload
+                    )
+                )
             }
         )
 
@@ -33,7 +39,7 @@ class AIDemoController(
     }
 
     @GetMapping("/stream-array", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    fun streamArrayResponse(): Flux<DemoArray> {
+    fun streamArrayResponse(): Flux<String> {
         val prompt =
             """
                 Generate 5 random ice breaker questions. 
@@ -61,13 +67,13 @@ class AIDemoController(
         val emitter = openAIStreamClientService.openStructuredArrayStream<DemoArray>(
             prompt = prompt,
             streamedItemTypeReference = object : TypeReference<DemoArray>() {},
-            onItemReceived = { item ->
-                println("✅")
-                println(item)
-            },
-            onComplete = { payload ->
+            onComplete = { (payload, emitter) ->
                 // TODO: Add gpt tokens usage log here - when the system will be redesigned
-                println("Stream completed with result: ${payload.finalContent}")
+                emitter.tryEmitNext(
+                    objectMapper.writeValueAsString(
+                        payload
+                    )
+                )
             }
         )
 

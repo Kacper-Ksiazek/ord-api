@@ -10,10 +10,10 @@ import com.ord.shared.utils.Console
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
 import com.ord.core.ai_provider.enums.StreamedOpenAIResponseType
+import com.ord.core.ai_provider.services.Emitter
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -71,12 +71,12 @@ class OpenAIAPIClientServiceImpl(
         prompt: String,
         onChunkReceived: (String) -> Unit,
         onError: (Throwable) -> Unit,
-        onComplete: (StreamCompletedPayload<String>) -> Unit
-    ): Sinks.Many<String> {
-        return makeStreamedRequest(
+        onComplete: (Pair<StreamCompletedPayload<String>, Emitter>) -> Unit,
+    ): Emitter {
+        return makeStreamedRequest<String>(
             prompt = prompt,
             onError = onError,
-//            onComplete = onComplete,
+            onComplete = onComplete,
             onDeltaReceived = { (delta, emitter) ->
                 emitter.tryEmitNext(delta)
             }
@@ -88,16 +88,26 @@ class OpenAIAPIClientServiceImpl(
         streamedItemTypeReference: TypeReference<TStreamedItem>,
         onItemReceived: (TStreamedItem) -> Unit,
         onError: (Throwable) -> Unit,
-        onComplete: (StreamCompletedPayload<String>) -> Unit
-    ): Sinks.Many<TStreamedItem> {
+        onComplete: (Pair<StreamCompletedPayload<List<TStreamedItem>>, Emitter>) -> Unit,
+    ): Emitter {
         var parsingItemBuffer: String = "";
 
-        val separator = "[[BREAK]]";
+        val resultItems: MutableList<TStreamedItem> = mutableListOf()
 
-        return makeStreamedRequest<TStreamedItem>(
+        val separator = "[[BREAK]]"; // TODO: Make it some global constant
+
+        return makeStreamedRequest<String>(
             prompt = prompt,
             onError = onError,
-//            onComplete = onComplete,
+            onComplete = { (payload, emitter) ->
+                val result = StreamCompletedPayload<List<TStreamedItem>>(
+                    finalContent = resultItems,
+                    inputTokens = payload.inputTokens,
+                    outputTokens = payload.outputTokens
+                )
+
+                onComplete(Pair(result, emitter))
+            },
             onDeltaReceived = { (delta, emitter) ->
                 parsingItemBuffer += delta
 
@@ -112,7 +122,9 @@ class OpenAIAPIClientServiceImpl(
 
                     if (parsedItem != null) {
                         onItemReceived(parsedItem)
-                        emitter.tryEmitNext(parsedItem)
+                        resultItems.add(parsedItem)
+
+                        emitter.tryEmitNext(objectMapper.writeValueAsString(parsedItem))
                     }
 
                     parsingItemBuffer = ""
@@ -127,13 +139,13 @@ class OpenAIAPIClientServiceImpl(
         }
     }
 
-    private fun <T> makeStreamedRequest(
+    private fun <TStreamedChunk> makeStreamedRequest(
         prompt: String,
-        onDeltaReceived: (Pair<String, Sinks.Many<T>>) -> Unit,
         onError: (Throwable) -> Unit,
-//        onComplete: (StreamCompletedPayload<T>) -> Unit
-    ): Sinks.Many<T> {
-        val emitter = Sinks.many().unicast().onBackpressureBuffer<T>()
+        onDeltaReceived: (Pair<String, Emitter>) -> Unit,
+        onComplete: (Pair<StreamCompletedPayload<String>, Emitter>) -> Unit
+    ): Sinks.Many<String> {
+        val emitter: Emitter = Sinks.many().unicast().onBackpressureBuffer<String>()
 
         val request = openAIRequestFactory.createRequest(
             prompt = prompt,
@@ -151,6 +163,7 @@ class OpenAIAPIClientServiceImpl(
             .doOnError { error ->
                 onError(error)
                 emitter.tryEmitError(error)
+                emitter.tryEmitComplete()
             }
             .doOnNext { chunk ->
                 try {
@@ -169,14 +182,16 @@ class OpenAIAPIClientServiceImpl(
                         StreamedOpenAIResponseType.RESPONSE_COMPLETED -> {
                             val usage = jsonNode.get("response")?.get("usage")
 
-//                            onComplete(
-//                                StreamCompletedPayload<T>(
-////                                    finalContent = type.extractRelevantValue(jsonNode) ?: "",
-//                                    finalContent= "TODO",
-//                                    inputTokens = usage?.get("input_tokens")?.asInt() ?: 0,
-//                                    outputTokens = usage?.get("output_tokens")?.asInt() ?: 0
-//                                )
-//                            )
+                            onComplete(
+                                Pair(
+                                    StreamCompletedPayload(
+                                        finalContent = type.extractRelevantValue(jsonNode) ?: "",
+                                        inputTokens = usage?.get("input_tokens")?.asInt() ?: 0,
+                                        outputTokens = usage?.get("output_tokens")?.asInt() ?: 0
+                                    ),
+                                    emitter
+                                )
+                            )
                         }
 
                         StreamedOpenAIResponseType.RESPONSE_ERROR -> throw Exception()
