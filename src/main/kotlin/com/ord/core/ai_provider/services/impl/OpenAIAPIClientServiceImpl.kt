@@ -94,7 +94,8 @@ class OpenAIAPIClientServiceImpl(
 
         val resultItems: MutableList<TStreamedItem> = mutableListOf()
 
-        val separator = "[[BREAK]]"; // TODO: Make it some global constant
+        val separator = OpenAIAPIClientService.STREAMING_CONTENT_SEPARATOR
+        val separatorRegex = Regex(Regex.escape(separator))
 
         return makeStreamedRequest<String>(
             prompt = prompt,
@@ -111,10 +112,11 @@ class OpenAIAPIClientServiceImpl(
             onDeltaReceived = { (delta, emitter) ->
                 parsingItemBuffer += delta
 
-                if (parsingItemBuffer.contains(separator)) {
+                if (separatorRegex.containsMatchIn(parsingItemBuffer)) {
                     val parsedItem = objectMapper.readValue(
                         parsingItemBuffer
                             .replace(separator, "")
+                            .replace("\n", "")
                             .trim(),
                         streamedItemTypeReference
                     )
@@ -161,9 +163,9 @@ class OpenAIAPIClientServiceImpl(
             .retrieve()
             .bodyToFlux(String::class.java)
             .doOnError { error ->
-                onError(error)
                 emitter.tryEmitError(error)
                 emitter.tryEmitComplete()
+                onError(error)
             }
             .doOnNext { chunk ->
                 try {

@@ -1,7 +1,12 @@
 package com.ord.features.conversation.api.facades
 
-interface ConversationTopicFacade {
-    fun suggestTopics()
+import com.ord.core.user.model.UserEntity
+import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
+import reactor.core.publisher.Flux
 
-    // TODO: Implement methods to preserve some topic
+interface ConversationTopicFacade {
+    fun suggestTopics(
+        user: UserEntity,
+        body: SuggestConversationTopicRequest
+    ): Flux<String>
 }
