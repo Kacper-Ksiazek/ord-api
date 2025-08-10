@@ -8,6 +8,7 @@ import com.ord.features.conversation.models.enums.ConversationTone
 
 data class CreateConversationRequest(
     val topic: String,
+    val additionalContext: String? = null,
 
     val language: LanguageName,
     val proficiencyLevel: LanguageProficiencyLevel,
