@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component
 
 @Component
 class ConversationMapper(
-    private val userMapper: UserMapper
+    private val userMapper: UserMapper,
+    private val conversationMessageMapper: ConversationMessageMapper,
 ) : MapperBase<ConversationEntity, ConversationDTO> {
 
     override fun toEntity(dto: ConversationDTO): ConversationEntity {
@@ -24,6 +25,7 @@ class ConversationMapper(
 
             user = userMapper.toEntity(dto.user),
             userId = dto.userId,
+            messages = dto.messages.map { conversationMessageMapper.toEntity(it) }.toMutableList(),
 
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt
@@ -43,6 +45,7 @@ class ConversationMapper(
 
             user = userMapper.toDTO(entity.user),
             userId = entity.userId,
+            messages = entity.messages.map { conversationMessageMapper.toDTO(it) }.toMutableList(),
 
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
