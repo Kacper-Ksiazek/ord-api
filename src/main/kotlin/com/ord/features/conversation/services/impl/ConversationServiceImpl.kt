@@ -13,8 +13,7 @@ import java.util.UUID
 
 @Service
 class ConversationServiceImpl(
-    override val repository: ConversationRepository,
-    private val conversationMessageMapper: ConversationMessageMapper,
+    override val repository: ConversationRepository
 ) : ConversationService {
     override fun findRecentTopics(
         userId: UUID,
@@ -28,16 +27,5 @@ class ConversationServiceImpl(
             language = language,
             limit = limit
         )
-    }
-
-    override fun addMessageToConversation(
-        conversation: ConversationEntity,
-        message: ConversationMessageDTO
-    ) {
-        conversation.messages.add(
-            conversationMessageMapper.toEntity(message)
-        )
-
-        repository.save(conversation)
     }
 }

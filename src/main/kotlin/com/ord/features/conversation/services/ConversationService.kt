@@ -14,9 +14,4 @@ interface ConversationService : UserResourceService<ConversationEntity> {
         language: LanguageName,
         limit: Int = 10
     ): List<String>
-
-    fun addMessageToConversation(
-        conversation: ConversationEntity,
-        message: ConversationMessageDTO
-    )
 }

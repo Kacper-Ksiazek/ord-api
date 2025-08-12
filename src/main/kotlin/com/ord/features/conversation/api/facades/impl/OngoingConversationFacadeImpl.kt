@@ -3,8 +3,9 @@ package com.ord.features.conversation.api.facades.impl
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
-import com.ord.features.conversation.models.dto.ConversationMessageDTO
+import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
+import com.ord.features.conversation.services.ConversationMessageService
 import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
@@ -16,7 +17,8 @@ import java.util.*
 @Service
 class OngoingConversationFacadeImpl(
     private val openAIAPIClientService: OpenAIAPIClientService,
-    private val conversationService: ConversationService
+    private val conversationService: ConversationService,
+    private val conversationMessageService: ConversationMessageService,
 ) : OngoingConversationFacade {
     override fun initializeConversation() {
         TODO("Not yet implemented")
@@ -29,6 +31,21 @@ class OngoingConversationFacadeImpl(
     ): Flux<String> {
         val conversation = conversationService.findByIdOrFail(conversationId, user.id)
 
+        val serializedConversationHistory: List<String> =
+            conversation.messages
+                .mapIndexed { index, message -> message.serialize(index) }
+                .toMutableList()
+                .apply {
+                    add(
+                        serializeMessage(
+                            index = this.size,
+                            sender = ConversationMessageSender.USER,
+                            message = lastestUserMessage
+                        )
+                    )
+                }
+
+
         val prompt = Prompt(
             variant = AvailablePrompts.CONVERSATION_REQUEST_AI_RESPONSE,
             params = mapOf(
@@ -37,7 +54,7 @@ class OngoingConversationFacadeImpl(
                 "topic" to conversation.topic,
                 "goal" to conversation.goal.toString(),
                 "goalExplanation" to conversation.goal.contextForAI,
-                "serializedConversationHistory" to listOf<String>().toParamString()
+                "serializedConversationHistory" to serializedConversationHistory.toParamString(tabulated = true),
             )
         )
 
@@ -47,7 +64,12 @@ class OngoingConversationFacadeImpl(
                 onComplete = { (payload, emitter) ->
                     // TODO: Save logs here
 
-                    // TODO: Save AI message here - but first add extension function to the ConversationEntity which would simply allow adding new messages to it
+                    conversationMessageService.createMessage(
+                        conversationId = conversation.id,
+                        sender = ConversationMessageSender.AI,
+                        content = payload.finalContent,
+                        messageOrder = 0
+                    )
                 }
             )
             .asFlux()
@@ -57,7 +79,7 @@ class OngoingConversationFacadeImpl(
         TODO("Not yet implemented")
     }
 
-    private fun ConversationMessageDTO.serialize(index: Int): String {
+    private fun ConversationMessageEntity.serialize(index: Int): String {
         return serializeMessage(index, sender, content)
     }
 
