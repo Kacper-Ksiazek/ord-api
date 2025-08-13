@@ -3,8 +3,11 @@ package com.ord.features.conversation.api.facades.impl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.user.model.UserEntity
+import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
+import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
 import com.ord.features.conversation.models.entities.ConversationEntity
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
@@ -31,6 +34,10 @@ class OngoingConversationFacadeImpl(
     ): Flux<String> {
         val conversation = conversationService.findByIdOrFail(conversationId, user.id)
 
+        if (conversation.messages.isNotEmpty()) {
+            throw BadRequestException("Conversation with id $conversationId has been already initialized. ")
+        }
+
         val prompt = Prompt(
             variant = AvailablePrompts.CONVERSATION_INITIALIZE,
             params = conversation.convertToPromptParams()
@@ -55,10 +62,9 @@ class OngoingConversationFacadeImpl(
 
     override fun requestAIMessage(
         user: UserEntity,
-        conversationId: UUID,
-        lastestUserMessage: String
+        body: CreateAIConversationMessageRequest
     ): Flux<String> {
-        val conversation = conversationService.findByIdOrFail(conversationId, user.id)
+        val conversation = conversationService.findByIdOrFail(body.conversationId, user.id)
 
         val serializedConversationHistory: List<String> =
             conversation.messages
@@ -69,7 +75,7 @@ class OngoingConversationFacadeImpl(
                         serializeMessage(
                             index = this.size,
                             sender = ConversationMessageSender.USER,
-                            message = lastestUserMessage
+                            message = body.latestUserMessage
                         )
                     )
                 }
@@ -92,7 +98,7 @@ class OngoingConversationFacadeImpl(
                         conversationId = conversation.id,
                         sender = ConversationMessageSender.AI,
                         content = payload.finalContent,
-                        messageOrder = 0
+                        messageOrder = body.messageOrder
                     )
                 }
             )
@@ -101,25 +107,22 @@ class OngoingConversationFacadeImpl(
 
     override fun saveUserMessageAndGetFeedback(
         user: UserEntity,
-        conversationId: UUID,
-        userMessage: String,
-        latestAIMessage: String?,
-        messageOrder: Int
+        body: ReviewUserConversationMessageRequest
     ): ResponseEntity<ReviewedUserConversationMessage> {
-        val conversation = conversationService.findByIdOrFail(conversationId, user.id)
+        val conversation = conversationService.findByIdOrFail(body.conversationId, user.id)
 
         conversationMessageService.createMessage(
             conversationId = conversation.id,
             sender = ConversationMessageSender.USER,
-            content = userMessage,
-            messageOrder = messageOrder
+            content = body.message,
+            messageOrder = body.messageOrder
         )
 
         val prompt = Prompt(
             variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
             params = conversation.convertToPromptParams() + mapOf(
-                "userMessage" to userMessage,
-                "latestAIMessage" to (latestAIMessage
+                "userMessage" to body.message,
+                "latestAIMessage" to (body.latestAIMessage
                     ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
             )
         )

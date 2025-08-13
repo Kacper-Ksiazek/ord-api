@@ -6,4 +6,5 @@ data class ReviewUserConversationMessageRequest(
     val conversationId: UUID,
     val message: String,
     val messageOrder: Int,
+    val latestAIMessage: String? = null,
 )

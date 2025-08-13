@@ -2,6 +2,8 @@ package com.ord.features.conversation.api.facades
 
 import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
+import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Flux
 import java.util.*
@@ -20,8 +22,7 @@ interface OngoingConversationFacade {
      */
     fun requestAIMessage(
         user: UserEntity,
-        conversationId: UUID,
-        lastestUserMessage: String
+        body: CreateAIConversationMessageRequest
     ): Flux<String>
 
     /**
@@ -30,13 +31,6 @@ interface OngoingConversationFacade {
      */
     fun saveUserMessageAndGetFeedback(
         user: UserEntity,
-        conversationId: UUID,
-        userMessage: String,
-        latestAIMessage: String? = null,
-        /**
-         * Technically, it could be computed from DB by taking the amount of messages, but in
-         * practice, for latency reasons, it is better to pass it from the client directly.
-         */
-        messageOrder: Int
+        body: ReviewUserConversationMessageRequest
     ): ResponseEntity<ReviewedUserConversationMessage>
 }
