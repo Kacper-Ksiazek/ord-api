@@ -9,7 +9,9 @@ data class ConversationUserMessageFeedbackDTO(
     val grammar: Int,
     val vocabulary: Int,
     val answerLength: Int,
+
     val suggestedAnswer: String? = null,
+    val comment: String? = null,
 
     val createdAt: Instant = Instant.now(),
     val updatedAt: Instant = Instant.now()

@@ -17,6 +17,7 @@ class ConversationUserMessageFeedbackMapper {
             vocabulary = dto.vocabulary,
             answerLength = dto.answerLength,
             suggestedAnswer = dto.suggestedAnswer,
+            comment = dto.comment,
             message = messageEntity,
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt
@@ -30,6 +31,7 @@ class ConversationUserMessageFeedbackMapper {
             vocabulary = entity.vocabulary,
             answerLength = entity.answerLength,
             suggestedAnswer = entity.suggestedAnswer,
+            comment = entity.comment,
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
         )

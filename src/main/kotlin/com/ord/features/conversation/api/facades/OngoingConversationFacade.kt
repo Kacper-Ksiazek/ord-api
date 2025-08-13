@@ -1,10 +1,10 @@
 package com.ord.features.conversation.api.facades
 
 import com.ord.core.user.model.UserEntity
-import com.ord.features.conversation.models.dto.ConversationMessageDTO
-import com.ord.features.conversation.models.entities.ConversationEntity
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Flux
-import java.util.UUID
+import java.util.*
 
 interface OngoingConversationFacade {
     /**
@@ -25,5 +25,10 @@ interface OngoingConversationFacade {
      * Performs a grammar and style review of a single user message, independently
      * of the current conversation context.
      */
-    fun saveUserMessageAndGetFeedback()
+    fun saveUserMessageAndGetFeedback(
+        user: UserEntity,
+        conversationId: UUID,
+        userMessage: String,
+        latestAIMessage: String,
+    ): ResponseEntity<ReviewedUserConversationMessage>
 }

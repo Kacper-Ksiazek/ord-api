@@ -1,8 +1,10 @@
 package com.ord.features.conversation.api.facades.impl
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
 import com.ord.features.conversation.services.ConversationMessageService
@@ -10,6 +12,7 @@ import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.toParamString
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import java.util.*
@@ -54,6 +57,7 @@ class OngoingConversationFacadeImpl(
                 "topic" to conversation.topic,
                 "goal" to conversation.goal.toString(),
                 "goalExplanation" to conversation.goal.contextForAI,
+                "additionalContext" to conversation.additionalContext,
                 "serializedConversationHistory" to serializedConversationHistory.toParamString(tabulated = true),
             )
         )
@@ -75,8 +79,37 @@ class OngoingConversationFacadeImpl(
             .asFlux()
     }
 
-    override fun saveUserMessageAndGetFeedback() {
-        TODO("Not yet implemented")
+    override fun saveUserMessageAndGetFeedback(
+        user: UserEntity,
+        conversationId: UUID,
+        userMessage: String,
+        latestAIMessage: String
+    ): ResponseEntity<ReviewedUserConversationMessage> {
+        val conversation = conversationService.findByIdOrFail(conversationId, user.id)
+
+        val prompt = Prompt(
+            variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
+            params = mapOf(
+                "language" to conversation.language.toString(),
+                "level" to conversation.proficiencyLevel.toString(),
+                "topic" to conversation.topic,
+                "goal" to conversation.goal.toString(),
+                "goalExplanation" to conversation.goal.contextForAI,
+                "additionalContext" to conversation.additionalContext,
+                "userMessage" to userMessage,
+                "latestAIMessage" to latestAIMessage
+            )
+        )
+
+        val aiFeedback: ReviewedUserConversationMessage = openAIAPIClientService.makeRequest(
+            prompt = prompt.toString(),
+            aiResponseTypeReference = object : TypeReference<ReviewedUserConversationMessage>() {},
+            saveLog = { openAIResponse ->
+                // TODO
+            }
+        )
+
+        return ResponseEntity.ok(aiFeedback)
     }
 
     private fun ConversationMessageEntity.serialize(index: Int): String {

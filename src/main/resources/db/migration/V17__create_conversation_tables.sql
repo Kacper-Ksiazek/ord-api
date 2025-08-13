@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
     answer_length    INT  NOT NULL CHECK (answer_length >= 0 AND answer_length <= 10),
 
     suggested_answer TEXT                     DEFAULT NULL,
+    comment          TEXT                     DEFAULT NULL,
 
     message_id       UUID NOT NULL UNIQUE,
 

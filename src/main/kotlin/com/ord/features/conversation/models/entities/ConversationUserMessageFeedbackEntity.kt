@@ -25,6 +25,9 @@ data class ConversationUserMessageFeedbackEntity(
     @Column(name = "suggested_answer", columnDefinition = "TEXT")
     var suggestedAnswer: String? = null,
 
+    @Column(name = "comment", columnDefinition = "TEXT")
+    var comment: String? = null,
+
     @OneToOne
     @JoinColumn(name = "message_id", nullable = false, unique = true)
     var message: ConversationMessageEntity,
