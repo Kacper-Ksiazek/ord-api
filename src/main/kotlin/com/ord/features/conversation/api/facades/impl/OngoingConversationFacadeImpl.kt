@@ -60,6 +60,7 @@ class OngoingConversationFacadeImpl(
             .asFlux()
     }
 
+
     override fun requestAIMessage(
         user: UserEntity,
         body: CreateAIConversationMessageRequest
@@ -104,6 +105,7 @@ class OngoingConversationFacadeImpl(
             )
             .asFlux()
     }
+
 
     override fun saveUserMessageAndGetFeedback(
         user: UserEntity,
