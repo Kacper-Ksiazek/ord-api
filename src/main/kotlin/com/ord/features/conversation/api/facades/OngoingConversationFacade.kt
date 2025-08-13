@@ -8,9 +8,12 @@ import java.util.*
 
 interface OngoingConversationFacade {
     /**
-     * Initializes conversation by either AI or USER
+     * Make AI to initialize a conversation with the user.
      */
-    fun initializeConversation()
+    fun initializeConversationByAI(
+        user: UserEntity,
+        conversationId: UUID,
+    ): Flux<String>
 
     /**
      * Calls AI API to request a message in conversation from the AI
@@ -29,6 +32,11 @@ interface OngoingConversationFacade {
         user: UserEntity,
         conversationId: UUID,
         userMessage: String,
-        latestAIMessage: String,
+        latestAIMessage: String? = null,
+        /**
+         * Technically, it could be computed from DB by taking the amount of messages, but in
+         * practice, for latency reasons, it is better to pass it from the client directly.
+         */
+        messageOrder: Int
     ): ResponseEntity<ReviewedUserConversationMessage>
 }

@@ -5,8 +5,10 @@ import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.models.entities.ConversationEntity
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
+import com.ord.features.conversation.models.extensions.convertToPromptParams
 import com.ord.features.conversation.services.ConversationMessageService
 import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
@@ -23,8 +25,32 @@ class OngoingConversationFacadeImpl(
     private val conversationService: ConversationService,
     private val conversationMessageService: ConversationMessageService,
 ) : OngoingConversationFacade {
-    override fun initializeConversation() {
-        TODO("Not yet implemented")
+    override fun initializeConversationByAI(
+        user: UserEntity,
+        conversationId: UUID
+    ): Flux<String> {
+        val conversation = conversationService.findByIdOrFail(conversationId, user.id)
+
+        val prompt = Prompt(
+            variant = AvailablePrompts.CONVERSATION_INITIALIZE,
+            params = conversation.convertToPromptParams()
+        )
+
+        return openAIAPIClientService
+            .openSimpleStringStream(
+                prompt = prompt.toString(),
+                onComplete = { (payload) ->
+                    // TODO: Save logs here
+
+                    conversationMessageService.createMessage(
+                        conversationId = conversation.id,
+                        sender = ConversationMessageSender.AI,
+                        content = payload.finalContent,
+                        messageOrder = 0
+                    )
+                }
+            )
+            .asFlux()
     }
 
     override fun requestAIMessage(
@@ -51,13 +77,7 @@ class OngoingConversationFacadeImpl(
 
         val prompt = Prompt(
             variant = AvailablePrompts.CONVERSATION_REQUEST_AI_RESPONSE,
-            params = mapOf(
-                "language" to conversation.language.toString(),
-                "level" to conversation.proficiencyLevel.toString(),
-                "topic" to conversation.topic,
-                "goal" to conversation.goal.toString(),
-                "goalExplanation" to conversation.goal.contextForAI,
-                "additionalContext" to conversation.additionalContext,
+            params = conversation.convertToPromptParams() + mapOf(
                 "serializedConversationHistory" to serializedConversationHistory.toParamString(tabulated = true),
             )
         )
@@ -83,21 +103,24 @@ class OngoingConversationFacadeImpl(
         user: UserEntity,
         conversationId: UUID,
         userMessage: String,
-        latestAIMessage: String
+        latestAIMessage: String?,
+        messageOrder: Int
     ): ResponseEntity<ReviewedUserConversationMessage> {
         val conversation = conversationService.findByIdOrFail(conversationId, user.id)
 
+        conversationMessageService.createMessage(
+            conversationId = conversation.id,
+            sender = ConversationMessageSender.USER,
+            content = userMessage,
+            messageOrder = messageOrder
+        )
+
         val prompt = Prompt(
             variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
-            params = mapOf(
-                "language" to conversation.language.toString(),
-                "level" to conversation.proficiencyLevel.toString(),
-                "topic" to conversation.topic,
-                "goal" to conversation.goal.toString(),
-                "goalExplanation" to conversation.goal.contextForAI,
-                "additionalContext" to conversation.additionalContext,
+            params = conversation.convertToPromptParams() + mapOf(
                 "userMessage" to userMessage,
-                "latestAIMessage" to latestAIMessage
+                "latestAIMessage" to (latestAIMessage
+                    ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
             )
         )
 
@@ -111,6 +134,10 @@ class OngoingConversationFacadeImpl(
 
         return ResponseEntity.ok(aiFeedback)
     }
+
+    //
+    // Utility functions
+    //
 
     private fun ConversationMessageEntity.serialize(index: Int): String {
         return serializeMessage(index, sender, content)

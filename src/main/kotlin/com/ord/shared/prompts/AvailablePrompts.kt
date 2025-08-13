@@ -6,6 +6,7 @@ enum class AvailablePrompts(
     CONVERSATION_REQUEST_AI_RESPONSE(resourcePath = "conversation/respond_in_conversation.md"),
     CONVERSATION_SUGGEST_TOPIC(resourcePath = "conversation/suggest_conversation_topic.md"),
     CONVERSATION_REVIEW_USER_RESPONSE(resourcePath = "conversation/review_user_message_in_conversation.md"),
+    CONVERSATION_INITIALIZE(resourcePath = "conversation/initialize_conversation.md"),
 
     GAMES_GENERATE_CROSSWORD(resourcePath = "games/generate_crossword_game.md"),
     GAMES_GENERATE_WORDS_TYPING(resourcePath = "games/generate_words_typing_game.md"),

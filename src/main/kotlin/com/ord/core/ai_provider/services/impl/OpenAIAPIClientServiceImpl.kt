@@ -135,6 +135,10 @@ class OpenAIAPIClientServiceImpl(
         )
     }
 
+    // ----
+    // Utils
+    // ----
+
     private fun trackOpenAIAPIRequestAttempt(attempt: Int) {
         if (attempt > openAIProperties.maximumNumberOfOpenAIAPIRequestAttempts) {
             throw BadGatewayException("AI service could not generate a valid response after $attempt attempts. Please try again.")
