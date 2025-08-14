@@ -26,6 +26,8 @@ class ConversationTopicFacadeImpl(
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
+    val isTestingEnv: Boolean = true;
+
     override fun suggestTopics(user: UserEntity, body: SuggestConversationTopicRequest): Flux<String> {
         val languageProficiency = languageProficiencyService.findUserProficiencyInLanguageOrThrow(
             user.id,
@@ -53,7 +55,7 @@ class ConversationTopicFacadeImpl(
             )
         )
 
-        return openAIStreamClientService
+        val flux = openAIStreamClientService
             .openStructuredArrayStream<SimpleStreamedArrayItem>(
                 prompt = prompt.toString(),
                 streamedItemTypeReference = object : TypeReference<SimpleStreamedArrayItem>() {},
@@ -66,5 +68,14 @@ class ConversationTopicFacadeImpl(
                 }
             )
             .asFlux()
+
+        return if (isTestingEnv) {
+            // For tests: block until the full result is collected and emit as Flux
+            @Suppress("BlockingMethodInNonBlockingContext")
+            Flux.fromIterable(flux.collectList().block() ?: emptyList())
+        } else {
+            // For production: stream each chunk
+            flux
+        }
     }
 }

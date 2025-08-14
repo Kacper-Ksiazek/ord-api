@@ -53,7 +53,7 @@ class SecurityConfiguration(
             "/api/v1/auth/logout",
             "/api/v1/words/**",
             "/api/v1/games/**",
-            "/api/v1/conversations/**",
+//            "/api/v1/conversations/**",
         )
     }
 }
