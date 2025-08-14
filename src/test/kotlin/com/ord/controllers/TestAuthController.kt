@@ -68,7 +68,7 @@ class TestAuthController @Autowired constructor(
     @DisplayName("General")
     inner class GeneralAuthTests {
         @Test
-        fun `401 - when trying to access restricted resource without providing the cookie token`() {
+        fun `403 - when trying to access restricted resource without providing the cookie token`() {
             // This method already ensures that cookie is not null
             val authenticatedUser = mockAuthenticatedUser()
             // Assert a session is created
@@ -77,9 +77,9 @@ class TestAuthController @Autowired constructor(
             // Create a request to /me
             val request = authRequestFactory.meRequest()
 
-            // Without providing the cookie token, /me should return 401
+            // Without providing the cookie token, /me should return 403
             mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isUnauthorized()
+                MockMvcResultMatchers.status().isForbidden()
             )
 
             // But with the cookie token, it should return 200
@@ -296,13 +296,13 @@ class TestAuthController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `401 - me endpoint should return 401 for anonymous users`() {
+            fun `403 - me endpoint should return 401 for anonymous users`() {
                 // Create a request
                 val request = authRequestFactory.meRequest()
 
                 // Perform the request
                 mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.UNAUTHORIZED.value()
+                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
                 }
             }
 
