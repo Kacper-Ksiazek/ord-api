@@ -1,5 +1,6 @@
 package com.ord.features.conversation.api.facades.impl
 
+import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.facades.ConversationCRUDFacade
 import com.ord.features.conversation.api.requests.CreateConversationRequest
@@ -15,8 +16,10 @@ import java.util.UUID
 @Service
 class ConversationCRUDFacadeImpl(
     private val conversationService: ConversationService,
-    private val conversationMapper: ConversationMapper
+    private val conversationMapper: ConversationMapper,
+    private val languageProficiencyService: LanguageProficiencyService,
 ) : ConversationCRUDFacade {
+
     internal fun ConversationEntity.toDTO(): ConversationDTO {
         return conversationMapper.toDTO(this)
     }
@@ -25,6 +28,8 @@ class ConversationCRUDFacadeImpl(
         user: UserEntity,
         body: CreateConversationRequest
     ): ResponseEntity<ConversationDTO> {
+        val proficiency = languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, body.language)
+
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(
@@ -33,7 +38,7 @@ class ConversationCRUDFacadeImpl(
                         topic = body.topic,
                         additionalContext = body.additionalContext ?: "",
                         language = body.language,
-                        proficiencyLevel = body.proficiencyLevel,
+                        proficiencyLevel = proficiency.proficiency,
                         goal = body.goal,
                         aiTone = body.tone,
                         aiResponseLength = body.aiResponseLength,

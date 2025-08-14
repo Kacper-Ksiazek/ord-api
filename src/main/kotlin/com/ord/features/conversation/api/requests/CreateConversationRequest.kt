@@ -11,7 +11,6 @@ data class CreateConversationRequest(
     val additionalContext: String? = null,
 
     val language: LanguageName,
-    val proficiencyLevel: LanguageProficiencyLevel,
 
     val tone: ConversationTone,
     val goal: ConversationGoal,
