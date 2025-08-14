@@ -57,7 +57,7 @@ data class ConversationEntity(
     var userId: UUID = user.id,
 
     @OneToMany(
-        mappedBy = "conversation",
+        mappedBy = "conversationId",
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
         fetch = FetchType.LAZY
