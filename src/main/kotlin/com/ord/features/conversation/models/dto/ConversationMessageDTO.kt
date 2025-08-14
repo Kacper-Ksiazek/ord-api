@@ -5,15 +5,13 @@ import java.time.Instant
 import java.util.*
 
 data class ConversationMessageDTO(
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID,
 
     val messageOrder: Int,
     val sender: ConversationMessageSender,
     val content: String,
 
-    val conversationId: UUID,
     val feedback: ConversationUserMessageFeedbackDTO? = null,
 
-    val createdAt: Instant = Instant.now(),
-    val updatedAt: Instant = Instant.now()
+    val createdAt: Instant = Instant.now()
 )

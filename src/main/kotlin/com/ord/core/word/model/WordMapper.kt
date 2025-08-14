@@ -2,14 +2,14 @@ package com.ord.core.word.model
 
 import com.ord.core.user.model.UserMapper
 import com.ord.features.bank.model.BankMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class WordMapper(
     private val userMapper: UserMapper,
     private val bankMapper: BankMapper
-) : MapperBase<WordEntity, WordDTO> {
+) : BidirectionalEntityMapper<WordEntity, WordDTO> {
     override fun toEntity(dto: WordDTO): WordEntity {
         return WordEntity(
             id = dto.id,

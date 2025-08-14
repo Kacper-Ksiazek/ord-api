@@ -2,14 +2,14 @@ package com.ord.features.gpt_tokens_usage_log.variants.story_tokens_usage.model
 
 import com.ord.core.user.model.UserMapper
 import com.ord.features.story.models.mappers.StoryMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class StoryTokensUsageMapper(
     private val userMapper: UserMapper,
     private val storyMapper: StoryMapper
-) : MapperBase<StoryTokensUsageEntity, StoryTokensUsageDTO> {
+) : BidirectionalEntityMapper<StoryTokensUsageEntity, StoryTokensUsageDTO> {
     override fun toEntity(dto: StoryTokensUsageDTO): StoryTokensUsageEntity {
         return StoryTokensUsageEntity(
             id = dto.id,

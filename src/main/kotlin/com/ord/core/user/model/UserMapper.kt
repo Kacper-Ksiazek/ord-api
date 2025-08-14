@@ -1,10 +1,10 @@
 package com.ord.core.user.model
 
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
-class UserMapper : MapperBase<UserEntity, UserDTO> {
+class UserMapper : BidirectionalEntityMapper<UserEntity, UserDTO> {
     override fun toEntity(dto: UserDTO): UserEntity {
         return UserEntity(
             id = dto.id,

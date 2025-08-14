@@ -1,13 +1,13 @@
 package com.ord.core.langugae_proficiency.model
 
 import com.ord.core.user.model.UserMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class LanguageProficiencyMapper(
     private val userMapper: UserMapper
-) : MapperBase<LanguageProficiencyEntity, LanguageProficiencyDTO> {
+) : BidirectionalEntityMapper<LanguageProficiencyEntity, LanguageProficiencyDTO> {
     override fun toEntity(dto: LanguageProficiencyDTO): LanguageProficiencyEntity {
         return LanguageProficiencyEntity(
             id = dto.id,

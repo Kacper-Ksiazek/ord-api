@@ -1,13 +1,13 @@
 package com.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model
 
 import com.ord.core.user.model.UserMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class WordTokensUsageMapper(
     private val userMapper: UserMapper,
-) : MapperBase<WordTokensUsageEntity, WordTokensUsageDTO> {
+) : BidirectionalEntityMapper<WordTokensUsageEntity, WordTokensUsageDTO> {
     override fun toEntity(dto: WordTokensUsageDTO): WordTokensUsageEntity {
         return WordTokensUsageEntity(
             id = dto.id,

@@ -1,10 +1,9 @@
 package com.ord.features.conversation.models.dto
 
-import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 data class ConversationUserMessageFeedbackDTO(
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID,
 
     val grammar: Int,
     val vocabulary: Int,
@@ -12,7 +11,4 @@ data class ConversationUserMessageFeedbackDTO(
 
     val suggestedAnswer: String? = null,
     val comment: String? = null,
-
-    val createdAt: Instant = Instant.now(),
-    val updatedAt: Instant = Instant.now()
 )

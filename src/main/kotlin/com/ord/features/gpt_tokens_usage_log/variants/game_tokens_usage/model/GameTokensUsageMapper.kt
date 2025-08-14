@@ -1,13 +1,13 @@
 package com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model
 
 import com.ord.core.user.model.UserMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class GameTokensUsageMapper(
     private val userMapper: UserMapper,
-) : MapperBase<GameTokensUsageEntity, GameTokensUsageDTO> {
+) : BidirectionalEntityMapper<GameTokensUsageEntity, GameTokensUsageDTO> {
     override fun toEntity(dto: GameTokensUsageDTO): GameTokensUsageEntity {
         return GameTokensUsageEntity(
             id = dto.id,

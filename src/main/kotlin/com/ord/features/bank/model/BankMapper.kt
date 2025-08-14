@@ -2,14 +2,14 @@ package com.ord.features.bank.model
 
 import com.ord.core.user.model.UserMapper
 import com.ord.features.bank_group.model.BankGroupMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class BankMapper(
     private val userMapper: UserMapper,
     private val bankGroupMapper: BankGroupMapper
-) : MapperBase<BankEntity, BankDTO> {
+) : BidirectionalEntityMapper<BankEntity, BankDTO> {
     override fun toEntity(dto: BankDTO): BankEntity {
         return BankEntity(
             id = dto.id,

@@ -1,13 +1,13 @@
 package com.ord.features.user_activity_log.model
 
 import com.ord.core.user.model.UserMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class UserActivityLogMapper(
     private val userMapper: UserMapper,
-) : MapperBase<UserActivityLogEntity, UserActivityLogDTO> {
+) : BidirectionalEntityMapper<UserActivityLogEntity, UserActivityLogDTO> {
     override fun toEntity(dto: UserActivityLogDTO): UserActivityLogEntity {
         return UserActivityLogEntity(
             id = dto.id,

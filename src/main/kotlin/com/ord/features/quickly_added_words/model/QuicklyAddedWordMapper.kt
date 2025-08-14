@@ -1,13 +1,13 @@
 package com.ord.features.quickly_added_words.model
 
 import com.ord.core.user.model.UserMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class QuicklyAddedWordMapper(
     private val userMapper: UserMapper
-): MapperBase<QuicklyAddedWordEntity, QuicklyAddedWordDTO> {
+): BidirectionalEntityMapper<QuicklyAddedWordEntity, QuicklyAddedWordDTO> {
     override fun toEntity(dto: QuicklyAddedWordDTO): QuicklyAddedWordEntity {
         return QuicklyAddedWordEntity(
             id = dto.id,

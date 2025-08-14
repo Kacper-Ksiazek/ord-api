@@ -3,14 +3,14 @@ package com.ord.features.story.models.mappers
 import com.ord.core.user.model.UserMapper
 import com.ord.features.story.models.dto.StoryDTO
 import com.ord.features.story.models.entities.StoryEntity
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class StoryMapper(
     private val userMapper: UserMapper,
     private val storyContextMapper: StoryContextMapper
-) : MapperBase<StoryEntity, StoryDTO> {
+) : BidirectionalEntityMapper<StoryEntity, StoryDTO> {
     override fun toEntity(dto: StoryDTO): StoryEntity {
         return StoryEntity(
             id = dto.id,

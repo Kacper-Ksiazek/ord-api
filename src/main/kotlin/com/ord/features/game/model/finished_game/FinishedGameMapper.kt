@@ -1,13 +1,13 @@
 package com.ord.features.game.model.finished_game
 
 import com.ord.core.user.model.UserMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class FinishedGameMapper(
     private val userMapper: UserMapper,
-) : MapperBase<FinishedGameEntity, FinishedGameDTO> {
+) : BidirectionalEntityMapper<FinishedGameEntity, FinishedGameDTO> {
     override fun toDTO(entity: FinishedGameEntity): FinishedGameDTO {
         return FinishedGameDTO(
             id = entity.id,
