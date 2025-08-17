@@ -16,3 +16,4 @@ Your reply should:
 1. Be a plain text, with neither extra messages nor any kind of formatting. Markdown is not allowed as well.
 2. Provide a lot of space for the user to respond and keep the conversation going.
 3. Match the conversation type and follow additional context, if provided. It's super important.
+4. Always end your answer with a question to the user, so they can continue the conversation.

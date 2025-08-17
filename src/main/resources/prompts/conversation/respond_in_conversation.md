@@ -23,3 +23,4 @@ Your reply should:
     It's super important to leave a room for the user to respond and keep the conversation alive.
 4. Match the requested proficiency level.
 5. Return just a plain text, with neither extra messages nor any kind of formatting. Markdown is not allowed as well.
+6. Always end your answer with a question to the user, so they can continue the conversation.
