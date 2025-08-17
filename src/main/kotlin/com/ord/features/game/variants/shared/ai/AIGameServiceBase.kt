@@ -35,7 +35,7 @@ abstract class AIGameServiceBase {
             prompt = prompt,
             validateResponseBody = validateResponseBody,
             parseResponseBody = parseResponseBody,
-            aiResponseTypeReference = aiResponseTypeReference,
+            aiResponseType = aiResponseTypeReference,
             saveLog = {
                 gameTokensUsageService.save(
                     user = user,

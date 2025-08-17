@@ -8,7 +8,6 @@ import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
-import com.ord.features.conversation.models.entities.ConversationEntity
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
 import com.ord.features.conversation.models.extensions.convertToPromptParams
@@ -57,7 +56,6 @@ class OngoingConversationFacadeImpl(
                     )
                 }
             )
-            .asFlux()
     }
 
 
@@ -103,7 +101,6 @@ class OngoingConversationFacadeImpl(
                     )
                 }
             )
-            .asFlux()
     }
 
 
@@ -131,7 +128,7 @@ class OngoingConversationFacadeImpl(
 
         val aiFeedback: ReviewedUserConversationMessage = openAIAPIClientService.makeRequest(
             prompt = prompt.toString(),
-            aiResponseTypeReference = object : TypeReference<ReviewedUserConversationMessage>() {},
+            aiResponseType = object : TypeReference<ReviewedUserConversationMessage>() {},
             saveLog = { openAIResponse ->
                 // TODO
             }

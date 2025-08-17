@@ -14,11 +14,13 @@ import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.toParamString
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 
 @Service
 class ConversationTopicFacadeImpl(
+    private val env: Environment,
     private val conversationService: ConversationService,
     private val openAIStreamClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService
@@ -26,7 +28,7 @@ class ConversationTopicFacadeImpl(
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
-    val isTestingEnv: Boolean = true;
+    val isTestingEnv: Boolean = env.activeProfiles.contains("test")
 
     override fun suggestTopics(user: UserEntity, body: SuggestConversationTopicRequest): Flux<String> {
         val languageProficiency = languageProficiencyService.findUserProficiencyInLanguageOrThrow(
@@ -58,16 +60,15 @@ class ConversationTopicFacadeImpl(
         val flux = openAIStreamClientService
             .openStructuredArrayStream<SimpleStreamedArrayItem>(
                 prompt = prompt.toString(),
-                streamedItemTypeReference = object : TypeReference<SimpleStreamedArrayItem>() {},
+                streamedItemType = object : TypeReference<SimpleStreamedArrayItem>() {},
                 onComplete = { (payload, emitter) ->
                     emitter.tryEmitNext(
                         objectMapper.writeValueAsString(
-                            payload
+                            payload.finalContent
                         )
                     )
                 }
             )
-            .asFlux()
 
         return if (isTestingEnv) {
             // For tests: block until the full result is collected and emit as Flux

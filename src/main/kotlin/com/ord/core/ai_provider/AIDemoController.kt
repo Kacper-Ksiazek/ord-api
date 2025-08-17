@@ -23,7 +23,7 @@ class AIDemoController(
     fun streamStringResponse(): Flux<String> {
         val prompt = "Generate 5 random ice breaker questions. Start each with a separate numbered point"
 
-        val emitter = openAIStreamClientService.openSimpleStringStream(
+        return openAIStreamClientService.openSimpleStringStream(
             prompt = prompt,
             onComplete = { (payload, emitter) ->
                 // TODO: Add gpt tokens usage log here - when the system will be redesigned
@@ -34,8 +34,6 @@ class AIDemoController(
                 )
             }
         )
-
-        return emitter.asFlux()
     }
 
     @GetMapping("/stream-array", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
@@ -64,9 +62,9 @@ class AIDemoController(
                [[BREAK]]
             """
 
-        val emitter = openAIStreamClientService.openStructuredArrayStream<DemoArray>(
+        return openAIStreamClientService.openStructuredArrayStream<DemoArray>(
             prompt = prompt,
-            streamedItemTypeReference = object : TypeReference<DemoArray>() {},
+            streamedItemType = object : TypeReference<DemoArray>() {},
             onComplete = { (payload, emitter) ->
                 // TODO: Add gpt tokens usage log here - when the system will be redesigned
                 emitter.tryEmitNext(
@@ -76,7 +74,5 @@ class AIDemoController(
                 )
             }
         )
-
-        return emitter.asFlux()
     }
 }
