@@ -8,7 +8,9 @@ import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
+import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
+import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
 import com.ord.features.conversation.models.extensions.convertToPromptParams
 import com.ord.features.conversation.services.ConversationMessageService
@@ -110,13 +112,6 @@ class OngoingConversationFacadeImpl(
     ): ResponseEntity<ReviewedUserConversationMessage> {
         val conversation = conversationService.findByIdOrFail(body.conversationId, user.id)
 
-        conversationMessageService.createMessage(
-            conversationId = conversation.id,
-            sender = ConversationMessageSender.USER,
-            content = body.message,
-            messageOrder = body.messageOrder
-        )
-
         val prompt = Prompt(
             variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
             params = conversation.convertToPromptParams() + mapOf(
@@ -132,6 +127,19 @@ class OngoingConversationFacadeImpl(
             saveLog = { openAIResponse ->
                 // TODO
             }
+        )
+
+        conversationMessageService.createMessageWithFeedback(
+            conversationId = conversation.id,
+            content = body.message,
+            messageOrder = body.messageOrder,
+            feedback = ConversationUserMessageFeedbackEntity(
+                grammar = aiFeedback.grammar,
+                vocabulary = aiFeedback.vocabulary,
+                answerLength = aiFeedback.answerLength,
+                suggestedAnswer = aiFeedback.suggestedAnswer,
+                comment = aiFeedback.comment
+            )
         )
 
         return ResponseEntity.ok(aiFeedback)

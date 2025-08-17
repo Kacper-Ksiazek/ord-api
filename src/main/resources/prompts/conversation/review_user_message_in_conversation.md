@@ -9,7 +9,7 @@ Your task is to review the user message in the conversation and provide feedback
 2. Conversation topic: **%%topic%%**.
 3. Conversation type:  **%%goal%%** - **%%goalExplanation%%**.
 4. Additional context for the conversation: **%%additionalContext%%**.
-5. Last AI message ( second person in convo ): **%%lastAiMessage%%**.
+5. Last AI message ( second person in convo ): **%%latestAIMessage%%**.
 
 ### TASK INSTRUCTIONS:
 
@@ -49,6 +49,6 @@ type ExpectedResult = {
      * It's for learning purposes so don't overwhelm the user with too much information. They will have an opportunity to ask for clarifications later so provide just a brief comment.
      */
     comment: string | null
-    suggestedCorrectAnswer: string | null // If user answer is 100% correct, then leave this as null
+    suggestedAnswer: string | null // If user answer is 100% correct, then leave this as null
 }
 ```

@@ -9,8 +9,7 @@ import java.util.*
 @Entity
 @Table(name = "conversation_user_message_feedback")
 data class ConversationUserMessageFeedbackEntity(
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID = UUID.randomUUID(),
 
     @Column(name = "grammar", nullable = false)
@@ -27,10 +26,6 @@ data class ConversationUserMessageFeedbackEntity(
 
     @Column(name = "comment", columnDefinition = "TEXT")
     var comment: String? = null,
-
-    @OneToOne
-    @JoinColumn(name = "message_id", nullable = false, unique = true)
-    var message: ConversationMessageEntity,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

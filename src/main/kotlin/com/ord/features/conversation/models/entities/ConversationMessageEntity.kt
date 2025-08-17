@@ -32,7 +32,12 @@ data class ConversationMessageEntity(
     @Transient
     var conversation: ConversationEntity? = null,
 
-    @OneToOne(mappedBy = "message", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], optional = true)
+    @OneToOne(
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        optional = true
+    )
+    @JoinColumn(name = "feedback_id", referencedColumnName = "id")
     var feedback: ConversationUserMessageFeedbackEntity? = null,
 
     @Column(name = "created_at", nullable = false, updatable = false)

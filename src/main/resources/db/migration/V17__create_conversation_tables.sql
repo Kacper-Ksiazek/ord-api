@@ -19,6 +19,23 @@ CREATE TABLE IF NOT EXISTS conversations
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+
+CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
+(
+    id               UUID PRIMARY KEY,
+
+    grammar          INT NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
+    vocabulary       INT NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),
+    answer_length    INT NOT NULL CHECK (answer_length >= 0 AND answer_length <= 10),
+
+    suggested_answer TEXT                     DEFAULT NULL,
+    comment          TEXT                     DEFAULT NULL,
+
+    created_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+
 CREATE TABLE IF NOT EXISTS conversation_messages
 (
     id              UUID PRIMARY KEY,
@@ -28,28 +45,11 @@ CREATE TABLE IF NOT EXISTS conversation_messages
     sender          conversation_message_sender NOT NULL,
 
     conversation_id UUID                        NOT NULL,
+    feedback_id     UUID                     DEFAULT NULL,
 
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (conversation_id) REFERENCES conversations (id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
-(
-    id               UUID PRIMARY KEY,
-
-    grammar          INT  NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
-    vocabulary       INT  NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),
-    answer_length    INT  NOT NULL CHECK (answer_length >= 0 AND answer_length <= 10),
-
-    suggested_answer TEXT                     DEFAULT NULL,
-    comment          TEXT                     DEFAULT NULL,
-
-    message_id       UUID NOT NULL UNIQUE,
-
-    created_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (message_id) REFERENCES conversation_messages (id) ON DELETE CASCADE
+    FOREIGN KEY (conversation_id) REFERENCES conversations (id) ON DELETE CASCADE,
+    FOREIGN KEY (feedback_id) REFERENCES conversation_user_message_feedback (id) ON DELETE CASCADE
 );

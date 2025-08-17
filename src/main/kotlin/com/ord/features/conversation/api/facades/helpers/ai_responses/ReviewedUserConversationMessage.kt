@@ -8,5 +8,5 @@ data class ReviewedUserConversationMessage(
     val answerLength: Int,
 
     val comment: String? = null,
-    val suggestedCorrectAnswer: String? = null
+    val suggestedAnswer: String? = null
 )
