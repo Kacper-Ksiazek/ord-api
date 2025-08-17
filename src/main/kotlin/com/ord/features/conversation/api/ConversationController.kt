@@ -6,6 +6,7 @@ import com.ord.features.conversation.api.facades.ConversationCRUDFacade
 import com.ord.features.conversation.api.facades.ConversationTopicFacade
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
+import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -30,7 +31,7 @@ class ConversationController(
     @PostMapping("/suggest-topics", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun suggestTopic(
         @AuthenticatedUser user: UserEntity,
-        @RequestBody body: SuggestConversationTopicRequest
+        @Valid @RequestBody body: SuggestConversationTopicRequest
     ) = conversationTopicFacade.suggestTopics(user, body)
 
     //
@@ -52,7 +53,7 @@ class ConversationController(
     @PostMapping("/")
     fun createConversation(
         @AuthenticatedUser user: UserEntity,
-        @RequestBody body: CreateConversationRequest
+        @Valid @RequestBody body: CreateConversationRequest
     ) = conversationCRUDFacade.createConversation(user, body)
 
 
