@@ -15,7 +15,7 @@ class ConversationRequestFactory(
 ) {
     fun getSuggestTopicsRequest(
         authenticatedUser: MockedAuthenticatedUser? = null,
-        clueFromUser: String? = null,
+        clueFromUser: String? = "Let's talk about the weather!",
         language: String? = GameMockerBase.Companion.DefaultParams.language.toString(),
         conversationGoal: String? = ConversationGoal.SMALL_TALK.toString(),
     ): MockHttpServletRequestBuilder {

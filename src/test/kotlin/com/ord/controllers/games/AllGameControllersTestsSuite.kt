@@ -7,4 +7,4 @@ import org.junit.platform.suite.api.SuiteDisplayName
 @Suite
 @SuiteDisplayName("  - ( Games ): ")
 @SelectPackages("com.ord.controllers.games")
-class AllGameControllersTests
+class AllGameControllersTestsSuite

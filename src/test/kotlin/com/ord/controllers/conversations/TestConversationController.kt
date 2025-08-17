@@ -9,15 +9,21 @@ import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserMapper
 import com.ord.controllers.conversations.helpers.request_factories.ConversationRequestFactory
 import com.ord.core.ai_provider.dto.helpers.SimpleStreamedArrayItem
-import com.ord.testing_utils.api.RESTTestingUtils
+import com.ord.testing_utils.api.SSETestingUtils
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldNotBe
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
@@ -47,8 +53,8 @@ class TestConversationController @Autowired constructor(
         objectMapper = objectMapper,
     )
 
-    private val sse: RESTTestingUtils by lazy {
-        RESTTestingUtils(
+    private val sse: SSETestingUtils by lazy {
+        SSETestingUtils(
             mockMvc = mockMvc,
             objectMapper = objectMapper
         )
@@ -57,32 +63,165 @@ class TestConversationController @Autowired constructor(
     @Nested
     @DisplayName("[POST] /api/v1/conversations/suggest-topics - suggest some conversation topics")
     inner class PostSuggestTopics {
+
         @Nested
         @DisplayName("Positive")
+        @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+        @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Positive {
-            @Test
-            fun `testing test`() {
+            lateinit var chunks: List<SimpleStreamedArrayItem>
+            lateinit var finalContent: List<SimpleStreamedArrayItem>
+
+            @BeforeAll
+            fun beforeAll() {
                 val authenticatedUser = mockAuthenticatedUser()
 
                 val request = conversationRequestFactory.getSuggestTopicsRequest(
                     authenticatedUser = authenticatedUser,
                 )
 
-                val (chunks, finalContent) = sse.postSSERequest(
+                val response = sse.postSSERequestWithStructuralChunks(
                     request = request,
                     chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
                     finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
                 )
 
-                println(chunks)
-                println(finalContent)
+                response shouldNotBe null
+
+                chunks = response!!.first
+                finalContent = response.second
+            }
+
+
+            @Test
+            fun `200 - There should be exactly 3 suggestions`() {
+                val expectedNumberOfSuggestions = 3
+
+                chunks shouldHaveSize expectedNumberOfSuggestions
+                finalContent shouldHaveSize expectedNumberOfSuggestions
+            }
+
+            @Test
+            fun `200 - All chunks should be included in the final content`() {
+                finalContent shouldContainAll chunks
+            }
+
+            @Test
+            fun `200 - Not passing clue from user is allowed`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                val request = conversationRequestFactory.getSuggestTopicsRequest(
+                    authenticatedUser = authenticatedUser,
+                    clueFromUser = null,
+                )
+
+                val response = sse.postSSERequestWithStructuralChunks(
+                    request = request,
+                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
+                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                )
             }
         }
 
         @Nested
         @DisplayName("Negative")
         inner class Negative {
+            @Test
+            fun `403 - Anonymous user cannot get topic suggestions`() {
+                val request = conversationRequestFactory.getSuggestTopicsRequest()
 
+                sse.postSSERequestWithStructuralChunks(
+                    expectedStatus = HttpStatus.FORBIDDEN,
+                    request = request,
+                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
+                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                )
+            }
+
+            @Test
+            fun `400 - Invalid language`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                val request = conversationRequestFactory.getSuggestTopicsRequest(
+                    authenticatedUser = authenticatedUser,
+                    language = "invalid_language"
+                )
+
+                sse.postSSERequestWithStructuralChunks(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    request = request,
+                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
+                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                )
+            }
+
+            @Test
+            fun `400 - Invalid conversation goal`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                val request = conversationRequestFactory.getSuggestTopicsRequest(
+                    authenticatedUser = authenticatedUser,
+                    conversationGoal = "invalid_goal"
+                )
+
+                sse.postSSERequestWithStructuralChunks(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    request = request,
+                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
+                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                )
+            }
+
+            @Test
+            fun `400 - Too long clueFromUser`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                val request = conversationRequestFactory.getSuggestTopicsRequest(
+                    authenticatedUser = authenticatedUser,
+                    clueFromUser = "x".repeat(260),
+                )
+
+                sse.postSSERequestWithStructuralChunks(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    request = request,
+                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
+                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                )
+            }
+
+            @Test
+            fun `400 - Empty conversation goal`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                val request = conversationRequestFactory.getSuggestTopicsRequest(
+                    authenticatedUser = authenticatedUser,
+                    conversationGoal = null,
+                )
+
+                sse.postSSERequestWithStructuralChunks(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    request = request,
+                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
+                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                )
+            }
+
+            @Test
+            fun `400 - Empty language`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                val request = conversationRequestFactory.getSuggestTopicsRequest(
+                    authenticatedUser = authenticatedUser,
+                    language = null,
+                )
+
+                sse.postSSERequestWithStructuralChunks(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    request = request,
+                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
+                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                )
+            }
         }
     }
 }
