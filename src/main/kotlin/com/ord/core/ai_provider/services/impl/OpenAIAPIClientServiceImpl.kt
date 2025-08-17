@@ -1,24 +1,27 @@
 package com.ord.core.ai_provider.services.impl
 
-import com.ord.config.RestClientConfig
-import com.ord.config.properties.OpenAIProperties
-import com.ord.core.ai_provider.dto.OpenAIResponse
-import com.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
-import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.exceptions.REST.BadGatewayException
-import com.ord.shared.utils.Console
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ord.config.RestClientConfig
+import com.ord.config.properties.OpenAIProperties
+import com.ord.core.ai_provider.dto.OpenAIResponse
+import com.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
 import com.ord.core.ai_provider.enums.StreamedOpenAIResponseType
 import com.ord.core.ai_provider.services.Emitter
+import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.exceptions.REST.BadGatewayException
+import com.ord.shared.utils.Console
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
+import kotlin.collections.contains
 
 @Service
 class OpenAIAPIClientServiceImpl(
@@ -26,13 +29,15 @@ class OpenAIAPIClientServiceImpl(
     private val restClientConfig: RestClientConfig,
     private val openAIProperties: OpenAIProperties,
     private val webClient: WebClient,
+    private val env: Environment
 ) : OpenAIAPIClientService {
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
+    val isTestingEnv: Boolean = env.activeProfiles.contains("test")
 
     override fun <T> makeRequest(
-        aiResponseTypeReference: TypeReference<T>,
+        aiResponseType: TypeReference<T>,
 
         prompt: String,
 
@@ -55,7 +60,7 @@ class OpenAIAPIClientServiceImpl(
                 .also { saveLog(it) }
 
             parsedResponseBody = try {
-                parseResponseBody(objectMapper.readValue(response.data, aiResponseTypeReference))
+                parseResponseBody(objectMapper.readValue(response.data, aiResponseType))
             } catch (e: Exception) {
                 // TODO: Hide behind "debug" feature flag
                 Console.printRed("\n\uD83D\uDEA8 [OPENAI REQUEST PARSING ERROR] Exception: ${e.message}")
@@ -72,7 +77,7 @@ class OpenAIAPIClientServiceImpl(
         onChunkReceived: (String) -> Unit,
         onError: (Throwable) -> Unit,
         onComplete: (Pair<StreamCompletedPayload<String>, Emitter>) -> Unit,
-    ): Emitter {
+    ): Flux<String> {
         return makeStreamedRequest<String>(
             prompt = prompt,
             onError = onError,
@@ -85,11 +90,11 @@ class OpenAIAPIClientServiceImpl(
 
     override fun <TStreamedItem> openStructuredArrayStream(
         prompt: String,
-        streamedItemTypeReference: TypeReference<TStreamedItem>,
+        streamedItemType: TypeReference<TStreamedItem>,
         onItemReceived: (TStreamedItem) -> Unit,
         onError: (Throwable) -> Unit,
         onComplete: (Pair<StreamCompletedPayload<List<TStreamedItem>>, Emitter>) -> Unit,
-    ): Emitter {
+    ): Flux<String> {
         var parsingItemBuffer: String = "";
 
         val resultItems: MutableList<TStreamedItem> = mutableListOf()
@@ -118,7 +123,7 @@ class OpenAIAPIClientServiceImpl(
                             .replace(separator, "")
                             .replace("\n", "")
                             .trim(),
-                        streamedItemTypeReference
+                        streamedItemType
                     )
 
 
@@ -150,7 +155,7 @@ class OpenAIAPIClientServiceImpl(
         onError: (Throwable) -> Unit,
         onDeltaReceived: (Pair<String, Emitter>) -> Unit,
         onComplete: (Pair<StreamCompletedPayload<String>, Emitter>) -> Unit
-    ): Sinks.Many<String> {
+    ): Flux<String> {
         val emitter: Emitter = Sinks.many().unicast().onBackpressureBuffer<String>()
 
         val request = openAIRequestFactory.createRequest(
@@ -159,6 +164,7 @@ class OpenAIAPIClientServiceImpl(
             context = "Return a plain text"
         )
 
+        @Suppress("CallingSubscribeInNonBlockingScope")
         webClient.post()
             .uri(openAIProperties.apiUrl)
             .bodyValue(request)
@@ -210,13 +216,22 @@ class OpenAIAPIClientServiceImpl(
                     emitter.tryEmitError(exception)
                     return@doOnNext
                 }
-
             }
             .doOnComplete {
                 emitter.tryEmitComplete()
             }
             .subscribe()
 
-        return emitter
+        val flux = emitter.asFlux()
+
+        return if (isTestingEnv) {
+            // For tests: block until the full result is collected and emit as Flux
+            @Suppress("BlockingMethodInNonBlockingContext")
+            Flux.fromIterable(flux.collectList().block() ?: emptyList())
+        } else {
+            // For production: stream each chunk
+            flux
+        }
+
     }
 }

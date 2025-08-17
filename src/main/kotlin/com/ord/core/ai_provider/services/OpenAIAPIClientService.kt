@@ -3,6 +3,7 @@ package com.ord.core.ai_provider.services
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
 
 typealias Emitter = Sinks.Many<String>
@@ -13,7 +14,7 @@ interface OpenAIAPIClientService {
     }
 
     fun <T> makeRequest(
-        aiResponseTypeReference: TypeReference<T>,
+        aiResponseType: TypeReference<T>,
 
         prompt: String,
 
@@ -27,13 +28,13 @@ interface OpenAIAPIClientService {
         onChunkReceived: (String) -> Unit = {},
         onError: (Throwable) -> Unit = { throw it },
         onComplete: (Pair<StreamCompletedPayload<String>, Emitter>) -> Unit,
-    ): Emitter
+    ): Flux<String>
 
     fun <TStreamedItem> openStructuredArrayStream(
         prompt: String,
-        streamedItemTypeReference: TypeReference<TStreamedItem>,
+        streamedItemType: TypeReference<TStreamedItem>,
         onItemReceived: (TStreamedItem) -> Unit = {},
         onError: (Throwable) -> Unit = { throw it },
         onComplete: (Pair<StreamCompletedPayload<List<TStreamedItem>>, Emitter>) -> Unit,
-    ): Emitter
+    ): Flux<String>
 }
