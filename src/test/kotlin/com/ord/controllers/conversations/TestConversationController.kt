@@ -1,5 +1,6 @@
 package com.ord.controllers.conversations
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
@@ -7,6 +8,7 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserMapper
 import com.ord.controllers.conversations.helpers.request_factories.ConversationRequestFactory
+import com.ord.core.ai_provider.dto.helpers.SimpleStreamedArrayItem
 import com.ord.testing_utils.api.RESTTestingUtils
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.DisplayName
@@ -16,10 +18,12 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 
 @SpringBootTest
+@ActiveProfiles("test")
 @ExtendWith(SpringExtension::class)
 @AutoConfigureMockMvc
 @DisplayName("- ConversationController")
@@ -64,7 +68,14 @@ class TestConversationController @Autowired constructor(
                     authenticatedUser = authenticatedUser,
                 )
 
-                sse.postSSERequest<Unit>(request = request)
+                val (chunks, finalContent) = sse.postSSERequest(
+                    request = request,
+                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
+                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                )
+
+                println(chunks)
+                println(finalContent)
             }
         }
 

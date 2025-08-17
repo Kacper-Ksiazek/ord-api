@@ -6,18 +6,16 @@ import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
-import java.util.function.Consumer
 
 class RESTTestingUtils(
     private val mockMvc: MockMvc,
     private val objectMapper: ObjectMapper
 ) {
-    fun <T> postSSERequest(
+    fun <TChunk, TFinalContent> postSSERequest(
         request: MockHttpServletRequestBuilder,
-//        finalType: TypeReference<T>,
-        perChunk: Consumer<String> = Consumer { }
-        // TODO: Add proper return type here
-    ) {
+        chunkType: TypeReference<TChunk>,
+        finalType: TypeReference<TFinalContent>
+    ): Pair<List<TChunk>, TFinalContent> {
         val mvcResult = mockMvc
             .perform(request)
             .andExpect(ResultMatcher { result ->
@@ -34,25 +32,23 @@ class RESTTestingUtils(
         val events = rawBody.split("\n\n")
             .map { it.trim() }
             .filter { it.isNotEmpty() }
+            .map { it.refineEventLine() }
 
-        val combinedResult = StringBuilder()
-
-        for (event in events) {
-            val dataLine = event.lines()
-                .firstOrNull { it.startsWith("data:") }
-                ?.removePrefix("data:")
-                ?.trim()
-
-            if (!dataLine.isNullOrEmpty()) {
-                perChunk.accept(dataLine)
-                combinedResult.append(dataLine)
+        val chunks: List<TChunk> = events
+            .slice(0 until events.size - 1)
+            .map {
+                objectMapper.readValue(it, chunkType)
             }
-        }
 
-        println(combinedResult.toString())
+        val finalEvent: TFinalContent = objectMapper.readValue(events.last(), finalType)
 
+        return Pair(chunks, finalEvent)
+    }
 
-        // Parse final combined JSON into the desired type
-//        return objectMapper.readValue(combinedResult.toString(), finalType)
+    private fun String.refineEventLine(): String {
+        val result = this.replace("data:", "")
+            .trim()
+
+        return result;
     }
 }
