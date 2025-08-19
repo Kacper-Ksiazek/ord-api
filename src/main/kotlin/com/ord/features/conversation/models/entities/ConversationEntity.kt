@@ -46,7 +46,7 @@ data class ConversationEntity(
     var aiResponseLength: ConversationAIResponseLength,
 
     @Column(name = "additional_context", nullable = false, columnDefinition = "TEXT")
-    var additionalContext: String,
+    var additionalContext: String? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

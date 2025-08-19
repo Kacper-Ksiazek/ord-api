@@ -9,6 +9,6 @@ fun ConversationEntity.convertToPromptParams(): Map<String, String> {
         "topic" to topic,
         "goal" to goal.toString(),
         "goalExplanation" to goal.contextForAI,
-        "additionalContext" to additionalContext
+        "additionalContext" to (additionalContext ?: "-")
     )
 }

@@ -20,7 +20,7 @@ data class ConversationDTO(
     val aiTone: ConversationTone,
     val aiResponseLength: ConversationAIResponseLength,
 
-    val additionalContext: String,
+    val additionalContext: String? = null,
     val messages: MutableList<ConversationMessageDTO>,
 
     val createdAt: Instant = Instant.now(),
