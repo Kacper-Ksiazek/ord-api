@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultMatcher
@@ -55,9 +56,14 @@ class SSETestingUtils(
     fun postStringChunks(
         request: MockHttpServletRequestBuilder,
         expectedStatus: HttpStatus = HttpStatus.OK,
-    ) {
+    ): String {
+        val requestBuilder = request
+            .characterEncoding("UTF-8")
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .contentType(MediaType.APPLICATION_JSON)
+
         val mvcResult = mockMvc
-            .perform(request)
+            .perform(requestBuilder)
             .andExpect(ResultMatcher { result ->
                 result.response.status shouldBe expectedStatus.value()
             })
@@ -65,24 +71,27 @@ class SSETestingUtils(
 
         // Abort for testing errors / edge cases
         if (expectedStatus !== HttpStatus.OK) {
-            return
+            return ""
         }
 
         val response: MockHttpServletResponse = mvcResult.response
-        val rawBody = response.contentAsString
+        val rawBody = response.getContentAsString(Charsets.UTF_8)
 
         // Split SSE events (double newline separated)
-        val events = rawBody.split("\n\n")
-            .map { it.trim() }
+        val chunks = rawBody.split("\n\n")
             .filter { it.isNotEmpty() }
-            .map { it.refineEventLine() }
+            .map { it.refineEventLine(applyTrim = false) }
 
-        println(events)
+        return chunks.joinToString("")
     }
 
-    private fun String.refineEventLine(): String {
-        val result = this.replace("data:", "")
-            .trim()
+    private fun String.refineEventLine(applyTrim: Boolean = true): String {
+        val result: String = this.replace("data:", "")
+            .apply {
+                if (applyTrim) {
+                    this.trim()
+                }
+            }
 
         return result;
     }
