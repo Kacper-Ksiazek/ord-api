@@ -80,7 +80,7 @@ class TestConversationController @Autowired constructor(
                     authenticatedUser = authenticatedUser,
                 )
 
-                val response = sse.postSSERequestWithStructuralChunks(
+                val response = sse.postStructuralChunks(
                     request = request,
                     chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
                     finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
@@ -115,7 +115,7 @@ class TestConversationController @Autowired constructor(
                     clueFromUser = null,
                 )
 
-                val response = sse.postSSERequestWithStructuralChunks(
+                val response = sse.postStructuralChunks(
                     request = request,
                     chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
                     finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
@@ -130,7 +130,7 @@ class TestConversationController @Autowired constructor(
             fun `403 - Anonymous user cannot get topic suggestions`() {
                 val request = conversationRequestFactory.getSuggestTopicsRequest()
 
-                sse.postSSERequestWithStructuralChunks(
+                sse.postStructuralChunks(
                     expectedStatus = HttpStatus.FORBIDDEN,
                     request = request,
                     chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
@@ -147,7 +147,7 @@ class TestConversationController @Autowired constructor(
                     language = "invalid_language"
                 )
 
-                sse.postSSERequestWithStructuralChunks(
+                sse.postStructuralChunks(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     request = request,
                     chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
@@ -164,7 +164,7 @@ class TestConversationController @Autowired constructor(
                     conversationGoal = "invalid_goal"
                 )
 
-                sse.postSSERequestWithStructuralChunks(
+                sse.postStructuralChunks(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     request = request,
                     chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
@@ -181,7 +181,7 @@ class TestConversationController @Autowired constructor(
                     clueFromUser = "x".repeat(260),
                 )
 
-                sse.postSSERequestWithStructuralChunks(
+                sse.postStructuralChunks(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     request = request,
                     chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
@@ -198,7 +198,7 @@ class TestConversationController @Autowired constructor(
                     conversationGoal = null,
                 )
 
-                sse.postSSERequestWithStructuralChunks(
+                sse.postStructuralChunks(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     request = request,
                     chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
@@ -215,7 +215,7 @@ class TestConversationController @Autowired constructor(
                     language = null,
                 )
 
-                sse.postSSERequestWithStructuralChunks(
+                sse.postStructuralChunks(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     request = request,
                     chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},

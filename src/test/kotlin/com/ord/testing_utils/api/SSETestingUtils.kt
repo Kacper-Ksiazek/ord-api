@@ -13,7 +13,8 @@ class SSETestingUtils(
     private val mockMvc: MockMvc,
     private val objectMapper: ObjectMapper
 ) {
-    fun <TChunk, TFinalContent> postSSERequestWithStructuralChunks(
+
+    fun <TChunk, TFinalContent> postStructuralChunks(
         request: MockHttpServletRequestBuilder,
         chunkType: TypeReference<TChunk>,
         finalType: TypeReference<TFinalContent>,
@@ -51,6 +52,33 @@ class SSETestingUtils(
         return Pair(chunks, finalEvent)
     }
 
+    fun postStringChunks(
+        request: MockHttpServletRequestBuilder,
+        expectedStatus: HttpStatus = HttpStatus.OK,
+    ) {
+        val mvcResult = mockMvc
+            .perform(request)
+            .andExpect(ResultMatcher { result ->
+                result.response.status shouldBe expectedStatus.value()
+            })
+            .andReturn()
+
+        // Abort for testing errors / edge cases
+        if (expectedStatus !== HttpStatus.OK) {
+            return
+        }
+
+        val response: MockHttpServletResponse = mvcResult.response
+        val rawBody = response.contentAsString
+
+        // Split SSE events (double newline separated)
+        val events = rawBody.split("\n\n")
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .map { it.refineEventLine() }
+
+        println(events)
+    }
 
     private fun String.refineEventLine(): String {
         val result = this.replace("data:", "")
