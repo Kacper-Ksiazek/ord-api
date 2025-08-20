@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -116,10 +117,93 @@ class TestOngoingConversationController @Autowired constructor(
             }
         }
 
+        // TODO: FIX FAILING TESTS !!!!
+
         @Nested
         @DisplayName("Negative")
         inner class Negative {
+            @Test
+            fun `403 - Anonymous user cannot initialize conversation by AI`() {
+                val request = ongoingConversationRequestFactory.getInitConversationByAIRequest(
+                    conversationId = java.util.UUID.randomUUID(),
+                )
 
+                sse.postStringChunks(
+                    request = request,
+                    expectedStatus = HttpStatus.FORBIDDEN,
+                )
+            }
+
+            @Test
+            fun `400 - Missing conversationId`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                val request = ongoingConversationRequestFactory.getInitConversationByAIRequest(
+                    authenticatedUser = authenticatedUser,
+                    conversationId = null,
+                )
+
+                sse.postStringChunks(
+                    request = request,
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                )
+            }
+
+            @Test
+            fun `404 - Conversation not found`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                val request = ongoingConversationRequestFactory.getInitConversationByAIRequest(
+                    authenticatedUser = authenticatedUser,
+                    conversationId = java.util.UUID.randomUUID(),
+                )
+
+                sse.postStringChunks(
+                    request = request,
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                )
+            }
+
+            @Test
+            fun `400 - Conversation already initialized`() {
+                val authenticatedUser = mockAuthenticatedUser()
+                val conversation = conversationSeeder.seedOneEntity(authenticatedUser)
+
+                val initRequest = ongoingConversationRequestFactory.getInitConversationByAIRequest(
+                    authenticatedUser = authenticatedUser,
+                    conversationId = conversation.id,
+                )
+
+                // First initialization succeeds
+                sse.postStringChunks(
+                    request = initRequest,
+                    expectedStatus = HttpStatus.OK,
+                )
+
+                // Second attempt should fail with 400
+                sse.postStringChunks(
+                    request = initRequest,
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                )
+            }
+
+            @Test
+            fun `404 - Conversation belongs to a different user`() {
+                val owner = mockAuthenticatedUser()
+                val intruder = mockAuthenticatedUser()
+
+                val conversation = conversationSeeder.seedOneEntity(owner)
+
+                val request = ongoingConversationRequestFactory.getInitConversationByAIRequest(
+                    authenticatedUser = intruder,
+                    conversationId = conversation.id,
+                )
+
+                sse.postStringChunks(
+                    request = request,
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                )
+            }
         }
     }
 }
