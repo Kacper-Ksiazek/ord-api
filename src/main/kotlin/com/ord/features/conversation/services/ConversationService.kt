@@ -14,4 +14,6 @@ interface ConversationService : UserResourceService<ConversationEntity> {
         language: LanguageName,
         limit: Int = 10
     ): List<String>
+
+    fun findByIdOrFailWithMessages(id: UUID, userId: UUID): ConversationEntity
 }

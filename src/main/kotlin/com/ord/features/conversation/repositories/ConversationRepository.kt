@@ -14,8 +14,8 @@ interface ConversationRepository : UserResourceRepository<ConversationEntity> {
         SELECT c.topic
         FROM ConversationEntity c
         WHERE c.user.id = :userId
-          AND c.goal = :goal
-          AND c.language = :language
+            AND c.goal = :goal
+            AND c.language = :language
         ORDER BY c.createdAt DESC
         LIMIT :limit
         """
@@ -26,4 +26,19 @@ interface ConversationRepository : UserResourceRepository<ConversationEntity> {
         @Param("language") language: LanguageName,
         @Param("limit") limit: Int
     ): List<String>
+
+
+    @Query(
+        """
+            SELECT c
+            FROM ConversationEntity c
+            LEFT JOIN FETCH c.messages
+            WHERE c.user.id = :userId
+                AND c.id = :id
+        """
+    )
+    fun findByIdOrFailWithMessages(
+        @Param("id") id: UUID,
+        @Param("userId") userId: UUID
+    ): ConversationEntity?
 }

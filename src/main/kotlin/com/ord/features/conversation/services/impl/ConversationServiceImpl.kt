@@ -1,6 +1,7 @@
 package com.ord.features.conversation.services.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.conversation.models.dto.ConversationDTO
 import com.ord.features.conversation.models.dto.ConversationMessageDTO
 import com.ord.features.conversation.models.entities.ConversationEntity
@@ -27,5 +28,13 @@ class ConversationServiceImpl(
             language = language,
             limit = limit
         )
+    }
+
+    override fun findByIdOrFailWithMessages(
+        id: UUID,
+        userId: UUID
+    ): ConversationEntity {
+        return repository.findByIdOrFailWithMessages(id, userId)
+            ?: throw NotFoundException("Conversation with id $id not found")
     }
 }
