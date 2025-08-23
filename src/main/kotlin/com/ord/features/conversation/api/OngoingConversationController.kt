@@ -18,7 +18,7 @@ class OngoingConversationController(
     @PostMapping("/initialize-by-ai", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun initializeConversationByAI(
         @AuthenticatedUser user: UserEntity,
-        @Valid @RequestParam(required = false, name = "conversationId") conversationId: UUID,
+        @Valid @RequestParam(required = true, name = "conversationId") conversationId: UUID,
     ) = ongoingConversationFacade.initializeConversationByAI(user, conversationId)
 
 

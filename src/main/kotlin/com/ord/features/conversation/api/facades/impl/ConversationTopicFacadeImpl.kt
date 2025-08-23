@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ord.core.ai_provider.dto.helpers.SimpleStreamedArrayItem
+import com.ord.core.ai_provider.dto.helpers.StreamSimpleItem
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.user.model.UserEntity
@@ -14,21 +14,17 @@ import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.toParamString
-import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 
 @Service
 class ConversationTopicFacadeImpl(
-    private val env: Environment,
     private val conversationService: ConversationService,
     private val openAIStreamClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService
 ) : ConversationTopicFacade {
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
-
-    val isTestingEnv: Boolean = env.activeProfiles.contains("test")
 
     override fun suggestTopics(user: UserEntity, body: SuggestConversationTopicRequest): Flux<String> {
         val languageProficiency = languageProficiencyService.findUserProficiencyInLanguageOrThrow(
@@ -57,10 +53,10 @@ class ConversationTopicFacadeImpl(
             )
         )
 
-        val flux = openAIStreamClientService
-            .openStructuredArrayStream<SimpleStreamedArrayItem>(
+         return openAIStreamClientService
+            .openStructuredArrayStream<StreamSimpleItem>(
                 prompt = prompt.toString(),
-                streamedItemType = object : TypeReference<SimpleStreamedArrayItem>() {},
+                streamedItemType = object : TypeReference<StreamSimpleItem>() {},
                 onComplete = { (payload, emitter) ->
                     emitter.tryEmitNext(
                         objectMapper.writeValueAsString(
@@ -69,14 +65,5 @@ class ConversationTopicFacadeImpl(
                     )
                 }
             )
-
-        return if (isTestingEnv) {
-            // For tests: block until the full result is collected and emit as Flux
-            @Suppress("BlockingMethodInNonBlockingContext")
-            Flux.fromIterable(flux.collectList().block() ?: emptyList())
-        } else {
-            // For production: stream each chunk
-            flux
-        }
     }
 }

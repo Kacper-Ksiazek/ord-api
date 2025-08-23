@@ -33,7 +33,9 @@ class OngoingConversationFacadeImpl(
         user: UserEntity,
         conversationId: UUID
     ): Flux<String> {
-        val conversation = conversationService.findByIdOrFail(conversationId, user.id)
+        val conversation = conversationService.findByIdOrFailWithMessages(conversationId, user.id)
+
+        conversation.messages.size
 
         if (conversation.messages.isNotEmpty()) {
             throw BadRequestException("Conversation with id $conversationId has been already initialized. ")
