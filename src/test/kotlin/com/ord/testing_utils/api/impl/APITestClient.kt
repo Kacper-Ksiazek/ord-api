@@ -15,8 +15,8 @@ class APITestClientImpl(
 
     override fun get(
         url: String,
-        queryParams: Map<String, String>?,
         user: MockedAuthenticatedUser?,
+        queryParams: Map<String, String>?,
     ): WebTestClient.ResponseSpec {
         val request = webClient
             .get()

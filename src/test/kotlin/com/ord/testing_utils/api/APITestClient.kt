@@ -6,8 +6,8 @@ import org.springframework.test.web.reactive.server.WebTestClient
 interface APITestClient {
     fun get(
         url: String,
-        queryParams: Map<String, String>? = null,
         user: MockedAuthenticatedUser?,
+        queryParams: Map<String, String>? = null,
     ): WebTestClient.ResponseSpec
 
 
