@@ -212,6 +212,7 @@
                             <goal>compile</goal>
                         </goals>
                         <configuration>
+                            <jvmTarget>17</jvmTarget>
                             <compilerPlugins>
                                 <plugin>spring</plugin>
                                 <plugin>jpa</plugin>
@@ -229,6 +230,7 @@
                             <goal>test-compile</goal>
                         </goals>
                         <configuration>
+                            <jvmTarget>17</jvmTarget>
                             <compilerPlugins>
                                 <plugin>no-arg</plugin>
                             </compilerPlugins>
@@ -239,7 +241,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jvmTarget>1.8</jvmTarget>
+                    <jvmTarget>17</jvmTarget>
                     <compilerPlugins>
                         <plugin>spring</plugin>
                         <plugin>jpa</plugin>
