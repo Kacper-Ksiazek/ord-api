@@ -1,6 +1,6 @@
 package com.ord.testing_utils.api
 
-import com.ord.testing_utils.dto.MockedAuthenticatedUser
+import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 
@@ -9,7 +9,7 @@ abstract class APITestClient(
 ) {
     fun get(
         url: String,
-        user: MockedAuthenticatedUser?,
+        user: MockedAuthenticatedUserUpdated?,
         queryParams: Map<String, String>? = null,
     ): WebTestClient.ResponseSpec {
         val request = webClient
@@ -23,10 +23,6 @@ abstract class APITestClient(
             }
             .apply {
                 withAuth(user)
-
-                if (user != null) {
-                    this.cookie(user.authCookie.name, user.authCookie.value)
-                }
             }
 
         return request
@@ -38,7 +34,7 @@ abstract class APITestClient(
     fun <TBody> post(
         url: String,
         body: TBody?,
-        user: MockedAuthenticatedUser?
+        user: MockedAuthenticatedUserUpdated?
     ): WebTestClient.ResponseSpec {
         return webClient
             .post()
@@ -58,7 +54,7 @@ abstract class APITestClient(
     fun <TBody> put(
         url: String,
         body: TBody?,
-        user: MockedAuthenticatedUser?
+        user: MockedAuthenticatedUserUpdated?
     ): WebTestClient.ResponseSpec {
         return webClient
             .put()
@@ -77,7 +73,7 @@ abstract class APITestClient(
 
     fun delete(
         url: String,
-        user: MockedAuthenticatedUser?
+        user: MockedAuthenticatedUserUpdated?
     ): WebTestClient.ResponseSpec {
         return webClient
             .delete()
@@ -90,7 +86,7 @@ abstract class APITestClient(
 
 
     private fun WebTestClient.RequestHeadersSpec<*>.withAuth(
-        user: MockedAuthenticatedUser?,
+        user: MockedAuthenticatedUserUpdated?,
     ): WebTestClient.RequestHeadersSpec<*> {
         return if (user != null) {
             this.cookie(user.authCookie.name, user.authCookie.value)
