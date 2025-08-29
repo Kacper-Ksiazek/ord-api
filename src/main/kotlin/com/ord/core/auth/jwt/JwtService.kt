@@ -4,6 +4,7 @@ import com.ord.config.properties.JwtProperties
 import com.ord.core.user.model.UserEntity
 import com.ord.core.user.service.UserService
 import com.ord.exceptions.REST.ForbiddenException
+import com.ord.exceptions.REST.UnauthorizedException
 import com.ord.shared.utils.CookieUtils
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
@@ -33,7 +34,7 @@ class JwtService(
 
     @Throws(ForbiddenException::class)
     fun getAuthenticatedUserOrThrowForbidden(request: HttpServletRequest): UserEntity =
-        getAuthenticatedUser(request) ?: throw ForbiddenException("User is not authenticated")
+        getAuthenticatedUser(request) ?: throw UnauthorizedException("User is not authenticated")
 
     @Throws(ExpiredJwtException::class)
     fun extractUsername(jwtToken: String): String =

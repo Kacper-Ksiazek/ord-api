@@ -25,11 +25,11 @@ class AuthenticatedUserArgumentResolver(
         mavContainer: ModelAndViewContainer?,
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?
-    ): Any? {
-        val httpServletRequest =
-            webRequest.getNativeRequest(HttpServletRequest::class.java)
-                ?: throw InternalServerError("Request is not found")
+    ): UserEntity = getAuthenticatedUser(webRequest)
 
-        return jwtService.getAuthenticatedUserOrThrowForbidden(httpServletRequest)
+    fun getAuthenticatedUser(webRequest: NativeWebRequest): UserEntity {
+        return jwtService.getAuthenticatedUserOrThrowForbidden(
+            webRequest.nativeRequest as HttpServletRequest
+        )
     }
 }
