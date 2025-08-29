@@ -29,9 +29,6 @@ class TestStringUtils {
             text = text
         )
 
-        println(expected)
-        println(actual)
-
         assert(expected == actual)
     }
 
