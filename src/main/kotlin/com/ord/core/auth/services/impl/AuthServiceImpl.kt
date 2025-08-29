@@ -11,11 +11,13 @@ import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.enums.UserRole
 import com.ord.exceptions.ForbiddenException
+import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.UserNotFoundException
 import com.ord.shared.utils.CookieUtils
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -30,8 +32,6 @@ class AuthServiceImpl(
     private val userRepository: UserRepository,
     private val userSessionService: UserSessionService
 ) : AuthService {
-
-    @Throws(UserNotFoundException::class)
     override fun register(
         request: RegisterRequest,
         response: HttpServletResponse
@@ -53,8 +53,6 @@ class AuthServiceImpl(
         return user
     }
 
-
-    @Throws(UserNotFoundException::class)
     override fun login(
         request: LoginRequest,
         response: HttpServletResponse
@@ -62,19 +60,22 @@ class AuthServiceImpl(
         val user = userRepository.findByEmail(request.email)
             ?: throw UserNotFoundException(email = request.email)
 
-        authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(
-                request.email,
-                request.password
+        try {
+            authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(
+                    request.email,
+                    request.password
+                )
             )
-        )
+        } catch (e: BadCredentialsException) {
+            throw BadRequestException("Invalid credentials")
+        }
 
         jwtFactory.createTokenForUser(user, response)
 
         return user
     }
 
-    @Throws(ForbiddenException::class)
     override fun logout(
         request: HttpServletRequest,
         response: HttpServletResponse
@@ -83,10 +84,8 @@ class AuthServiceImpl(
             .getJWTFromRequest(request)
             ?: throw ForbiddenException("No JWT token found in request")
 
-        // Delete session from database
         userSessionService.deleteSessionByToken(token)
 
-        // Delete JWT cookie
         CookieUtils.deleteCookie(jwtProperties.authCookieName, response)
     }
 }

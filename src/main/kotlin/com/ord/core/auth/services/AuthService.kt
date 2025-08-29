@@ -9,18 +9,15 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 
 interface AuthService {
-    @Throws(UserNotFoundException::class)
     fun register(
         request: RegisterRequest,
         response: HttpServletResponse
     ): UserEntity
 
-    @Throws(UserNotFoundException::class)
     fun login(
         request: LoginRequest,
         response: HttpServletResponse
     ): UserEntity
 
-    @Throws(ForbiddenException::class)
     fun logout(request: HttpServletRequest, response: HttpServletResponse)
 }
