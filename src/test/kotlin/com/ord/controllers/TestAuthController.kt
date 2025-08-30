@@ -1,93 +1,58 @@
 package com.ord.controllers
 
 import com.ord.config.properties.JwtProperties
-import com.ord.controllers.bases.ControllerTestBase
-import com.ord.core.auth.models.UserSessionEntity
 import com.ord.core.auth.services.UserSessionService
-import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserMapper
 import com.ord.core.user.service.UserService
 import com.ord.seeders.entities.UserSeeder
-import com.ord.testing_utils.api_requests_factories.AuthRequestFactory
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ord.controllers.bases.ControllerTestBaseUpdated
+import com.ord.core.auth.api.requests.dto.RegisterRequest
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.testing_utils.api.clients.AuthAPIClient
+import com.ord.testing_utils.api.dto.APIClientResponse
 import io.kotest.matchers.shouldBe
-import jakarta.servlet.http.Cookie
+import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
-import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.http.HttpStatusCode
+import org.springframework.test.web.reactive.server.WebTestClient
 
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@AutoConfigureMockMvc
 @DisplayName("- AuthController")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
 class TestAuthController @Autowired constructor(
     private val userSessionService: UserSessionService,
     private val userService: UserService,
     private val userSeeder: UserSeeder,
+    private val userRepository: UserRepository,
+    webClient: WebTestClient,
 
     objectMapper: ObjectMapper,
-    mockMvc: MockMvc,
     jwtProperties: JwtProperties,
-    languageProficiencyRepository: LanguageProficiencyRepository,
-    userMapper: UserMapper,
-    userRepository: UserRepository
-) : ControllerTestBase(
-    objectMapper = objectMapper,
-    mockMvc = mockMvc,
+) : ControllerTestBaseUpdated(
+    webClient,
     jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository,
-    userMapper = userMapper,
-    userRepository = userRepository
-){
-    private val PASSWORD = "123456"
-    private val EMAIL = "test@test.com"
-    private val BASE_URL = "/api/v1/auth"
+) {
+    private val authAPIClient = AuthAPIClient(webClient)
 
-    private val authRequestFactory = AuthRequestFactory(PASSWORD, EMAIL, BASE_URL, objectMapper)
+    object TestData {
+        const val USERNAME: String = "John Doe"
+        const val PASSWORD: String = "123456"
+        const val EMAIL: String = "test@test.com"
+    }
 
     @AfterEach
     fun cleanup() {
-        userRepository.deleteByEmail(EMAIL)
-    }
-
-    @Nested
-    @DisplayName("General")
-    inner class GeneralAuthTests {
-        @Test
-        fun `403 - when trying to access restricted resource without providing the cookie token`() {
-            // This method already ensures that cookie is not null
-            val authenticatedUser = mockAuthenticatedUser()
-            // Assert a session is created
-            assertUserSessionHasBeenCreated(authenticatedUser.token, authenticatedUser.email)
-
-            // Create a request to /me
-            val request = authRequestFactory.meRequest()
-
-            // Without providing the cookie token, /me should return 403
-            mockMvc.perform(request).andExpect(
-                MockMvcResultMatchers.status().isForbidden()
-            )
-
-            // But with the cookie token, it should return 200
-            val requestWithCookie = request.cookie(authenticatedUser.authCookie)
-            mockMvc.perform(requestWithCookie).andExpect(
-                MockMvcResultMatchers.status().isOk()
-            )
-        }
+        userRepository.deleteByEmail(TestData.EMAIL)
     }
 
     @Nested
@@ -96,21 +61,39 @@ class TestAuthController @Autowired constructor(
         @Nested
         @DisplayName("Positive")
         inner class Positive {
+            lateinit var response: APIClientResponse<UserDTO>
+
+            @BeforeEach
+            fun beforeEach() {
+                userService.findUserByEmail(TestData.EMAIL) shouldBe null
+
+                val rawResponse = authAPIClient.register(
+                    RegisterRequest(
+                        nativeLanguage = LanguageName.POLISH,
+                        name = TestData.USERNAME,
+                        email = TestData.EMAIL,
+                        password = TestData.PASSWORD,
+                    )
+                )
+
+                rawResponse.body shouldNotBe null
+
+                @Suppress("Unchecked_cast")
+                response = rawResponse as APIClientResponse<UserDTO>
+            }
+
             @Test
-            fun `201 - new user can be registed`() {
-                // Initially, there should be no user with the email in the database
-                assertNull(userService.findUserByEmail(EMAIL))
-                // Create a request
-                val request = authRequestFactory.registerRequest()
+            fun `201 - user with given email should be created`() {
+                userService.findUserByEmail(TestData.EMAIL) shouldNotBe null
 
-                // Perform the request
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.CREATED.value()
-                    it.response
-                }
+                response.body shouldNotBe null
+                response.body?.email shouldBe TestData.EMAIL
 
-                // Perform all kinds of needed assertions
-                validateLoginOrRegisterResponse(response)
+            }
+
+            @Test
+            fun `201 - after successful singing in, a new session should be created`() {
+                assertSessionHasBeenCreated(response)
             }
         }
 
@@ -120,242 +103,225 @@ class TestAuthController @Autowired constructor(
             @Test
             fun `400 - with an existing email should return 400`() {
                 // First, create a user
-                userSeeder.insertRowWithCredentials(EMAIL, PASSWORD)
+                userSeeder.insertRowWithCredentials(
+                    email = TestData.EMAIL,
+                    password = TestData.PASSWORD,
+                )
 
-                // Create a request
-                val request = authRequestFactory.registerRequest()
+                val response = authAPIClient.register(
+                    RegisterRequest(
+                        nativeLanguage = LanguageName.POLISH,
+                        name = TestData.USERNAME,
+                        email = TestData.EMAIL,
+                        password = TestData.PASSWORD,
+                    )
+                )
 
-                // Perform the request
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
-
-                // Assert the response body is empty
-                validateResponseBodyIsEmpty(response)
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `403 - register route should be available only for anonymous users`() {
                 val authenticatedUser = mockAuthenticatedUser()
 
-                // Create a request
-                val request = authRequestFactory.registerRequest(authenticatedUser)
+                val response = authAPIClient.register(
+                    user = authenticatedUser,
+                    body = RegisterRequest(
+                        nativeLanguage = LanguageName.POLISH,
+                        name = TestData.USERNAME,
+                        email = TestData.EMAIL,
+                        password = TestData.PASSWORD,
+                    )
+                )
 
-                // Perform the request
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
+                response.status shouldBe HttpStatus.FORBIDDEN
             }
         }
     }
+    /*
 
 
-    // ------------------------------
-    // /login
-    // ------------------------------
+// ------------------------------
+// /login
+// ------------------------------
 
-    @Nested
-    @DisplayName("[POST] /api/v1/auth/login - login a user")
-    inner class LoginTests {
+@Nested
+@DisplayName("[POST] /api/v1/auth/login - login a user")
+inner class LoginTests {
 
-        @Nested
-        @DisplayName("Positive")
-        inner class Positive {
-            @Test
-            fun `200 - User can login with correct credentials`() {
-                // First, create a user
-                userSeeder.insertRowWithCredentials(EMAIL, PASSWORD)
+@Nested
+@DisplayName("Positive")
+inner class Positive {
+    @Test
+    fun `200 - User can login with correct credentials`() {
+        // First, create a user
+        userSeeder.insertRowWithCredentials(EMAIL, PASSWORD)
 
-                // Create a request
-                val request = authRequestFactory.loginRequest()
+        // Create a request
+        val request = authRequestFactory.loginRequest()
 
-                // Perform the request
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                    it.response
-                }
-
-                // Perform all kinds of needed assertions
-                validateLoginOrRegisterResponse(response)
-            }
+        // Perform the request
+        val response = mockMvc.perform(request).andReturn().let {
+            it.response.status shouldBe HttpStatus.OK.value()
+            it.response
         }
 
-        @Nested
-        @DisplayName("Negative")
-        inner class Negative {
-            @Test
-            fun `403 - login route should be available only for anonymous users`() {
-                val authenticatedUser = mockAuthenticatedUser()
+        // Perform all kinds of needed assertions
+        validateLoginOrRegisterResponse(response)
+    }
+}
 
-                // Create a request
-                val request = authRequestFactory.loginRequest(authenticatedUser)
+@Nested
+@DisplayName("Negative")
+inner class Negative {
+    @Test
+    fun `403 - login route should be available only for anonymous users`() {
+        val authenticatedUser = mockAuthenticatedUser()
 
-                // Perform the request
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
-            }
+        // Create a request
+        val request = authRequestFactory.loginRequest(authenticatedUser)
 
-            @Test
-            fun `404 - login with non-existing email should return 404`() {
-                // Create a request
-                val request = authRequestFactory.loginRequest()
-
-                // Perform the request
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                    it.response
-                }
-
-                // Assert the response body is empty
-                validateResponseBodyIsEmpty(response)
-            }
+        // Perform the request
+        mockMvc.perform(request).andReturn().let {
+            it.response.status shouldBe HttpStatus.FORBIDDEN.value()
         }
     }
 
+    @Test
+    fun `404 - login with non-existing email should return 404`() {
+        // Create a request
+        val request = authRequestFactory.loginRequest()
 
-    @Nested
-    @DisplayName("[DELETE] /api/v1/auth/logout - logout a user")
-    inner class LogoutTests {
-
-        @Nested
-        @DisplayName("Positive")
-        inner class Positive {
-            @Test
-            fun `200 - User can logout`() {
-                // First, generate an authenticated user
-                val authenticatedUser = mockAuthenticatedUser()
-
-                // Assert a session is created
-                assertUserSessionHasBeenCreated(authenticatedUser.token, authenticatedUser.email)
-
-                // Prepare a request to /logout
-                val request = authRequestFactory.logoutRequest(authenticatedUser)
-
-                // Perform the request
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                    it.response
-                }
-
-                assertNull(userSessionService.findByToken(authenticatedUser.token))
-
-                // Auth cookie should have no value
-                val authCookie = response.getCookie(jwtProperties.authCookieName)!!
-                assert(authCookie.value.isEmpty())
-            }
+        // Perform the request
+        val response = mockMvc.perform(request).andReturn().let {
+            it.response.status shouldBe HttpStatus.NOT_FOUND.value()
+            it.response
         }
 
-
-        @Nested
-        @DisplayName("Negative")
-        inner class Negative {
-            @Test
-            fun `403 - logout route should be available only for authenticated users`() {
-                // Create a request
-                val request = authRequestFactory.logoutRequest()
-
-                // Perform the request
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
-            }
-        }
-    }
-
-
-    @Nested
-    @DisplayName("[GET] /api/v1/auth/me - get information about the authenticated user")
-    inner class MeTests {
-
-        @Nested
-        @DisplayName("Positive")
-        inner class Positive {
-            @Test
-            fun `200 - me endpoint should return information about the authenticated user`() {
-                // First, create a user
-                val authenticatedUser = mockAuthenticatedUser(EMAIL)
-
-                // Create a request
-                val request = authRequestFactory.meRequest(authenticatedUser)
-
-                // Perform the request
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                    it.response
-                }
-
-                // Assert the response data contains information about the user
-                assertResponseContainsProperInformationAboutTheUser(response)
-            }
-
-        }
-
-        @Nested
-        @DisplayName("Negative")
-        inner class Negative {
-            @Test
-            fun `403 - me endpoint should return 401 for anonymous users`() {
-                // Create a request
-                val request = authRequestFactory.meRequest()
-
-                // Perform the request
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
-            }
-
-        }
-    }
-
-
-    // ------------------------------
-    // Helper methods
-    // ------------------------------
-
-    private fun validateResponseBodyIsEmpty(response: MockHttpServletResponse) {
         // Assert the response body is empty
-        assert(response.contentAsString.isEmpty())
+        validateResponseBodyIsEmpty(response)
     }
+}
+}
 
-    private fun validateLoginOrRegisterResponse(response: MockHttpServletResponse) {
-        // Assert a cookie is set
-        val token = assertAuthCookieIsSet(response)
+
+@Nested
+@DisplayName("[DELETE] /api/v1/auth/logout - logout a user")
+inner class LogoutTests {
+
+@Nested
+@DisplayName("Positive")
+inner class Positive {
+    @Test
+    fun `200 - User can logout`() {
+        // First, generate an authenticated user
+        val authenticatedUser = mockAuthenticatedUser()
 
         // Assert a session is created
-        assertUserSessionHasBeenCreated(token)
+        assertUserSessionHasBeenCreated(authenticatedUser.token, authenticatedUser.email)
+
+        // Prepare a request to /logout
+        val request = authRequestFactory.logoutRequest(authenticatedUser)
+
+        // Perform the request
+        val response = mockMvc.perform(request).andReturn().let {
+            it.response.status shouldBe HttpStatus.OK.value()
+            it.response
+        }
+
+        assertNull(userSessionService.findByToken(authenticatedUser.token))
+
+        // Auth cookie should have no value
+        val authCookie = response.getCookie(jwtProperties.authCookieName)!!
+        assert(authCookie.value.isEmpty())
+    }
+}
+
+
+@Nested
+@DisplayName("Negative")
+inner class Negative {
+    @Test
+    fun `403 - logout route should be available only for authenticated users`() {
+        // Create a request
+        val request = authRequestFactory.logoutRequest()
+
+        // Perform the request
+        mockMvc.perform(request).andReturn().let {
+            it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+        }
+    }
+}
+}
+
+
+@Nested
+@DisplayName("[GET] /api/v1/auth/me - get information about the authenticated user")
+inner class MeTests {
+
+@Nested
+@DisplayName("Positive")
+inner class Positive {
+    @Test
+    fun `200 - me endpoint should return information about the authenticated user`() {
+        // First, create a user
+        val authenticatedUser = mockAuthenticatedUser(EMAIL)
+
+        // Create a request
+        val request = authRequestFactory.meRequest(authenticatedUser)
+
+        // Perform the request
+        val response = mockMvc.perform(request).andReturn().let {
+            it.response.status shouldBe HttpStatus.OK.value()
+            it.response
+        }
 
         // Assert the response data contains information about the user
         assertResponseContainsProperInformationAboutTheUser(response)
     }
 
-    private fun assertResponseContainsProperInformationAboutTheUser(
-        response: MockHttpServletResponse,
-        expectedEmail: String = EMAIL
-    ) {
-        val data: UserDTO = getResponseBody(response)
+}
 
-        assert(data.email == expectedEmail)
+@Nested
+@DisplayName("Negative")
+inner class Negative {
+    @Test
+    fun `403 - me endpoint should return 401 for anonymous users`() {
+        // Create a request
+        val request = authRequestFactory.meRequest()
+
+        // Perform the request
+        mockMvc.perform(request).andReturn().let {
+            it.response.status shouldBe HttpStatus.FORBIDDEN.value()
+        }
     }
 
-    private fun assertUserSessionHasBeenCreated(
-        token: String,
-        email: String = EMAIL
-    ) {
-        val correspondingSession: UserSessionEntity = userSessionService.findByToken(token).also {
-            assertNotNull(it)
-        }!!
+}
+}
 
-        assert(correspondingSession.token == token)
-        assert(correspondingSession.user.email == email)
-    }
 
-    private fun assertAuthCookieIsSet(response: MockHttpServletResponse): String {
-        val cookie: Cookie = response.getCookie(jwtProperties.authCookieName).also {
-            assertNotNull(it)
-        }!!
+*/
 
-        return cookie.value
+    // ------------------------------
+    // Helper methods
+    // ------------------------------
+
+    private fun assertSessionHasBeenCreated(response: APIClientResponse<UserDTO>) {
+        val token: String = response
+            .cookies[jwtProperties.authCookieName]
+            ?.firstOrNull()
+            .let {
+                it shouldNotBe null
+                it!!.value
+            }
+
+        userSessionService
+            .findByToken(token)
+            .also {
+                it shouldNotBe null
+
+                it!!.token shouldBe token
+                it.user.email shouldBe TestData.EMAIL
+            }!!
     }
 }

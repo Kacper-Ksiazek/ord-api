@@ -19,55 +19,46 @@ class AuthAPIClient(
     fun register(
         body: RegisterRequest,
         user: MockedAuthenticatedUserUpdated? = null
-    ): APIClientResponse<UserDTO> {
-        return post("$baseUrl/register", body, user)
-            .expectBody(UserDTO::class.java)
-            .returnResult()
-            .toApiClientResponse()
+    ): APIClientResponse<UserDTO?> {
+        return post(
+            url = "$baseUrl/register",
+            body = body,
+            user = user,
+            responseBodyClass = UserDTO::class.java
+        )
     }
 
 
     fun login(
         body: LoginRequest,
         user: MockedAuthenticatedUserUpdated? = null
-    ): APIClientResponse<UserDTO> {
-        return post("$baseUrl/login", body, user)
-            .expectBody(UserDTO::class.java)
-            .returnResult()
-            .toApiClientResponse()
+    ): APIClientResponse<UserDTO?> {
+        return post(
+            url = "$baseUrl/login",
+            body = body,
+            user = user,
+            responseBodyClass = UserDTO::class.java
+        )
     }
 
 
     fun me(
         user: MockedAuthenticatedUserUpdated? = null
-    ): APIClientResponse<UserDTO> {
-        return get("$baseUrl/me", user)
-            .expectBody(UserDTO::class.java)
-            .returnResult()
-            .toApiClientResponse()
+    ): APIClientResponse<UserDTO?> {
+        return get(
+            url = "$baseUrl/me",
+            user = user,
+            responseBodyClass = UserDTO::class.java
+        )
     }
 
 
     fun logout(
         user: MockedAuthenticatedUserUpdated? = null
-    ): APIClientResponse<Unit> {
-        val response = delete("$baseUrl/logout", user)
-            .returnResult<Unit>()
-
-        return APIClientResponse(
-            body = null,
-            status = response.status,
-            headers = response.responseHeaders,
-            cookies = response.responseCookies,
-        )
-    }
-
-    private fun EntityExchangeResult<UserDTO>.toApiClientResponse(): APIClientResponse<UserDTO> {
-        return APIClientResponse<UserDTO>(
-            body = responseBody,
-            status = status,
-            headers = responseHeaders,
-            cookies = responseCookies
+    ): APIClientResponse<Unit?> {
+        return delete<Unit>(
+            url = "$baseUrl/logout",
+            user = user,
         )
     }
 }
