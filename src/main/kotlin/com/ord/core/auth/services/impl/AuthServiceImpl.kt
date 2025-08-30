@@ -12,10 +12,13 @@ import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.enums.UserRole
 import com.ord.exceptions.ForbiddenException
 import com.ord.exceptions.REST.BadRequestException
+import com.ord.exceptions.REST.NotFoundException
 import com.ord.exceptions.UserNotFoundException
 import com.ord.shared.utils.CookieUtils
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.hibernate.exception.ConstraintViolationException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -37,15 +40,19 @@ class AuthServiceImpl(
         response: HttpServletResponse
     ): UserEntity {
         // Save user to database
-        val user = userRepository.save( // Create user object
-            UserEntity(
-                name = request.name,
-                email = request.email,
-                password = passwordEncoder.encode(request.password),
-                role = UserRole.USER,
-                nativeLanguage = request.nativeLanguage
+        val user = try {
+            userRepository.save( // Create user object
+                UserEntity(
+                    name = request.name,
+                    email = request.email,
+                    password = passwordEncoder.encode(request.password),
+                    role = UserRole.USER,
+                    nativeLanguage = request.nativeLanguage
+                )
             )
-        )
+        } catch (ex: DataIntegrityViolationException) {
+            throw BadRequestException("User already exists")
+        }
 
         // Generate and assign a JWT token
         jwtFactory.createTokenForUser(user, response)
@@ -57,23 +64,24 @@ class AuthServiceImpl(
         request: LoginRequest,
         response: HttpServletResponse
     ): UserEntity {
-        val user = userRepository.findByEmail(request.email)
-            ?: throw UserNotFoundException(email = request.email)
+        return try {
+            val user: UserEntity = userRepository
+                .findByEmail(request.email) ?: throw BadCredentialsException("User does not exist")
 
-        try {
             authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(
                     request.email,
                     request.password
                 )
             )
+
+            jwtFactory.createTokenForUser(user, response)
+
+            user
         } catch (e: BadCredentialsException) {
-            throw BadRequestException("Invalid credentials")
+            throw NotFoundException("Invalid credentials")
         }
 
-        jwtFactory.createTokenForUser(user, response)
-
-        return user
     }
 
     override fun logout(

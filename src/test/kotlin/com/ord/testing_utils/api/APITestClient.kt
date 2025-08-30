@@ -1,14 +1,11 @@
 package com.ord.testing_utils.api
 
+import com.ord.shared.utils.Console
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
-import io.kotest.matchers.shouldBe
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.returnResult
-import org.springframework.web.client.HttpStatusCodeException
-import kotlin.reflect.KClass
 
 abstract class APITestClient(
     val webClient: WebTestClient
@@ -122,6 +119,10 @@ abstract class APITestClient(
                     .responseBody
             }
         } catch (ex: Exception) {
+            Console.printRed("\uD83D\uDEA8 [e2e] Failed to convert response body")
+
+            println(result.responseBody)
+
             null
         }
 
