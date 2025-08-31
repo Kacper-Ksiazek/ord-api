@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.client.body
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -26,7 +27,7 @@ class UserControllerTest(
     fun `should get user by id`() {
         val email: String = faker.internet().emailAddress()
 
-        authAPIClient.register(
+        val response = authAPIClient.register(
             RegisterRequest(
                 name = "Test User",
                 email = email,

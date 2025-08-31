@@ -8,7 +8,7 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserMapper
 import com.ord.controllers.conversations.helpers.request_factories.ConversationRequestFactory
-import com.ord.core.ai_provider.dto.helpers.SimpleStreamedArrayItem
+import com.ord.core.ai_provider.dto.helpers.StreamSimpleItem
 import com.ord.testing_utils.api.SSETestingUtils
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldHaveSize
@@ -69,8 +69,8 @@ class TestConversationController @Autowired constructor(
         @TestInstance(TestInstance.Lifecycle.PER_CLASS)
         @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
         inner class Positive {
-            lateinit var chunks: List<SimpleStreamedArrayItem>
-            lateinit var finalContent: List<SimpleStreamedArrayItem>
+            lateinit var chunks: List<StreamSimpleItem>
+            lateinit var finalContent: List<StreamSimpleItem>
 
             @BeforeAll
             fun beforeAll() {
@@ -82,8 +82,8 @@ class TestConversationController @Autowired constructor(
 
                 val response = sse.postStructuralChunks(
                     request = request,
-                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
-                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                    chunkType = object : TypeReference<StreamSimpleItem>() {},
+                    finalType = object : TypeReference<List<StreamSimpleItem>>() {}
                 )
 
                 response shouldNotBe null
@@ -117,8 +117,8 @@ class TestConversationController @Autowired constructor(
 
                 val response = sse.postStructuralChunks(
                     request = request,
-                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
-                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                    chunkType = object : TypeReference<StreamSimpleItem>() {},
+                    finalType = object : TypeReference<List<StreamSimpleItem>>() {}
                 )
             }
         }
@@ -133,8 +133,8 @@ class TestConversationController @Autowired constructor(
                 sse.postStructuralChunks(
                     expectedStatus = HttpStatus.FORBIDDEN,
                     request = request,
-                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
-                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                    chunkType = object : TypeReference<StreamSimpleItem>() {},
+                    finalType = object : TypeReference<List<StreamSimpleItem>>() {}
                 )
             }
 
@@ -150,8 +150,8 @@ class TestConversationController @Autowired constructor(
                 sse.postStructuralChunks(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     request = request,
-                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
-                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                    chunkType = object : TypeReference<StreamSimpleItem>() {},
+                    finalType = object : TypeReference<List<StreamSimpleItem>>() {}
                 )
             }
 
@@ -167,8 +167,8 @@ class TestConversationController @Autowired constructor(
                 sse.postStructuralChunks(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     request = request,
-                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
-                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                    chunkType = object : TypeReference<StreamSimpleItem>() {},
+                    finalType = object : TypeReference<List<StreamSimpleItem>>() {}
                 )
             }
 
@@ -184,8 +184,8 @@ class TestConversationController @Autowired constructor(
                 sse.postStructuralChunks(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     request = request,
-                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
-                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                    chunkType = object : TypeReference<StreamSimpleItem>() {},
+                    finalType = object : TypeReference<List<StreamSimpleItem>>() {}
                 )
             }
 
@@ -201,8 +201,8 @@ class TestConversationController @Autowired constructor(
                 sse.postStructuralChunks(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     request = request,
-                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
-                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                    chunkType = object : TypeReference<StreamSimpleItem>() {},
+                    finalType = object : TypeReference<List<StreamSimpleItem>>() {}
                 )
             }
 
@@ -218,8 +218,8 @@ class TestConversationController @Autowired constructor(
                 sse.postStructuralChunks(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     request = request,
-                    chunkType = object : TypeReference<SimpleStreamedArrayItem>() {},
-                    finalType = object : TypeReference<List<SimpleStreamedArrayItem>>() {}
+                    chunkType = object : TypeReference<StreamSimpleItem>() {},
+                    finalType = object : TypeReference<List<StreamSimpleItem>>() {}
                 )
             }
         }

@@ -1,9 +1,0 @@
-package com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository
-
-import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.GameTokensUsageEntity
-import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
-import com.ord.features.gpt_tokens_usage_log.variants.shared.repository.TokensUsageRepository
-import org.springframework.stereotype.Repository
-
-@Repository
-interface GameTokensUsageRepository : TokensUsageRepository<GameTokensUsageEntity, GamesGPTTokensConsumptionType>

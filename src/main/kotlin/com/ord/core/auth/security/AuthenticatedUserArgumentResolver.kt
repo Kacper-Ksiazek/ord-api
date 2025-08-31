@@ -1,35 +1,37 @@
 package com.ord.core.auth.security
 
-import com.ord.core.auth.jwt.JwtService
+import com.ord.core.security.UserRepositoryReactive
 import com.ord.core.user.model.UserEntity
-import com.ord.exceptions.REST.InternalServerError
-import jakarta.servlet.http.HttpServletRequest
 import org.springframework.core.MethodParameter
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.support.WebDataBinderFactory
-import org.springframework.web.context.request.NativeWebRequest
-import org.springframework.web.method.support.HandlerMethodArgumentResolver
-import org.springframework.web.method.support.ModelAndViewContainer
+import org.springframework.web.reactive.BindingContext
+import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver
+import org.springframework.web.server.ServerWebExchange
+import reactor.core.publisher.Mono
 
 @Component
 class AuthenticatedUserArgumentResolver(
-    private val jwtService: JwtService,
+    private val userRepositoryReactive: UserRepositoryReactive
 ) : HandlerMethodArgumentResolver {
+
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         return parameter.hasParameterAnnotation(AuthenticatedUser::class.java) &&
-                parameter.parameterType == UserEntity::class.java
+                UserEntity::class.java.isAssignableFrom(parameter.parameterType)
     }
 
     override fun resolveArgument(
         parameter: MethodParameter,
-        mavContainer: ModelAndViewContainer?,
-        webRequest: NativeWebRequest,
-        binderFactory: WebDataBinderFactory?
-    ): UserEntity = getAuthenticatedUser(webRequest)
-
-    fun getAuthenticatedUser(webRequest: NativeWebRequest): UserEntity {
-        return jwtService.getAuthenticatedUserOrThrowForbidden(
-            webRequest.nativeRequest as HttpServletRequest
-        )
+        bindingContext: BindingContext,
+        exchange: ServerWebExchange
+    ): Mono<Any> {
+        return exchange.getPrincipal<Authentication>() // Mono<Authentication>
+            .flatMap { auth ->
+                val email = auth.name // or (auth.principal as? CustomUserDetails)?.username
+                userRepositoryReactive.findByEmail(email)
+                    .switchIfEmpty(Mono.error(IllegalArgumentException("User not found")))
+            }
+            .cast(Any::class.java)
     }
 }
+

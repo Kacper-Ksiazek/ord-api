@@ -5,7 +5,6 @@ import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBaseUpdated
 import com.ord.core.auth.api.requests.dto.LoginRequest
 import com.ord.core.auth.api.requests.dto.RegisterRequest
-import com.ord.core.auth.services.UserSessionService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserDTO
@@ -210,105 +209,82 @@ class TestAuthController @Autowired constructor(
             }
         }
     }
-    /*
 
 
- @Nested
- @DisplayName("[DELETE] /api/v1/auth/logout - logout a user")
- inner class LogoutTests {
+    @Nested
+    @DisplayName("[DELETE] /api/v1/auth/logout - logout a user")
+    inner class LogoutTests {
 
- @Nested
- @DisplayName("Positive")
- inner class Positive {
-     @Test
-     fun `200 - User can logout`() {
-         // First, generate an authenticated user
-         val authenticatedUser = mockAuthenticatedUser()
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - User can logout`() {
+                val authenticatedUser = mockAuthenticatedUser()
 
-         // Assert a session is created
-         assertUserSessionHasBeenCreated(authenticatedUser.token, authenticatedUser.email)
+                val response = authAPIClient.logout(
+                    user = authenticatedUser
+                )
 
-         // Prepare a request to /logout
-         val request = authRequestFactory.logoutRequest(authenticatedUser)
+                userSessionService.findByToken(authenticatedUser.token) shouldBe null
 
-         // Perform the request
-         val response = mockMvc.perform(request).andReturn().let {
-             it.response.status shouldBe HttpStatus.OK.value()
-             it.response
-         }
-
-         assertNull(userSessionService.findByToken(authenticatedUser.token))
-
-         // Auth cookie should have no value
-         val authCookie = response.getCookie(jwtProperties.authCookieName)!!
-         assert(authCookie.value.isEmpty())
-     }
- }
+                response
+                    .cookies[jwtProperties.authCookieName]
+                    ?.firstOrNull()
+                    .let {
+                        it shouldNotBe null
+                        it!!
+                    }
+            }
+        }
 
 
- @Nested
- @DisplayName("Negative")
- inner class Negative {
-     @Test
-     fun `403 - logout route should be available only for authenticated users`() {
-         // Create a request
-         val request = authRequestFactory.logoutRequest()
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `401 - logout route should be available only for authenticated users`() {
+                val request = authAPIClient.logout()
 
-         // Perform the request
-         mockMvc.perform(request).andReturn().let {
-             it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-         }
-     }
- }
- }
+                request.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+        }
+    }
 
+    @Nested
+    @DisplayName("[GET] /api/v1/auth/me - get information about the authenticated user")
+    inner class MeTests {
 
- @Nested
- @DisplayName("[GET] /api/v1/auth/me - get information about the authenticated user")
- inner class MeTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - me endpoint should return information about the authenticated user`() {
+                val authenticatedUser = mockAuthenticatedUser()
 
- @Nested
- @DisplayName("Positive")
- inner class Positive {
-     @Test
-     fun `200 - me endpoint should return information about the authenticated user`() {
-         // First, create a user
-         val authenticatedUser = mockAuthenticatedUser(EMAIL)
+                val response = authAPIClient.me(
+                    user = authenticatedUser
+                )
 
-         // Create a request
-         val request = authRequestFactory.meRequest(authenticatedUser)
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.email shouldBe authenticatedUser.userInfo.email
+            }
+        }
 
-         // Perform the request
-         val response = mockMvc.perform(request).andReturn().let {
-             it.response.status shouldBe HttpStatus.OK.value()
-             it.response
-         }
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `401 - me endpoint should return 401 for anonymous users`() {
+                val response = authAPIClient.me()
 
-         // Assert the response data contains information about the user
-         assertResponseContainsProperInformationAboutTheUser(response)
-     }
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
 
- }
+        }
+    }
 
- @Nested
- @DisplayName("Negative")
- inner class Negative {
-     @Test
-     fun `403 - me endpoint should return 401 for anonymous users`() {
-         // Create a request
-         val request = authRequestFactory.meRequest()
-
-         // Perform the request
-         mockMvc.perform(request).andReturn().let {
-             it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-         }
-     }
-
- }
- }
-
-
- */
 
     // ------------------------------
     // Helper methods

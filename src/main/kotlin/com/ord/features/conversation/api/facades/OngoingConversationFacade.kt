@@ -4,6 +4,7 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
+import com.ord.features.conversation.models.entities.ConversationEntity
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Flux
 import java.util.*
@@ -12,10 +13,7 @@ interface OngoingConversationFacade {
     /**
      * Make AI to initialize a conversation with the user.
      */
-    fun initializeConversationByAI(
-        user: UserEntity,
-        conversationId: UUID,
-    ): Flux<String>
+    fun initializeConversationByAI(conversation: ConversationEntity): Flux<String>
 
     /**
      * Calls AI API to request a message in conversation from the AI

@@ -1,37 +1,32 @@
 package com.ord.features.conversation.models.entities
 
-import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 import java.util.*
 
-@Entity
-@Table(name = "conversation_user_message_feedback")
+@Table("conversation_user_message_feedback")
 data class ConversationUserMessageFeedbackEntity(
-    @Id @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID = UUID.randomUUID(),
+    @Id
+    var id: UUID? = null, // DB generates uuid_generate_v4()
 
-    @Column(name = "grammar", nullable = false)
+    @Column("grammar")
     var grammar: Int,
 
-    @Column(name = "vocabulary", nullable = false)
+    @Column("vocabulary")
     var vocabulary: Int,
 
-    @Column(name = "answer_length", nullable = false)
+    @Column("answer_length")
     var answerLength: Int,
 
-    @Column(name = "suggested_answer", columnDefinition = "TEXT")
+    @Column("suggested_answer")
     var suggestedAnswer: String? = null,
 
-    @Column(name = "comment", columnDefinition = "TEXT")
+    @Column("comment")
     var comment: String? = null,
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp
+    @Column("created_at")
     var createdAt: Instant = Instant.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    @UpdateTimestamp
-    var updatedAt: Instant = Instant.now()
 )
+

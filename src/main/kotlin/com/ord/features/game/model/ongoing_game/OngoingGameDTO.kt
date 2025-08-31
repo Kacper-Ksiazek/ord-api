@@ -19,8 +19,8 @@ data class OngoingGameDTO<TProperAnswers>(
     val language: LanguageName,
     val difficulty: GameDifficulty,
 
-    val user: UserDTO,
-    val userId: UUID = user.id,
+    val user: UserDTO?,
+    val userId: UUID? = user?.id,
 
     var createdAt: Instant = Instant.now()
 )

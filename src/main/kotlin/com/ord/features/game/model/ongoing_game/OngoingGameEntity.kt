@@ -5,49 +5,37 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.shared.models.IdentifiableUserResource
-import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
+import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Transient
+import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 import java.util.*
 
-@Entity
-@Table(name = "ongoing_games")
+@Table("ongoing_games")
 data class OngoingGameEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    override var id: UUID = UUID.randomUUID(),
+    override var id: UUID? = null,
 
-    @Column(name = "proper_answers", columnDefinition = "json")
-    var properAnswers: String,
+    @Column("proper_answers")
+    var properAnswers: String, // JSONB
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", columnDefinition = "game_type(0, 0) not null", nullable = false)
+    @Column("type")
     var type: GameType,
 
-    @Column(name = "language", columnDefinition = "language_name(0, 0) not null")
-    @Enumerated(EnumType.STRING)
+    @Column("language")
     var language: LanguageName,
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "difficulty", columnDefinition = "game_difficulty(0, 0) not null", nullable = false)
+    @Column("difficulty")
     var difficulty: GameDifficulty,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id", nullable = false)
-    override var user: UserEntity,
+    @Column("user_id")
+    override var userId: UUID,
 
-    @Column(name = "user_id", insertable = false, updatable = false)
-    var userId: UUID = user.id,
+    @Column("created_at")
+    var createdAt: Instant = Instant.now(),
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp
-    var createdAt: Instant = Instant.now()
-) : IdentifiableUserResource {
-    @PostLoad
-    fun populateUserId() {
-        userId = user.id
-    }
-}
+    @Transient
+    override var user: UserEntity? = null
+) : IdentifiableUserResource
+

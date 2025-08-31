@@ -1,50 +1,39 @@
 package com.ord.features.conversation.models.entities
 
 import com.ord.features.conversation.models.enums.ConversationMessageSender
-import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
+import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Transient
+import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 import java.util.*
 
-@Entity
-@Table(name = "conversation_messages")
+@Table("conversation_messages")
 data class ConversationMessageEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID = UUID.randomUUID(),
+    var id: UUID? = null,
 
-    @Column(name = "message_order", nullable = false)
+    @Column("message_order")
     var messageOrder: Int,
 
-    @Column(name = "sender", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Column("sender")
     var sender: ConversationMessageSender,
 
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    @Column("content")
     var content: String,
 
-    @Column(name = "conversation_id", nullable = false)
+    @Column("conversation_id")
     var conversationId: UUID,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "conversation_id", nullable = false, insertable = false, updatable = false)
-    @Transient
-    var conversation: ConversationEntity? = null,
+    @Column("feedback_id")
+    var feedbackId: UUID? = null,
 
-    @OneToOne(
-        cascade = [CascadeType.ALL],
-        orphanRemoval = true,
-        optional = true
-    )
-    @JoinColumn(name = "feedback_id", referencedColumnName = "id")
-    var feedback: ConversationUserMessageFeedbackEntity? = null,
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp
+    @Column("created_at")
     var createdAt: Instant = Instant.now(),
 
-    @Column(name = "updated_at", nullable = false)
-    @UpdateTimestamp
-    var updatedAt: Instant = Instant.now()
+    @Column("updated_at")
+    var updatedAt: Instant = Instant.now(),
+
+    @Transient
+    var feedback: ConversationUserMessageFeedbackEntity? = null
 )

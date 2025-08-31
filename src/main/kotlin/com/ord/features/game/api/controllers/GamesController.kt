@@ -1,11 +1,9 @@
 package com.ord.features.game.api.controllers
 
-import com.ord.core.auth.jwt.JwtService
 import com.ord.core.auth.security.AuthenticatedUser
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.services.OngoingGameService
 import com.ord.features.game.variants.shared.dto.api_requests.CancelGameRequest
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -14,7 +12,6 @@ import java.util.*
 @RestController
 @RequestMapping("/api/v1/games")
 class GamesController(
-    private val jwtService: JwtService,
     private val ongoingGameService: OngoingGameService,
 ) {
     // +-----------------------------+

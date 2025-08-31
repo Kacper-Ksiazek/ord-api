@@ -4,25 +4,23 @@ import com.ord.core.auth.api.requests.dto.LoginRequest
 import com.ord.core.auth.api.requests.dto.RegisterRequest
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.ResponseEntity
+import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 interface AuthFacade {
     fun register(
         body: RegisterRequest,
-        response: HttpServletResponse
+        exchange: ServerWebExchange
     ): Mono<ResponseEntity<UserDTO>>
 
     fun login(
         body: LoginRequest,
-        response: HttpServletResponse
+        exchange: ServerWebExchange
     ): Mono<ResponseEntity<UserDTO>>
 
     fun logout(
-        request: HttpServletRequest,
-        response: HttpServletResponse
+        exchange: ServerWebExchange
     ): Mono<ResponseEntity<Void>>
 
     fun me(

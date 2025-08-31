@@ -6,13 +6,10 @@ import com.ord.core.auth.api.requests.dto.RegisterRequest
 import com.ord.core.auth.security.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
-import com.ord.exceptions.ForbiddenException
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @RestController
@@ -22,23 +19,22 @@ class AuthController(
 ) {
     @PostMapping("/register")
     fun register(
-        @Valid @RequestBody request: RegisterRequest,
-        response: HttpServletResponse
-    ): Mono<ResponseEntity<UserDTO>> = authFacade.register(request, response)
+        @Valid @RequestBody body: RegisterRequest,
+        exchange: ServerWebExchange
+    ): Mono<ResponseEntity<UserDTO>> = authFacade.register(body, exchange)
 
 
     @PostMapping("/login")
     fun login(
-        @Valid @RequestBody request: LoginRequest,
-        response: HttpServletResponse
-    ): Mono<ResponseEntity<UserDTO>> = authFacade.login(request, response)
+        @Valid @RequestBody body: LoginRequest,
+        exchange: ServerWebExchange
+    ): Mono<ResponseEntity<UserDTO>> = authFacade.login(body, exchange)
 
 
     @DeleteMapping("/logout")
     fun logout(
-        request: HttpServletRequest,
-        response: HttpServletResponse
-    ): Mono<ResponseEntity<Void>> = authFacade.logout(request, response)
+        exchange: ServerWebExchange
+    ): Mono<ResponseEntity<Void>> = authFacade.logout(exchange)
 
 
     @GetMapping("/me")

@@ -7,73 +7,51 @@ import com.ord.features.conversation.models.enums.ConversationAIResponseLength
 import com.ord.features.conversation.models.enums.ConversationGoal
 import com.ord.features.conversation.models.enums.ConversationTone
 import com.ord.shared.models.IdentifiableUserResource
-import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.UpdateTimestamp
+import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Transient
+import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 import java.util.*
 
-@Entity
-@Table(name = "conversations")
+@Table("conversations")
 data class ConversationEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    override var id: UUID = UUID.randomUUID(),
+    override var id: UUID? = null,
 
-    @Column(name = "topic", nullable = false)
+    @Column("topic")
     var topic: String,
 
-    @Column(name = "language", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Column("language")
     var language: LanguageName,
 
-    @Column(name = "proficiency_level", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Column("proficiency_level")
     var proficiencyLevel: LanguageProficiencyLevel,
 
-    @Column(name = "goal", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Column("goal")
     var goal: ConversationGoal,
 
-    @Column(name = "ai_tone", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Column("ai_tone")
     var aiTone: ConversationTone,
 
-    @Column(name = "ai_response_length", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Column("ai_response_length")
     var aiResponseLength: ConversationAIResponseLength,
 
-    @Column(name = "additional_context", nullable = false, columnDefinition = "TEXT")
+    @Column("additional_context")
     var additionalContext: String? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id", nullable = false)
-    override var user: UserEntity,
+    @Column("user_id")
+    override var userId: UUID,
 
-    @Column(name = "user_id", insertable = false, updatable = false)
-    var userId: UUID = user.id,
-
-    @OneToMany(
-        mappedBy = "conversationId",
-        cascade = [CascadeType.ALL],
-        orphanRemoval = true,
-        fetch = FetchType.LAZY
-    )
-    var messages: MutableList<ConversationMessageEntity> = mutableListOf(),
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp
+    @Column("created_at")
     var createdAt: Instant = Instant.now(),
 
-    @Column(name = "updated_at", nullable = false)
-    @UpdateTimestamp
-    var updatedAt: Instant = Instant.now()
-) : IdentifiableUserResource {
-    @PostLoad
-    fun populateUserId() {
-        userId = user.id
-    }
-}
+    @Column("updated_at")
+    var updatedAt: Instant = Instant.now(),
+
+    @Transient
+    override var user: UserEntity? = null,
+
+    @Transient
+    var messages: MutableList<ConversationMessageEntity> = mutableListOf()
+) : IdentifiableUserResource

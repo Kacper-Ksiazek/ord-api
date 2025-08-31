@@ -89,6 +89,11 @@ class TestOngoingConversationController @Autowired constructor(
                 authenticatedUser = mockAuthenticatedUser()
                 conversation = conversationSeeder.seedOneEntity(authenticatedUser)
 
+                conversationRepository.findOneForUser(
+                    id = conversation.id,
+                    userId = authenticatedUser.userInfo.id
+                ) shouldNotBe null
+
                 val request = ongoingConversationRequestFactory.getInitConversationByAIRequest(
                     authenticatedUser = authenticatedUser,
                     conversationId = conversation.id,

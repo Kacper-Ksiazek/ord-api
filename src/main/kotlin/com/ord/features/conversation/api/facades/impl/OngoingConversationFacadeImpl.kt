@@ -9,6 +9,7 @@ import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUs
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
 import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
+import com.ord.features.conversation.models.entities.ConversationEntity
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
@@ -29,16 +30,11 @@ class OngoingConversationFacadeImpl(
     private val conversationService: ConversationService,
     private val conversationMessageService: ConversationMessageService,
 ) : OngoingConversationFacade {
-    override fun initializeConversationByAI(
-        user: UserEntity,
-        conversationId: UUID
-    ): Flux<String> {
-        val conversation = conversationService.findByIdOrFailWithMessages(conversationId, user.id)
-
+    override fun initializeConversationByAI(conversation: ConversationEntity): Flux<String> {
         conversation.messages.size
 
         if (conversation.messages.isNotEmpty()) {
-            throw BadRequestException("Conversation with id $conversationId has been already initialized. ")
+            throw BadRequestException("Conversation with id ${conversation.id} has been already initialized. ")
         }
 
         val prompt = Prompt(

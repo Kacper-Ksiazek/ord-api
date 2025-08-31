@@ -1,46 +1,24 @@
 package com.ord.config.security
 
-import com.ord.config.security.jwt.JwtAuthenticationFilter
+import com.ord.core.security.AnonymousOnlyAuthorizationManager
+import com.ord.core.security.JwtReactiveAuthenticationManager
+import com.ord.core.security.JwtRenewalWriteFilter
+import com.ord.core.security.JwtSecurityContextRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer
-import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer
-import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder
+import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.web.server.SecurityWebFilterChain
 
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 class SecurityConfiguration(
-    private val jwtAuthFilter: JwtAuthenticationFilter,
-    private val authenticationProvider: AuthenticationProvider
+    private val authManager: JwtReactiveAuthenticationManager,
+    private val contextRepository: JwtSecurityContextRepository,
+    private val renewalFilter: JwtRenewalWriteFilter
 ) {
-    @Bean
-    @Throws(Exception::class)
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http
-            .csrf { obj: CsrfConfigurer<HttpSecurity> -> obj.disable() }
-            .authorizeHttpRequests { req: AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ->
-                req
-                    .requestMatchers(*ANONYMOUS_PATHS).anonymous()
-                    .requestMatchers(*AUTHORIZED_PATHS).authenticated()
-                    .anyRequest().permitAll()
-            }
-            .sessionManagement { session: SessionManagementConfigurer<HttpSecurity?> ->
-                session.sessionCreationPolicy(
-                    SessionCreationPolicy.STATELESS
-                )
-            }
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
-
-
-        return http.build()
-    }
+    val anonymousOnlyAuthorizationManager = AnonymousOnlyAuthorizationManager()
 
     companion object {
         private val ANONYMOUS_PATHS = arrayOf(
@@ -56,4 +34,22 @@ class SecurityConfiguration(
             "/api/v1/conversations/**",
         )
     }
+
+    @Bean
+    fun securityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
+        return http
+            .csrf { it.disable() }
+            .securityContextRepository(contextRepository)
+            .authenticationManager(authManager)
+            .authorizeExchange { ex ->
+                ex.pathMatchers(*ANONYMOUS_PATHS).access(anonymousOnlyAuthorizationManager)
+                ex.pathMatchers(*AUTHORIZED_PATHS).authenticated()
+            }
+            .addFilterAfter(
+                renewalFilter,
+                SecurityWebFiltersOrder.SECURITY_CONTEXT_SERVER_WEB_EXCHANGE
+            )
+            .build()
+    }
+
 }

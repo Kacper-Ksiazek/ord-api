@@ -7,11 +7,10 @@ import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.UserMapper
 import com.ord.shared.api.MonoUtils
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @Service
@@ -21,24 +20,22 @@ class AuthFacadeImpl(
 ) : AuthFacade {
     override fun register(
         body: RegisterRequest,
-        response: HttpServletResponse
+        exchange: ServerWebExchange
     ): Mono<ResponseEntity<UserDTO>> {
-        return MonoUtils.fromBlocking {
-            val user = authService.register(body, response)
-
-            ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(user.toDTO())
-        }
+        return authService
+            .register(body, exchange)
+            .map { user ->
+                ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(user)
+            }
     }
 
     override fun login(
         body: LoginRequest,
-        response: HttpServletResponse
+        exchange: ServerWebExchange
     ): Mono<ResponseEntity<UserDTO>> {
-        return MonoUtils.fromBlocking {
-            val user = authService.login(body, response).toDTO()
-
+        return authService.login(body, exchange).map { user ->
             ResponseEntity
                 .status(HttpStatus.OK)
                 .body(user)
@@ -46,16 +43,15 @@ class AuthFacadeImpl(
     }
 
     override fun logout(
-        request: HttpServletRequest,
-        response: HttpServletResponse
+        exchange: ServerWebExchange
     ): Mono<ResponseEntity<Void>> {
-        return MonoUtils.fromBlocking {
-            authService.logout(request, response)
-
-            ResponseEntity
-                .status(HttpStatus.OK)
-                .build()
-        }
+        return authService
+            .logout(exchange)
+            .then(Mono.fromCallable {
+                ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .build()
+            })
     }
 
     override fun me(user: UserEntity): Mono<ResponseEntity<UserDTO>> {
