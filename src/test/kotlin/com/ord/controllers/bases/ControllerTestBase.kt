@@ -6,7 +6,6 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserMapper
 import com.ord.testing_utils.dto.MockedAuthenticatedUser

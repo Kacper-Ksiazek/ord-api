@@ -3,7 +3,7 @@ package com.ord.core.auth.api
 import com.ord.core.auth.api.facade.AuthFacade
 import com.ord.core.auth.api.requests.dto.LoginRequest
 import com.ord.core.auth.api.requests.dto.RegisterRequest
-import com.ord.core.auth.security.AuthenticatedUser
+import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import jakarta.validation.Valid

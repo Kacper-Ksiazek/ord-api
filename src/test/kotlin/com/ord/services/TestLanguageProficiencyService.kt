@@ -5,7 +5,6 @@ import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
-import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserMapper
 import com.ord.seeders.entities.LanguageProficiencySeeder
 import com.fasterxml.jackson.databind.ObjectMapper

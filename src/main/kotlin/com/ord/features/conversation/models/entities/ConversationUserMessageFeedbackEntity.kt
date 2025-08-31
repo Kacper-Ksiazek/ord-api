@@ -9,24 +9,15 @@ import java.util.*
 @Table("conversation_user_message_feedback")
 data class ConversationUserMessageFeedbackEntity(
     @Id
-    var id: UUID? = null, // DB generates uuid_generate_v4()
+    val id: UUID = UUID.randomUUID(),
 
-    @Column("grammar")
-    var grammar: Int,
+    val grammar: Int,
+    val vocabulary: Int,
+    val answerLength: Int,
 
-    @Column("vocabulary")
-    var vocabulary: Int,
+    val comment: String? = null,
+    val suggestedAnswer: String? = null,
 
-    @Column("answer_length")
-    var answerLength: Int,
-
-    @Column("suggested_answer")
-    var suggestedAnswer: String? = null,
-
-    @Column("comment")
-    var comment: String? = null,
-
-    @Column("created_at")
-    var createdAt: Instant = Instant.now(),
+    val createdAt: Instant = Instant.now(),
 )
 

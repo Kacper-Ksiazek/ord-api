@@ -1,23 +1,56 @@
 package com.ord.shared.repositories
 
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Modifying
-import org.springframework.data.jpa.repository.Query
+import org.springframework.data.r2dbc.repository.Modifying
+import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.NoRepositoryBean
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
 
 @NoRepositoryBean
-interface UserResourceRepository<T> : JpaRepository<T, UUID> {
-    @Query("SELECT r FROM #{#entityName} r WHERE r.user.id = :userId")
-    fun findAllForUser(userId: UUID): List<T>
+interface UserResourceRepository<TEntity : Any> : ReactiveCrudRepository<TEntity, UUID> {
+    @Query(
+        """
+        SELECT * 
+            FROM :#{#entityName} 
+        WHERE user_id = :userId
+        """
+    )
+    fun findAllForUser(userId: UUID): Flux<TEntity>
 
-    @Query("SELECT r FROM #{#entityName} r WHERE r.user.id = :userId AND r.id IN :ids")
-    fun findAllForUser(ids: Set<UUID>, userId: UUID): List<T>
 
-    @Query("SELECT r FROM #{#entityName} r WHERE r.user.id = :userId AND r.id = :id")
-    fun findOneForUser(userId: UUID, id: UUID): T?
+    @Query(
+        """
+        SELECT * 
+            FROM :#{#entityName} 
+        WHERE user_id = :userId 
+            AND id = ANY(:ids)
+        """
+    )
+    fun findAllForUser(ids: Set<UUID>, userId: UUID): Flux<TEntity>
+
+
+    @Query(
+        """
+        SELECT * 
+            FROM :#{#entityName} 
+        WHERE user_id = :userId 
+            AND id = :id
+        """
+    )
+    fun findOneForUser(userId: UUID, id: UUID): Mono<TEntity>
+
 
     @Modifying
-    @Query("DELETE FROM #{#entityName} r WHERE r.user.id = :userId AND r.id = :id")
-    fun deleteOneForUser(userId: UUID, id: UUID): Int
+    @Query(
+        """
+        DELETE 
+            FROM :#{#entityName} 
+        WHERE user_id = :userId 
+            AND id = :id
+        """
+    )
+    fun deleteOneForUser(userId: UUID, id: UUID): Mono<Int>
 }
+

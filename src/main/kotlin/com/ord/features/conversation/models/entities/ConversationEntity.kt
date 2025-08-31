@@ -17,41 +17,23 @@ import java.util.*
 @Table("conversations")
 data class ConversationEntity(
     @Id
-    override var id: UUID? = null,
+    override val id: UUID? = null,
 
-    @Column("topic")
-    var topic: String,
+    val topic: String,
+    val additionalContext: String? = null,
 
-    @Column("language")
-    var language: LanguageName,
+    val language: LanguageName,
+    val proficiencyLevel: LanguageProficiencyLevel,
 
-    @Column("proficiency_level")
-    var proficiencyLevel: LanguageProficiencyLevel,
+    val goal: ConversationGoal,
+    val aiTone: ConversationTone,
+    val aiResponseLength: ConversationAIResponseLength,
 
-    @Column("goal")
-    var goal: ConversationGoal,
-
-    @Column("ai_tone")
-    var aiTone: ConversationTone,
-
-    @Column("ai_response_length")
-    var aiResponseLength: ConversationAIResponseLength,
-
-    @Column("additional_context")
-    var additionalContext: String? = null,
-
-    @Column("user_id")
     override var userId: UUID,
 
-    @Column("created_at")
     var createdAt: Instant = Instant.now(),
-
-    @Column("updated_at")
     var updatedAt: Instant = Instant.now(),
 
-    @Transient
-    override var user: UserEntity? = null,
-
-    @Transient
-    var messages: MutableList<ConversationMessageEntity> = mutableListOf()
+    @Transient override var user: UserEntity? = null,
+    @Transient var messages: MutableList<ConversationMessageEntity> = mutableListOf()
 ) : IdentifiableUserResource

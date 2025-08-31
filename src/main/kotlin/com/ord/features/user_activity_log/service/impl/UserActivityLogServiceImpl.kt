@@ -1,7 +1,6 @@
 package com.ord.features.user_activity_log.service.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserEntity
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty

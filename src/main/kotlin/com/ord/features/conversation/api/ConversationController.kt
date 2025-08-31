@@ -1,6 +1,6 @@
 package com.ord.features.conversation.api
 
-import com.ord.core.auth.security.AuthenticatedUser
+import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.facades.ConversationCRUDFacade
 import com.ord.features.conversation.api.facades.ConversationTopicFacade
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 

@@ -9,31 +9,33 @@ import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.domain.enums.SortDirection
+import reactor.core.publisher.Mono
 import java.util.*
 
 interface WordRepositoryCustomMethods {
     fun findOneWord(
         wordId: UUID,
         user: UserEntity
-    ): SingleWordResponse
+    ): Mono<SingleWordResponse>
 
     fun findManyWords(
+        userId: UUID,
+        language: LanguageName,
+
         completed: Boolean?,
-        searchingPhrase: String?,
         bookmarked: Boolean?,
+        searchingPhrase: String?,
 
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
 
         wordType: WordType?,
-        language: LanguageName,
-        sortDirection: SortDirection,
         wordExtraMark: WordExtraMark?,
-        sortBy: GetAllWordsSortOptions,
 
-        user: UserEntity,
+        sortDirection: SortDirection,
+        sortBy: GetAllWordsSortOptions,
 
         page: Int,
         perPage: Int
-    ): PaginatedDataResponse<WordListItem>
+    ): Mono<PaginatedDataResponse<WordListItem>>
 }

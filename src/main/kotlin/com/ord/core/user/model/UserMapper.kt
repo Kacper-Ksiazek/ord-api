@@ -11,7 +11,6 @@ class UserMapper : BidirectionalEntityMapper<UserEntity, UserDTO> {
 
             name = dto.name,
             email = dto.email,
-            role = dto.role,
             password = dto.password,
             nativeLanguage = dto.nativeLanguage,
 
@@ -26,7 +25,6 @@ class UserMapper : BidirectionalEntityMapper<UserEntity, UserDTO> {
 
             name = entity.name,
             email = entity.email,
-            role = entity.role,
             password = entity.password,
             nativeLanguage = entity.nativeLanguage,
 

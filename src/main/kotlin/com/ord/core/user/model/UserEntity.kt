@@ -1,52 +1,42 @@
 package com.ord.core.user.model
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.enums.UserRole
-import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.time.Instant
 import java.util.*
 
-@Entity
 @Table(name = "users")
 data class UserEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID = UUID.randomUUID(),
 
-    @Column(nullable = false)
+    @Column("name")
     var name: String,
 
-    @Column(nullable = false, unique = true)
+    @Column("email")
     var email: String,
 
-    @Column(nullable = false, unique = true)
+    @Column("password")
     private var password: String,
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    var role: UserRole = UserRole.USER,
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "native_language", nullable = false)
+    @Column("native_language")
     var nativeLanguage: LanguageName,
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp
+    @Column("created_at")
     var createdAt: Instant = Instant.now(),
 
-    @Column(name = "updated_at", nullable = false)
-    @UpdateTimestamp
+    @Column("updated_at")
     var updatedAt: Instant = Instant.now()
 ) : UserDetails {
 
     // Java Security methods:
     override fun getAuthorities(): Collection<GrantedAuthority> =
-        listOf(SimpleGrantedAuthority(role.name))
+        listOf(SimpleGrantedAuthority("USER"))
 
     override fun getUsername(): String = email
 

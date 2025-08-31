@@ -15,27 +15,19 @@ import java.util.*
 @Table("ongoing_games")
 data class OngoingGameEntity(
     @Id
-    override var id: UUID? = null,
+    override val id: UUID = UUID.randomUUID(),
 
-    @Column("proper_answers")
-    var properAnswers: String, // JSONB
+    val properAnswers: String, // JSONB
 
-    @Column("type")
-    var type: GameType,
+    val language: LanguageName,
 
-    @Column("language")
-    var language: LanguageName,
+    val type: GameType,
+    val difficulty: GameDifficulty,
 
-    @Column("difficulty")
-    var difficulty: GameDifficulty,
+    override val userId: UUID,
 
-    @Column("user_id")
-    override var userId: UUID,
+    val createdAt: Instant = Instant.now(),
 
-    @Column("created_at")
-    var createdAt: Instant = Instant.now(),
-
-    @Transient
-    override var user: UserEntity? = null
+    @Transient override var user: UserEntity? = null
 ) : IdentifiableUserResource
 

@@ -1,6 +1,6 @@
 package com.ord.core.word.api
 
-import com.ord.core.auth.security.AuthenticatedUser
+import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.facades.WordAIFacade
 import com.ord.core.word.api.requests.dto.GenerateWordManualRequest

@@ -1,6 +1,6 @@
 package com.ord.features.game.api.controllers
 
-import com.ord.core.auth.security.AuthenticatedUser
+import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserEntity
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.game.variants.sentences_writing.api.SentencesWritingGameFacade

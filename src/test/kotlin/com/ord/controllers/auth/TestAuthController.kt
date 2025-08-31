@@ -6,7 +6,6 @@ import com.ord.controllers.bases.ControllerTestBaseUpdated
 import com.ord.core.auth.api.requests.dto.LoginRequest
 import com.ord.core.auth.api.requests.dto.RegisterRequest
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.service.UserService
 import com.ord.seeders.entities.UserSeeder

@@ -14,7 +14,6 @@ import com.ord.core.security.invalidateAuthTokenCookie
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.UserMapper
-import com.ord.core.user.model.enums.UserRole
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.exceptions.REST.UnauthorizedException
@@ -46,7 +45,6 @@ class AuthServiceImpl(
                     name = body.name,
                     email = body.email,
                     password = encoder.encode(body.password),
-                    role = UserRole.USER,
                     nativeLanguage = body.nativeLanguage
                 )
             )

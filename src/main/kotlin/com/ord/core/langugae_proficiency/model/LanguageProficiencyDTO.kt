@@ -7,14 +7,14 @@ import java.time.Instant
 import java.util.*
 
 data class LanguageProficiencyDTO(
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID,
 
-    var language: LanguageName,
-    var proficiency: LanguageProficiencyLevel,
+    val language: LanguageName,
+    var level: LanguageProficiencyLevel,
     var generativeContentLanguage: LanguageName,
 
-    var user: UserDTO,
+    val userId: UUID,
+    var user: UserDTO? = null,
 
     val createdAt: Instant = Instant.now(),
-    var updatedAt: Instant = Instant.now(),
 )

@@ -2,12 +2,6 @@
 --- |       USERS       |
 --- +-------------------+
 
----  UserRole
-CALL create_enum_type(
-        'user_role',
-        ARRAY ['ADMIN', 'USER']
-     );
-
 ---  LanguageName
 CALL create_enum_type(
         'language_name',

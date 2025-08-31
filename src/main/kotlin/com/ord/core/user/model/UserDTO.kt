@@ -1,7 +1,6 @@
 package com.ord.core.user.model
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.enums.UserRole
 import java.time.Instant
 import java.util.*
 
@@ -10,7 +9,6 @@ data class UserDTO(
 
     var name: String,
     var email: String,
-    var role: UserRole = UserRole.USER,
     var password: String,
     var nativeLanguage: LanguageName,
 

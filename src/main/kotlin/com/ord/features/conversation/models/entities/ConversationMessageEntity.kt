@@ -11,29 +11,17 @@ import java.util.*
 @Table("conversation_messages")
 data class ConversationMessageEntity(
     @Id
-    var id: UUID? = null,
+    val id: UUID = UUID.randomUUID(),
 
-    @Column("message_order")
-    var messageOrder: Int,
+    val content: String,
+    val messageOrder: Int,
+    val sender: ConversationMessageSender,
 
-    @Column("sender")
-    var sender: ConversationMessageSender,
-
-    @Column("content")
-    var content: String,
-
-    @Column("conversation_id")
-    var conversationId: UUID,
-
-    @Column("feedback_id")
+    val conversationId: UUID,
     var feedbackId: UUID? = null,
 
-    @Column("created_at")
-    var createdAt: Instant = Instant.now(),
+    val createdAt: Instant = Instant.now(),
 
-    @Column("updated_at")
-    var updatedAt: Instant = Instant.now(),
-
-    @Transient
-    var feedback: ConversationUserMessageFeedbackEntity? = null
+    @Transient var feedback: ConversationUserMessageFeedbackEntity? = null,
+    @Transient var conversation: ConversationEntity? = null
 )

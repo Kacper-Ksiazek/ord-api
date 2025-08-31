@@ -5,7 +5,6 @@ import com.ord.config.properties.JwtProperties
 import com.ord.controllers.games.bases.GameControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserMapper
 import com.ord.core.word.model.WordEntity
 import com.ord.core.word.repository.WordRepository

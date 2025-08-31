@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
-import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserMapper
 import com.ord.controllers.conversations.helpers.request_factories.ConversationRequestFactory
 import com.ord.core.ai_provider.dto.helpers.StreamSimpleItem

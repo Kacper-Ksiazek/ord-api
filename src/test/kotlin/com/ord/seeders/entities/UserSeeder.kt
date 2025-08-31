@@ -1,6 +1,5 @@
 package com.ord.seeders.entities
 
-import com.ord.core.user.UserRepository
 import com.ord.core.user.model.UserEntity
 import com.ord.seeders.entities.bases.SeederInterface
 import com.ord.seeders.factories.UserFactory

@@ -1,9 +1,7 @@
 package com.ord.controllers.conversations.seeders
 
-import com.ord.core.auth.security.AuthenticatedUser
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.UserMapper
 import com.ord.features.conversation.models.entities.ConversationEntity
 import com.ord.features.conversation.models.enums.ConversationAIResponseLength

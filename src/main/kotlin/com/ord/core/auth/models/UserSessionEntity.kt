@@ -13,19 +13,11 @@ data class UserSessionEntity(
     @Id
     override var id: UUID = UUID.randomUUID(),
 
-    @Column(name = "token", nullable = false, updatable = false, unique = true)
     var token: String,
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    override var user: UserEntity,
+    override var userId: UUID,
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp
     var createdAt: Instant = Instant.now(),
 
-    @Column(name = "updated_at", nullable = false)
-    @UpdateTimestamp
-    var updatedAt: Instant = Instant.now()
+    @Transient override var user: UserEntity? = null,
 ) : IdentifiableUserResource

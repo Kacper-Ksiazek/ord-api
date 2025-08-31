@@ -17,39 +17,23 @@ import java.util.UUID
 @Table("finished_games")
 data class FinishedGameEntity(
     @Id
-    override var id: UUID? = null,
+    override val id: UUID = UUID.randomUUID(),
 
-    @Column("duration")
+    val score: Int,
+    val accuracy: Float,
     val duration: String,
 
-    @Column("score")
-    val score: Int,
-
-    @Column("accuracy")
-    val accuracy: Float,
-
-    @Column("type")
-    val type: GameType,
-
-    @Column("language")
     val language: LanguageName,
 
-    @Column("difficulty")
-    val difficulty: GameDifficulty,
-
-    @Column("result")
+    val type: GameType,
     val result: GameResult,
-
-    @Column("grade")
+    val difficulty: GameDifficulty,
     val grade: GameGrade = GameGrade.NA,
 
-    @Column("user_id")
     override val userId: UUID,
 
-    @Column("created_at")
     val createdAt: Instant = Instant.now(),
 
-    @Transient
-    override val user: UserEntity? = null
+    @Transient override val user: UserEntity? = null
 ) : IdentifiableUserResource
 

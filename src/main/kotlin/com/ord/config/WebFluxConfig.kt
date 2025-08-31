@@ -1,6 +1,6 @@
 package com.ord.config
 
-import com.ord.core.auth.security.AuthenticatedUserArgumentResolver
+import com.ord.core.auth.annotations.AuthenticatedUserArgumentResolver
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.config.WebFluxConfigurer
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer

@@ -1,4 +1,4 @@
-package com.ord.core.auth.security
+package com.ord.core.auth.annotations
 
 import com.ord.core.security.UserRepositoryReactive
 import com.ord.core.user.model.UserEntity

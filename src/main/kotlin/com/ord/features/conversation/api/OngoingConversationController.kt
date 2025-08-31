@@ -1,6 +1,6 @@
 package com.ord.features.conversation.api
 
-import com.ord.core.auth.security.AuthenticatedUser
+import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.annotations.OwnedConversation
 import com.ord.features.conversation.api.facades.OngoingConversationFacade

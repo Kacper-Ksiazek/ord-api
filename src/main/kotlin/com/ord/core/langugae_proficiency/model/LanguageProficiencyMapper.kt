@@ -13,13 +13,13 @@ class LanguageProficiencyMapper(
             id = dto.id,
 
             language = dto.language,
-            proficiency = dto.proficiency,
+            level = dto.level,
             generativeContentLanguage = dto.generativeContentLanguage,
 
-            user = userMapper.toEntity(dto.user),
+            userId = dto.userId,
+            user = userMapper.toEntityOrNull(dto.user),
 
             createdAt = dto.createdAt,
-            updatedAt = dto.updatedAt
         )
     }
 
@@ -28,13 +28,13 @@ class LanguageProficiencyMapper(
             id = entity.id,
 
             language = entity.language,
-            proficiency = entity.proficiency,
+            level = entity.level,
             generativeContentLanguage = entity.generativeContentLanguage,
 
-            user = userMapper.toDTO(entity.user),
+            userId = entity.userId,
+            user = userMapper.toDTOOrNull(entity.user),
 
             createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt
         )
     }
 }

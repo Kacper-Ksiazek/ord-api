@@ -1,6 +1,6 @@
 package com.ord.features.game.api.controllers
 
-import com.ord.core.auth.security.AuthenticatedUser
+import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.variants.crossword.api.CrosswordGameFacade
 import com.ord.features.game.variants.crossword.dto.api_responses.FinishedCrosswordGameResponse

@@ -24,9 +24,21 @@ data class WordListItem(
     var translatedFrom: LanguageName,
     var translatedTo: LanguageName,
 
-    var bankId: UUID?,
     val bank: BankCompact?,
-
-    val createdAt: Instant,
-    var updatedAt: Instant
-)
+) {
+    companion object {
+        val fields = setOf(
+            "id",
+            "points",
+            "origin",
+            "translation",
+            "is_completed",
+            "is_bookmarked",
+            "type",
+            "extra_mark",
+            "translated_to",
+            "translated_from",
+            "created_at",
+        )
+    }
+}
