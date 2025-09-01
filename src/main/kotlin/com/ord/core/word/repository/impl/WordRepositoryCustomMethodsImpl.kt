@@ -18,9 +18,6 @@ import com.ord.features.bank_group.model.BankGroupEntity
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.api.dto.responses.PaginationData
 import com.ord.shared.domain.enums.SortDirection
-import jakarta.persistence.Tuple
-import jakarta.persistence.TypedQuery
-import jakarta.persistence.criteria.JoinType
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
@@ -31,107 +28,66 @@ import java.util.*
 class WordRepositoryCustomMethodsImpl(
     private val databaseClient: DatabaseClient,
 ) : WordRepositoryCustomMethods {
-    private val criteriaBuilder = entityManager.criteriaBuilder
 
     override fun findOneWord(
         wordId: UUID,
         user: UserEntity
-    ): SingleWordResponse {
-        val criteriaQuery = criteriaBuilder.createTupleQuery()
+    ): Mono<SingleWordResponse> {
+        val selectQuery = """
+            SELECT 
+                ${SingleWordResponse.fields.joinToString(", ") { "words.$it" }},
+                ${BankCompact.fields.joinToString(", ") { "banks.$it AS bank_$it" }},
+                ${BankGroupCompact.fields.joinToString(", ") { "bank_groups.$it AS bank_group_$it" }}
+            FROM words
+                LEFT JOIN banks ON words.bank_id = banks.id
+                LEFT JOIN bank_groups ON banks.group_id = bank_groups.id
+            WHERE words.id = :wordId AND words.user_id = :userId
+        """
 
-        val root = criteriaQuery.from(WordEntity::class.java)
-        val bankJoin = root.join<WordEntity, BankEntity>("bank", JoinType.LEFT)
-        val bankGroupJoin = bankJoin.join<BankEntity, BankGroupEntity>("bankGroup", JoinType.LEFT)
+        return databaseClient.sql(selectQuery)
+            .bind("wordId", wordId)
+            .bind("userId", user.id)
+            .map { row ->
+                val hasBank: Boolean = row.get("bank_name", String::class.java) != null
+                val hasBankGroup: Boolean = hasBank && row.get("bank_group_name", String::class.java) != null
 
-        criteriaQuery.multiselect(
-            root.get<UUID>("id"),                       // 0
+                SingleWordResponse(
+                    id = row.get("id", UUID::class.java)!!,
+                    points = row.get("points", Int::class.java)!!,
+                    origin = row.get("origin", String::class.java)!!,
+                    translation = row.get("translation", String::class.java)!!,
+                    definition = row.get("definition", String::class.java) ?: "",
+                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
+                    isCompleted = row.get("is_completed", Boolean::class.java)!!,
 
-            // Primitive type fields
-            root.get<Int>("points"),                    // 1
-            root.get<String>("origin"),                 // 2
-            root.get<String>("translation"),            // 3
-            root.get<String>("definition"),             // 4
-            root.get<Boolean>("isBookmarked"),          // 5
-            root.get<Boolean>("isCompleted"),           // 6
+                    type = WordType.valueOf(row.get("type", String::class.java)!!),
+                    extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
+                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
+                    translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
 
-            // Enum types
-            root.get<WordType>("type"),                 // 7
-            root.get<WordExtraMark?>("extraMark"),      // 8
-            root.get<LanguageName>("translatedTo"),     // 9
-            root.get<LanguageName>("translatedFrom"),   // 10
+                    useCases = row.get("use_cases", Array<String>::class.java)?.toSet() ?: emptySet(),
+                    exampleSentences = row.get("example_sentences", Array<ExampleSentence>::class.java)?.toSet() ?: emptySet(),
 
-            // Lists fields
-            root.get<String>("useCases"),               // 11
-            root.get<Int>("exampleSentences"),          // 12
-
-            // Bank fields
-            bankJoin.get<UUID?>("id"),                  // 13
-            bankJoin.get<String?>("name"),              // 14
-            bankJoin.get<String?>("description"),       // 15
-
-            // BankGroup fields
-            bankGroupJoin.get<UUID?>("id"),             // 16
-            bankGroupJoin.get<String?>("name"),         // 17
-            bankGroupJoin.get<String?>("color"),        // 18
-
-            // Timestamps
-            root.get<Instant>("createdAt"),             // 19
-            root.get<Instant>("updatedAt")              // 20
-        )
-
-        criteriaQuery.where(
-            criteriaBuilder.equal(root.get<UUID>("id"), wordId),
-            criteriaBuilder.equal(root.get<UUID>("userId"), user.id)
-        )
-
-        val query: TypedQuery<Tuple> = entityManager.createQuery(criteriaQuery)
-
-        if (query.resultList.isEmpty()) {
-            throw NotFoundException("Word with id $wordId not found for user with id ${user.id}")
-        }
-
-        val result: Tuple = query.singleResult!!
-
-        val bankId = result.get(13, UUID::class.java)
-        val bankGroupId = result.get(16, UUID::class.java)
-
-        @Suppress("UNCHECKED_CAST")
-        return SingleWordResponse(
-            id = result.get(0, UUID::class.java),
-
-            points = result.get(1, Int::class.java),
-            origin = result.get(2, String::class.java),
-            translation = result.get(3, String::class.java),
-            definition = result.get(4, String::class.java),
-            isBookmarked = result.get(5, Boolean::class.java),
-            isCompleted = result.get(6, Boolean::class.java),
-
-            type = result.get(7, WordType::class.java),
-            extraMark = result.get(8, WordExtraMark::class.java),
-            translatedTo = result.get(9, LanguageName::class.java),
-            translatedFrom = result.get(10, LanguageName::class.java),
-
-            useCases = result.get(11, Set::class.java) as Set<String>,
-            exampleSentences = result.get(12, Set::class.java) as Set<ExampleSentence>,
-
-            bank = if (bankId != null) {
-                BankCompact(
-                    id = bankId,
-                    name = result.get(14, String::class.java) ?: "",
-                    description = result.get(15, String::class.java) ?: "",
-                    bankGroup = if (bankGroupId != null) {
-                        BankGroupCompact(
-                            id = bankGroupId,
-                            name = result.get(17, String::class.java) ?: "",
-                            color = result.get(18, String::class.java) ?: ""
+                    bank = if (hasBank) {
+                        BankCompact(
+                            name = row.get("bank_name", String::class.java)!!,
+                            bankGroup = if (hasBankGroup) {
+                                BankGroupCompact(
+                                    name = row.get("bank_group_name", String::class.java)!!,
+                                    color = row.get("bank_group_color", String::class.java)!!
+                                )
+                            } else null
                         )
-                    } else null
-                )
-            } else null,
+                    } else null,
 
-            createdAt = result.get(19, Instant::class.java),
-            updatedAt = result.get(20, Instant::class.java)
-        )
+                    createdAt = row.get("created_at", Instant::class.java)!!,
+                    updatedAt = row.get("updated_at", Instant::class.java)!!
+                )
+            }
+            .one()
+            .switchIfEmpty(
+                Mono.error(NotFoundException("Word with id $wordId not found for user with id ${user.id}"))
+            )
     }
 
 

@@ -30,4 +30,24 @@ data class SingleWordResponse(
 
     val createdAt: Instant,
     var updatedAt: Instant,
-)
+) {
+    companion object {
+        val fields = setOf(
+            "id",
+            "points", 
+            "origin",
+            "definition",
+            "translation",
+            "is_completed",
+            "is_bookmarked",
+            "type",
+            "extra_mark",
+            "translated_to",
+            "translated_from",
+            "use_cases",
+            "example_sentences",
+            "created_at",
+            "updated_at"
+        )
+    }
+}
