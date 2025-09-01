@@ -5,14 +5,21 @@ import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
+import com.ord.core.word.model.WordEntity
 import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
+import com.ord.shared.domain.dto.CountingSummary
 import com.ord.shared.domain.enums.SortDirection
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.util.*
 
 interface WordRepositoryCustomMethods {
+    // ------
+    // READ
+    // ------
+
     fun findOneWord(
         wordId: UUID,
         user: UserEntity
@@ -38,4 +45,56 @@ interface WordRepositoryCustomMethods {
         page: Int,
         perPage: Int
     ): Mono<PaginatedDataResponse<WordListItem>>
+
+
+    fun findNOfLatestWords(
+        language: LanguageName,
+        limit: Int
+    ): Flux<String>
+
+    fun findNOfMostDifficultWords(
+        language: LanguageName,
+        limit: Int
+    ): Flux<String>
+
+    fun findAllWordsFromBanks(
+        language: LanguageName,
+        banksIds: List<UUID>
+    ): Flux<String>
+
+    fun findAllWordByTheirOrigins(
+        origins: Set<String>,
+        language: LanguageName,
+        userId: UUID
+    ): Flux<WordEntity>
+
+    // ------
+    // AGGREGATE
+    // ------
+
+    fun countCreated(
+        language: LanguageName,
+        userId: UUID
+    ): Mono<CountingSummary>
+
+    fun countCompleted(
+        language: LanguageName,
+        userId: UUID
+    ): Mono<CountingSummary>
+
+    // ------
+    // UPDATE
+    // ------
+
+    fun changeBankForSingleWord(
+        wordId: UUID,
+        bankId: UUID?,
+        userId: UUID
+    ): Mono<Int>
+
+    fun changeBankForMultipleWords(
+        bankId: UUID?,
+        wordIds: List<UUID>,
+        userId: UUID
+    ): Mono<Int>
 }

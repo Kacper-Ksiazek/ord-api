@@ -18,8 +18,10 @@ import com.ord.features.bank_group.model.BankGroupEntity
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.api.dto.responses.PaginationData
 import com.ord.shared.domain.enums.SortDirection
+import com.ord.shared.domain.dto.CountingSummary
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
 import java.util.*
@@ -88,6 +90,204 @@ class WordRepositoryCustomMethodsImpl(
             .switchIfEmpty(
                 Mono.error(NotFoundException("Word with id $wordId not found for user with id ${user.id}"))
             )
+    }
+
+
+    override fun findNOfLatestWords(
+        language: LanguageName,
+        limit: Int
+    ): Flux<String> {
+        val selectQuery = """
+            SELECT origin 
+            FROM words 
+            WHERE translated_from = :language 
+            ORDER BY created_at DESC 
+            LIMIT :limit
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("language", language.name)
+            .bind("limit", limit)
+            .map { row -> row.get("origin", String::class.java)!! }
+            .all()
+    }
+
+
+    override fun findNOfMostDifficultWords(
+        language: LanguageName,
+        limit: Int
+    ): Flux<String> {
+        val selectQuery = """
+            SELECT origin 
+            FROM words 
+            WHERE translated_from = :language 
+            ORDER BY points DESC 
+            LIMIT :limit
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("language", language.name)
+            .bind("limit", limit)
+            .map { row -> row.get("origin", String::class.java)!! }
+            .all()
+    }
+
+
+    override fun findAllWordsFromBanks(
+        language: LanguageName,
+        banksIds: List<UUID>
+    ): Flux<String> {
+        val selectQuery = """
+            SELECT origin 
+            FROM words 
+            WHERE translated_from = :language 
+            AND bank_id = ANY(:banksIds)
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("language", language.name)
+            .bind("banksIds", banksIds.toTypedArray())
+            .map { row -> row.get("origin", String::class.java)!! }
+            .all()
+    }
+
+
+    override fun findAllWordByTheirOrigins(
+        origins: Set<String>,
+        language: LanguageName,
+        userId: UUID
+    ): Flux<WordEntity> {
+        val selectQuery = """
+            SELECT id, origin, translation, definition, points, is_bookmarked, is_completed,
+                   type, extra_mark, translated_to, translated_from, use_cases, example_sentences,
+                   bank_id, user_id, created_at, updated_at
+            FROM words 
+            WHERE translated_from = :language 
+            AND origin = ANY(:origins) 
+            AND user_id = :userId
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("language", language.name)
+            .bind("origins", origins.toTypedArray())
+            .bind("userId", userId)
+            .map { row ->
+                WordEntity(
+                    id = row.get("id", UUID::class.java)!!,
+                    origin = row.get("origin", String::class.java)!!,
+                    translation = row.get("translation", String::class.java)!!,
+                    definition = row.get("definition", String::class.java) ?: "",
+                    points = row.get("points", Int::class.java)!!,
+                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
+                    isCompleted = row.get("is_completed", Boolean::class.java)!!,
+                    type = WordType.valueOf(row.get("type", String::class.java)!!),
+                    extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
+                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
+                    translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
+                    useCases = row.get("use_cases", Array<String>::class.java)?.toSet() ?: emptySet(),
+                    exampleSentences = row.get("example_sentences", Array<ExampleSentence>::class.java)?.toSet() ?: emptySet(),
+                    userId = userId,
+                    createdAt = row.get("created_at", Instant::class.java)!!,
+                    updatedAt = row.get("updated_at", Instant::class.java)!!
+                )
+            }
+            .all()
+    }
+
+
+    override fun countCreated(
+        language: LanguageName,
+        userId: UUID
+    ): Mono<CountingSummary> {
+        val selectQuery = """
+            SELECT * FROM count_words_by_field(
+                'created_at', 
+                cast(:language as text), 
+                :userId
+            )
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("language", language.name)
+            .bind("userId", userId)
+            .fetch()
+            .one()
+            .map { row ->
+                CountingSummary(
+                    today = (row.get("today") as? Number)?.toInt() ?: 0,
+                    week = (row.get("week") as? Number)?.toInt() ?: 0,
+                    month = (row.get("month") as? Number)?.toInt() ?: 0
+                )
+            }
+    }
+
+
+    override fun countCompleted(
+        language: LanguageName,
+        userId: UUID
+    ): Mono<CountingSummary> {
+        val selectQuery = """
+            SELECT * FROM count_words_by_field(
+                'completed_at', 
+                cast(:language as text), 
+                :userId
+            )
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("language", language.name)
+            .bind("userId", userId)
+            .fetch()
+            .one()
+            .map { row ->
+                CountingSummary(
+                    today = (row.get("today") as? Number)?.toInt() ?: 0,
+                    week = (row.get("week") as? Number)?.toInt() ?: 0,
+                    month = (row.get("month") as? Number)?.toInt() ?: 0
+                )
+            }
+    }
+
+
+    override fun changeBankForSingleWord(
+        wordId: UUID,
+        bankId: UUID?,
+        userId: UUID
+    ): Mono<Int> {
+        val updateQuery = """
+            UPDATE words 
+            SET bank_id = :bankId 
+            WHERE id = :wordId AND user_id = :userId
+        """
+
+        return databaseClient.sql(updateQuery)
+            .bind("wordId", wordId)
+            .bind("bankId", bankId)
+            .bind("userId", userId)
+            .fetch()
+            .rowsUpdated()
+            .map { it.toInt() }
+    }
+
+
+    override fun changeBankForMultipleWords(
+        bankId: UUID?,
+        wordIds: List<UUID>,
+        userId: UUID
+    ): Mono<Int> {
+        val updateQuery = """
+            UPDATE words 
+            SET bank_id = :bankId 
+            WHERE id = ANY(:wordIds) AND user_id = :userId
+        """
+
+        return databaseClient.sql(updateQuery)
+            .bind("bankId", bankId)
+            .bind("wordIds", wordIds.toTypedArray())
+            .bind("userId", userId)
+            .fetch()
+            .rowsUpdated()
+            .map { it.toInt() }
     }
 
 
@@ -189,6 +389,7 @@ class WordRepositoryCustomMethodsImpl(
                 )
             }
     }
+
 
     private fun createFilters(
         completed: Boolean?,
