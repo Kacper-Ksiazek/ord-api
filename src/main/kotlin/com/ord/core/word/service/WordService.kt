@@ -14,6 +14,8 @@ import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.domain.dto.CountingSummary
 import com.ord.shared.domain.enums.SortDirection
 import com.ord.shared.services.UserResourceService
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
 
 interface WordService : UserResourceService<WordEntity> {
@@ -21,24 +23,24 @@ interface WordService : UserResourceService<WordEntity> {
         wordId: UUID,
         bankId: UUID?,
         userId: UUID
-    ): Int
+    ): Mono<Int>
 
     fun changeBankForMultipleWords(
         wordIds: List<UUID>,
         bankId: UUID?,
         userId: UUID
-    ): Int
+    ): Mono<Int>
 
     fun getWordsForPromptGeneration(
         language: LanguageName,
         amountOfLatestWord: Int = 10,
         amountOfProblematicWord: Int = 10
-    ): Set<String>
+    ): Mono<Set<String>>
 
     fun getWordsForPromptGeneration(
         language: LanguageName,
         banksIds: List<UUID>
-    ): Set<String>
+    ): Mono<Set<String>>
 
     fun findManyWords(
         completed: Boolean? = null,
@@ -58,31 +60,37 @@ interface WordService : UserResourceService<WordEntity> {
 
         page: Int = 0,
         perPage: Int = 10
-    ): PaginatedDataResponse<WordListItem>
+    ): Mono<PaginatedDataResponse<WordListItem>>
 
     fun findOneWord(
         wordId: UUID,
         user: UserEntity
-    ): SingleWordResponse
+    ): Mono<SingleWordResponse>
 
     fun toggleProperty(
         wordId: UUID,
         userId: UUID,
         property: WordToggleableProperty
-    ): WordEntity
+    ): Mono<WordEntity>
 
     fun togglePropertyForManyWords(
         wordIds: Set<UUID>,
         userId: UUID,
         property: WordToggleableProperty
-    ): List<WordEntity>
+    ): Flux<WordEntity>
 
     fun saveNewWord(
         word: WordDTO,
         user: UserEntity
-    ): WordDTO
+    ): Mono<WordDTO>
 
-    fun countCreated(language: LanguageName, userId: UUID): CountingSummary
+    fun countCreated(
+        language: LanguageName,
+        userId: UUID
+    ): Mono<CountingSummary>
 
-    fun countCompleted(language: LanguageName, userId: UUID): CountingSummary
+    fun countCompleted(
+        language: LanguageName,
+        userId: UUID
+    ): Mono<CountingSummary>
 }
