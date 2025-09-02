@@ -77,13 +77,13 @@ class WordServiceImpl(
     ): Mono<Set<String>> {
         val latestWords = repository.findNOfLatestWords(
             language = language,
-            pageable = PageRequest.of(0, amountOfLatestWord)
-        )
+            limit = amountOfLatestWord
+        ).collectList()
 
         val problematicWords = repository.findNOfMostDifficultWords(
             language = language,
-            pageable = PageRequest.of(0, amountOfProblematicWord)
-        )
+            limit = amountOfProblematicWord
+        ).collectList()
 
         return Mono.zip(latestWords, problematicWords) { latest, problematic ->
             (latest + problematic).toSet()
@@ -97,7 +97,7 @@ class WordServiceImpl(
         return repository.findAllWordsFromBanks(
             language = language,
             banksIds = banksIds
-        ).map { it.toSet() }
+        ).collectList().map { it.toSet() }
     }
 
     override fun findManyWords(
@@ -120,6 +120,7 @@ class WordServiceImpl(
         perPage: Int
     ): Mono<PaginatedDataResponse<WordListItem>> {
         return repository.findManyWords(
+            userId = user.id,
             language = language,
             completed = completed,
             bookmarked = bookmarked,
@@ -133,8 +134,6 @@ class WordServiceImpl(
 
             banksIds = banksIds,
             bankGroupsIds = bankGroupsIds,
-
-            user = user,
 
             page = page,
             perPage = perPage
@@ -196,7 +195,7 @@ class WordServiceImpl(
                         if (countingSummary.today >= 10) {
                             userActivityLogsToSaveEntity.add(
                                 UserActivityLogEntity(
-                                    user = user,
+                                    userId = user.id,
                                     type = UserActivityType.WORDS_ADDED_IN_ONE_DAY_10,
                                     language = language,
                                 )
@@ -206,7 +205,7 @@ class WordServiceImpl(
                         if (countingSummary.week >= 50) {
                             userActivityLogsToSaveEntity.add(
                                 UserActivityLogEntity(
-                                    user = user,
+                                    userId = user.id,
                                     type = UserActivityType.WORDS_ADDED_IN_ONE_WEEK_50,
                                     language = language,
                                 )
@@ -224,7 +223,6 @@ class WordServiceImpl(
         userId: UUID
     ): Mono<CountingSummary> {
         return repository.countCreated(language = language, userId = userId)
-            .map { CountingSummary(it) }
     }
 
     override fun countCompleted(
@@ -232,6 +230,5 @@ class WordServiceImpl(
         userId: UUID
     ): Mono<CountingSummary> {
         return repository.countCompleted(language = language, userId = userId)
-            .map { CountingSummary(it) }
     }
 }
