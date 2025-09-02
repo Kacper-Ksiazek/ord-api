@@ -8,16 +8,33 @@ import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
 import com.ord.core.word.model.WordDTO
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
+import reactor.core.publisher.Mono
 import java.util.*
 
 interface WordCRUDFacade {
-    fun getManyWords(requestBody: GetManyWordsRequest, user: UserEntity): PaginatedDataResponse<WordListItem>
+    fun getManyWords(
+        requestBody: GetManyWordsRequest,
+        user: UserEntity
+    ): Mono<PaginatedDataResponse<WordListItem>>
 
-    fun getSingleWord(id: UUID, user: UserEntity): SingleWordResponse
+    fun getSingleWord(
+        id: UUID,
+        user: UserEntity
+    ): Mono<SingleWordResponse>
 
-    fun createWord(body: CreateWordRequest, user: UserEntity): WordDTO
+    fun createWord(
+        body: CreateWordRequest,
+        user: UserEntity
+    ): Mono<WordDTO>
 
-    fun updateWord(id: UUID, body: UpdateWordRequest, user: UserEntity): WordDTO
+    fun updateWord(
+        id: UUID,
+        body: UpdateWordRequest,
+        user: UserEntity
+    ): Mono<WordDTO>
 
-    fun deleteWord(id: UUID, user: UserEntity)
+    fun deleteWord(
+        id: UUID,
+        user: UserEntity
+    ): Mono<Void>
 }

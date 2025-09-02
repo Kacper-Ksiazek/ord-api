@@ -18,6 +18,7 @@ import com.ord.features.bank.service.BankService
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.extensions.convertToSetExplicitly
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
@@ -31,7 +32,7 @@ class WordCRUDFacadeImpl(
     override fun getManyWords(
         requestBody: GetManyWordsRequest,
         user: UserEntity
-    ): PaginatedDataResponse<WordListItem> {
+    ): Mono<PaginatedDataResponse<WordListItem>> {
         return wordService.findManyWords(
             language = requestBody.language,
             wordType = requestBody.wordType,
@@ -51,13 +52,12 @@ class WordCRUDFacadeImpl(
             page = requestBody.page ?: 0,
             perPage = requestBody.perPage ?: 10
         )
-
     }
 
     override fun getSingleWord(
         id: UUID,
         user: UserEntity
-    ): SingleWordResponse {
+    ): Mono<SingleWordResponse> {
         return wordService.findOneWord(
             wordId = id,
             user = user
@@ -67,7 +67,7 @@ class WordCRUDFacadeImpl(
     override fun createWord(
         body: CreateWordRequest,
         user: UserEntity
-    ): WordDTO {
+    ): Mono<WordDTO> {
         val bank = getBankFromRequestOrNull(
             bankService = bankService,
             bankId = body.bankId,
@@ -90,52 +90,53 @@ class WordCRUDFacadeImpl(
             bank = bankMapper.toDTOOrNull(bank)
         )
 
-        val result = wordService.save(wordMapper.toEntity(wordToSave))
-        return wordMapper.toDTO(result)
+        return wordService.saveNewWord(
+            word = wordToSave,
+            user = user
+        )
     }
 
     override fun updateWord(
         id: UUID,
         body: UpdateWordRequest,
         user: UserEntity
-    ): WordDTO {
-        val currentWord = wordService.findByIdOrFail(id = id, userId = user.id)
-
-        val bank = getBankFromRequestOrNull(
-            bankService = bankService,
-            bankId = body.bankId,
-            bankToCreate = body.bankToCreate,
-            user = user
-        )
-
-        val result: WordEntity = wordService.save(
-            wordMapper.toEntity(
-                WordDTO(
-                    id = id,
-                    origin = body.origin ?: currentWord.origin,
-                    translatedTo = body.translatedTo ?: currentWord.translatedTo,
-                    translatedFrom = body.translatedFrom ?: currentWord.translatedFrom,
-                    type = body.type ?: currentWord.type,
-                    exampleSentences = body.exampleSentences ?: currentWord.exampleSentences,
-                    translation = body.translation ?: currentWord.translation,
-                    extraMark = body.extraMark ?: currentWord.extraMark,
-                    definition = body.definition ?: currentWord.definition,
-                    useCases = body.useCases ?: currentWord.useCases,
-
-                    user = userMapper.toDTO(user),
-                    bank = bankMapper.toDTOOrNull(bank)
+    ): Mono<WordDTO> {
+        return wordService.findByIdOrFail(id = id, userId = user.id)
+            .map { currentWord ->
+                val bank = getBankFromRequestOrNull(
+                    bankService = bankService,
+                    bankId = body.bankId,
+                    bankToCreate = body.bankToCreate,
+                    user = user
                 )
-            )
-        )
 
-        return wordMapper.toDTO(result)
+                wordMapper.toEntity(
+                    WordDTO(
+                        id = id,
+                        origin = body.origin ?: currentWord.origin,
+                        translatedTo = body.translatedTo ?: currentWord.translatedTo,
+                        translatedFrom = body.translatedFrom ?: currentWord.translatedFrom,
+                        type = body.type ?: currentWord.type,
+                        exampleSentences = body.exampleSentences ?: currentWord.exampleSentences,
+                        translation = body.translation ?: currentWord.translation,
+                        extraMark = body.extraMark ?: currentWord.extraMark,
+                        definition = body.definition ?: currentWord.definition,
+                        useCases = body.useCases ?: currentWord.useCases,
+
+                        user = userMapper.toDTO(user),
+                        bank = bankMapper.toDTOOrNull(bank)
+                    )
+                )
+            }
+            .flatMap { updatedEntity -> wordService.save(updatedEntity) }
+            .map { savedEntity -> wordMapper.toDTO(savedEntity) }
     }
 
     override fun deleteWord(
         id: UUID,
         user: UserEntity
-    ) {
-        wordService.deleteById(
+    ): Mono<Void> {
+        return wordService.deleteById(
             id = id,
             userId = user.id
         )

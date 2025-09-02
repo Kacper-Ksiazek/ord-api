@@ -7,6 +7,7 @@ import com.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.ord.core.word.service.WordService
 import com.ord.shared.extensions.convertToSetExplicitly
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
@@ -17,23 +18,23 @@ class WordPropertyToggleFacadeImpl(
         id: UUID,
         property: WordToggleableProperty,
         user: UserEntity
-    ) {
-        wordService.toggleProperty(
+    ): Mono<Void> {
+        return wordService.toggleProperty(
             wordId = id,
             userId = user.id,
             property = property
-        )
+        ).then()
     }
 
     override fun togglePropertyForMultipleWords(
         body: WordBulkActionRequest,
         property: WordToggleableProperty,
         user: UserEntity
-    ) {
-        wordService.togglePropertyForManyWords(
+    ): Mono<Void> {
+        return wordService.togglePropertyForManyWords(
             wordIds = body.ids.convertToSetExplicitly(paramName = "ids"),
             userId = user.id,
             property = property
-        )
+        ).then()
     }
 }

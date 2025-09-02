@@ -9,6 +9,7 @@ import com.ord.core.word.api.requests.dto.ChangeBankForSingleWordRequest
 import com.ord.core.word.service.WordService
 import com.ord.features.bank.service.BankService
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
@@ -20,7 +21,7 @@ class WordBankManagementFacadeImpl(
         id: UUID,
         body: ChangeBankForSingleWordRequest,
         user: UserEntity
-    ) {
+    ): Mono<Void> {
         val bank = getBankFromRequestOrNull(
             bankService = bankService,
             user = user,
@@ -28,17 +29,17 @@ class WordBankManagementFacadeImpl(
             bankToCreate = body.bankToCreate
         )
 
-        wordService.changeBankForSingleWord(
+        return wordService.changeBankForSingleWord(
             wordId = id,
             bankId = bank?.id,
             userId = user.id
-        )
+        ).then()
     }
 
     override fun changeBankOfMultipleWords(
         body: ChangeBankForMultipleWordsRequest,
         user: UserEntity
-    ) {
+    ): Mono<Void> {
         val bank = getBankFromRequest(
             bankService = bankService,
             user = user,
@@ -46,11 +47,10 @@ class WordBankManagementFacadeImpl(
             bankToCreate = body.bankToCreate
         )
 
-        wordService.changeBankForMultipleWords(
+        return wordService.changeBankForMultipleWords(
             wordIds = body.wordIds,
             bankId = bank.id,
             userId = user.id
-        )
-
+        ).then()
     }
 }
