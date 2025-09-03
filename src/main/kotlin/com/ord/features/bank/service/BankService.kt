@@ -5,6 +5,7 @@ import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.model.BankEntity
 import com.ord.shared.services.UserResourceService
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 import java.util.*
 
 @Service
@@ -13,5 +14,5 @@ interface BankService : UserResourceService<BankEntity> {
         bankId: UUID?,
         bankToCreate: CreateBankRequest?,
         user: UserEntity
-    ): BankEntity?
+    ): Mono<BankEntity?>
 }
