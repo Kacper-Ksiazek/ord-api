@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ord.config.RestClientConfig
 import com.ord.config.properties.OpenAIProperties
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
@@ -26,7 +25,6 @@ import kotlin.collections.contains
 @Service
 class OpenAIAPIClientServiceImpl(
     private val openAIRequestFactory: OpenAIRequestFactory,
-    private val restClientConfig: RestClientConfig,
     private val openAIProperties: OpenAIProperties,
     private val webClient: WebClient,
     private val env: Environment
@@ -55,9 +53,14 @@ class OpenAIAPIClientServiceImpl(
         do {
             trackOpenAIAPIRequestAttempt(numberOfAttempts++)
 
-            response = restClientConfig
-                .makeOpenAIPostRequest(openAIRequest)
-                .also { saveLog(it) }
+            response = webClient.post()
+                .uri(openAIProperties.apiUrl)
+                .bodyValue(openAIRequest)
+                .retrieve()
+                .bodyToMono(OpenAIResponse::class.java)
+                .block() ?: throw RuntimeException("OpenAI response is null")
+
+            saveLog(response)
 
             parsedResponseBody = try {
                 parseResponseBody(objectMapper.readValue(response.data, aiResponseType))

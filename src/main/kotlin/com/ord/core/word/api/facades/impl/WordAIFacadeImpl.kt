@@ -3,8 +3,8 @@ package com.ord.core.word.api.facades.impl
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ord.config.RestClientConfig
-import com.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
+import com.fasterxml.jackson.core.type.TypeReference
+import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
@@ -23,9 +23,8 @@ import reactor.core.publisher.Mono
 
 @Component
 class WordAIFacadeImpl(
-    private val openAIRequestFactory: OpenAIRequestFactory,
+    private val openAIAPIClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService,
-    private val restClientConfig: RestClientConfig,
 ) : WordAIFacade {
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
@@ -56,24 +55,31 @@ class WordAIFacadeImpl(
                     )
                 ).toString()
 
-                // Create the request
-                val openAIRequest = openAIRequestFactory.createRequest(prompt)
-
-                // Send the request to OpenAI
-                val response = restClientConfig.makeOpenAIPostRequest(openAIRequest)
-
-                Mono.just(with(response.data) {
-                    when {
-                        contains("WORD_MISSPELLED") -> throw BadRequestException("The word ${body.word} in the language ${body.language} is misspelled.")
-                        contains("NON_EXISTENT_WORD") -> throw BadRequestException("The word ${body.word} does not exist in the language ${body.language}.")
-
-                        else -> {
-                            val result = jsonObjectMapper.readValue<AIGeneratedWordManual>(this)
-                            result.originalWord = body.word
-                            result
+                // Send the request to OpenAI using reactive service
+                val response = openAIAPIClientService.makeRequest(
+                    aiResponseType = object : TypeReference<AIGeneratedWordManual>() {},
+                    prompt = prompt,
+                    saveLog = { /* Log handling can be added here if needed */ },
+                    validateResponseBody = { responseBody ->
+                        responseBody != null && 
+                        !responseBody.toString().contains("WORD_MISSPELLED") &&
+                        !responseBody.toString().contains("NON_EXISTENT_WORD")
+                    },
+                    parseResponseBody = { responseBody ->
+                        when {
+                            responseBody.toString().contains("WORD_MISSPELLED") -> 
+                                throw BadRequestException("The word ${body.word} in the language ${body.language} is misspelled.")
+                            responseBody.toString().contains("NON_EXISTENT_WORD") -> 
+                                throw BadRequestException("The word ${body.word} does not exist in the language ${body.language}.")
+                            else -> {
+                                responseBody.originalWord = body.word
+                                responseBody
+                            }
                         }
                     }
-                })
+                )
+
+                Mono.just(response)
             }
     }
 }
