@@ -15,6 +15,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Mono
 import java.util.*
 
 @RestController
@@ -32,20 +33,18 @@ class WordController(
     fun getAllWords(
         @RequestBody @Valid requestBody: GetManyWordsRequest,
         @AuthenticatedUser user: UserEntity
-    ): ResponseEntity<PaginatedDataResponse<WordListItem>> {
-        return ResponseEntity.status(HttpStatus.OK).body(
-            wordCRUDFacade.getManyWords(requestBody, user)
-        )
+    ): Mono<ResponseEntity<PaginatedDataResponse<WordListItem>>> {
+        return wordCRUDFacade.getManyWords(requestBody, user)
+            .map { ResponseEntity.status(HttpStatus.OK).body(it) }
     }
 
     @GetMapping("/{id}")
     fun getWord(
         @PathVariable id: UUID,
         @AuthenticatedUser user: UserEntity
-    ): ResponseEntity<SingleWordResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(
-            wordCRUDFacade.getSingleWord(id, user)
-        )
+    ): Mono<ResponseEntity<SingleWordResponse>> {
+        return wordCRUDFacade.getSingleWord(id, user)
+            .map { ResponseEntity.status(HttpStatus.OK).body(it) }
     }
 
 
@@ -53,10 +52,9 @@ class WordController(
     fun createWord(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: CreateWordRequest
-    ): ResponseEntity<WordDTO> {
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(wordCRUDFacade.createWord(body, user))
+    ): Mono<ResponseEntity<WordDTO>> {
+        return wordCRUDFacade.createWord(body, user)
+            .map { ResponseEntity.status(HttpStatus.CREATED).body(it) }
     }
 
     @PatchMapping("/{id}")
@@ -64,10 +62,9 @@ class WordController(
         @PathVariable id: UUID,
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: UpdateWordRequest
-    ): ResponseEntity<WordDTO> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(wordCRUDFacade.updateWord(id, body, user))
+    ): Mono<ResponseEntity<WordDTO>> {
+        return wordCRUDFacade.updateWord(id, body, user)
+            .map { ResponseEntity.status(HttpStatus.OK).body(it) }
     }
 
 
@@ -75,10 +72,9 @@ class WordController(
     fun deleteWord(
         @AuthenticatedUser user: UserEntity,
         @PathVariable id: UUID
-    ): ResponseEntity<Unit> {
-        wordCRUDFacade.deleteWord(id, user)
-
-        return ResponseEntity.status(HttpStatus.OK).build()
+    ): Mono<ResponseEntity<Unit>> {
+        return wordCRUDFacade.deleteWord(id, user)
+            .then(Mono.fromCallable { ResponseEntity.status(HttpStatus.OK).build<Unit>() })
     }
 
     // -------
@@ -90,20 +86,18 @@ class WordController(
         @PathVariable id: UUID,
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: ChangeBankForSingleWordRequest
-    ): ResponseEntity<Unit> {
-        wordBankManagementFacade.changeBankOfOneWord(id, body, user)
-
-        return ResponseEntity.status(HttpStatus.OK).build()
+    ): Mono<ResponseEntity<Unit>> {
+        return wordBankManagementFacade.changeBankOfOneWord(id, body, user)
+            .then(Mono.fromCallable { ResponseEntity.status(HttpStatus.OK).build<Unit>() })
     }
 
     @PostMapping("/change-bank-for-multiple-words")
     fun changeBankForMultipleWords(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: ChangeBankForMultipleWordsRequest
-    ): ResponseEntity<Unit> {
-        wordBankManagementFacade.changeBankOfMultipleWords(body, user)
-
-        return ResponseEntity.status(HttpStatus.OK).build()
+    ): Mono<ResponseEntity<Unit>> {
+        return wordBankManagementFacade.changeBankOfMultipleWords(body, user)
+            .then(Mono.fromCallable { ResponseEntity.status(HttpStatus.OK).build<Unit>() })
     }
 
     // -------
@@ -115,10 +109,9 @@ class WordController(
         @PathVariable id: UUID,
         @AuthenticatedUser user: UserEntity,
         @RequestParam(required = false) property: WordToggleableProperty
-    ): ResponseEntity<Unit> {
-        wordPropertyToggleFacade.togglePropertyForOneWord(id, property, user)
-
-        return ResponseEntity.status(HttpStatus.OK).build()
+    ): Mono<ResponseEntity<Unit>> {
+        return wordPropertyToggleFacade.togglePropertyForOneWord(id, property, user)
+            .then(Mono.fromCallable { ResponseEntity.status(HttpStatus.OK).build<Unit>() })
     }
 
     @PostMapping("/toggle-property-for-multiple-words")
@@ -126,9 +119,8 @@ class WordController(
         @RequestParam(required = false) property: WordToggleableProperty,
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: WordBulkActionRequest
-    ): ResponseEntity<Unit> {
-        wordPropertyToggleFacade.togglePropertyForMultipleWords(body, property, user)
-
-        return ResponseEntity.status(HttpStatus.OK).build()
+    ): Mono<ResponseEntity<Unit>> {
+        return wordPropertyToggleFacade.togglePropertyForMultipleWords(body, property, user)
+            .then(Mono.fromCallable { ResponseEntity.status(HttpStatus.OK).build<Unit>() })
     }
 }

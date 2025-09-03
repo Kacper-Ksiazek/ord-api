@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/v1/words/ai")
@@ -22,9 +23,8 @@ class WordAIController(
     fun generateAIManual(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: GenerateWordManualRequest
-    ): ResponseEntity<AIGeneratedWordManual> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(wordAIFacade.generateWordManual(body, user))
+    ): Mono<ResponseEntity<AIGeneratedWordManual>> {
+        return wordAIFacade.generateWordManual(body, user)
+            .map { ResponseEntity.status(HttpStatus.OK).body(it) }
     }
 }
