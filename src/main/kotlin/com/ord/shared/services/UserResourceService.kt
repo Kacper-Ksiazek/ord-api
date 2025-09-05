@@ -12,9 +12,11 @@ import java.util.*
 interface UserResourceService<TEntity : IdentifiableUserResource> {
     val repository: UserResourceRepository<TEntity>
 
+
     fun save(t: TEntity): Mono<TEntity> {
         return repository.save(t)
     }
+
 
     fun update(
         t: TEntity,
@@ -30,6 +32,7 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
             }
     }
 
+
     @Transactional
     fun deleteById(
         id: UUID,
@@ -42,6 +45,7 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
             }
     }
 
+
     fun findById(
         id: UUID,
         userId: UUID? = null
@@ -53,6 +57,7 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
         }
     }
 
+
     fun findByIdOrFail(
         id: UUID,
         userId: UUID? = null,
@@ -61,6 +66,7 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
         return findById(id, userId)
             .switchIfEmpty(Mono.error(NotFoundException(message)))
     }
+
 
     fun findAll(
         userId: UUID? = null
