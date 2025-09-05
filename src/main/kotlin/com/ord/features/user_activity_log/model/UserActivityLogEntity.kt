@@ -15,15 +15,14 @@ data class UserActivityLogEntity(
     @Id
     override var id: UUID = UUID.randomUUID(),
 
-    val points: Int = type.points,
-
-    val language: LanguageName,
     val type: UserActivityType,
+    val language: LanguageName,
     val gameDifficulty: GameDifficulty? = null,
+    val points: Int = type.points,
 
     override val userId: UUID,
 
     var createdAt: Instant = Instant.now(),
 
-    override var user: UserEntity? = null,
+    @Transient override var user: UserEntity? = null,
 ) : IdentifiableUserResource

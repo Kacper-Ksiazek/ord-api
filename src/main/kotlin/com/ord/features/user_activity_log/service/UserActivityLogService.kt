@@ -5,6 +5,8 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.user_activity_log.model.UserActivityLogEntity
 import com.ord.features.user_activity_log.model.enums.UserActivityType
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
 
 interface UserActivityLogService {
@@ -17,14 +19,18 @@ interface UserActivityLogService {
         type: UserActivityType,
         language: LanguageName,
         difficulty: GameDifficulty? = null
-    ): Boolean
+    ): Mono<Boolean>
+
 
     fun log(
         userId: UUID,
         type: UserActivityType,
         language: LanguageName,
         difficulty: GameDifficulty? = null
-    ): Boolean
+    ): Mono<Boolean>
 
-    fun logMany(userActivityLogEntities: Set<UserActivityLogEntity>): Set<UserActivityLogEntity>
+
+    fun logMany(
+        userActivityLogEntities: Set<UserActivityLogEntity>
+    ): Flux<UserActivityLogEntity>
 }
