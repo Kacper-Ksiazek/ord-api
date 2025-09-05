@@ -14,10 +14,11 @@ class QuicklyAddedWordMapper(
 
             word = dto.word,
             language = dto.language,
-            user = userMapper.toEntity(dto.user),
 
             createdAt = dto.createdAt,
-            updatedAt = dto.updatedAt
+
+            userId = dto.user.id,
+            user = userMapper.toEntity(dto.user)
         )
     }
 
@@ -25,11 +26,13 @@ class QuicklyAddedWordMapper(
         return QuicklyAddedWordDTO(
             id = entity.id,
 
-            word = entity.word, language = entity.language,
+            word = entity.word,
+            language = entity.language,
+
+            userId = entity.userId,
             user = userMapper.toDTO(entity.user),
 
-            createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt
+            createdAt = entity.createdAt
         )
     }
 }
