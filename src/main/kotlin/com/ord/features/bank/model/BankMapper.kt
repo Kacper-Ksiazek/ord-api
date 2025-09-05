@@ -17,13 +17,13 @@ class BankMapper(
             name = dto.name,
             description = dto.description,
 
+            userId = dto.user.id,
             user = userMapper.toEntity(dto.user),
 
             bankGroupId = dto.bankGroupId,
             bankGroup = bankGroupMapper.toEntityOrNull(dto.bankGroup),
 
             createdAt = dto.createdAt,
-            updatedAt = dto.updatedAt
         )
     }
 
@@ -34,13 +34,13 @@ class BankMapper(
             name = entity.name,
             description = entity.description,
 
-            user = userMapper.toDTO(entity.user),
+            userId = entity.userId,
+            user = userMapper.toDTO(entity.user!!),
 
             bankGroupId = entity.bankGroupId,
             bankGroup = bankGroupMapper.toDTOOrNull(entity.bankGroup),
 
             createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt
         )
     }
 }
