@@ -20,7 +20,10 @@ class CrosswordAIGenerateService() : AIGenerateGameServiceBase<
     prompt = AvailablePrompts.GAMES_GENERATE_CROSSWORD,
     aiResponseTypeReference = object : TypeReference<AIGeneratedCrossword>() {},
 ) {
-    override fun parseAIResponse(responseBody: AIGeneratedCrossword, context: GameContext): AIGeneratedCrossword {
+    override fun parseAIResponse(
+        responseBody: AIGeneratedCrossword,
+        context: GameContext
+    ): AIGeneratedCrossword {
         val expectedNumberOfQuestions = context.amountOfQuestion
 
         return responseBody.copy(
@@ -34,14 +37,20 @@ class CrosswordAIGenerateService() : AIGenerateGameServiceBase<
         )
     }
 
-    override fun validateAIResponse(parsedResponseBody: AIGeneratedCrossword?, context: GameContext): Boolean {
+    override fun validateAIResponse(
+        parsedResponseBody: AIGeneratedCrossword?,
+        context: GameContext
+    ): Boolean {
         val amountOfQuestion = context.amountOfQuestion
 
         return parsedResponseBody?.questions?.size == amountOfQuestion &&
                 parsedResponseBody.questions.map { it.word }.distinct().size == amountOfQuestion
     }
 
-    override fun refineAIResponse(aiResponse: AIGeneratedCrossword, context: GameContext): GeneratedCrosswordGame {
+    override fun refineAIResponse(
+        aiResponse: AIGeneratedCrossword,
+        context: GameContext
+    ): GeneratedCrosswordGame {
         return GeneratedCrosswordGame(
             instruction = CrosswordInstruction.Companion.construct(
                 aiGeneratedQuestions = aiResponse,

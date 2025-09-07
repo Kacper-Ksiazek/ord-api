@@ -7,6 +7,7 @@ import com.ord.features.game.variants.shared.dto.api_requests.CancelGameRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Mono
 import java.util.*
 
 @RestController
@@ -55,13 +56,14 @@ class GamesController(
         @PathVariable gameId: UUID,
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: CancelGameRequest
-    ): ResponseEntity<Unit> {
-        ongoingGameService.cancelGame(
+    ): Mono<ResponseEntity<Unit>> {
+        return ongoingGameService.cancelGame(
             ongoingGameId = gameId,
             userId = user.id,
             duration = body.duration
         )
-
-        return ResponseEntity.noContent().build()
+        .then(Mono.fromCallable {
+            ResponseEntity.noContent().build<Unit>()
+        })
     }
 }

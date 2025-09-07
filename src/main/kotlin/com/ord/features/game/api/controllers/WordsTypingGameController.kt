@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/v1/games/words-typing")
@@ -23,11 +24,11 @@ class WordsTypingGameController(
     fun startWordsTypingGame(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: StartGameRequest
-    ): ResponseEntity<StartedWordsTypingGameResponse> = wordsTypingGameFacade.startGame(user = user, body = body)
+    ): Mono<ResponseEntity<StartedWordsTypingGameResponse>> = wordsTypingGameFacade.startGame(user = user, body = body)
 
     @PostMapping("/finish")
     fun finishWordsTypingGame(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: FinishWordsTypingGameRequest
-    ): ResponseEntity<FinishedWordsTypingGameResponse> = wordsTypingGameFacade.finishGame(user, body)
+    ): Mono<ResponseEntity<FinishedWordsTypingGameResponse>> = wordsTypingGameFacade.finishGame(user, body)
 }

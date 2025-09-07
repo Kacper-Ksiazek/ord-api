@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/v1/games/crossword")
@@ -26,7 +27,7 @@ class CrosswordGameController(
     fun startCrosswordGame(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: StartGameRequest,
-    ): ResponseEntity<StartedCrosswordGameResponse> = crosswordGameFacade.startGame(user, body)
+    ): Mono<ResponseEntity<StartedCrosswordGameResponse>> = crosswordGameFacade.startGame(user, body)
 
 
     /**
@@ -36,5 +37,5 @@ class CrosswordGameController(
     fun finishCrosswordGame(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: FinishCrosswordGameRequest
-    ): ResponseEntity<FinishedCrosswordGameResponse> = crosswordGameFacade.finishGame(user, body)
+    ): Mono<ResponseEntity<FinishedCrosswordGameResponse>> = crosswordGameFacade.finishGame(user, body)
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/v1/games/sentences-writing")
@@ -25,13 +26,13 @@ class SentencesWritingGameController(
     fun startWordsTypingGame(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: StartGameRequest
-    ): ResponseEntity<StartedSentencesWritingGameResponse> = sentencesWritingGameFacade.startGame(user, body)
+    ): Mono<ResponseEntity<StartedSentencesWritingGameResponse>> = sentencesWritingGameFacade.startGame(user, body)
 
     @PostMapping("/finish")
     fun finishWordsTypingGame(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: FinishSentencesWritingGameRequest
-    ): ResponseEntity<FinishedSentencesWritingGameResponse> {
+    ): Mono<ResponseEntity<FinishedSentencesWritingGameResponse>> {
         body.answers.forEach {
             if (it.value.length > 1024) {
                 throw BadRequestException("Each sentence answer must up to 1024 characters, but got ${it.value.length} characters.")
