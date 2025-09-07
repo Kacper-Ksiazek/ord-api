@@ -7,6 +7,7 @@ import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAn
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
 import com.ord.features.game.variants.shared.enums.WordAnswerScore
 import com.ord.shared.utils.data_classes.Percentage
+import reactor.core.publisher.Mono
 import java.util.*
 import kotlin.collections.Set
 
@@ -17,22 +18,20 @@ interface GameReviewService {
         difficulty: GameDifficulty,
         user: UserEntity,
         language: LanguageName
-    ): Set<IdentifiableReviewedWordAnswer> {
+    ): Mono<Set<IdentifiableReviewedWordAnswer>> {
         val reviewedQuestions = reviewUserAnswers(
             expectedAnswers = expectedAnswers,
             userAnswers = userAnswers,
             difficulty = difficulty
         )
 
-        updateDBPointsForManyWords(
+        return updateDBPointsForManyWords(
             user = user,
             language = language,
             ratedWords = reviewedQuestions.associate {
                 it.expectedAnswer to it.score
             }
-        )
-
-        return reviewedQuestions
+        ).thenReturn(reviewedQuestions)
     }
 
     fun reviewUserAnswers(
@@ -49,7 +48,7 @@ interface GameReviewService {
          * Each entry represents a word answered by the user and the score it received after review.
          */
         ratedWords: Map<String, WordAnswerScore>
-    )
+    ): Mono<Void>
 
     companion object {
         /**

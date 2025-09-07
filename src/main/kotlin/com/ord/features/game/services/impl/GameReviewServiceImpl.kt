@@ -3,7 +3,6 @@ package com.ord.features.game.services.impl
 import com.ord.config.GamesConfig
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
-import com.ord.core.word.model.WordEntity
 import com.ord.core.word.repository.WordRepository
 import com.ord.core.word.service.WordService
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
@@ -15,6 +14,7 @@ import com.ord.features.user_activity_log.model.UserActivityLogEntity
 import com.ord.features.user_activity_log.model.enums.UserActivityType
 import com.ord.features.user_activity_log.service.UserActivityLogService
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 import java.time.Instant
 import java.util.*
 
@@ -53,62 +53,72 @@ class GameReviewServiceImpl(
         user: UserEntity,
         language: LanguageName,
         ratedWords: Map<String, WordAnswerScore>
-    ) {
-        val wordsToSave: MutableSet<WordEntity> = mutableSetOf()
-        val userActivityLogsToSaveEntity: MutableSet<UserActivityLogEntity> = mutableSetOf()
+    ): Mono<Void> {
+        val userActivityLogsToSave: MutableSet<UserActivityLogEntity> = mutableSetOf()
 
-        wordRepository.findAllWordByTheirOrigins(
+        return wordRepository.findAllWordByTheirOrigins(
             origins = ratedWords.keys,
             language = language,
             userId = user.id
-        ).forEach { word ->
-            val points: WordAnswerScore = ratedWords[word.origin] ?: return@forEach
+        )
+            .map { word ->
+                val points: WordAnswerScore = ratedWords[word.origin] ?: WordAnswerScore.INCORRECT
 
-            val isWordCompletedBefore: Boolean = word.isCompleted
+                val isWordCompletedBefore: Boolean = word.isCompleted
 
-            word.points += points.dbPoints
-            word.isCompleted = word.points >= GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
+                word.points += points.dbPoints
+                word.isCompleted = word.points >= GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
 
-            if (word.isCompleted && !isWordCompletedBefore) {
-                word.completedAt = Instant.now()
+                if (word.isCompleted && !isWordCompletedBefore) {
+                    word.completedAt = Instant.now()
 
-                userActivityLogsToSaveEntity.add(
-                    UserActivityLogEntity(
-                        user = user,
-                        type = UserActivityType.WORD_COMPLETED,
-                        language = language
+                    userActivityLogsToSave.add(
+                        UserActivityLogEntity(
+                            user = user,
+                            userId = user.id,
+                            type = UserActivityType.WORD_COMPLETED,
+                            language = language
+                        )
                     )
-                )
+                }
+
+                word
             }
-
-            wordsToSave.add(word)
-        }
-
-        wordRepository.saveAll(wordsToSave)
-
-        wordService.countCompleted(language = language, userId = user.id).let {
-            if (it.today >= 10) {
-                userActivityLogsToSaveEntity.add(
-                    UserActivityLogEntity(
-                        user = user,
-                        type = UserActivityType.WORDS_COMPLETED_IN_ONE_DAY_10,
-                        language = language
-                    )
-                )
+            .collectList()
+            .flatMap { wordsToSave ->
+                wordRepository.saveAll(wordsToSave).collectList()
             }
+            .flatMap { 
+                wordService.countCompleted(language = language, userId = user.id)
+                    .map { completedCount ->
+                        if (completedCount.today >= 10) {
+                            userActivityLogsToSave.add(
+                                UserActivityLogEntity(
+                                    user = user,
+                                    userId = user.id,
+                                    type = UserActivityType.WORDS_COMPLETED_IN_ONE_DAY_10,
+                                    language = language
+                                )
+                            )
+                        }
 
-            if (it.week >= 30) {
-                userActivityLogsToSaveEntity.add(
-                    UserActivityLogEntity(
-                        user = user,
-                        type = UserActivityType.WORDS_COMPLETED_IN_ONE_WEEK_30,
-                        language = language
-                    )
-                )
+                        if (completedCount.week >= 30) {
+                            userActivityLogsToSave.add(
+                                UserActivityLogEntity(
+                                    user = user,
+                                    userId = user.id,
+                                    type = UserActivityType.WORDS_COMPLETED_IN_ONE_WEEK_30,
+                                    language = language
+                                )
+                            )
+                        }
+                        
+                        userActivityLogsToSave
+                    }
             }
-        }
-
-        userActivityLogService.logMany(userActivityLogsToSaveEntity)
+            .flatMap { activityLogs ->
+                userActivityLogService.logMany(activityLogs).then()
+            }
     }
 
 }

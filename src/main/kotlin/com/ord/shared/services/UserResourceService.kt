@@ -46,6 +46,7 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
     }
 
 
+    // TODO: This could return null :/
     fun findById(
         id: UUID,
         userId: UUID? = null
