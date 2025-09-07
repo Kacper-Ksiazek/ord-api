@@ -1,7 +1,6 @@
 package com.ord.features.game.variants.shared.ai
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.user.model.UserEntity
@@ -12,13 +11,12 @@ import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.extensions.getNumberOfQuestions
 import com.ord.features.game.variants.shared.ai.helpers.GameContext
-import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
 import com.ord.shared.domain.enums.SortDirection
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.toParamString
 import org.springframework.beans.factory.annotation.Autowired
-import kotlin.reflect.KClass
+import reactor.core.publisher.Mono
 
 abstract class AIGenerateGameServiceBase<
         TGeneratedGame,
@@ -54,57 +52,54 @@ abstract class AIGenerateGameServiceBase<
         user: UserEntity,
         language: LanguageName,
         difficulty: GameDifficulty,
-    ): TGeneratedGame {
-        val amountOfQuestion: Int = difficulty.getNumberOfQuestions(gameType)
-        val languageProficiency: LanguageProficiencyEntity =
-            languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, language)
+    ): Mono<TGeneratedGame> {
+        return languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, language)
+            .flatMap { languageProficiency ->
+                val amountOfQuestion: Int = difficulty.getNumberOfQuestions(gameType)
+                val userLanguageProficiency = languageProficiency.level
+                val generativeContentLanguage = languageProficiency.generativeContentLanguage
 
-        val userLanguageProficiency = languageProficiency.proficiency
-        val generativeContentLanguage = languageProficiency.generativeContentLanguage
+                getWordsForGame(
+                    user = user,
+                    language = language,
+                    n = amountOfQuestion
+                )
+                .map { words ->
+                    val context = GameContext(
+                        language = language,
+                        difficulty = difficulty,
+                        amountOfQuestion = amountOfQuestion,
+                        userLanguageProficiency = userLanguageProficiency,
+                        generativeContentLanguage = generativeContentLanguage,
+                        words = words
+                    )
 
-        val words = getWordsForGame(
-            user = user,
-            language = language,
-            n = amountOfQuestion
-        )
+                    val prompt = Prompt(
+                        variant = this.prompt,
+                        params = mapOf(
+                            "language" to language.name,
+                            "difficulty" to difficulty.name,
+                            "proficiency" to userLanguageProficiency.name,
+                            "words" to words.toParamString(tabulated = true),
+                            "amountOfQuestions" to amountOfQuestion.toString(),
+                            "generativeContentLanguage" to generativeContentLanguage.toString(),
+                        ) + promptExtraParams
+                    )
 
-        val context = GameContext(
-            language = language,
-            difficulty = difficulty,
-            amountOfQuestion = amountOfQuestion,
-            userLanguageProficiency = userLanguageProficiency,
-            generativeContentLanguage = generativeContentLanguage,
-            words = words
-        )
-
-        val prompt = Prompt(
-            variant = prompt,
-            params = mapOf(
-                "language" to language.name,
-                "difficulty" to difficulty.name,
-                "proficiency" to userLanguageProficiency.name,
-                "words" to words.toParamString(tabulated = true),
-                "amountOfQuestions" to amountOfQuestion.toString(),
-                "generativeContentLanguage" to languageProficiency.generativeContentLanguage.toString(),
-            ) + promptExtraParams
-        )
-
-        val aiResponse = makeGameAIRequest<TAIResponse>(
-            aiResponseTypeReference = aiResponseTypeReference,
-
-            user = user,
-            prompt = prompt.toString(),
-            difficulty = difficulty,
-            language = language,
-
-            gameType = gameType,
-            consumptionType = GamesGPTTokensConsumptionType.GENERATE,
-
-            validateResponseBody = { validateAIResponse(it, context) },
-            parseResponseBody = { parseAIResponse(it, context) }
-        )
-
-        return refineAIResponse(aiResponse, context)
+                    Pair(context, prompt)
+                }
+            }
+            .flatMap { (context, prompt) ->
+                makeGameAIRequest(
+                    prompt = prompt.toString(),
+                    aiResponseTypeReference = aiResponseTypeReference,
+                    validateResponseBody = { validateAIResponse(it, context) },
+                    parseResponseBody = { parseAIResponse(it, context) }
+                )
+                .map { aiResponse ->
+                    refineAIResponse(aiResponse, context)
+                }
+            }
     }
 
     protected fun getWordsForGame(
@@ -112,10 +107,10 @@ abstract class AIGenerateGameServiceBase<
         language: LanguageName,
         n: Int,
         maximumWordLength: Int? = null,
-    ): List<String> {
+    ): Mono<List<String>> {
         // TODO: Generate a list of words using AI - plans for the future far far away
 
-        val words = wordService.findManyWords(
+        return wordService.findManyWords(
             user = user,
             language = language,
             perPage = 500,
@@ -123,21 +118,25 @@ abstract class AIGenerateGameServiceBase<
             sortDirection = SortDirection.DESC,
             completed = false
             // TODO: Add more filters
-        ).data
-            .apply {
-                if (size < n) {
-                    throw BadRequestException("Not enough words to generate a game")
-                }
+        ).flatMap { paginatedWords ->
+            val words = paginatedWords.data
+            
+            if (words.size < n) {
+                Mono.error(BadRequestException("Not enough words to generate a game"))
+            } else {
+                val shuffledWords = words.shuffled()
+                
+                val selectedWords = if (maximumWordLength != null) {
+                    shuffledWords
+                        .take(2 * n)
+                        .filter { it.origin.length <= maximumWordLength }
+                        .take(n)
+                } else {
+                    shuffledWords.take(n)
+                }.map { it.origin }
+                
+                Mono.just(selectedWords)
             }
-            .shuffled()
-
-        return if (maximumWordLength != null) {
-            words
-                .take(2 * n)
-                .filter { it.origin.length <= maximumWordLength }
-                .take(n)
-        } else {
-            words.take(n)
-        }.map { it.origin }
+        }
     }
 }

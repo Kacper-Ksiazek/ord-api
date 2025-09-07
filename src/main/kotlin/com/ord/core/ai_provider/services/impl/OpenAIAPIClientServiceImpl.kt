@@ -19,6 +19,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 import kotlin.collections.contains
 
@@ -42,37 +43,45 @@ class OpenAIAPIClientServiceImpl(
         saveLog: (openAIResponse: OpenAIResponse) -> Unit,
         validateResponseBody: (parsedResponseBody: T?) -> Boolean,
         parseResponseBody: (responseBody: T) -> T
-    ): T {
+    ): Mono<T> {
         val openAIRequest = openAIRequestFactory.createRequest(prompt)
 
-        var response: OpenAIResponse
-        var parsedResponseBody: T?
+        return attemptRequest(openAIRequest, aiResponseType, saveLog, validateResponseBody, parseResponseBody, 0)
+    }
 
-        var numberOfAttempts = 0
+    private fun <T> attemptRequest(
+        openAIRequest: Any,
+        aiResponseType: TypeReference<T>,
+        saveLog: (openAIResponse: OpenAIResponse) -> Unit,
+        validateResponseBody: (parsedResponseBody: T?) -> Boolean,
+        parseResponseBody: (responseBody: T) -> T,
+        attemptNumber: Int
+    ): Mono<T> {
+        if (attemptNumber > openAIProperties.maximumNumberOfOpenAIAPIRequestAttempts) {
+            return Mono.error(BadGatewayException("AI service could not generate a valid response after $attemptNumber attempts. Please try again."))
+        }
 
-        do {
-            trackOpenAIAPIRequestAttempt(numberOfAttempts++)
+        return webClient.post()
+            .uri(openAIProperties.apiUrl)
+            .bodyValue(openAIRequest)
+            .retrieve()
+            .bodyToMono(OpenAIResponse::class.java)
+            .doOnNext { response -> saveLog(response) }
+            .flatMap { response ->
+                val parsedResponseBody = try {
+                    parseResponseBody(objectMapper.readValue(response.data, aiResponseType))
+                } catch (e: Exception) {
+                    Console.printRed("\n\uD83D\uDEA8 [OPENAI REQUEST PARSING ERROR] Exception: ${e.message}")
+                    println(e)
+                    null
+                }
 
-            response = webClient.post()
-                .uri(openAIProperties.apiUrl)
-                .bodyValue(openAIRequest)
-                .retrieve()
-                .bodyToMono(OpenAIResponse::class.java)
-                .block() ?: throw RuntimeException("OpenAI response is null")
-
-            saveLog(response)
-
-            parsedResponseBody = try {
-                parseResponseBody(objectMapper.readValue(response.data, aiResponseType))
-            } catch (e: Exception) {
-                // TODO: Hide behind "debug" feature flag
-                Console.printRed("\n\uD83D\uDEA8 [OPENAI REQUEST PARSING ERROR] Exception: ${e.message}")
-                println(e)
-                null
+                if (parsedResponseBody != null && validateResponseBody(parsedResponseBody)) {
+                    Mono.just(parsedResponseBody)
+                } else {
+                    attemptRequest(openAIRequest, aiResponseType, saveLog, validateResponseBody, parseResponseBody, attemptNumber + 1)
+                }
             }
-        } while (parsedResponseBody === null || !validateResponseBody(parsedResponseBody))
-
-        return parsedResponseBody
     }
 
     override fun openSimpleStringStream(
@@ -146,12 +155,6 @@ class OpenAIAPIClientServiceImpl(
     // ----
     // Utils
     // ----
-
-    private fun trackOpenAIAPIRequestAttempt(attempt: Int) {
-        if (attempt > openAIProperties.maximumNumberOfOpenAIAPIRequestAttempts) {
-            throw BadGatewayException("AI service could not generate a valid response after $attempt attempts. Please try again.")
-        }
-    }
 
     private fun <TStreamedChunk> makeStreamedRequest(
         prompt: String,

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 
 typealias Emitter = Sinks.Many<String>
@@ -21,7 +22,7 @@ interface OpenAIAPIClientService {
         saveLog: (openAIResponse: OpenAIResponse) -> Unit,
         validateResponseBody: (parsedResponseBody: T?) -> Boolean = { it != null },
         parseResponseBody: (responseBody: T) -> T = { it }
-    ): T
+    ): Mono<T>
 
     fun openSimpleStringStream(
         prompt: String,

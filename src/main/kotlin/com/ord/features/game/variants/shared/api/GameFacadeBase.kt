@@ -9,6 +9,7 @@ import com.ord.features.game.services.OngoingGameService
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import reactor.core.publisher.Mono
 
 abstract class GameFacadeBase<TCreatedGameResponse, TFinishGameRequest, TFinishedGameResponse> {
     /**
@@ -21,7 +22,7 @@ abstract class GameFacadeBase<TCreatedGameResponse, TFinishGameRequest, TFinishe
     abstract fun startGame(
         user: UserEntity,
         body: StartGameRequest
-    ): ResponseEntity<TCreatedGameResponse>
+    ): Mono<ResponseEntity<TCreatedGameResponse>>
 
     /**
      * Finishes an ongoing game.
@@ -33,7 +34,7 @@ abstract class GameFacadeBase<TCreatedGameResponse, TFinishGameRequest, TFinishe
     abstract fun finishGame(
         user: UserEntity,
         body: TFinishGameRequest
-    ): ResponseEntity<TFinishedGameResponse>
+    ): Mono<ResponseEntity<TFinishedGameResponse>>
 
     @Autowired
     protected lateinit var ongoingGameService: OngoingGameService
