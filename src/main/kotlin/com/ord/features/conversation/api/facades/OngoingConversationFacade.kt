@@ -7,6 +7,7 @@ import com.ord.features.conversation.api.requests.ReviewUserConversationMessageR
 import com.ord.features.conversation.models.entities.ConversationEntity
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
 
 interface OngoingConversationFacade {
@@ -30,5 +31,5 @@ interface OngoingConversationFacade {
     fun saveUserMessageAndGetFeedback(
         user: UserEntity,
         body: ReviewUserConversationMessageRequest
-    ): ResponseEntity<ReviewedUserConversationMessage>
+    ): Mono<ResponseEntity<ReviewedUserConversationMessage>>
 }

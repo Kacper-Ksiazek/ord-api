@@ -6,10 +6,13 @@ import com.ord.features.conversation.api.annotations.OwnedConversation
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.models.entities.ConversationEntity
 import jakarta.validation.Valid
+import org.springframework.http.ResponseEntity
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Mono
 import java.util.*
 
 @RestController
@@ -35,5 +38,5 @@ class OngoingConversationController(
     fun handleUserMessage(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: ReviewUserConversationMessageRequest
-    ) = ongoingConversationFacade.saveUserMessageAndGetFeedback(user, body)
+    ): Mono<ResponseEntity<ReviewedUserConversationMessage>> = ongoingConversationFacade.saveUserMessageAndGetFeedback(user, body)
 }

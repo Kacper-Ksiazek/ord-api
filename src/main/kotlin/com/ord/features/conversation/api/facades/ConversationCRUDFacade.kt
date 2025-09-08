@@ -4,25 +4,26 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.models.dto.ConversationDTO
 import org.springframework.http.ResponseEntity
+import reactor.core.publisher.Mono
 import java.util.UUID
 
 interface ConversationCRUDFacade {
     fun createConversation(
         user: UserEntity,
         body: CreateConversationRequest,
-    ): ResponseEntity<ConversationDTO>
+    ): Mono<ResponseEntity<ConversationDTO>>
 
     fun getManyConversations(
         user: UserEntity,
-    ): ResponseEntity<List<ConversationDTO>>
+    ): Mono<ResponseEntity<List<ConversationDTO>>>
 
     fun getConversationById(
         user: UserEntity,
         conversationId: UUID,
-    ): ResponseEntity<ConversationDTO>
+    ): Mono<ResponseEntity<ConversationDTO>>
 
     fun deleteConversation(
         user: UserEntity,
         conversationId: UUID,
-    ): ResponseEntity<Unit>
+    ): Mono<ResponseEntity<Unit>>
 }

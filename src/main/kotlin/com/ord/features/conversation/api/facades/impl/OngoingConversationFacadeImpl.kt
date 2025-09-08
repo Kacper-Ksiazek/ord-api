@@ -22,6 +22,7 @@ import com.ord.shared.prompts.toParamString
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
 
 @Service
@@ -53,7 +54,7 @@ class OngoingConversationFacadeImpl(
                         sender = ConversationMessageSender.AI,
                         content = payload.finalContent,
                         messageOrder = 0
-                    )
+                    ).subscribe()
                 }
             )
     }
@@ -63,84 +64,87 @@ class OngoingConversationFacadeImpl(
         user: UserEntity,
         body: CreateAIConversationMessageRequest
     ): Flux<String> {
-        val conversation = conversationService.findByIdOrFail(body.conversationId, user.id)
+        return conversationService.findByIdOrFail(body.conversationId, user.id)
+            .flatMapMany { conversation ->
+                val serializedConversationHistory: List<String> =
+                    conversation.messages
+                        .mapIndexed { index, message -> message.serialize(index) }
+                        .toMutableList()
+                        .apply {
+                            add(
+                                serializeMessage(
+                                    index = this.size,
+                                    sender = ConversationMessageSender.USER,
+                                    message = body.latestUserMessage
+                                )
+                            )
+                        }
 
-        val serializedConversationHistory: List<String> =
-            conversation.messages
-                .mapIndexed { index, message -> message.serialize(index) }
-                .toMutableList()
-                .apply {
-                    add(
-                        serializeMessage(
-                            index = this.size,
-                            sender = ConversationMessageSender.USER,
-                            message = body.latestUserMessage
-                        )
+                val prompt = Prompt(
+                    variant = AvailablePrompts.CONVERSATION_REQUEST_AI_RESPONSE,
+                    params = conversation.convertToPromptParams() + mapOf(
+                        "serializedConversationHistory" to serializedConversationHistory.toParamString(tabulated = true),
                     )
-                }
+                )
 
+                openAIAPIClientService
+                    .openSimpleStringStream(
+                        prompt = prompt.toString(),
+                        onComplete = { (payload, emitter) ->
+                            // TODO: Save logs here
 
-        val prompt = Prompt(
-            variant = AvailablePrompts.CONVERSATION_REQUEST_AI_RESPONSE,
-            params = conversation.convertToPromptParams() + mapOf(
-                "serializedConversationHistory" to serializedConversationHistory.toParamString(tabulated = true),
-            )
-        )
-
-        return openAIAPIClientService
-            .openSimpleStringStream(
-                prompt = prompt.toString(),
-                onComplete = { (payload, emitter) ->
-                    // TODO: Save logs here
-
-                    conversationMessageService.createMessage(
-                        conversationId = conversation.id,
-                        sender = ConversationMessageSender.AI,
-                        content = payload.finalContent,
-                        messageOrder = body.messageOrder
+                            conversationMessageService.createMessage(
+                                conversationId = conversation.id,
+                                sender = ConversationMessageSender.AI,
+                                content = payload.finalContent,
+                                messageOrder = body.messageOrder
+                            ).subscribe()
+                        }
                     )
-                }
-            )
+            }
     }
 
 
     override fun saveUserMessageAndGetFeedback(
         user: UserEntity,
         body: ReviewUserConversationMessageRequest
-    ): ResponseEntity<ReviewedUserConversationMessage> {
-        val conversation = conversationService.findByIdOrFail(body.conversationId, user.id)
+    ): Mono<ResponseEntity<ReviewedUserConversationMessage>> {
+        return conversationService.findByIdOrFail(body.conversationId, user.id)
+            .flatMap { conversation ->
+                val prompt = Prompt(
+                    variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
+                    params = conversation.convertToPromptParams() + mapOf(
+                        "userMessage" to body.message,
+                        "latestAIMessage" to (body.latestAIMessage
+                            ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
+                    )
+                )
 
-        val prompt = Prompt(
-            variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
-            params = conversation.convertToPromptParams() + mapOf(
-                "userMessage" to body.message,
-                "latestAIMessage" to (body.latestAIMessage
-                    ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
-            )
-        )
-
-        val aiFeedback: ReviewedUserConversationMessage = openAIAPIClientService.makeRequest(
-            prompt = prompt.toString(),
-            aiResponseType = object : TypeReference<ReviewedUserConversationMessage>() {},
-            saveLog = { openAIResponse ->
-                // TODO
+                openAIAPIClientService.makeRequest(
+                    prompt = prompt.toString(),
+                    aiResponseType = object : TypeReference<ReviewedUserConversationMessage>() {},
+                    saveLog = { openAIResponse ->
+                        // TODO
+                    }
+                )
+                .flatMap { aiFeedback ->
+                    conversationMessageService.createMessageWithFeedback(
+                        conversationId = conversation.id,
+                        content = body.message,
+                        messageOrder = body.messageOrder,
+                        feedback = ConversationUserMessageFeedbackEntity(
+                            grammar = aiFeedback.grammar,
+                            vocabulary = aiFeedback.vocabulary,
+                            answerLength = aiFeedback.answerLength,
+                            suggestedAnswer = aiFeedback.suggestedAnswer,
+                            comment = aiFeedback.comment
+                        )
+                    )
+                    .then(Mono.fromCallable {
+                        ResponseEntity.ok(aiFeedback)
+                    })
+                }
             }
-        )
-
-        conversationMessageService.createMessageWithFeedback(
-            conversationId = conversation.id,
-            content = body.message,
-            messageOrder = body.messageOrder,
-            feedback = ConversationUserMessageFeedbackEntity(
-                grammar = aiFeedback.grammar,
-                vocabulary = aiFeedback.vocabulary,
-                answerLength = aiFeedback.answerLength,
-                suggestedAnswer = aiFeedback.suggestedAnswer,
-                comment = aiFeedback.comment
-            )
-        )
-
-        return ResponseEntity.ok(aiFeedback)
     }
 
     //

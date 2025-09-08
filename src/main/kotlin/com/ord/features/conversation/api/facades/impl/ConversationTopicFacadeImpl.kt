@@ -27,43 +27,44 @@ class ConversationTopicFacadeImpl(
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
     override fun suggestTopics(user: UserEntity, body: SuggestConversationTopicRequest): Flux<String> {
-        val languageProficiency = languageProficiencyService.findUserProficiencyInLanguageOrThrow(
-            user.id,
-            body.language
-        )
-
-        val recentTopics = conversationService.findRecentTopics(
-            userId = user.id,
-            language = body.language,
-            limit = 10,
-            goal = body.conversationGoal
-        )
-
-        val prompt = Prompt(
-            variant = AvailablePrompts.CONVERSATION_SUGGEST_TOPIC,
-            params = mapOf(
-                "language" to body.language.toString(),
-                "level" to languageProficiency.proficiency.toString(),
-                "clue" to (body.clueFromUser ?: "NONE"),
-                "goal" to body.conversationGoal.toString(),
-                "goalExplanation" to body.conversationGoal.contextForAI,
-                "examples" to body.conversationGoal.examplesForAI.toParamString(tabulated = true),
-                "recentConversations" to recentTopics.toParamString(tabulated = true),
-                "separator" to OpenAIAPIClientService.STREAMING_CONTENT_SEPARATOR
+        return languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, body.language)
+            .zipWith(
+                conversationService.findRecentTopics(
+                    userId = user.id,
+                    language = body.language,
+                    limit = 10,
+                    goal = body.conversationGoal
+                ).collectList()
             )
-        )
-
-         return openAIStreamClientService
-            .openStructuredArrayStream<StreamSimpleItem>(
-                prompt = prompt.toString(),
-                streamedItemType = object : TypeReference<StreamSimpleItem>() {},
-                onComplete = { (payload, emitter) ->
-                    emitter.tryEmitNext(
-                        objectMapper.writeValueAsString(
-                            payload.finalContent
-                        )
+            .flatMapMany { tuple ->
+                val languageProficiency = tuple.t1
+                val recentTopics = tuple.t2
+                val prompt = Prompt(
+                    variant = AvailablePrompts.CONVERSATION_SUGGEST_TOPIC,
+                    params = mapOf(
+                        "language" to body.language.toString(),
+                        "level" to languageProficiency.level.toString(),
+                        "clue" to (body.clueFromUser ?: "NONE"),
+                        "goal" to body.conversationGoal.toString(),
+                        "goalExplanation" to body.conversationGoal.contextForAI,
+                        "examples" to body.conversationGoal.examplesForAI.toParamString(tabulated = true),
+                        "recentConversations" to recentTopics.toParamString(tabulated = true),
+                        "separator" to OpenAIAPIClientService.STREAMING_CONTENT_SEPARATOR
                     )
-                }
-            )
+                )
+
+                openAIStreamClientService
+                    .openStructuredArrayStream<StreamSimpleItem>(
+                        prompt = prompt.toString(),
+                        streamedItemType = object : TypeReference<StreamSimpleItem>() {},
+                        onComplete = { (payload, emitter) ->
+                            emitter.tryEmitNext(
+                                objectMapper.writeValueAsString(
+                                    payload.finalContent
+                                )
+                            )
+                        }
+                    )
+            }
     }
 }

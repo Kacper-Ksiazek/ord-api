@@ -6,8 +6,10 @@ import com.ord.features.conversation.api.facades.ConversationCRUDFacade
 import com.ord.features.conversation.api.facades.ConversationTopicFacade
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
+import com.ord.features.conversation.models.dto.ConversationDTO
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 import java.util.UUID
 
 @RestController
@@ -39,26 +42,26 @@ class ConversationController(
     @GetMapping("/")
     fun getConversations(
         @AuthenticatedUser user: UserEntity
-    ) = conversationCRUDFacade.getManyConversations(user)
+    ): Mono<ResponseEntity<List<ConversationDTO>>> = conversationCRUDFacade.getManyConversations(user)
 
 
     @GetMapping("/{conversationId}")
-    fun getConversations(
+    fun getConversationById(
         @AuthenticatedUser user: UserEntity,
         @PathVariable conversationId: UUID,
-    ) = conversationCRUDFacade.getConversationById(user, conversationId)
+    ): Mono<ResponseEntity<ConversationDTO>> = conversationCRUDFacade.getConversationById(user, conversationId)
 
 
     @PostMapping("/")
     fun createConversation(
         @AuthenticatedUser user: UserEntity,
         @Valid @RequestBody body: CreateConversationRequest
-    ) = conversationCRUDFacade.createConversation(user, body)
+    ): Mono<ResponseEntity<ConversationDTO>> = conversationCRUDFacade.createConversation(user, body)
 
 
     @DeleteMapping("/{conversationId}")
     fun deleteConversation(
         @AuthenticatedUser user: UserEntity,
         @PathVariable conversationId: UUID,
-    ) = conversationCRUDFacade.deleteConversation(user, conversationId)
+    ): Mono<ResponseEntity<Unit>> = conversationCRUDFacade.deleteConversation(user, conversationId)
 }
