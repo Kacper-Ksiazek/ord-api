@@ -3,6 +3,7 @@ package com.ord.features.conversation.services
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
+import reactor.core.publisher.Mono
 import java.util.UUID
 
 interface ConversationMessageService {
@@ -11,12 +12,13 @@ interface ConversationMessageService {
         sender: ConversationMessageSender,
         content: String,
         messageOrder: Int
-    ): ConversationMessageEntity
+    ): Mono<ConversationMessageEntity>
+
 
     fun createMessageWithFeedback(
         conversationId: UUID,
         messageOrder: Int,
         content: String,
         feedback: ConversationUserMessageFeedbackEntity
-    ): ConversationMessageEntity
+    ): Mono<ConversationMessageEntity>
 }

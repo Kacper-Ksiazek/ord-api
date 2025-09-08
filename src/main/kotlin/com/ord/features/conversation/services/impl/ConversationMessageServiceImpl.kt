@@ -1,6 +1,5 @@
 package com.ord.features.conversation.services.impl
 
-import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
@@ -8,7 +7,8 @@ import com.ord.features.conversation.models.mappers.ConversationUserMessageFeedb
 import com.ord.features.conversation.repositories.ConversationMessageRepository
 import com.ord.features.conversation.services.ConversationMessageService
 import org.springframework.stereotype.Service
-import java.util.UUID
+import reactor.core.publisher.Mono
+import java.util.*
 
 @Service
 class ConversationMessageServiceImpl(
@@ -20,7 +20,7 @@ class ConversationMessageServiceImpl(
         sender: ConversationMessageSender,
         content: String,
         messageOrder: Int
-    ): ConversationMessageEntity {
+    ): Mono<ConversationMessageEntity> {
         return conversationMessageRepository.save(
             ConversationMessageEntity(
                 conversationId = conversationId,
@@ -36,7 +36,7 @@ class ConversationMessageServiceImpl(
         messageOrder: Int,
         content: String,
         feedback: ConversationUserMessageFeedbackEntity
-    ): ConversationMessageEntity {
+    ): Mono<ConversationMessageEntity> {
         return conversationMessageRepository.save(
             ConversationMessageEntity(
                 conversationId = conversationId,

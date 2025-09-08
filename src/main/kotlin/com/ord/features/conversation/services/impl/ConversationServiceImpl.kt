@@ -10,6 +10,8 @@ import com.ord.features.conversation.models.mappers.ConversationMessageMapper
 import com.ord.features.conversation.repositories.ConversationRepository
 import com.ord.features.conversation.services.ConversationService
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.UUID
 
 @Service
@@ -21,7 +23,7 @@ class ConversationServiceImpl(
         goal: ConversationGoal,
         language: LanguageName,
         limit: Int
-    ): List<String> {
+    ): Flux<String> {
         return repository.findRecentTopics(
             userId = userId,
             goal = goal,
@@ -30,11 +32,13 @@ class ConversationServiceImpl(
         )
     }
 
+
     override fun findByIdOrFailWithMessages(
         id: UUID,
         userId: UUID
-    ): ConversationEntity {
-        return repository.findByIdOrFailWithMessages(id, userId)
-            ?: throw NotFoundException("Conversation with id $id not found")
+    ): Mono<ConversationEntity> {
+        return repository
+            .findByIdOrFailWithMessages(id, userId)
+            .switchIfEmpty(Mono.error(NotFoundException("Conversation with id $id not found")))
     }
 }

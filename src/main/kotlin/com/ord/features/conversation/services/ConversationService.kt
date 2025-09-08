@@ -5,6 +5,8 @@ import com.ord.features.conversation.models.dto.ConversationMessageDTO
 import com.ord.features.conversation.models.entities.ConversationEntity
 import com.ord.features.conversation.models.enums.ConversationGoal
 import com.ord.shared.services.UserResourceService
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
 
 interface ConversationService : UserResourceService<ConversationEntity> {
@@ -13,7 +15,8 @@ interface ConversationService : UserResourceService<ConversationEntity> {
         goal: ConversationGoal,
         language: LanguageName,
         limit: Int = 10
-    ): List<String>
+    ): Flux<String>
 
-    fun findByIdOrFailWithMessages(id: UUID, userId: UUID): ConversationEntity
+
+    fun findByIdOrFailWithMessages(id: UUID, userId: UUID): Mono<ConversationEntity>
 }
