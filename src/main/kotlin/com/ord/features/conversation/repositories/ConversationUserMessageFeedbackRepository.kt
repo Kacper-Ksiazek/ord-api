@@ -1,7 +1,7 @@
 package com.ord.features.conversation.repositories
 
 import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import java.util.*
 
-interface ConversationUserMessageFeedbackRepository : JpaRepository<ConversationUserMessageFeedbackEntity, UUID>
+interface ConversationUserMessageFeedbackRepository : ReactiveCrudRepository<ConversationUserMessageFeedbackEntity, UUID>
