@@ -4,7 +4,6 @@ import com.ord.exceptions.REST.NotFoundException
 import com.ord.shared.models.IdentifiableUserResource
 import com.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.util.*
@@ -33,7 +32,6 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
     }
 
 
-    @Transactional
     fun deleteById(
         id: UUID,
         userId: UUID,
