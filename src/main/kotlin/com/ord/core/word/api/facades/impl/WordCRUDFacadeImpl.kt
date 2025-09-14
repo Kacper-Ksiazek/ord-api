@@ -68,32 +68,32 @@ class WordCRUDFacadeImpl(
         body: CreateWordRequest,
         user: UserEntity
     ): Mono<WordDTO> {
-        val bank = getBankFromRequestOrNull(
+        return getBankFromRequestOrNull(
             bankService = bankService,
             bankId = body.bankId,
             bankToCreate = body.bankToCreate,
             user = user
-        )
+        ).flatMap { bank ->
+            val wordToSave = WordDTO(
+                origin = body.origin,
+                translatedTo = body.translatedTo ?: user.nativeLanguage,
+                translatedFrom = body.translatedFrom,
+                type = body.type,
+                exampleSentences = body.exampleSentences,
+                translation = body.translation,
+                extraMark = body.extraMark,
+                definition = body.definition,
+                useCases = body.useCases,
 
-        val wordToSave = WordDTO(
-            origin = body.origin,
-            translatedTo = body.translatedTo ?: user.nativeLanguage,
-            translatedFrom = body.translatedFrom,
-            type = body.type,
-            exampleSentences = body.exampleSentences,
-            translation = body.translation,
-            extraMark = body.extraMark,
-            definition = body.definition,
-            useCases = body.useCases,
+                user = userMapper.toDTO(user),
+                bank = bankMapper.toDTOOrNull(bank)
+            )
 
-            user = userMapper.toDTO(user),
-            bank = bankMapper.toDTOOrNull(bank)
-        )
-
-        return wordService.saveNewWord(
-            word = wordToSave,
-            user = user
-        )
+            wordService.saveNewWord(
+                word = wordToSave,
+                user = user
+            )
+        }
     }
 
     override fun updateWord(
@@ -102,31 +102,31 @@ class WordCRUDFacadeImpl(
         user: UserEntity
     ): Mono<WordDTO> {
         return wordService.findByIdOrFail(id = id, userId = user.id)
-            .map { currentWord ->
-                val bank = getBankFromRequestOrNull(
+            .flatMap { currentWord ->
+                getBankFromRequestOrNull(
                     bankService = bankService,
                     bankId = body.bankId,
                     bankToCreate = body.bankToCreate,
                     user = user
-                )
+                ).map { bank ->
+                    wordMapper.toEntity(
+                        WordDTO(
+                            id = id,
+                            origin = body.origin ?: currentWord.origin,
+                            translatedTo = body.translatedTo ?: currentWord.translatedTo,
+                            translatedFrom = body.translatedFrom ?: currentWord.translatedFrom,
+                            type = body.type ?: currentWord.type,
+                            exampleSentences = body.exampleSentences ?: currentWord.exampleSentences,
+                            translation = body.translation ?: currentWord.translation,
+                            extraMark = body.extraMark ?: currentWord.extraMark,
+                            definition = body.definition ?: currentWord.definition,
+                            useCases = body.useCases ?: currentWord.useCases,
 
-                wordMapper.toEntity(
-                    WordDTO(
-                        id = id,
-                        origin = body.origin ?: currentWord.origin,
-                        translatedTo = body.translatedTo ?: currentWord.translatedTo,
-                        translatedFrom = body.translatedFrom ?: currentWord.translatedFrom,
-                        type = body.type ?: currentWord.type,
-                        exampleSentences = body.exampleSentences ?: currentWord.exampleSentences,
-                        translation = body.translation ?: currentWord.translation,
-                        extraMark = body.extraMark ?: currentWord.extraMark,
-                        definition = body.definition ?: currentWord.definition,
-                        useCases = body.useCases ?: currentWord.useCases,
-
-                        user = userMapper.toDTO(user),
-                        bank = bankMapper.toDTOOrNull(bank)
+                            user = userMapper.toDTO(user),
+                            bank = bankMapper.toDTOOrNull(bank)
+                        )
                     )
-                )
+                }
             }
             .flatMap { updatedEntity -> wordService.save(updatedEntity) }
             .map { savedEntity -> wordMapper.toDTO(savedEntity) }

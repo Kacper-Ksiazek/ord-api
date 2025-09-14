@@ -22,35 +22,35 @@ class WordBankManagementFacadeImpl(
         body: ChangeBankForSingleWordRequest,
         user: UserEntity
     ): Mono<Void> {
-        val bank = getBankFromRequestOrNull(
+        return getBankFromRequestOrNull(
             bankService = bankService,
             user = user,
             bankId = body.bankId,
             bankToCreate = body.bankToCreate
-        )
-
-        return wordService.changeBankForSingleWord(
-            wordId = id,
-            bankId = bank?.id,
-            userId = user.id
-        ).then()
+        ).flatMap { bank ->
+            wordService.changeBankForSingleWord(
+                wordId = id,
+                bankId = bank?.id,
+                userId = user.id
+            )
+        }.then()
     }
 
     override fun changeBankOfMultipleWords(
         body: ChangeBankForMultipleWordsRequest,
         user: UserEntity
     ): Mono<Void> {
-        val bank = getBankFromRequest(
+        return getBankFromRequest(
             bankService = bankService,
             user = user,
             bankId = body.bankId,
             bankToCreate = body.bankToCreate
-        )
-
-        return wordService.changeBankForMultipleWords(
-            wordIds = body.wordIds,
-            bankId = bank.id,
-            userId = user.id
-        ).then()
+        ).flatMap { bank ->
+            wordService.changeBankForMultipleWords(
+                wordIds = body.wordIds,
+                bankId = bank.id,
+                userId = user.id
+            )
+        }.then()
     }
 }
