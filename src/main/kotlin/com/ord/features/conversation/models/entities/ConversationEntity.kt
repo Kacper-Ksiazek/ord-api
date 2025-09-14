@@ -17,7 +17,7 @@ import java.util.*
 @Table("conversations")
 data class ConversationEntity(
     @Id
-    override val id: UUID? = null,
+    override val id: UUID = UUID.randomUUID(),
 
     val topic: String,
     val additionalContext: String? = null,

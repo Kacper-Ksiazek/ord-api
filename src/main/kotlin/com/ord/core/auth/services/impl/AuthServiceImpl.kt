@@ -105,6 +105,7 @@ class AuthServiceImpl(
             .save(
                 UserSessionEntity(
                     user = user,
+                    userId = user.id,
                     token = token
                 )
             )

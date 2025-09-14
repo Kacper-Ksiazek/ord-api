@@ -26,7 +26,8 @@ fun OngoingGameEntity.finish(
         difficulty = difficulty,
         result = GameResult.COMPLETED,
 
-        user = user
+        user = user,
+        userId = userId,
     )
 }
 
@@ -44,6 +45,7 @@ fun OngoingGameEntity.cancel(
         language = language,
         difficulty = difficulty,
 
-        user = user
+        user = user,
+        userId = userId,
     )
 }

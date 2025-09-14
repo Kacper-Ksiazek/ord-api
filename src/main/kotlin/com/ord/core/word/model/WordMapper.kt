@@ -57,7 +57,7 @@ class WordMapper(
             exampleSentences = entity.exampleSentences,
 
             userId = entity.userId,
-            user = userMapper.toDTO(entity.user),
+            user = userMapper.toDTO(entity.user!!),
 
             bankId = entity.bankId,
             bank = bankMapper.toDTOOrNull(entity.bank),

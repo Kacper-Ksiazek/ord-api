@@ -20,7 +20,7 @@ data class OngoingGameDTO<TProperAnswers>(
     val difficulty: GameDifficulty,
 
     val user: UserDTO?,
-    val userId: UUID? = user?.id,
+    val userId: UUID,
 
     var createdAt: Instant = Instant.now()
 )

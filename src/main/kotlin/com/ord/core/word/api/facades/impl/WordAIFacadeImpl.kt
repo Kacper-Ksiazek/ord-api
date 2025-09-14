@@ -35,7 +35,6 @@ class WordAIFacadeImpl(
         return languageProficiencyService.findUserProficiencyInLanguage(user.id, body.language)
             .switchIfEmpty(Mono.error(BadRequestException("User does not have any proficiency in the requested language.")))
             .flatMap { userProficiencyInRequestedLanguage ->
-
                 val translateTo: LanguageName =
                     body.targetLanguage ?: userProficiencyInRequestedLanguage!!.generativeContentLanguage
                 val proficiencyLevel: LanguageProficiencyLevel =
@@ -56,21 +55,23 @@ class WordAIFacadeImpl(
                 ).toString()
 
                 // Send the request to OpenAI using reactive service
-                val response = openAIAPIClientService.makeRequest(
+                openAIAPIClientService.makeRequest(
                     aiResponseType = object : TypeReference<AIGeneratedWordManual>() {},
                     prompt = prompt,
                     saveLog = { /* Log handling can be added here if needed */ },
                     validateResponseBody = { responseBody ->
-                        responseBody != null && 
-                        !responseBody.toString().contains("WORD_MISSPELLED") &&
-                        !responseBody.toString().contains("NON_EXISTENT_WORD")
+                        responseBody != null &&
+                                !responseBody.toString().contains("WORD_MISSPELLED") &&
+                                !responseBody.toString().contains("NON_EXISTENT_WORD")
                     },
                     parseResponseBody = { responseBody ->
                         when {
-                            responseBody.toString().contains("WORD_MISSPELLED") -> 
+                            responseBody.toString().contains("WORD_MISSPELLED") ->
                                 throw BadRequestException("The word ${body.word} in the language ${body.language} is misspelled.")
-                            responseBody.toString().contains("NON_EXISTENT_WORD") -> 
+
+                            responseBody.toString().contains("NON_EXISTENT_WORD") ->
                                 throw BadRequestException("The word ${body.word} does not exist in the language ${body.language}.")
+
                             else -> {
                                 responseBody.originalWord = body.word
                                 responseBody
@@ -78,8 +79,6 @@ class WordAIFacadeImpl(
                         }
                     }
                 )
-
-                Mono.just(response)
             }
     }
 }
