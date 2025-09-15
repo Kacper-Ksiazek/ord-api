@@ -34,35 +34,35 @@ class CrosswordGameFacade(
         user: UserEntity,
         body: StartGameRequest
     ): Mono<ResponseEntity<StartedCrosswordGameResponse>> {
-        return Mono.fromCallable {
-            crosswordAIGenerateGameService.generate(
-                user = user,
-                language = body.language,
-                difficulty = body.difficulty
-            )
-        }
-        .flatMap { (instruction, properAnswers) ->
-            ongoingGameService.save(
-                OngoingGameEntity(
-                    user = user,
-                    userId = user.id,
-                    type = GameType.CROSSWORD,
+        return crosswordAIGenerateGameService.generate(
+            user = user,
+            language = body.language,
+            difficulty = body.difficulty
+        )
+            .flatMap {
+                val (instruction, properAnswers) = it
 
-                    language = body.language,
-                    difficulty = body.difficulty,
-                    properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
-                )
-            )
-            .map { savedGame ->
-                ResponseEntity.ok(
-                    StartedCrosswordGameResponse(
-                        gameId = savedGame.id,
-                        instruction = instruction,
-                        properAnswers = properAnswers
+                ongoingGameService.save(
+                    OngoingGameEntity(
+                        user = user,
+                        userId = user.id,
+                        type = GameType.CROSSWORD,
+
+                        language = body.language,
+                        difficulty = body.difficulty,
+                        properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
                     )
                 )
+                    .map { savedGame ->
+                        ResponseEntity.ok(
+                            StartedCrosswordGameResponse(
+                                gameId = savedGame.id,
+                                instruction = instruction,
+                                properAnswers = properAnswers
+                            )
+                        )
+                    }
             }
-        }
     }
 
     override fun finishGame(
@@ -81,54 +81,54 @@ class CrosswordGameFacade(
                     expectedAnswers = game.properAnswers.questions,
                     userAnswers = body.answers.questions,
                 )
-                .map { reviewedQuestions ->
-                    val scoreForQuestions: Int = reviewedQuestions.calculatedWeightedModuleScore(
-                        moduleWeight = GamesConfig.GameScoring.ModulesWeights.Crossword.QUESTIONS,
-                        gameMaxScore = GamesConfig.GameScoring.MaxScore.CROSSWORD
-                    )
-
-                    val reviewedFinalAnswer: WordAnswerScore = WordAnswerScore.Companion.reviewUserAnswer(
-                        userAnswer = body.answers.finalWord,
-                        expectedAnswer = game.properAnswers.finalWord,
-                        difficulty = game.difficulty
-                    )
-
-                    val scoreForFinalWord: Int = GameReviewService.Companion.calculatedWeightedModuleScore(
-                        earnedPoints = reviewedFinalAnswer.wage,
-                        pointsToEarn = WordAnswerScore.CORRECT.wage,
-                        moduleWeight = GamesConfig.GameScoring.ModulesWeights.Crossword.FINAL_WORD,
-                        gameMaxScore = GamesConfig.GameScoring.MaxScore.CROSSWORD
-                    )
-
-                    val score: Int = scoreForQuestions + scoreForFinalWord
-                    
-                    Triple(game, reviewedQuestions, score) to reviewedFinalAnswer
-                }
-                .flatMap { (gameData, reviewedFinalAnswer) ->
-                    val (game, reviewedQuestions, score) = gameData
-                    
-                    ongoingGameService.completeGame(
-                        ongoingGame = game,
-                        score = score,
-                        duration = body.duration
-                    )
-                    .then(Mono.fromCallable {
-                        ResponseEntity.ok(
-                            FinishedCrosswordGameResponse(
-                                score = score,
-                                maxScore = GamesConfig.GameScoring.MaxScore.CROSSWORD,
-                                reviewedAnswers = CrosswordReviewedAnswers(
-                                    finalWord = ReviewedWordAnswer(
-                                        expectedAnswer = game.properAnswers.finalWord,
-                                        userAnswer = body.answers.finalWord,
-                                        score = reviewedFinalAnswer
-                                    ),
-                                    questions = reviewedQuestions
-                                )
-                            )
+                    .map { reviewedQuestions ->
+                        val scoreForQuestions: Int = reviewedQuestions.calculatedWeightedModuleScore(
+                            moduleWeight = GamesConfig.GameScoring.ModulesWeights.Crossword.QUESTIONS,
+                            gameMaxScore = GamesConfig.GameScoring.MaxScore.CROSSWORD
                         )
-                    })
-                }
+
+                        val reviewedFinalAnswer: WordAnswerScore = WordAnswerScore.Companion.reviewUserAnswer(
+                            userAnswer = body.answers.finalWord,
+                            expectedAnswer = game.properAnswers.finalWord,
+                            difficulty = game.difficulty
+                        )
+
+                        val scoreForFinalWord: Int = GameReviewService.Companion.calculatedWeightedModuleScore(
+                            earnedPoints = reviewedFinalAnswer.wage,
+                            pointsToEarn = WordAnswerScore.CORRECT.wage,
+                            moduleWeight = GamesConfig.GameScoring.ModulesWeights.Crossword.FINAL_WORD,
+                            gameMaxScore = GamesConfig.GameScoring.MaxScore.CROSSWORD
+                        )
+
+                        val score: Int = scoreForQuestions + scoreForFinalWord
+
+                        Triple(game, reviewedQuestions, score) to reviewedFinalAnswer
+                    }
+                    .flatMap { (gameData, reviewedFinalAnswer) ->
+                        val (game, reviewedQuestions, score) = gameData
+
+                        ongoingGameService.completeGame(
+                            ongoingGame = game,
+                            score = score,
+                            duration = body.duration
+                        )
+                            .then(Mono.fromCallable {
+                                ResponseEntity.ok(
+                                    FinishedCrosswordGameResponse(
+                                        score = score,
+                                        maxScore = GamesConfig.GameScoring.MaxScore.CROSSWORD,
+                                        reviewedAnswers = CrosswordReviewedAnswers(
+                                            finalWord = ReviewedWordAnswer(
+                                                expectedAnswer = game.properAnswers.finalWord,
+                                                userAnswer = body.answers.finalWord,
+                                                score = reviewedFinalAnswer
+                                            ),
+                                            questions = reviewedQuestions
+                                        )
+                                    )
+                                )
+                            })
+                    }
             }
     }
 }
