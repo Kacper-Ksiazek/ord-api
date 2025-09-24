@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS user_activity_logs
 (
-    id              UUID PRIMARY KEY,
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     user_id         UUID               NOT NULL REFERENCES users (id) ON DELETE CASCADE,
 

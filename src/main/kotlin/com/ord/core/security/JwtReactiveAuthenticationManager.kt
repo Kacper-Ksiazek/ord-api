@@ -26,49 +26,52 @@ class JwtReactiveAuthenticationManager(
         return Mono.defer {
             Mono.fromCallable { jwtService.parseAndValidate(token).body }
         }.flatMap { claims: Claims ->
-            val jti = claims.extractJti()
+            authenticateWithValidToken(token, claims)
+        }.onErrorResume { cause ->
+            if (cause is ExpiredJwtException || cause.cause is ExpiredJwtException) {
+                handleExpiredToken(token)
+            } else {
+                Mono.error(cause)
+            }
+        }
+    }
 
-            sessionsRepository
-                .findByToken(jti)
-                .switchIfEmpty(Mono.error(BadCredentialsException("Invalid token")))
-                .flatMap { session ->
-                    userRepositoryReactive
-                        .findByEmail(claims.extractSubject())
-                        .switchIfEmpty(Mono.error(BadCredentialsException("Invalid token")))
-                        .map { user ->
-                            authenticatedToken(user!!, null)
-                        }
-
-                }
-                .onErrorResume { cause ->
-                    if (cause is ExpiredJwtException || cause.cause is ExpiredJwtException) {
-                        val claims = jwtService.parseAllowExpired(token)
-                        val jti = claims.extractJti()
-
-                        sessionsRepository
-                            .findByToken(jti)
-                            .flatMap { session ->
-                                val subject = claims.extractSubject()
-
-                                val newToken = jwtService.createToken(subject = subject)
-
-                                val updatedSession = session!!.copy(
-                                    token = newToken,
-                                )
-
-                                sessionsRepository
-                                    .save(updatedSession)
-                                    .then(userRepositoryReactive.findByEmail(email = subject))
-                                    .map { user ->
-                                        authenticatedToken(user!!, newToken)
-                                    }
-                            }
-                            .switchIfEmpty(Mono.error(BadCredentialsException("Expired and session missing")))
-                    } else {
-                        Mono.error(cause)
+    private fun authenticateWithValidToken(token: String, claims: Claims): Mono<Authentication> {
+        return sessionsRepository
+            .findByToken(token)
+            .switchIfEmpty(Mono.error(BadCredentialsException("Invalid token")))
+            .flatMap { session ->
+                userRepositoryReactive
+                    .findByEmail(claims.extractSubject())
+                    .switchIfEmpty(Mono.error(BadCredentialsException("Invalid token")))
+                    .map { user ->
+                        authenticatedToken(user!!, null)
                     }
-                }
+            }
+    }
 
+    private fun handleExpiredToken(token: String): Mono<Authentication> {
+        return Mono.fromCallable {
+            jwtService.parseAllowExpired(token)
+        }.flatMap { claims ->
+            sessionsRepository
+                .findByToken(token)
+                .flatMap { session ->
+                    val subject = claims.extractSubject()
+                    val newToken = jwtService.createToken(subject = subject)
+
+                    val updatedSession = session!!.copy(
+                        token = newToken,
+                    )
+
+                    sessionsRepository
+                        .save(updatedSession)
+                        .then(userRepositoryReactive.findByEmail(email = subject))
+                        .map { user ->
+                            authenticatedToken(user!!, newToken)
+                        }
+                }
+                .switchIfEmpty(Mono.error(MissingUserSessionException()))
         }
     }
 

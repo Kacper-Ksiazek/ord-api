@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS user_sessions
 (
-    id         UUID PRIMARY KEY,
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     token      TEXT UNIQUE              NOT NULL,
 

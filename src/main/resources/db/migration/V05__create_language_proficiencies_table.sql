@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS language_proficiencies
 (
-    id                          UUID PRIMARY KEY,
+    id                          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id                     UUID                 NOT NULL,
 
     level                       language_proficiency NOT NULL,

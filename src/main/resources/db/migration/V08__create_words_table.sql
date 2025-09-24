@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS words
 (
-    id                UUID PRIMARY KEY,
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     -- Describes word's kind, such as `noun` or `verb`
     type              word_type     NOT NULL,

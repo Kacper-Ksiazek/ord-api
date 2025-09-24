@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS conversations
 (
-    id                 UUID PRIMARY KEY,
+    id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     topic              TEXT                            NOT NULL,
     additional_context TEXT                     DEFAULT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS conversations
 
 CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
 (
-    id               UUID PRIMARY KEY,
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     grammar          INT  NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
     vocabulary       INT  NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
 
 CREATE TABLE IF NOT EXISTS conversation_messages
 (
-    id              UUID PRIMARY KEY,
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     message_order   INT                         NOT NULL,
     content         TEXT                        NOT NULL,

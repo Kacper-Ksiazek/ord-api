@@ -1,6 +1,7 @@
 package com.ord.core.security
 
 import com.ord.config.properties.JwtProperties
+import org.springframework.http.ResponseCookie
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextImpl
@@ -27,8 +28,25 @@ class JwtSecurityContextRepository(
                     exchange.attributes[JwtExchangeAttrs.RENEWED_TOKEN_ATTR] = details["renewedToken"] as String
                 }
             }
-            .map { SecurityContextImpl(it) }
+            .map<SecurityContext?> { SecurityContextImpl(it) }
+            .onErrorResume { error ->
+                if (error is MissingUserSessionException) {
+                    clearAuthCookie(exchange)
+                    Mono.empty()
+                } else {
+                    Mono.error(error)
+                }
+            }
     }
 
     override fun save(exchange: ServerWebExchange?, context: SecurityContext?): Mono<Void?>? = Mono.empty()
+
+    private fun clearAuthCookie(exchange: ServerWebExchange) {
+        val expiredCookie = ResponseCookie.from(jwtProperties.authCookieName, "")
+            .maxAge(0)
+            .path("/")
+            .build()
+
+        exchange.response.addCookie(expiredCookie)
+    }
 }

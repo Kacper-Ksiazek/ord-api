@@ -11,10 +11,6 @@ import java.util.*
 
 @Table(name = "user_sessions")
 data class UserSessionEntity(
-    @Id
-    override var id: UUID? = null,
-
-
     var token: String,
 
     @Column("user_id")
@@ -22,6 +18,10 @@ data class UserSessionEntity(
 
     var createdAt: Instant = Instant.now(),
 
+    @Id
+    override var id: UUID? = null
+) : IdentifiableUserResource {
+
     @Transient
-    override var user: UserEntity? = null,
-) : IdentifiableUserResource
+    override var user: UserEntity? = null
+}
