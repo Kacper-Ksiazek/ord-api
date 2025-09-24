@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS users
                VARCHAR(255) NOT NULL,
     email      VARCHAR(255) NOT NULL,
     password   VARCHAR(255) NOT NULL,
-    role       user_role    NOT NULL    DEFAULT 'USER',
     native_language language_name NOT NULL,
 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
