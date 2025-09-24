@@ -1,8 +1,8 @@
 package com.ord.features.conversation.models.extensions
 
-import com.ord.features.conversation.models.entities.ConversationEntity
+import com.ord.features.conversation.models.dto.ConversationDTO
 
-fun ConversationEntity.convertToPromptParams(): Map<String, String> {
+fun ConversationDTO.convertToPromptParams(): Map<String, String> {
     return mapOf(
         "language" to language.toString(),
         "level" to proficiencyLevel.toString(),

@@ -21,6 +21,7 @@ import com.ord.features.game.variants.shared.enums.WordAnswerScore
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.util.UUID
 
 @Service
 class CrosswordGameFacade(
@@ -31,31 +32,33 @@ class CrosswordGameFacade(
         FinishCrosswordGameRequest,
         FinishedCrosswordGameResponse>() {
     override fun startGame(
-        user: UserEntity,
+        userId: UUID,
         body: StartGameRequest
     ): Mono<ResponseEntity<StartedCrosswordGameResponse>> {
-        return crosswordAIGenerateGameService.generate(
-            user = user,
-            language = body.language,
-            difficulty = body.difficulty
-        )
+        return crosswordAIGenerateGameService
+            .generate(
+                userId = userId,
+                language = body.language,
+                difficulty = body.difficulty
+            )
             .flatMap {
                 val (instruction, properAnswers) = it
 
-                ongoingGameService.save(
-                    OngoingGameEntity(
-                        userId = user.id,
-                        type = GameType.CROSSWORD,
+                ongoingGameService
+                    .save(
+                        OngoingGameEntity(
+                            userId = userId,
+                            type = GameType.CROSSWORD,
 
-                        language = body.language,
-                        difficulty = body.difficulty,
-                        properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
+                            language = body.language,
+                            difficulty = body.difficulty,
+                            properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
+                        )
                     )
-                )
                     .map { savedGame ->
                         ResponseEntity.ok(
                             StartedCrosswordGameResponse(
-                                gameId = savedGame.id,
+                                gameId = savedGame.id!!,
                                 instruction = instruction,
                                 properAnswers = properAnswers
                             )
@@ -65,16 +68,18 @@ class CrosswordGameFacade(
     }
 
     override fun finishGame(
-        user: UserEntity,
+        userId: UUID,
         body: FinishCrosswordGameRequest
     ): Mono<ResponseEntity<FinishedCrosswordGameResponse>> {
-        return ongoingGameService.findByIdOrFail(id = body.gameId, userId = user.id)
-            .map { entity ->
-                ongoingGameMapper.toCrosswordDTO(entity)
-            }
+        return ongoingGameService
+            .findByIdOrFail(
+                id = body.gameId,
+                userId = userId
+            )
+            .map { ongoingGameMapper.toCrosswordDTO(it) }
             .flatMap { game ->
                 gameReviewService.reviewUserAnswersAndUpdateDBPoints(
-                    user = user,
+                    userId = userId,
                     language = game.language,
                     difficulty = game.difficulty,
                     expectedAnswers = game.properAnswers.questions,

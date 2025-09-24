@@ -1,7 +1,7 @@
 package com.ord.features.game.api.controllers
 
 import com.ord.core.auth.annotations.AuthenticatedUser
-import com.ord.core.user.model.UserEntity
+import com.ord.core.user.model.UserDTO
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.game.variants.sentences_writing.api.SentencesWritingGameFacade
 import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameRequest
@@ -24,13 +24,13 @@ class SentencesWritingGameController(
 
     @PostMapping("/start")
     fun startWordsTypingGame(
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: StartGameRequest
-    ): Mono<ResponseEntity<StartedSentencesWritingGameResponse>> = sentencesWritingGameFacade.startGame(user, body)
+    ): Mono<ResponseEntity<StartedSentencesWritingGameResponse>> = sentencesWritingGameFacade.startGame(user.id, body)
 
     @PostMapping("/finish")
     fun finishWordsTypingGame(
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: FinishSentencesWritingGameRequest
     ): Mono<ResponseEntity<FinishedSentencesWritingGameResponse>> {
         body.answers.forEach {
@@ -39,6 +39,6 @@ class SentencesWritingGameController(
             }
         }
 
-        return sentencesWritingGameFacade.finishGame(user, body)
+        return sentencesWritingGameFacade.finishGame(user.id, body)
     }
 }

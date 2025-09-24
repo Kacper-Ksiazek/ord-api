@@ -1,9 +1,7 @@
 package com.ord.features.game.services.impl
 
-import com.ord.features.game.model.finished_game.FinishedGameEntity
 import com.ord.features.game.model.finished_game.extensions.getUserActivityType
 import com.ord.features.game.model.ongoing_game.OngoingGameDTO
-import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.extensions.cancel
 import com.ord.features.game.model.ongoing_game.extensions.finish
@@ -25,41 +23,25 @@ class OngoingGameServiceImpl(
     val finishedGameService: FinishedGameService,
     val transactionalOperator: TransactionalOperator
 ) : OngoingGameService {
-
-    override fun completeGame(
-        ongoingGameEntity: OngoingGameEntity,
-        score: Int,
-        duration: String
-    ): Mono<FinishedGameEntity> {
-        return finishedGameService
-            .save(ongoingGameEntity.finish(score, duration))
-            .flatMap { finishedGame ->
-                val userId = finishedGame.userId
-
-                userActivityLogService.log(
-                    userId = userId,
-                    type = finishedGame.getUserActivityType(),
-                    language = finishedGame.language,
-                    difficulty = finishedGame.difficulty
-                )
-                    .flatMap {
-                        repository.deleteById(ongoingGameEntity.id)
-                            .thenReturn(finishedGame)
-                    }
-            }
-            .`as`(transactionalOperator::transactional)
-    }
-
     override fun completeGame(
         ongoingGame: OngoingGameDTO<*>,
         score: Int,
         duration: String
     ): Mono<Void> {
-        return this.completeGame(
-            ongoingGameEntity = ongoingGameMapper.toEntity(ongoingGame),
-            score,
-            duration
-        ).then()
+        return finishedGameService
+            .save(ongoingGame.finish(score, duration))
+            .flatMap { finishedGame ->
+                userActivityLogService
+                    .log(
+                        userId = finishedGame.userId,
+                        type = finishedGame.getUserActivityType(),
+                        language = finishedGame.language,
+                        difficulty = finishedGame.difficulty
+                    )
+                    .flatMap { repository.deleteById(ongoingGame.id) }
+            }
+            .`as`(transactionalOperator::transactional)
+            .then()
     }
 
     override fun cancelGame(
@@ -67,7 +49,8 @@ class OngoingGameServiceImpl(
         userId: UUID,
         duration: String
     ): Mono<Void> {
-        return this.findByIdOrFail(id = ongoingGameId, userId = userId)
+        return findByIdOrFail(id = ongoingGameId, userId = userId)
+            .map { ongoingGameMapper.toDTO(it) }
             .flatMap { ongoingGame ->
                 finishedGameService.save(ongoingGame.cancel(duration))
                     .flatMap { finishedGame ->
@@ -78,7 +61,7 @@ class OngoingGameServiceImpl(
                             difficulty = finishedGame.difficulty
                         )
                             .flatMap {
-                                repository.deleteById(ongoingGame.id).then()
+                                repository.deleteById(ongoingGameId).then()
                             }
                     }
             }

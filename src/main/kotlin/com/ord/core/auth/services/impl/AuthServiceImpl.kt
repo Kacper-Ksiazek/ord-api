@@ -14,6 +14,7 @@ import com.ord.core.security.invalidateAuthTokenCookie
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.UserMapper
+import com.ord.core.user.model.toDTO
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.exceptions.REST.UnauthorizedException
@@ -30,7 +31,6 @@ class AuthServiceImpl(
     private val jwtProperties: JwtProperties,
     private val jwtService: JwtService,
     private val encoder: PasswordEncoder,
-    private val userMapper: UserMapper,
 
     private val userRepositoryReactive: UserRepositoryReactive,
     private val sessionRepositoryReactive: UserSessionRepositoryReactive
@@ -48,6 +48,7 @@ class AuthServiceImpl(
                     nativeLanguage = body.nativeLanguage
                 )
             )
+            .map { it.toDTO() }
             .flatMap { createUserSession(it) }
             .map { createAuthTokenCookie(it, exchange) }
             .doOnError { cause ->
@@ -66,8 +67,9 @@ class AuthServiceImpl(
         return userRepositoryReactive
             .findByEmail(body.email)
             .filter { encoder.matches(body.password, it?.password) }
+            .map { it!!.toDTO() }
             .switchIfEmpty(Mono.error(NotFoundException("Invalid email or password")))
-            .flatMap { createUserSession(it!!) }
+            .flatMap { createUserSession(it) }
             .map { createAuthTokenCookie(it, exchange) }
 
     }
@@ -95,7 +97,7 @@ class AuthServiceImpl(
     }
 
 
-    private fun createUserSession(user: UserEntity): Mono<Pair<UserDTO, String>> {
+    private fun createUserSession(user: UserDTO): Mono<Pair<UserDTO, String>> {
         val token = jwtService.createToken(
             jti = UUID.randomUUID().toString(),
             subject = user.email,
@@ -108,7 +110,7 @@ class AuthServiceImpl(
                     token = token
                 )
             )
-            .thenReturn(Pair(user.toDTO(), token))
+            .thenReturn(Pair(user, token))
     }
 
 
@@ -124,10 +126,5 @@ class AuthServiceImpl(
         )
 
         return user
-    }
-
-
-    private fun UserEntity.toDTO(): UserDTO {
-        return userMapper.toDTO(this)
     }
 }

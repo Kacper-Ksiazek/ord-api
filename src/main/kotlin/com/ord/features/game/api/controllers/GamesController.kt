@@ -1,6 +1,7 @@
 package com.ord.features.game.api.controllers
 
 import com.ord.core.auth.annotations.AuthenticatedUser
+import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.services.OngoingGameService
 import com.ord.features.game.variants.shared.dto.api_requests.CancelGameRequest
@@ -54,16 +55,17 @@ class GamesController(
     @DeleteMapping("/cancel/{gameId}")
     fun cancelGame(
         @PathVariable gameId: UUID,
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: CancelGameRequest
     ): Mono<ResponseEntity<Unit>> {
-        return ongoingGameService.cancelGame(
-            ongoingGameId = gameId,
-            userId = user.id,
-            duration = body.duration
-        )
-        .then(Mono.fromCallable {
-            ResponseEntity.noContent().build<Unit>()
-        })
+        return ongoingGameService
+            .cancelGame(
+                ongoingGameId = gameId,
+                userId = user.id,
+                duration = body.duration
+            )
+            .then(Mono.fromCallable {
+                ResponseEntity.noContent().build<Unit>()
+            })
     }
 }

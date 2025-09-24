@@ -22,11 +22,12 @@ class SentencesWritingAIReviewService(
     private val languageProficiencyService: LanguageProficiencyService,
 ) : AIGameServiceBase() {
     fun review(
-        user: UserEntity,
+        userId: UUID,
         ongoingGame: OngoingSentencesWritingGameDTO,
         userAnswers: FinishSentencesWritingGameAnswers
     ): Mono<FinishedSentencesWritingGameResponse> {
-        return languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, ongoingGame.language)
+        return languageProficiencyService
+            .findUserProficiencyInLanguageOrThrow(userId, ongoingGame.language)
             .flatMap { languageProficiency ->
                 val prompt = Prompt(
                     variant = AvailablePrompts.GAMES_REVIEW_SENTENCES_WRITING,

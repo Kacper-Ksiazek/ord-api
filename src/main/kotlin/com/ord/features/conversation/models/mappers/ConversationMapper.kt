@@ -13,7 +13,7 @@ class ConversationMapper(
 ) : UnidirectionalEntityMapper<ConversationEntity, ConversationDTO> {
     override fun toDTO(entity: ConversationEntity): ConversationDTO {
         return ConversationDTO(
-            id = entity.id,
+            id = entity.id ?: error("Conversation id must not be null"),
             topic = entity.topic,
             language = entity.language,
             proficiencyLevel = entity.proficiencyLevel,

@@ -3,6 +3,18 @@ package com.ord.core.user.model
 import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
+fun UserEntity.toDTO(): UserDTO = UserDTO(
+    id = id ?: error("Expected DB to generate ID"),
+
+    name = name,
+    email = email,
+    password = password,
+    nativeLanguage = nativeLanguage,
+
+    createdAt = createdAt,
+    updatedAt = updatedAt
+)
+
 @Component
 class UserMapper : BidirectionalEntityMapper<UserEntity, UserDTO> {
     override fun toEntity(dto: UserDTO): UserEntity {
@@ -20,16 +32,6 @@ class UserMapper : BidirectionalEntityMapper<UserEntity, UserDTO> {
     }
 
     override fun toDTO(entity: UserEntity): UserDTO {
-        return UserDTO(
-            id = entity.id,
-
-            name = entity.name,
-            email = entity.email,
-            password = entity.password,
-            nativeLanguage = entity.nativeLanguage,
-
-            createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt
-        )
+        return entity.toDTO()
     }
 }

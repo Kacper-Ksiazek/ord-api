@@ -6,8 +6,4 @@ interface BidirectionalEntityMapper<Entity, DTO>: UnidirectionalEntityMapper<Ent
     fun toEntityOrNull(dto: DTO?): Entity? {
         return dto?.let { toEntity(it) }
     }
-
-    fun toEntityList(dtos: List<DTO>): List<Entity> {
-        return dtos.map { toEntity(it) }
-    }
 }

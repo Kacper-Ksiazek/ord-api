@@ -22,7 +22,7 @@ interface WordRepositoryCustomMethods {
 
     fun findOneWord(
         wordId: UUID,
-        user: UserEntity
+        userId: UUID,
     ): Mono<SingleWordResponse>
 
     fun findManyWords(

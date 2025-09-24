@@ -13,7 +13,7 @@ import java.util.*
 @Table(name = "users")
 data class UserEntity(
     @Id
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID? = null,
 
     @Column("name")
     var name: String,

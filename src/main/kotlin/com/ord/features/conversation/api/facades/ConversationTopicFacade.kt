@@ -1,12 +1,12 @@
 package com.ord.features.conversation.api.facades
 
-import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
 import reactor.core.publisher.Flux
+import java.util.UUID
 
 interface ConversationTopicFacade {
     fun suggestTopics(
-        user: UserEntity,
+        userId: UUID,
         body: SuggestConversationTopicRequest
     ): Flux<String>
 }

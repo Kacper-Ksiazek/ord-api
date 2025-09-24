@@ -40,30 +40,6 @@ class UserActivityLogServiceImpl(
     }
 
     override fun log(
-        user: UserEntity,
-        type: UserActivityType,
-        language: LanguageName,
-        difficulty: GameDifficulty?
-    ): Mono<Boolean> {
-        return checkIfLogCanBeAdded(user.id, type, language)
-            .flatMap { canBeAdded ->
-                if (canBeAdded) {
-                    repository.save(
-                        UserActivityLogEntity(
-                            userId = user.id,
-                            type = type,
-                            language = language,
-                            gameDifficulty = difficulty,
-                            user = user
-                        )
-                    ).map { true }
-                } else {
-                    Mono.just(false)
-                }
-            }
-    }
-
-    override fun log(
         userId: UUID,
         type: UserActivityType,
         language: LanguageName,
@@ -72,12 +48,26 @@ class UserActivityLogServiceImpl(
         return userRepository.findById(userId)
             .switchIfEmpty(Mono.error(NotFoundException("User with ID $userId not found")))
             .flatMap { user ->
-                log(
-                    user = user,
+                checkIfLogCanBeAdded(
+                    userId = userId,
                     type = type,
-                    language = language,
-                    difficulty = difficulty
+                    language = language
                 )
+                    .flatMap { canBeAdded ->
+                        if (canBeAdded) {
+                            repository.save(
+                                UserActivityLogEntity(
+                                    userId = userId,
+                                    type = type,
+                                    language = language,
+                                    gameDifficulty = difficulty,
+                                    user = user
+                                )
+                            ).map { true }
+                        } else {
+                            Mono.just(false)
+                        }
+                    }
             }
     }
 

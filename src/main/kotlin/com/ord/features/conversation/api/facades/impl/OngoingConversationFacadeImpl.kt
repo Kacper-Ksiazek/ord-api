@@ -8,12 +8,15 @@ import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
+import com.ord.features.conversation.models.dto.ConversationDTO
+import com.ord.features.conversation.models.dto.ConversationMessageDTO
 import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
 import com.ord.features.conversation.models.entities.ConversationEntity
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
 import com.ord.features.conversation.models.extensions.convertToPromptParams
+import com.ord.features.conversation.models.mappers.ConversationMapper
 import com.ord.features.conversation.services.ConversationMessageService
 import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
@@ -30,41 +33,57 @@ class OngoingConversationFacadeImpl(
     private val openAIAPIClientService: OpenAIAPIClientService,
     private val conversationService: ConversationService,
     private val conversationMessageService: ConversationMessageService,
+    private val conversationMapper: ConversationMapper,
 ) : OngoingConversationFacade {
-    override fun initializeConversationByAI(conversation: ConversationEntity): Flux<String> {
-        conversation.messages.size
-
-        if (conversation.messages.isNotEmpty()) {
-            throw BadRequestException("Conversation with id ${conversation.id} has been already initialized. ")
-        }
-
-        val prompt = Prompt(
-            variant = AvailablePrompts.CONVERSATION_INITIALIZE,
-            params = conversation.convertToPromptParams()
-        )
-
-        return openAIAPIClientService
-            .openSimpleStringStream(
-                prompt = prompt.toString(),
-                onComplete = { (payload) ->
-                    // TODO: Save logs here
-
-                    conversationMessageService.createMessage(
-                        conversationId = conversation.id,
-                        sender = ConversationMessageSender.AI,
-                        content = payload.finalContent,
-                        messageOrder = 0
-                    ).subscribe()
-                }
+    override fun initializeConversationByAI(
+        conversationId: UUID,
+        userId: UUID,
+    ): Flux<String> {
+        return conversationService
+            .findByIdOrFail(
+                id = conversationId,
+                userId = userId
             )
+            .map { conversationMapper.toDTO(it) }
+            .flatMapMany { conversation ->
+                if (conversation.messages.isNotEmpty()) {
+                    return@flatMapMany Flux.error(
+                        BadRequestException("Conversation with id ${conversation.id} has been already initialized.")
+                    )
+                }
+
+                val prompt = Prompt(
+                    variant = AvailablePrompts.CONVERSATION_INITIALIZE,
+                    params = conversation.convertToPromptParams()
+                )
+
+                openAIAPIClientService
+                    .openSimpleStringStream(
+                        prompt = prompt.toString(),
+                        onComplete = { (payload) ->
+                            // TODO: Save logs here
+
+                            conversationMessageService.createMessage(
+                                conversationId = conversation.id,
+                                sender = ConversationMessageSender.AI,
+                                content = payload.finalContent,
+                                messageOrder = 0
+                            ).subscribe()
+                        }
+                    )
+            }
     }
 
 
     override fun requestAIMessage(
-        user: UserEntity,
+        userId: UUID,
         body: CreateAIConversationMessageRequest
     ): Flux<String> {
-        return conversationService.findByIdOrFail(body.conversationId, user.id)
+        // TODO: Fetch with JOINED messages
+
+        return conversationService
+            .findByIdOrFail(body.conversationId, userId)
+            .map { conversationMapper.toDTO(it) }
             .flatMapMany { conversation ->
                 val serializedConversationHistory: List<String> =
                     conversation.messages
@@ -106,10 +125,12 @@ class OngoingConversationFacadeImpl(
 
 
     override fun saveUserMessageAndGetFeedback(
-        user: UserEntity,
+        userId: UUID,
         body: ReviewUserConversationMessageRequest
     ): Mono<ResponseEntity<ReviewedUserConversationMessage>> {
-        return conversationService.findByIdOrFail(body.conversationId, user.id)
+        return conversationService
+            .findByIdOrFail(body.conversationId, userId)
+            .map { conversationMapper.toDTO(it) }
             .flatMap { conversation ->
                 val prompt = Prompt(
                     variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
@@ -127,23 +148,23 @@ class OngoingConversationFacadeImpl(
                         // TODO
                     }
                 )
-                .flatMap { aiFeedback ->
-                    conversationMessageService.createMessageWithFeedback(
-                        conversationId = conversation.id,
-                        content = body.message,
-                        messageOrder = body.messageOrder,
-                        feedback = ConversationUserMessageFeedbackEntity(
-                            grammar = aiFeedback.grammar,
-                            vocabulary = aiFeedback.vocabulary,
-                            answerLength = aiFeedback.answerLength,
-                            suggestedAnswer = aiFeedback.suggestedAnswer,
-                            comment = aiFeedback.comment
+                    .flatMap { aiFeedback ->
+                        conversationMessageService.createMessageWithFeedback(
+                            conversationId = conversation.id,
+                            content = body.message,
+                            messageOrder = body.messageOrder,
+                            feedback = ConversationUserMessageFeedbackEntity(
+                                grammar = aiFeedback.grammar,
+                                vocabulary = aiFeedback.vocabulary,
+                                answerLength = aiFeedback.answerLength,
+                                suggestedAnswer = aiFeedback.suggestedAnswer,
+                                comment = aiFeedback.comment
+                            )
                         )
-                    )
-                    .then(Mono.fromCallable {
-                        ResponseEntity.ok(aiFeedback)
-                    })
-                }
+                            .then(Mono.fromCallable {
+                                ResponseEntity.ok(aiFeedback)
+                            })
+                    }
             }
     }
 
@@ -151,7 +172,7 @@ class OngoingConversationFacadeImpl(
     // Utility functions
     //
 
-    private fun ConversationMessageEntity.serialize(index: Int): String {
+    private fun ConversationMessageDTO.serialize(index: Int): String {
         return serializeMessage(index, sender, content)
     }
 

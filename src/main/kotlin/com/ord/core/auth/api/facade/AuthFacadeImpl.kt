@@ -54,11 +54,11 @@ class AuthFacadeImpl(
             })
     }
 
-    override fun me(user: UserEntity): Mono<ResponseEntity<UserDTO>> {
+    override fun me(user: UserDTO): Mono<ResponseEntity<UserDTO>> {
         return MonoUtils.fromBlocking {
             ResponseEntity
                 .status(HttpStatus.OK)
-                .body(user.toDTO())
+                .body(user)
         }
     }
 

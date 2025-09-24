@@ -1,6 +1,7 @@
 package com.ord.core.word.service.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
@@ -114,13 +115,13 @@ class WordServiceImpl(
         wordExtraMark: WordExtraMark?,
         sortBy: GetAllWordsSortOptions?,
 
-        user: UserEntity,
+        userId: UUID,
 
         page: Int,
         perPage: Int
     ): Mono<PaginatedDataResponse<WordListItem>> {
         return repository.findManyWords(
-            userId = user.id,
+            userId = userId,
             language = language,
             completed = completed,
             bookmarked = bookmarked,
@@ -142,11 +143,11 @@ class WordServiceImpl(
 
     override fun findOneWord(
         wordId: UUID,
-        user: UserEntity,
+        userId: UUID
     ): Mono<SingleWordResponse> {
         return repository.findOneWord(
             wordId = wordId,
-            user = user
+            userId = userId
         )
     }
 
@@ -181,21 +182,21 @@ class WordServiceImpl(
     }
 
     override fun saveNewWord(
-        word: WordDTO,
-        user: UserEntity
+        word: WordEntity,
+        userId: UUID,
     ): Mono<WordDTO> {
         val language = word.translatedFrom
-        
-        return repository.save(wordMapper.toEntity(word))
+
+        return repository.save(word)
             .flatMap { savedEntity ->
-                countCreated(language = language, userId = user.id)
+                countCreated(language = language, userId = userId)
                     .map { countingSummary ->
                         val userActivityLogsToSaveEntity: MutableSet<UserActivityLogEntity> = mutableSetOf()
-                        
+
                         if (countingSummary.today >= 10) {
                             userActivityLogsToSaveEntity.add(
                                 UserActivityLogEntity(
-                                    userId = user.id,
+                                    userId = userId,
                                     type = UserActivityType.WORDS_ADDED_IN_ONE_DAY_10,
                                     language = language,
                                 )
@@ -205,14 +206,13 @@ class WordServiceImpl(
                         if (countingSummary.week >= 50) {
                             userActivityLogsToSaveEntity.add(
                                 UserActivityLogEntity(
-                                    userId = user.id,
+                                    userId = userId,
                                     type = UserActivityType.WORDS_ADDED_IN_ONE_WEEK_50,
                                     language = language,
                                 )
                             )
                         }
-                        
-                        // TODO: Handle userActivityLogsToSaveEntity reactively
+
                         wordMapper.toDTO(savedEntity)
                     }
             }

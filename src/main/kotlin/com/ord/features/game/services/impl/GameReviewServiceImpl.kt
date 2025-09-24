@@ -49,8 +49,9 @@ class GameReviewServiceImpl(
         }.toSet()
     }
 
+
     override fun updateDBPointsForManyWords(
-        user: UserEntity,
+        userId: UUID,
         language: LanguageName,
         ratedWords: Map<String, WordAnswerScore>
     ): Mono<Void> {
@@ -59,7 +60,7 @@ class GameReviewServiceImpl(
         return wordRepository.findAllWordByTheirOrigins(
             origins = ratedWords.keys,
             language = language,
-            userId = user.id
+            userId = userId
         )
             .map { word ->
                 val points: WordAnswerScore = ratedWords[word.origin] ?: WordAnswerScore.INCORRECT
@@ -74,28 +75,30 @@ class GameReviewServiceImpl(
 
                     userActivityLogsToSave.add(
                         UserActivityLogEntity(
-                            user = user,
-                            userId = user.id,
+                            userId = userId,
                             type = UserActivityType.WORD_COMPLETED,
                             language = language
                         )
                     )
                 }
 
-                word
+                return@map word
             }
             .collectList()
             .flatMap { wordsToSave ->
                 wordRepository.saveAll(wordsToSave).collectList()
             }
-            .flatMap { 
-                wordService.countCompleted(language = language, userId = user.id)
+            .flatMap {
+                wordService
+                    .countCompleted(
+                        language = language,
+                        userId = userId
+                    )
                     .map { completedCount ->
                         if (completedCount.today >= 10) {
                             userActivityLogsToSave.add(
                                 UserActivityLogEntity(
-                                    user = user,
-                                    userId = user.id,
+                                    userId = userId,
                                     type = UserActivityType.WORDS_COMPLETED_IN_ONE_DAY_10,
                                     language = language
                                 )
@@ -105,14 +108,13 @@ class GameReviewServiceImpl(
                         if (completedCount.week >= 30) {
                             userActivityLogsToSave.add(
                                 UserActivityLogEntity(
-                                    user = user,
-                                    userId = user.id,
+                                    userId = userId,
                                     type = UserActivityType.WORDS_COMPLETED_IN_ONE_WEEK_30,
                                     language = language
                                 )
                             )
                         }
-                        
+
                         userActivityLogsToSave
                     }
             }

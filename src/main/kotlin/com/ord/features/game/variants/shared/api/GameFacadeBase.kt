@@ -2,7 +2,6 @@ package com.ord.features.game.variants.shared.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.services.GameReviewService
 import com.ord.features.game.services.OngoingGameService
@@ -10,6 +9,7 @@ import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Mono
+import java.util.*
 
 abstract class GameFacadeBase<TCreatedGameResponse, TFinishGameRequest, TFinishedGameResponse> {
     /**
@@ -20,7 +20,7 @@ abstract class GameFacadeBase<TCreatedGameResponse, TFinishGameRequest, TFinishe
      * @return A response entity containing the created game response.
      */
     abstract fun startGame(
-        user: UserEntity,
+        userId: UUID,
         body: StartGameRequest
     ): Mono<ResponseEntity<TCreatedGameResponse>>
 
@@ -32,7 +32,7 @@ abstract class GameFacadeBase<TCreatedGameResponse, TFinishGameRequest, TFinishe
      * @return A response entity containing the finished game response.
      */
     abstract fun finishGame(
-        user: UserEntity,
+        userId: UUID,
         body: TFinishGameRequest
     ): Mono<ResponseEntity<TFinishedGameResponse>>
 

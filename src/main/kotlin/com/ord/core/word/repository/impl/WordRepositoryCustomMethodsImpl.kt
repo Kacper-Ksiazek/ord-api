@@ -19,6 +19,7 @@ import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.api.dto.responses.PaginationData
 import com.ord.shared.domain.enums.SortDirection
 import com.ord.shared.domain.dto.CountingSummary
+import net.sf.jsqlparser.util.validation.metadata.NamedObject
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
@@ -33,7 +34,7 @@ class WordRepositoryCustomMethodsImpl(
 
     override fun findOneWord(
         wordId: UUID,
-        user: UserEntity
+        userId: UUID,
     ): Mono<SingleWordResponse> {
         val selectQuery = """
             SELECT 
@@ -48,7 +49,7 @@ class WordRepositoryCustomMethodsImpl(
 
         return databaseClient.sql(selectQuery)
             .bind("wordId", wordId)
-            .bind("userId", user.id)
+            .bind("userId", userId)
             .map { row ->
                 val hasBank: Boolean = row.get("bank_name", String::class.java) != null
                 val hasBankGroup: Boolean = hasBank && row.get("bank_group_name", String::class.java) != null
@@ -68,7 +69,8 @@ class WordRepositoryCustomMethodsImpl(
                     translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
 
                     useCases = row.get("use_cases", Array<String>::class.java)?.toSet() ?: emptySet(),
-                    exampleSentences = row.get("example_sentences", Array<ExampleSentence>::class.java)?.toSet() ?: emptySet(),
+                    exampleSentences = row.get("example_sentences", Array<ExampleSentence>::class.java)?.toSet()
+                        ?: emptySet(),
 
                     bank = if (hasBank) {
                         BankCompact(
@@ -88,7 +90,7 @@ class WordRepositoryCustomMethodsImpl(
             }
             .one()
             .switchIfEmpty(
-                Mono.error(NotFoundException("Word with id $wordId not found for user with id ${user.id}"))
+                Mono.error(NotFoundException("Word with id $wordId not found for user with id $userId"))
             )
     }
 
@@ -185,7 +187,8 @@ class WordRepositoryCustomMethodsImpl(
                     translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
                     translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
                     useCases = row.get("use_cases", Array<String>::class.java)?.toSet() ?: emptySet(),
-                    exampleSentences = row.get("example_sentences", Array<ExampleSentence>::class.java)?.toSet() ?: emptySet(),
+                    exampleSentences = row.get("example_sentences", Array<ExampleSentence>::class.java)?.toSet()
+                        ?: emptySet(),
                     userId = userId,
                     createdAt = row.get("created_at", Instant::class.java)!!,
                     updatedAt = row.get("updated_at", Instant::class.java)!!
@@ -262,7 +265,7 @@ class WordRepositoryCustomMethodsImpl(
 
         return databaseClient.sql(updateQuery)
             .bind("wordId", wordId)
-            .bind("bankId", bankId)
+            .apply { if (bankId != null) bind("bankId", bankId) else bindNull("bankId", UUID::class.java) }
             .bind("userId", userId)
             .fetch()
             .rowsUpdated()
@@ -282,7 +285,7 @@ class WordRepositoryCustomMethodsImpl(
         """
 
         return databaseClient.sql(updateQuery)
-            .bind("bankId", bankId)
+            .apply { if (bankId != null) bind("bankId", bankId) else bindNull("bankId", UUID::class.java) }
             .bind("wordIds", wordIds.toTypedArray())
             .bind("userId", userId)
             .fetch()

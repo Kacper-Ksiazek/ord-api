@@ -5,7 +5,7 @@ import java.time.Instant
 import java.util.*
 
 data class UserDTO(
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID,
 
     var name: String,
     var email: String,

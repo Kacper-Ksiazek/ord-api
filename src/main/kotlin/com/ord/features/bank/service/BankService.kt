@@ -13,6 +13,6 @@ interface BankService : UserResourceService<BankEntity> {
     fun findByIdOrCreate(
         bankId: UUID?,
         bankToCreate: CreateBankRequest?,
-        user: UserEntity
+        userId: UUID
     ): Mono<BankEntity?>
 }

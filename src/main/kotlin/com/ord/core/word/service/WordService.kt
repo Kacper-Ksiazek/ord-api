@@ -1,6 +1,7 @@
 package com.ord.core.word.service
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
@@ -56,7 +57,7 @@ interface WordService : UserResourceService<WordEntity> {
         wordExtraMark: WordExtraMark? = null,
         sortBy: GetAllWordsSortOptions? = null,
 
-        user: UserEntity,
+        userId: UUID,
 
         page: Int = 0,
         perPage: Int = 10
@@ -64,7 +65,7 @@ interface WordService : UserResourceService<WordEntity> {
 
     fun findOneWord(
         wordId: UUID,
-        user: UserEntity
+        userId: UUID
     ): Mono<SingleWordResponse>
 
     fun toggleProperty(
@@ -80,8 +81,8 @@ interface WordService : UserResourceService<WordEntity> {
     ): Flux<WordEntity>
 
     fun saveNewWord(
-        word: WordDTO,
-        user: UserEntity
+        word: WordEntity,
+        userId: UUID,
     ): Mono<WordDTO>
 
     fun countCreated(

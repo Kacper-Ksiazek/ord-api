@@ -61,7 +61,7 @@ class OngoingGameMapper(
 
     private fun <T : Any> OngoingGameEntity.convertToCertainDTO(typeReference: TypeReference<T>): OngoingGameDTO<T> {
         return OngoingGameDTO(
-            id = id,
+            id = id ?: error("OngoingGame id must not be null"),
             properAnswers = jsonObjectMapper.readValue(properAnswers, typeReference),
             type = type,
             language = language,

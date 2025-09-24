@@ -26,7 +26,7 @@ class UserActivityLogMapper(
 
     override fun toDTO(entity: UserActivityLogEntity): UserActivityLogDTO {
         return UserActivityLogDTO(
-            id = entity.id,
+            id = entity.id ?: error("UserActivityLog id must not be null"),
 
             type = entity.type,
             language = entity.language,

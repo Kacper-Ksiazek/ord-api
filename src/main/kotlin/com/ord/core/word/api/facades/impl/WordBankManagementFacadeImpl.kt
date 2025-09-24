@@ -1,5 +1,6 @@
 package com.ord.core.word.api.facades.impl
 
+import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.facades.WordBankManagementFacade
 import com.ord.core.word.api.facades.internal.getBankFromRequest
@@ -20,11 +21,11 @@ class WordBankManagementFacadeImpl(
     override fun changeBankOfOneWord(
         id: UUID,
         body: ChangeBankForSingleWordRequest,
-        user: UserEntity
+        user: UserDTO
     ): Mono<Void> {
         return getBankFromRequestOrNull(
             bankService = bankService,
-            user = user,
+            userId = user.id,
             bankId = body.bankId,
             bankToCreate = body.bankToCreate
         ).flatMap { bank ->
@@ -38,11 +39,11 @@ class WordBankManagementFacadeImpl(
 
     override fun changeBankOfMultipleWords(
         body: ChangeBankForMultipleWordsRequest,
-        user: UserEntity
+        user: UserDTO
     ): Mono<Void> {
         return getBankFromRequest(
             bankService = bankService,
-            user = user,
+            userId = user.id,
             bankId = body.bankId,
             bankToCreate = body.bankToCreate
         ).flatMap { bank ->

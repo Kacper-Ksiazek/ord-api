@@ -1,14 +1,13 @@
 package com.ord.core.word.api.facades.impl
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
-import com.ord.core.user.model.UserEntity
+import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.facades.WordAIFacade
 import com.ord.core.word.api.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.responses.dto.AIGeneratedWordManual
@@ -30,7 +29,7 @@ class WordAIFacadeImpl(
 
     override fun generateWordManual(
         body: GenerateWordManualRequest,
-        user: UserEntity
+        user: UserDTO,
     ): Mono<AIGeneratedWordManual> {
         return languageProficiencyService.findUserProficiencyInLanguage(user.id, body.language)
             .switchIfEmpty(Mono.error(BadRequestException("User does not have any proficiency in the requested language.")))

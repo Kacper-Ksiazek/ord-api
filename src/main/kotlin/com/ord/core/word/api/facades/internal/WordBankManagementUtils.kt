@@ -13,7 +13,7 @@ internal fun getBankFromRequest(
     bankService: BankService,
     bankId: UUID?,
     bankToCreate: CreateBankRequest?,
-    user: UserEntity
+    userId: UUID,
 ): Mono<BankEntity> {
     if (bankToCreate == null && bankId == null) {
         return Mono.error(BadRequestException("Either bankToCreate or bankId has to be specifed"))
@@ -26,30 +26,31 @@ internal fun getBankFromRequest(
     return bankService.findByIdOrCreate(
         bankId = bankId,
         bankToCreate = bankToCreate,
-        user = user
+        userId = userId
     )
-    .cast(BankEntity::class.java)
-    .onErrorMap(DataIntegrityViolationException::class.java) { 
-        BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
-    }
+        .cast(BankEntity::class.java)
+        .onErrorMap(DataIntegrityViolationException::class.java) {
+            BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
+        }
 }
 
 internal fun getBankFromRequestOrNull(
     bankService: BankService,
     bankId: UUID?,
     bankToCreate: CreateBankRequest?,
-    user: UserEntity
+    userId: UUID,
 ): Mono<BankEntity?> {
     if (bankToCreate != null && bankId != null) {
         return Mono.error(BadRequestException("You cannot create a new bank and use an existing bank at the same time"))
     }
 
-    return bankService.findByIdOrCreate(
-        bankId = bankId,
-        bankToCreate = bankToCreate,
-        user = user
-    )
-    .onErrorMap(DataIntegrityViolationException::class.java) { 
-        BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
-    }
+    return bankService
+        .findByIdOrCreate(
+            bankId = bankId,
+            bankToCreate = bankToCreate,
+            userId = userId
+        )
+        .onErrorMap(DataIntegrityViolationException::class.java) {
+            BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
+        }
 }

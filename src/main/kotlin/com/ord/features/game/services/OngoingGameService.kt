@@ -9,12 +9,6 @@ import java.util.*
 
 interface OngoingGameService : UserResourceService<OngoingGameEntity> {
     fun completeGame(
-        ongoingGameEntity: OngoingGameEntity,
-        score: Int,
-        duration: String
-    ): Mono<FinishedGameEntity>
-
-    fun completeGame(
         ongoingGame: OngoingGameDTO<*>,
         score: Int,
         duration: String

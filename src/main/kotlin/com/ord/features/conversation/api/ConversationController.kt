@@ -1,7 +1,7 @@
 package com.ord.features.conversation.api
 
 import com.ord.core.auth.annotations.AuthenticatedUser
-import com.ord.core.user.model.UserEntity
+import com.ord.core.user.model.UserDTO
 import com.ord.features.conversation.api.facades.ConversationCRUDFacade
 import com.ord.features.conversation.api.facades.ConversationTopicFacade
 import com.ord.features.conversation.api.requests.CreateConversationRequest
@@ -10,15 +10,9 @@ import com.ord.features.conversation.models.dto.ConversationDTO
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
-import java.util.UUID
+import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/conversations")
@@ -32,36 +26,50 @@ class ConversationController(
 
     @PostMapping("/suggest-topics", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun suggestTopic(
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: SuggestConversationTopicRequest
-    ) = conversationTopicFacade.suggestTopics(user, body)
+    ) = conversationTopicFacade.suggestTopics(
+        userId = user.id,
+        body = body
+    )
 
     //
     // CRUD ENDPOINTS
     //
     @GetMapping("/")
     fun getConversations(
-        @AuthenticatedUser user: UserEntity
-    ): Mono<ResponseEntity<List<ConversationDTO>>> = conversationCRUDFacade.getManyConversations(user)
+        @AuthenticatedUser user: UserDTO
+    ): Mono<ResponseEntity<List<ConversationDTO>>> = conversationCRUDFacade.getManyConversations(
+        userId = user.id
+    )
 
 
     @GetMapping("/{conversationId}")
     fun getConversationById(
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
         @PathVariable conversationId: UUID,
-    ): Mono<ResponseEntity<ConversationDTO>> = conversationCRUDFacade.getConversationById(user, conversationId)
+    ): Mono<ResponseEntity<ConversationDTO>> = conversationCRUDFacade.getConversationById(
+        conversationId = conversationId,
+        userId = user.id
+    )
 
 
     @PostMapping("/")
     fun createConversation(
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: CreateConversationRequest
-    ): Mono<ResponseEntity<ConversationDTO>> = conversationCRUDFacade.createConversation(user, body)
+    ): Mono<ResponseEntity<ConversationDTO>> = conversationCRUDFacade.createConversation(
+        userId = user.id,
+        body = body
+    )
 
 
     @DeleteMapping("/{conversationId}")
     fun deleteConversation(
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
         @PathVariable conversationId: UUID,
-    ): Mono<ResponseEntity<Unit>> = conversationCRUDFacade.deleteConversation(user, conversationId)
+    ): Mono<ResponseEntity<Unit>> = conversationCRUDFacade.deleteConversation(
+        conversationId = conversationId,
+        userId = user.id
+    )
 }

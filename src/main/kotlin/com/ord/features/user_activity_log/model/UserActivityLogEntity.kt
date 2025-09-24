@@ -13,7 +13,7 @@ import java.util.*
 @Table("user_activity_logs")
 data class UserActivityLogEntity(
     @Id
-    override var id: UUID = UUID.randomUUID(),
+    override var id: UUID? = null,
 
     val type: UserActivityType,
     val language: LanguageName,

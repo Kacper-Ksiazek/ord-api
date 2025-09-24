@@ -1,7 +1,8 @@
 package com.ord.core.auth.annotations
 
 import com.ord.core.security.UserRepositoryReactive
-import com.ord.core.user.model.UserEntity
+import com.ord.core.user.model.UserDTO
+import com.ord.core.user.model.toDTO
 import org.springframework.core.MethodParameter
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
@@ -17,7 +18,7 @@ class AuthenticatedUserArgumentResolver(
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
         return parameter.hasParameterAnnotation(AuthenticatedUser::class.java) &&
-                UserEntity::class.java.isAssignableFrom(parameter.parameterType)
+                UserDTO::class.java.isAssignableFrom(parameter.parameterType)
     }
 
     override fun resolveArgument(
@@ -28,7 +29,10 @@ class AuthenticatedUserArgumentResolver(
         return exchange.getPrincipal<Authentication>() // Mono<Authentication>
             .flatMap { auth ->
                 val email = auth.name // or (auth.principal as? CustomUserDetails)?.username
-                userRepositoryReactive.findByEmail(email)
+
+                userRepositoryReactive
+                    .findByEmail(email)
+                    .map { it!!.toDTO() }
                     .switchIfEmpty(Mono.error(IllegalArgumentException("User not found")))
             }
             .cast(Any::class.java)

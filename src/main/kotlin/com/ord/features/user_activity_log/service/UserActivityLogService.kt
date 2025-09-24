@@ -10,18 +10,6 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 interface UserActivityLogService {
-    /**
-     * Logs new user activity and saves it to the database
-     * Returns true if the log was successfully saved and false if it wasn't
-     */
-    fun log(
-        user: UserEntity,
-        type: UserActivityType,
-        language: LanguageName,
-        difficulty: GameDifficulty? = null
-    ): Mono<Boolean>
-
-
     fun log(
         userId: UUID,
         type: UserActivityType,

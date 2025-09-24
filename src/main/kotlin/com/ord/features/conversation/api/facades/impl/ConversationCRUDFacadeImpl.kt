@@ -1,8 +1,6 @@
 package com.ord.features.conversation.api.facades.impl
 
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
-import com.ord.core.security.UserRepositoryReactive
-import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.facades.ConversationCRUDFacade
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.models.dto.ConversationDTO
@@ -13,14 +11,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import java.util.UUID
+import java.util.*
 
 @Service
 class ConversationCRUDFacadeImpl(
     private val conversationService: ConversationService,
     private val conversationMapper: ConversationMapper,
     private val languageProficiencyService: LanguageProficiencyService,
-    private val userRepositoryReactive: UserRepositoryReactive,
 ) : ConversationCRUDFacade {
 
     internal fun ConversationEntity.toDTO(): ConversationDTO {
@@ -28,10 +25,11 @@ class ConversationCRUDFacadeImpl(
     }
 
     override fun createConversation(
-        user: UserEntity,
+        userId: UUID,
         body: CreateConversationRequest
     ): Mono<ResponseEntity<ConversationDTO>> {
-        return languageProficiencyService.findUserProficiencyInLanguageOrThrow(user.id, body.language)
+        return languageProficiencyService
+            .findUserProficiencyInLanguageOrThrow(userId, body.language)
             .flatMap { proficiency ->
                 conversationService.save(
                     ConversationEntity(
@@ -42,8 +40,7 @@ class ConversationCRUDFacadeImpl(
                         goal = body.goal,
                         aiTone = body.tone,
                         aiResponseLength = body.aiResponseLength,
-                        user = user,
-                        userId = user.id
+                        userId = userId,
                     )
                 )
             }
@@ -54,8 +51,11 @@ class ConversationCRUDFacadeImpl(
             }
     }
 
-    override fun getManyConversations(user: UserEntity): Mono<ResponseEntity<List<ConversationDTO>>> {
-        return conversationService.findAll(user.id)
+    override fun getManyConversations(
+        userId: UUID
+    ): Mono<ResponseEntity<List<ConversationDTO>>> {
+        return conversationService
+            .findAll(userId)
             .map { it.toDTO() }
             .collectList()
             .map { conversationDTOs ->
@@ -66,12 +66,12 @@ class ConversationCRUDFacadeImpl(
     }
 
     override fun getConversationById(
-        user: UserEntity,
+        userId: UUID,
         conversationId: UUID
     ): Mono<ResponseEntity<ConversationDTO>> {
         return conversationService.findByIdOrFail(
             id = conversationId,
-            userId = user.id
+            userId = userId
         )
             .map { conversationEntity ->
                 ResponseEntity
@@ -81,12 +81,12 @@ class ConversationCRUDFacadeImpl(
     }
 
     override fun deleteConversation(
-        user: UserEntity,
+        userId: UUID,
         conversationId: UUID
     ): Mono<ResponseEntity<Unit>> {
         return conversationService.deleteById(
             id = conversationId,
-            userId = user.id,
+            userId = userId,
         )
             .then(Mono.fromCallable {
                 ResponseEntity

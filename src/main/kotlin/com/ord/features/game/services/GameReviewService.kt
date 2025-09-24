@@ -16,7 +16,7 @@ interface GameReviewService {
         expectedAnswers: Map<UUID, String>,
         userAnswers: Set<WordUserAnswer>,
         difficulty: GameDifficulty,
-        user: UserEntity,
+        userId: UUID,
         language: LanguageName
     ): Mono<Set<IdentifiableReviewedWordAnswer>> {
         val reviewedQuestions = reviewUserAnswers(
@@ -26,7 +26,7 @@ interface GameReviewService {
         )
 
         return updateDBPointsForManyWords(
-            user = user,
+            userId = userId,
             language = language,
             ratedWords = reviewedQuestions.associate {
                 it.expectedAnswer to it.score
@@ -41,7 +41,7 @@ interface GameReviewService {
     ): Set<IdentifiableReviewedWordAnswer>
 
     fun updateDBPointsForManyWords(
-        user: UserEntity,
+        userId: UUID,
         language: LanguageName,
         /**
          * Map of word identifiers (as Strings) to their corresponding review scores.

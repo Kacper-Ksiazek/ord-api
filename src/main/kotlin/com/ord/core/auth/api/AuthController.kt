@@ -39,6 +39,6 @@ class AuthController(
 
     @GetMapping("/me")
     fun me(
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
     ): Mono<ResponseEntity<UserDTO>> = authFacade.me(user)
 }

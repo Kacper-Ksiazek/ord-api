@@ -18,7 +18,7 @@ class BankServiceImpl(
     override fun findByIdOrCreate(
         bankId: UUID?,
         bankToCreate: CreateBankRequest?,
-        user: UserEntity
+        userId: UUID
     ): Mono<BankEntity?> {
         if (bankToCreate != null && bankId != null) {
             return Mono.error(BadRequestException("You cannot create a new bank and use an existing bank at the same time"))
@@ -26,19 +26,21 @@ class BankServiceImpl(
 
         return when {
             bankId != null -> {
-                repository.findOneForUser(bankId, user.id)
+                repository.findOneForUser(bankId, userId)
                     .cast(BankEntity::class.java)
                     .switchIfEmpty(Mono.error(NotFoundException("Bank with ID $bankId not found")))
             }
+
             bankToCreate != null -> {
                 repository.save(
                     BankEntity(
                         name = bankToCreate.name,
                         description = bankToCreate.description,
-                        userId = user.id
+                        userId = userId
                     )
                 ).cast(BankEntity::class.java)
             }
+
             else -> Mono.error(BadRequestException("Either bankId or bankToCreate must be provided"))
         }
     }

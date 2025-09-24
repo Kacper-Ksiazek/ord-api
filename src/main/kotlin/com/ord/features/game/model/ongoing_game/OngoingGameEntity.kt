@@ -15,7 +15,7 @@ import java.util.*
 @Table("ongoing_games")
 data class OngoingGameEntity(
     @Id
-    override val id: UUID = UUID.randomUUID(),
+    override val id: UUID? = null,
 
     val properAnswers: String, // JSONB
 
