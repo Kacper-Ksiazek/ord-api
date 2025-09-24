@@ -43,7 +43,7 @@ class ConversationMessageServiceImpl(
                 sender = ConversationMessageSender.USER,
                 content = content,
                 messageOrder = messageOrder,
-                feedback = feedback
+                feedbackId = feedback.id
             )
         )
     }

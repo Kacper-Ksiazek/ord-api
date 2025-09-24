@@ -38,7 +38,6 @@ class SentencesWritingGameFacade(
         .flatMap { (instruction, properAnswers) ->
             ongoingGameService.save(
                 OngoingGameEntity(
-                    user = user,
                     userId = user.id,
                     type = GameType.SENTENCES_WRITING,
 

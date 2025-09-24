@@ -104,7 +104,6 @@ class AuthServiceImpl(
         return sessionRepositoryReactive
             .save(
                 UserSessionEntity(
-                    user = user,
                     userId = user.id,
                     token = token
                 )

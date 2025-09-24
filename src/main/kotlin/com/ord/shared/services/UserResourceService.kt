@@ -21,7 +21,7 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
         t: TEntity,
         userId: UUID,
     ): Mono<TEntity> {
-        return findByIdOrFail(t.id, userId)
+        return findByIdOrFail(t.id!!, userId)
             .flatMap { existing ->
                 if (existing.user?.id != userId) {
                     Mono.error<TEntity>(NotFoundException("Entity not found"))

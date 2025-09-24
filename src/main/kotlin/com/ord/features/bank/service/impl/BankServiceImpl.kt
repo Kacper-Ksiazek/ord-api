@@ -35,8 +35,7 @@ class BankServiceImpl(
                     BankEntity(
                         name = bankToCreate.name,
                         description = bankToCreate.description,
-                        userId = user.id,
-                        user = user
+                        userId = user.id
                     )
                 ).cast(BankEntity::class.java)
             }

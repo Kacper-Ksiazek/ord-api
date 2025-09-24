@@ -44,7 +44,6 @@ class CrosswordGameFacade(
 
                 ongoingGameService.save(
                     OngoingGameEntity(
-                        user = user,
                         userId = user.id,
                         type = GameType.CROSSWORD,
 
