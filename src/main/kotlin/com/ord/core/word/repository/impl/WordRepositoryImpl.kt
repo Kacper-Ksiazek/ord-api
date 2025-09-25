@@ -1,11 +1,8 @@
-@file:Suppress("DEPRECATION")
-
 package com.ord.core.word.repository.impl
 
-@Deprecated("This file is deprecated. Implementation moved to WordRepositoryImpl.")
-
+import com.ord.shared.repositories.GenericUserResourceRepository
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
@@ -16,14 +13,11 @@ import com.ord.core.word.model.json.ExampleSentence
 import com.ord.core.word.repository.WordRepositoryCustomMethods
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.bank.dto.BankCompact
-import com.ord.features.bank.model.BankEntity
 import com.ord.features.bank_group.dto.BankGroupCompact
-import com.ord.features.bank_group.model.BankGroupEntity
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.api.dto.responses.PaginationData
 import com.ord.shared.domain.enums.SortDirection
 import com.ord.shared.domain.dto.CountingSummary
-import net.sf.jsqlparser.util.validation.metadata.NamedObject
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
@@ -32,9 +26,12 @@ import java.time.Instant
 import java.util.*
 
 @Repository
-class WordRepositoryCustomMethodsImpl(
-    private val databaseClient: DatabaseClient,
-) : WordRepositoryCustomMethods {
+class WordRepositoryImpl(
+    template: R2dbcEntityTemplate
+) : GenericUserResourceRepository<WordEntity>(template), WordRepositoryCustomMethods {
+    override val entityClass: Class<WordEntity> = WordEntity::class.java
+
+    private val databaseClient: DatabaseClient = template.databaseClient
 
     override fun findOneWord(
         wordId: UUID,
@@ -51,7 +48,8 @@ class WordRepositoryCustomMethodsImpl(
             WHERE words.id = :wordId AND words.user_id = :userId
         """
 
-        return databaseClient.sql(selectQuery)
+        return databaseClient
+            .sql(selectQuery)
             .bind("wordId", wordId)
             .bind("userId", userId)
             .map { row ->

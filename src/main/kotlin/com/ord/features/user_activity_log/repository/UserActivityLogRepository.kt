@@ -5,12 +5,15 @@ import com.ord.features.user_activity_log.model.UserActivityLogEntity
 import com.ord.features.user_activity_log.model.enums.UserActivityType
 import com.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.r2dbc.repository.Query
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import java.util.*
 
 @Repository
-interface UserActivityLogRepository : UserResourceRepository<UserActivityLogEntity> {
+interface UserActivityLogRepository :
+    UserResourceRepository<UserActivityLogEntity>,
+    ReactiveCrudRepository<UserActivityLogEntity, UUID> {
     @Query(
         """
         SELECT COUNT(*) FROM user_activity_logs
