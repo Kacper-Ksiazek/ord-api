@@ -5,7 +5,7 @@ import com.ord.features.conversation.api.requests.SuggestConversationTopicReques
 import com.ord.features.conversation.models.dto.ConversationDTO
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
-import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
+import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
@@ -17,7 +17,7 @@ class ConversationAPIClient(
 
     fun suggestTopics(
         body: SuggestConversationTopicRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<String?> {
         return post(
             url = "$baseUrl/suggest-topics",
@@ -28,7 +28,7 @@ class ConversationAPIClient(
     }
 
     fun getConversations(
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<List<ConversationDTO>?> {
         return get(
             url = "$baseUrl/",
@@ -39,7 +39,7 @@ class ConversationAPIClient(
 
     fun getConversationById(
         conversationId: UUID,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<ConversationDTO?> {
         return get(
             url = "$baseUrl/$conversationId",
@@ -50,7 +50,7 @@ class ConversationAPIClient(
 
     fun createConversation(
         body: CreateConversationRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<ConversationDTO?> {
         return post(
             url = "$baseUrl/",
@@ -62,7 +62,7 @@ class ConversationAPIClient(
 
     fun deleteConversation(
         conversationId: UUID,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<Unit?> {
         return delete<Unit>(
             url = "$baseUrl/$conversationId",

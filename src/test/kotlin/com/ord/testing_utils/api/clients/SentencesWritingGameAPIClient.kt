@@ -6,7 +6,7 @@ import com.ord.features.game.variants.sentences_writing.dto.api_responses.Starte
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
-import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
+import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.reactive.server.WebTestClient
 
@@ -17,7 +17,7 @@ class SentencesWritingGameAPIClient(
 
     fun startGame(
         body: StartGameRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<StartedSentencesWritingGameResponse?> {
         return post(
             url = "$baseUrl/start",
@@ -29,7 +29,7 @@ class SentencesWritingGameAPIClient(
 
     fun finishGame(
         body: FinishSentencesWritingGameRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<FinishedSentencesWritingGameResponse?> {
         return post(
             url = "$baseUrl/finish",

@@ -8,10 +8,9 @@ import com.ord.core.word.model.WordDTO
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
-import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
+import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.test.web.reactive.server.returnResult
 import java.util.*
 
 class WordsAPIClient(
@@ -21,7 +20,7 @@ class WordsAPIClient(
 
     fun getManyWords(
         body: GetManyWordsRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<PaginatedDataResponse<WordListItem>?> {
         return post(
             url = "$baseUrl/get-many-words",
@@ -34,7 +33,7 @@ class WordsAPIClient(
 
     fun getWord(
         id: UUID,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<SingleWordResponse?> {
         return get(
             url = "$baseUrl/$id",
@@ -46,7 +45,7 @@ class WordsAPIClient(
 
     fun createWord(
         body: CreateWordRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<WordDTO?> {
         return post(
             url = "$baseUrl/",
@@ -60,7 +59,7 @@ class WordsAPIClient(
     fun updateWord(
         id: UUID,
         body: UpdateWordRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<WordDTO?> {
         return put(
             url = "$baseUrl/$id",
@@ -73,7 +72,7 @@ class WordsAPIClient(
 
     fun deleteWord(
         id: UUID,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<Unit?> {
         return delete<Unit>(
             url = "$baseUrl/$id",
@@ -85,7 +84,7 @@ class WordsAPIClient(
     fun changeWordBank(
         id: UUID,
         body: ChangeBankForSingleWordRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<Unit?> {
         return post(
             url = "$baseUrl/$id/change-bank",
@@ -97,7 +96,7 @@ class WordsAPIClient(
 
     fun changeBankForMultipleWords(
         body: ChangeBankForMultipleWordsRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<Unit?> {
         return post(
             url = "$baseUrl/change-bank-for-multiple-words",
@@ -110,7 +109,7 @@ class WordsAPIClient(
     fun togglePropertyForOneWord(
         id: UUID,
         property: WordToggleableProperty? = null,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<Unit?> {
         val queryParam = if (property != null) "?property=$property" else ""
         return post(
@@ -124,7 +123,7 @@ class WordsAPIClient(
     fun togglePropertyForManyWords(
         property: WordToggleableProperty? = null,
         body: WordBulkActionRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<Unit?> {
         val queryParam = if (property != null) "?property=$property" else ""
         return post(

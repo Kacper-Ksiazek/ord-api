@@ -4,7 +4,7 @@ import com.ord.core.word.api.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.responses.dto.AIGeneratedWordManual
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
-import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
+import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.reactive.server.WebTestClient
 
@@ -15,7 +15,7 @@ class WordAIAPIClient(
 
     fun generateManual(
         body: GenerateWordManualRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<AIGeneratedWordManual?> {
         return post(
             url = "$baseUrl/generate-manual",

@@ -1,7 +1,5 @@
 package com.ord.seeders.factories
 
-/*
-
 import com.ord.core.user.model.UserEntity
 import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.model.BankEntity
@@ -41,5 +39,3 @@ class BankFactory(
         )
     }
 }
-
- */

@@ -1,7 +1,5 @@
 package com.ord.seeders.factories
 
-/*
-
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -25,12 +23,9 @@ class LanguageProficiencyFactory(
         // Return a new language proficiency entity
         return LanguageProficiencyEntity(
             language = LanguageName::class.getRandomValue(),
-            proficiency = LanguageProficiencyLevel::class.getRandomValue(),
-            user = user,
+            level = LanguageProficiencyLevel::class.getRandomValue(),
+            userId = user.id!!,
             generativeContentLanguage = LanguageName::class.getRandomValue()
         )
     }
 }
-
-
- */

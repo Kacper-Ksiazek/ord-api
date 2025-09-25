@@ -1,7 +1,5 @@
 package com.ord.seeders.entities
 
-/*
-
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.UserMapper
@@ -19,7 +17,7 @@ class BankSeeder(
     private val userMapper: UserMapper
 ) : SeederInterface<BankEntity> {
     override fun seedOneEntity(data: BankEntity?): BankEntity {
-        return bankRepository.save(data ?: bankMockFactory.mockEntity())
+        return bankRepository.save(data ?: bankMockFactory.mockEntity()).block()!!
     }
 
     fun seedOneEntityForUser(
@@ -31,7 +29,7 @@ class BankSeeder(
                 user = user,
                 bankGroup = bankGroup
             )
-        )
+        ).block()!!
     }
 
     fun seedOneEntityForUser(
@@ -45,8 +43,6 @@ class BankSeeder(
     }
 
     override fun deleteAll() {
-        bankRepository.deleteAll()
+        bankRepository.deleteAll().block()
     }
 }
-
- */

@@ -1,26 +1,17 @@
 package com.ord.controllers
 
-/*
-
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
-import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserEntity
+import com.ord.core.security.UserRepository
 import com.ord.core.user.model.UserMapper
-import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
+import com.ord.testing_utils.api.clients.WordsAPIClient
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
-import com.ord.core.word.api.responses.dto.SingleWordResponse
-import com.ord.core.word.api.responses.dto.WordListItem
 import com.ord.core.word.model.WordDTO
 import com.ord.core.word.model.WordEntity
 import com.ord.core.word.model.WordMapper
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
-import com.ord.core.word.model.json.ExampleSentence
 import com.ord.core.word.repository.WordRepository
 import com.ord.core.word.service.WordService
-import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.model.BankEntity
 import com.ord.features.bank.service.BankService
 import com.ord.seeders.entities.BankGroupSeeder
@@ -29,39 +20,20 @@ import com.ord.seeders.entities.UserSeeder
 import com.ord.seeders.entities.WordSeeder
 import com.ord.seeders.factories.BankFactory
 import com.ord.seeders.factories.WordFactory
-import com.ord.shared.api.dto.responses.PaginatedDataResponse
-import com.ord.shared.domain.enums.SortDirection
-import com.ord.testing_utils.api_requests_factories.WordRequestFactory
-import com.ord.testing_utils.api_requests_factories.data.WordDataChanges
-import com.ord.testing_utils.api_requests_factories.data.compareWithDefaultCreateWordData
-import com.ord.testing_utils.api_requests_factories.data.compareWithDefaultUpdateWordData
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.ord.testing_utils.extensions.compareWith
-import com.ord.testing_utils.extensions.detectChanges
-import com.ord.shared.utils.data_classes.Optional
-import com.fasterxml.jackson.databind.ObjectMapper
-import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
-import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
-import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
 
 @SpringBootTest
@@ -80,25 +52,18 @@ class TestWordsController @Autowired constructor(
     private val bankGroupSeeder: BankGroupSeeder,
     private var wordMockFactory: WordFactory,
 
-    objectMapper: ObjectMapper,
-    mockMvc: MockMvc,
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     userMapper: UserMapper,
-    userRepository: UserRepository
+    userRepository: UserRepository,
+    webClient: WebTestClient
 
 ) : ControllerTestBase(
-    objectMapper = objectMapper,
-    mockMvc = mockMvc,
+    webClient = webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
-    userMapper = userMapper,
-    userRepository = userRepository
 ) {
-    private val wordRequestFactory = WordRequestFactory(
-        BASE_URL = "/api/v1/words/",
-        objectMapper = objectMapper
-    )
+    private val wordsAPIClient = WordsAPIClient(webClient)
 
     lateinit var authenticatedUser: MockedAuthenticatedUser
 
@@ -107,6 +72,7 @@ class TestWordsController @Autowired constructor(
         authenticatedUser = mockAuthenticatedUser()
     }
 
+    /* MIGRATION STEP 1
     @Nested
     @DisplayName("[GET] /api/v1/words/ - get many words")
     inner class GetManyWords {
@@ -627,7 +593,9 @@ class TestWordsController @Autowired constructor(
 
         }
     }
+     */
 
+    /* MIGRATION STEP 2
     @Nested
     @DisplayName("[GET] /api/v1/words/{id} - get a single word")
     inner class GetSingleWords {
@@ -774,7 +742,9 @@ class TestWordsController @Autowired constructor(
             }
         }
     }
+     */
 
+    /* MIGRATION STEP 3
     @Nested
     @DisplayName("[POST] /api/v1/words/ - create a word")
     inner class CreateWordTests {
@@ -1077,7 +1047,9 @@ class TestWordsController @Autowired constructor(
 
 
     }
+     */
 
+    /* MIGRATION STEP 4
     @Nested
     @DisplayName("[PATCH] /api/v1/words/{id} - update a word")
     inner class UpdateWordTests {
@@ -1382,7 +1354,9 @@ class TestWordsController @Autowired constructor(
             }
         }
     }
+     */
 
+    /* MIGRATION STEP 5
     @Nested
     @DisplayName("[DELETE] /api/v1/words/{id} - delete a word")
     inner class DeleteWordTests {
@@ -1462,7 +1436,9 @@ class TestWordsController @Autowired constructor(
             }
         }
     }
+     */
 
+    /* MIGRATION STEP 6
     @Nested
     @DisplayName("[POST] /api/v1/words/{id}/change-bank - change word's bank")
     inner class ChangeSingleWordBankTests {
@@ -1798,7 +1774,9 @@ class TestWordsController @Autowired constructor(
             }
         }
     }
+     */
 
+    /* MIGRATION STEP 7
     @Nested
     @DisplayName("[POST] /api/v1/words/change-bank-for-multiple-words - change bank for multiple words")
     inner class ChangeBankForManyWordsAtTheSameTime {
@@ -2235,7 +2213,9 @@ class TestWordsController @Autowired constructor(
             }
         }
     }
+     */
 
+    /* MIGRATION STEP 8
     @Nested
     @DisplayName("[POST] /api/v1/words/{id}/toggle-property - toggle word's property")
     inner class TogglePropertyForOneWordTests {
@@ -2358,9 +2338,10 @@ class TestWordsController @Autowired constructor(
             }
         }
     }
+     */
 
+    /* MIGRATION STEP 9
     @Nested
-
     @DisplayName("[POST] /api/v1/words/toggle-property-for-multiple-words - toggle property for multiple words")
     inner class TogglePropertyForManyWordsTests {
         @Nested
@@ -2584,6 +2565,7 @@ class TestWordsController @Autowired constructor(
         }
 
     }
+     */
 
     private fun assertThatWordActuallyExists(
         response: MockHttpServletResponse,
@@ -2636,6 +2618,3 @@ class TestWordsController @Autowired constructor(
         this.assertBooleanProperty(property, value)
     }
 }
-
-
- */

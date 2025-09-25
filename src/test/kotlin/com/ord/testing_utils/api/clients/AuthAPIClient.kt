@@ -5,7 +5,7 @@ import com.ord.core.auth.api.requests.dto.RegisterRequest
 import com.ord.core.user.model.UserDTO
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
-import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
+import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.reactive.server.WebTestClient
 
@@ -16,7 +16,7 @@ class AuthAPIClient(
 
     fun register(
         body: RegisterRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<UserDTO?> {
         return post(
             url = "$baseUrl/register",
@@ -29,7 +29,7 @@ class AuthAPIClient(
 
     fun login(
         body: LoginRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<UserDTO?> {
         return post(
             url = "$baseUrl/login",
@@ -41,7 +41,7 @@ class AuthAPIClient(
 
 
     fun me(
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<UserDTO?> {
         return get(
             url = "$baseUrl/me",
@@ -52,7 +52,7 @@ class AuthAPIClient(
 
 
     fun logout(
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<Unit?> {
         return delete<Unit>(
             url = "$baseUrl/logout",

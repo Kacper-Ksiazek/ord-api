@@ -2,7 +2,7 @@ package com.ord.testing_utils.api
 
 import com.ord.shared.utils.Console
 import com.ord.testing_utils.api.dto.APIClientResponse
-import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
+import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -13,7 +13,7 @@ abstract class APITestClient(
 ) {
     fun <TResponseBody> get(
         url: String,
-        user: MockedAuthenticatedUserUpdated?,
+        user: MockedAuthenticatedUser?,
         queryParams: Map<String, String>? = null,
         responseBodyType: ParameterizedTypeReference<TResponseBody>? = null,
     ): APIClientResponse<TResponseBody?> {
@@ -38,7 +38,7 @@ abstract class APITestClient(
     fun <TResponseBody> post(
         url: String,
         body: Any?,
-        user: MockedAuthenticatedUserUpdated?,
+        user: MockedAuthenticatedUser?,
         responseBodyType: ParameterizedTypeReference<TResponseBody>? = null,
     ): APIClientResponse<TResponseBody?> {
         return webClient
@@ -60,7 +60,7 @@ abstract class APITestClient(
     fun <TResponseBody> put(
         url: String,
         body: Any?,
-        user: MockedAuthenticatedUserUpdated?,
+        user: MockedAuthenticatedUser?,
         responseBodyType: ParameterizedTypeReference<TResponseBody>? = null,
     ): APIClientResponse<TResponseBody?> {
         return webClient
@@ -81,7 +81,7 @@ abstract class APITestClient(
 
     fun <TResponseBody> delete(
         url: String,
-        user: MockedAuthenticatedUserUpdated?,
+        user: MockedAuthenticatedUser?,
         responseBodyType: ParameterizedTypeReference<TResponseBody>? = null,
     ): APIClientResponse<TResponseBody?> {
         return webClient
@@ -96,7 +96,7 @@ abstract class APITestClient(
 
 
     private fun WebTestClient.RequestHeadersSpec<*>.withAuth(
-        user: MockedAuthenticatedUserUpdated?,
+        user: MockedAuthenticatedUser?,
     ): WebTestClient.RequestHeadersSpec<*> {
         return if (user != null) {
             this.cookie(user.authCookie.name, user.authCookie.value)

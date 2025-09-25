@@ -1,7 +1,5 @@
 package com.ord.seeders.entities
 
-/*
-
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
@@ -21,15 +19,15 @@ class WordSeeder(
     private val wordRepository: WordRepository
 ) : SeederInterface<WordEntity> {
     override fun seedOneEntity(data: WordEntity?): WordEntity {
-        return wordRepository.save(data ?: wordMockFactory.mockEntity())
+        return wordRepository.save(data ?: wordMockFactory.mockEntity()).block()!!
     }
 
     override fun deleteAll() {
-        wordRepository.deleteAll()
+        wordRepository.deleteAll().block()
     }
 
     fun saveMany(entities: List<WordEntity>): List<WordEntity> {
-        return wordRepository.saveAll(entities)
+        return wordRepository.saveAll(entities).collectList().block()!!
     }
 
     fun seedOneEntityForUser(
@@ -42,7 +40,7 @@ class WordSeeder(
 
         if (bank.isPresent) mockEntity.bank = bank.value
 
-        return wordRepository.save(mockEntity)
+        return wordRepository.save(mockEntity).block()!!
     }
 
     fun seedOneEntityForUser(
@@ -73,7 +71,7 @@ class WordSeeder(
             )
         }
 
-        return wordRepository.saveAll(wordEntities)
+        return wordRepository.saveAll(wordEntities).collectList().block()!!
     }
 
     fun seedMultipleEntitiesForUser(
@@ -90,6 +88,3 @@ class WordSeeder(
         )
     }
 }
-
-
- */

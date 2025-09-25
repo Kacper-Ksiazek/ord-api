@@ -1,7 +1,5 @@
 package com.ord.seeders.factories
 
-/*
-
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
 import com.ord.core.word.model.WordEntity
@@ -61,12 +59,10 @@ class WordFactory(
             translatedTo = translatedTo,
             exampleSentences = exampleSentences,
             user = user,
-            userId = user.id,
+            userId = user.id!!,
             bank = bank,
             bankId = bank?.id,
             bankGroupId = bank?.bankGroupId
         )
     }
 }
-
- */

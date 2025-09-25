@@ -1,7 +1,5 @@
 package com.ord.seeders.entities
 
-/*
-
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
@@ -20,11 +18,11 @@ class LanguageProficiencySeeder(
     override fun seedOneEntity(data: LanguageProficiencyEntity?): LanguageProficiencyEntity {
         return languageProficiencyRepository.save(
             data ?: languageProficiencyFactory.mockEntity()
-        )
+        ).block()!!
     }
 
     override fun deleteAll() {
-        languageProficiencyRepository.deleteAll()
+        languageProficiencyRepository.deleteAll().block()
     }
 
     fun seedOneEntity(
@@ -39,9 +37,6 @@ class LanguageProficiencySeeder(
         languageProficiency?.also { data.proficiency = it }
         generativeContentLanguage?.also { data.generativeContentLanguage = it }
 
-        return languageProficiencyRepository.save(data)
+        return languageProficiencyRepository.save(data).block()!!
     }
 }
-
-
- */

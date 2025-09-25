@@ -2,11 +2,12 @@ package com.ord.controllers.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ord.config.properties.JwtProperties
-import com.ord.controllers.bases.ControllerTestBaseUpdated
+import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.api.requests.dto.LoginRequest
 import com.ord.core.auth.api.requests.dto.RegisterRequest
+import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.security.UserRepositoryReactive
+import com.ord.core.security.UserRepository
 import com.ord.core.security.UserSessionRepositoryReactive
 import com.ord.core.user.model.UserDTO
 import com.ord.seeders.entities.UserSeeder
@@ -30,15 +31,15 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @AutoConfigureWebTestClient
 class TestAuthController @Autowired constructor(
     private val userSeeder: UserSeeder,
-    private val userRepository: UserRepositoryReactive,
+    private val userRepository: UserRepository,
     private val userSessionRepository: UserSessionRepositoryReactive,
     webClient: WebTestClient,
-
-    objectMapper: ObjectMapper,
     jwtProperties: JwtProperties,
-) : ControllerTestBaseUpdated(
+    languageProficiencyRepository: LanguageProficiencyRepository
+) : ControllerTestBase(
     webClient,
     jwtProperties = jwtProperties,
+    languageProficiencyRepository = languageProficiencyRepository
 ) {
     private val authAPIClient = AuthAPIClient(webClient)
 

@@ -8,12 +8,12 @@ import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.user.model.UserDTO
-import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
+import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseCookie
 import org.springframework.test.web.reactive.server.WebTestClient
 
-abstract class ControllerTestBaseUpdated(
+abstract class ControllerTestBase(
     val webClient: WebTestClient,
     val jwtProperties: JwtProperties,
     val languageProficiencyRepository: LanguageProficiencyRepository,
@@ -27,7 +27,7 @@ abstract class ControllerTestBaseUpdated(
 //            GameMockerBase.Companion.DefaultParams.language to LanguageProficiencyLevel.C1
             LanguageName.ENGLISH to LanguageProficiencyLevel.C1
         )
-    ): MockedAuthenticatedUserUpdated {
+    ): MockedAuthenticatedUser {
         val response = webClient
             .post()
             .uri("/api/v1/auth/register")
@@ -64,7 +64,7 @@ abstract class ControllerTestBaseUpdated(
             .collectList()
             .block()
 
-        return MockedAuthenticatedUserUpdated(
+        return MockedAuthenticatedUser(
             token = authCookie.value,
             userInfo = response.responseBody!!,
             authCookie = authCookie,

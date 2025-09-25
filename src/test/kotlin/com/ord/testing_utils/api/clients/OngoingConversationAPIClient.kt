@@ -5,7 +5,7 @@ import com.ord.features.conversation.api.requests.CreateAIConversationMessageReq
 import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
-import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
+import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
@@ -17,7 +17,7 @@ class OngoingConversationAPIClient(
 
     fun initializeConversationByAI(
         conversationId: UUID,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<String?> {
         return post(
             url = "$baseUrl/initialize-by-ai?conversationId=$conversationId",
@@ -29,7 +29,7 @@ class OngoingConversationAPIClient(
 
     fun requestAIMessage(
         body: CreateAIConversationMessageRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<String?> {
         return post(
             url = "$baseUrl/request-ai-message",
@@ -41,7 +41,7 @@ class OngoingConversationAPIClient(
 
     fun handleUserMessage(
         body: ReviewUserConversationMessageRequest,
-        user: MockedAuthenticatedUserUpdated? = null
+        user: MockedAuthenticatedUser? = null
     ): APIClientResponse<ReviewedUserConversationMessage?> {
         return post(
             url = "$baseUrl/handle-user-message",
