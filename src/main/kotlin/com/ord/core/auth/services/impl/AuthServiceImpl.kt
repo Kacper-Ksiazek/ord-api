@@ -6,14 +6,13 @@ import com.ord.core.auth.api.requests.dto.RegisterRequest
 import com.ord.core.auth.models.UserSessionEntity
 import com.ord.core.auth.services.AuthService
 import com.ord.core.security.JwtService
-import com.ord.core.security.UserRepositoryReactive
+import com.ord.core.security.UserRepository
 import com.ord.core.security.UserSessionRepositoryReactive
 import com.ord.core.security.addAuthTokenCookie
 import com.ord.core.security.getCookieValue
 import com.ord.core.security.invalidateAuthTokenCookie
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
-import com.ord.core.user.model.UserMapper
 import com.ord.core.user.model.toDTO
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.REST.NotFoundException
@@ -32,14 +31,14 @@ class AuthServiceImpl(
     private val jwtService: JwtService,
     private val encoder: PasswordEncoder,
 
-    private val userRepositoryReactive: UserRepositoryReactive,
+    private val userRepository: UserRepository,
     private val sessionRepositoryReactive: UserSessionRepositoryReactive
 ) : AuthService {
     override fun register(
         body: RegisterRequest,
         exchange: ServerWebExchange
     ): Mono<UserDTO> {
-        return userRepositoryReactive
+        return userRepository
             .save(
                 UserEntity(
                     name = body.name,
@@ -64,7 +63,7 @@ class AuthServiceImpl(
         body: LoginRequest,
         exchange: ServerWebExchange
     ): Mono<UserDTO> {
-        return userRepositoryReactive
+        return userRepository
             .findByEmail(body.email)
             .filter { encoder.matches(body.password, it?.password) }
             .map { it!!.toDTO() }

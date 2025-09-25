@@ -1,6 +1,6 @@
 package com.ord.core.auth.annotations
 
-import com.ord.core.security.UserRepositoryReactive
+import com.ord.core.security.UserRepository
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.toDTO
 import org.springframework.core.MethodParameter
@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 
 @Component
 class AuthenticatedUserArgumentResolver(
-    private val userRepositoryReactive: UserRepositoryReactive
+    private val userRepository: UserRepository
 ) : HandlerMethodArgumentResolver {
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
@@ -30,7 +30,7 @@ class AuthenticatedUserArgumentResolver(
             .flatMap { auth ->
                 val email = auth.name // or (auth.principal as? CustomUserDetails)?.username
 
-                userRepositoryReactive
+                userRepository
                     .findByEmail(email)
                     .map { it!!.toDTO() }
                     .switchIfEmpty(Mono.error(IllegalArgumentException("User not found")))

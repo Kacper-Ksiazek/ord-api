@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono
 class JwtReactiveAuthenticationManager(
     private val jwtService: JwtService,
     private val sessionsRepository: UserSessionRepositoryReactive,
-    private val userRepositoryReactive: UserRepositoryReactive,
+    private val userRepository: UserRepository,
     private val jwtProperties: JwtProperties
 ) : ReactiveAuthenticationManager {
     override fun authenticate(authentication: Authentication?): Mono<Authentication> {
@@ -41,7 +41,7 @@ class JwtReactiveAuthenticationManager(
             .findByToken(token)
             .switchIfEmpty(Mono.error(BadCredentialsException("Invalid token")))
             .flatMap { session ->
-                userRepositoryReactive
+                userRepository
                     .findByEmail(claims.extractSubject())
                     .switchIfEmpty(Mono.error(BadCredentialsException("Invalid token")))
                     .map { user ->
@@ -66,7 +66,7 @@ class JwtReactiveAuthenticationManager(
 
                     sessionsRepository
                         .save(updatedSession)
-                        .then(userRepositoryReactive.findByEmail(email = subject))
+                        .then(userRepository.findByEmail(email = subject))
                         .map { user ->
                             authenticatedToken(user!!, newToken)
                         }
