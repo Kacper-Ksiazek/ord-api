@@ -22,7 +22,9 @@ import com.ord.features.user_activity_log.service.UserActivityLogService
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.domain.dto.CountingSummary
 import com.ord.shared.domain.enums.SortDirection
+import com.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -30,11 +32,13 @@ import java.util.*
 
 @Service
 class WordServiceImpl(
-    override val repository: WordRepository,
-
+    private val repository: WordRepository,
     val wordMapper: WordMapper,
     val userActivityLogService: UserActivityLogService
 ) : WordService {
+
+    override val userRepository: UserResourceRepository<WordEntity> = repository
+    override val crudRepository: ReactiveCrudRepository<WordEntity, UUID> = repository
     override fun changeBankForSingleWord(
         wordId: UUID,
         bankId: UUID?,
@@ -158,6 +162,7 @@ class WordServiceImpl(
     ): Mono<WordEntity> {
         return repository.findOneForUser(id = wordId, userId = userId)
             .switchIfEmpty(Mono.error(NotFoundException("Word with id $wordId not found")))
+            .map { it!! }
             .map { wordEntity -> wordEntity.toggleProperty(property) }
             .flatMap { updatedEntity -> repository.save(updatedEntity) }
     }

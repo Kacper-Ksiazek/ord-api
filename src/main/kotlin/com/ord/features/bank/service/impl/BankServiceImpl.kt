@@ -1,20 +1,24 @@
 package com.ord.features.bank.service.impl
 
-import com.ord.core.user.model.UserEntity
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.model.BankEntity
+import com.ord.features.bank.repository.BankRepository
 import com.ord.features.bank.service.BankService
 import com.ord.shared.repositories.UserResourceRepository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.util.*
 
 @Service
 class BankServiceImpl(
-    override val repository: UserResourceRepository<BankEntity>
+    private val bankRepository: BankRepository
 ) : BankService {
+    override val userRepository: UserResourceRepository<BankEntity> = bankRepository
+    override val crudRepository: ReactiveCrudRepository<BankEntity, UUID> = bankRepository
+
     override fun findByIdOrCreate(
         bankId: UUID?,
         bankToCreate: CreateBankRequest?,
@@ -26,19 +30,18 @@ class BankServiceImpl(
 
         return when {
             bankId != null -> {
-                repository.findOneForUser(bankId, userId)
-                    .cast(BankEntity::class.java)
+                bankRepository.findOneForUser(userId, bankId)
                     .switchIfEmpty(Mono.error(NotFoundException("Bank with ID $bankId not found")))
             }
 
             bankToCreate != null -> {
-                repository.save(
+                bankRepository.save(
                     BankEntity(
                         name = bankToCreate.name,
                         description = bankToCreate.description,
                         userId = userId
                     )
-                ).cast(BankEntity::class.java)
+                )
             }
 
             else -> Mono.error(BadRequestException("Either bankId or bankToCreate must be provided"))

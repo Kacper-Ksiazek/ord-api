@@ -1,6 +1,7 @@
 package com.ord.features.conversation.services
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.features.conversation.models.dto.ConversationDTO
 import com.ord.features.conversation.models.dto.ConversationMessageDTO
 import com.ord.features.conversation.models.entities.ConversationEntity
 import com.ord.features.conversation.models.enums.ConversationGoal
@@ -18,5 +19,8 @@ interface ConversationService : UserResourceService<ConversationEntity> {
     ): Flux<String>
 
 
-    fun findByIdOrFailWithMessages(id: UUID, userId: UUID): Mono<ConversationEntity>
+    fun findByIdOrFailWithMessages(
+        id: UUID,
+        userId: UUID
+    ): Mono<ConversationDTO>
 }

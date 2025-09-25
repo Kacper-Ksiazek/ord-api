@@ -9,6 +9,8 @@ import com.ord.features.conversation.models.enums.ConversationGoal
 import com.ord.features.conversation.models.mappers.ConversationMessageMapper
 import com.ord.features.conversation.repositories.ConversationRepository
 import com.ord.features.conversation.services.ConversationService
+import com.ord.shared.repositories.UserResourceRepository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -16,15 +18,18 @@ import java.util.UUID
 
 @Service
 class ConversationServiceImpl(
-    override val repository: ConversationRepository
+    private val conversationRepository: ConversationRepository
 ) : ConversationService {
+    override val userRepository: UserResourceRepository<ConversationEntity> = conversationRepository
+    override val crudRepository: ReactiveCrudRepository<ConversationEntity, UUID> = conversationRepository
+
     override fun findRecentTopics(
         userId: UUID,
         goal: ConversationGoal,
         language: LanguageName,
         limit: Int
     ): Flux<String> {
-        return repository.findRecentTopics(
+        return conversationRepository.findRecentTopics(
             userId = userId,
             goal = goal,
             language = language,
@@ -36,8 +41,8 @@ class ConversationServiceImpl(
     override fun findByIdOrFailWithMessages(
         id: UUID,
         userId: UUID
-    ): Mono<ConversationEntity> {
-        return repository
+    ): Mono<ConversationDTO> {
+        return conversationRepository
             .findByIdOrFailWithMessages(id, userId)
             .switchIfEmpty(Mono.error(NotFoundException("Conversation with id $id not found")))
     }

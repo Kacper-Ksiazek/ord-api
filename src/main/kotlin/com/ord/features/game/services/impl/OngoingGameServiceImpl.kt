@@ -2,6 +2,7 @@ package com.ord.features.game.services.impl
 
 import com.ord.features.game.model.finished_game.extensions.getUserActivityType
 import com.ord.features.game.model.ongoing_game.OngoingGameDTO
+import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.extensions.cancel
 import com.ord.features.game.model.ongoing_game.extensions.finish
@@ -10,6 +11,8 @@ import com.ord.features.game.services.FinishedGameService
 import com.ord.features.game.services.OngoingGameService
 import com.ord.features.user_activity_log.model.enums.UserActivityType
 import com.ord.features.user_activity_log.service.UserActivityLogService
+import com.ord.shared.repositories.UserResourceRepository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.reactive.TransactionalOperator
 import reactor.core.publisher.Mono
@@ -17,12 +20,15 @@ import java.util.*
 
 @Service
 class OngoingGameServiceImpl(
-    override val repository: OngoingGameRepository,
+    val repository: OngoingGameRepository,
     val userActivityLogService: UserActivityLogService,
     val ongoingGameMapper: OngoingGameMapper,
     val finishedGameService: FinishedGameService,
     val transactionalOperator: TransactionalOperator
 ) : OngoingGameService {
+    override val userRepository: UserResourceRepository<OngoingGameEntity> = repository
+    override val crudRepository: ReactiveCrudRepository<OngoingGameEntity, UUID> = repository
+
     override fun completeGame(
         ongoingGame: OngoingGameDTO<*>,
         score: Int,

@@ -1,5 +1,6 @@
 package com.ord.features.conversation.services
 
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.models.entities.ConversationMessageEntity
 import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
 import com.ord.features.conversation.models.enums.ConversationMessageSender
@@ -19,6 +20,6 @@ interface ConversationMessageService {
         conversationId: UUID,
         messageOrder: Int,
         content: String,
-        feedback: ConversationUserMessageFeedbackEntity
+        aiFeedback: ReviewedUserConversationMessage
     ): Mono<ConversationMessageEntity>
 }

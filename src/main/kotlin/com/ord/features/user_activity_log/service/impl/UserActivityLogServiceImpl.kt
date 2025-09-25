@@ -1,8 +1,7 @@
 package com.ord.features.user_activity_log.service.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.security.UserRepositoryReactive
-import com.ord.core.user.model.UserEntity
+import com.ord.core.security.UserRepository
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.user_activity_log.model.UserActivityLogEntity
@@ -18,7 +17,7 @@ import java.util.*
 @Service
 class UserActivityLogServiceImpl(
     val repository: UserActivityLogRepository,
-    val userRepository: UserRepositoryReactive
+    val userRepository: UserRepository
 ) : UserActivityLogService {
     private fun checkIfLogCanBeAdded(
         userId: UUID,
@@ -61,7 +60,6 @@ class UserActivityLogServiceImpl(
                                     type = type,
                                     language = language,
                                     gameDifficulty = difficulty,
-                                    user = user
                                 )
                             ).map { true }
                         } else {
