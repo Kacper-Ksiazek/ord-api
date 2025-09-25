@@ -3,6 +3,7 @@ package com.ord.testing_utils.api
 import com.ord.shared.utils.Console
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.returnResult
@@ -10,12 +11,12 @@ import org.springframework.test.web.reactive.server.returnResult
 abstract class APITestClient(
     val webClient: WebTestClient
 ) {
-    fun <TBody> get(
+    fun <TResponseBody> get(
         url: String,
         user: MockedAuthenticatedUserUpdated?,
         queryParams: Map<String, String>? = null,
-        responseBodyClass: Class<TBody>? = null,
-    ): APIClientResponse<TBody?> {
+        responseBodyType: ParameterizedTypeReference<TResponseBody>? = null,
+    ): APIClientResponse<TResponseBody?> {
         return webClient
             .get()
             .uri { uriBuilder ->
@@ -30,16 +31,16 @@ abstract class APITestClient(
                 withAuth(user)
             }
             .exchange()
-            .toAPIClientResponse(responseBodyClass)
+            .toAPIClientResponse(responseBodyType)
     }
 
 
-    fun <TBody> post(
+    fun <TResponseBody> post(
         url: String,
         body: Any?,
         user: MockedAuthenticatedUserUpdated?,
-        responseBodyClass: Class<TBody>? = null,
-    ): APIClientResponse<TBody?> {
+        responseBodyType: ParameterizedTypeReference<TResponseBody>? = null,
+    ): APIClientResponse<TResponseBody?> {
         return webClient
             .post()
             .uri(url)
@@ -52,16 +53,16 @@ abstract class APITestClient(
                 }
             }
             .exchange()
-            .toAPIClientResponse(responseBodyClass)
+            .toAPIClientResponse(responseBodyType)
     }
 
 
-    fun <TBody> put(
+    fun <TResponseBody> put(
         url: String,
-        body: TBody?,
+        body: Any?,
         user: MockedAuthenticatedUserUpdated?,
-        responseBodyClass: Class<TBody>? = null,
-    ): APIClientResponse<TBody?> {
+        responseBodyType: ParameterizedTypeReference<TResponseBody>? = null,
+    ): APIClientResponse<TResponseBody?> {
         return webClient
             .put()
             .uri(url)
@@ -74,15 +75,15 @@ abstract class APITestClient(
                 }
             }
             .exchange()
-            .toAPIClientResponse(responseBodyClass)
+            .toAPIClientResponse(responseBodyType)
     }
 
 
-    fun <TBody> delete(
+    fun <TResponseBody> delete(
         url: String,
         user: MockedAuthenticatedUserUpdated?,
-        responseBodyClass: Class<TBody>? = null,
-    ): APIClientResponse<TBody?> {
+        responseBodyType: ParameterizedTypeReference<TResponseBody>? = null,
+    ): APIClientResponse<TResponseBody?> {
         return webClient
             .delete()
             .uri(url)
@@ -90,7 +91,7 @@ abstract class APITestClient(
                 withAuth(user)
             }
             .exchange()
-            .toAPIClientResponse(responseBodyClass)
+            .toAPIClientResponse(responseBodyType)
     }
 
 
@@ -105,16 +106,16 @@ abstract class APITestClient(
     }
 
 
-    private fun <TBody> WebTestClient.ResponseSpec.toAPIClientResponse(
-        responseBodyClass: Class<TBody>? = null
-    ): APIClientResponse<TBody?> {
+    private fun <TResponseBody> WebTestClient.ResponseSpec.toAPIClientResponse(
+        responseBodyType: ParameterizedTypeReference<TResponseBody>? = null
+    ): APIClientResponse<TResponseBody?> {
         val result = this.returnResult<Unit>()
 
-        val responseBody: TBody? = try {
-            if (responseBodyClass == null) {
+        val responseBody: TResponseBody? = try {
+            if (responseBodyType == null) {
                 null
             } else {
-                this.expectBody(responseBodyClass)
+                this.expectBody(responseBodyType)
                     .returnResult()
                     .responseBody
             }

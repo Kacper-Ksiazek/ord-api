@@ -6,6 +6,7 @@ import com.ord.core.user.model.UserDTO
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.reactive.server.WebTestClient
 
 class AuthAPIClient(
@@ -21,7 +22,7 @@ class AuthAPIClient(
             url = "$baseUrl/register",
             body = body,
             user = user,
-            responseBodyClass = UserDTO::class.java
+            responseBodyType = object : ParameterizedTypeReference<UserDTO>() {}
         )
     }
 
@@ -34,7 +35,7 @@ class AuthAPIClient(
             url = "$baseUrl/login",
             body = body,
             user = user,
-            responseBodyClass = UserDTO::class.java
+            responseBodyType = object : ParameterizedTypeReference<UserDTO>() {}
         )
     }
 
@@ -45,7 +46,7 @@ class AuthAPIClient(
         return get(
             url = "$baseUrl/me",
             user = user,
-            responseBodyClass = UserDTO::class.java
+            responseBodyType = object : ParameterizedTypeReference<UserDTO>() {}
         )
     }
 
