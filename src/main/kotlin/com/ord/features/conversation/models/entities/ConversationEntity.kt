@@ -32,8 +32,8 @@ data class ConversationEntity(
     override var userId: UUID,
 
     var createdAt: Instant = Instant.now(),
-    var updatedAt: Instant = Instant.now(),
-
-    @Transient override var user: UserEntity? = null,
-    @Transient var messages: MutableList<ConversationMessageEntity> = mutableListOf()
-) : IdentifiableUserResource
+    var updatedAt: Instant = Instant.now()
+) : IdentifiableUserResource {
+    @Transient
+    var messages: MutableList<ConversationMessageEntity> = mutableListOf()
+}

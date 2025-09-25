@@ -9,7 +9,7 @@ import java.util.*
 @Table("conversation_user_message_feedback")
 data class ConversationUserMessageFeedbackEntity(
     @Id
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID? = null,
 
     val grammar: Int,
     val vocabulary: Int,
@@ -17,6 +17,8 @@ data class ConversationUserMessageFeedbackEntity(
 
     val comment: String? = null,
     val suggestedAnswer: String? = null,
+
+    val messageId: UUID,
 
     val createdAt: Instant = Instant.now(),
 )

@@ -11,7 +11,7 @@ import java.util.*
 @Table("conversation_messages")
 data class ConversationMessageEntity(
     @Id
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID? = null,
 
     val content: String,
     val messageOrder: Int,
