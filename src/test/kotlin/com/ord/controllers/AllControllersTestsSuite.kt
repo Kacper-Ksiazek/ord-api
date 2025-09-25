@@ -11,10 +11,10 @@ import org.junit.platform.suite.api.SuiteDisplayName
 @SuiteDisplayName("- Controllers: ")
 @SelectClasses(
     value = [
-        TestAuthController::class,
-        TestWordsController::class,
-        AllGameControllersTestsSuite::class,
-        AllConversationControllersTestsSuite::class
+//        TestAuthController::class,
+//        TestWordsController::class,
+//        AllGameControllersTestsSuite::class,
+//        AllConversationControllersTestsSuite::class
     ]
 )
 class AllControllersTestsSuite

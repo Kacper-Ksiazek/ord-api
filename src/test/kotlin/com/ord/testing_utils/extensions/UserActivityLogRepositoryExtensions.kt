@@ -8,6 +8,8 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import java.util.*
 
+/*
+
 fun UserActivityLogRepository.assertUserActivityLogForCompletingGame(
     expectedType: UserActivityType,
     language: LanguageName,
@@ -25,3 +27,6 @@ fun UserActivityLogRepository.assertUserActivityLogForCompletingGame(
         it.gameDifficulty shouldBe difficulty
     }
 }
+
+
+ */

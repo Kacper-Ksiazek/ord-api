@@ -1,5 +1,7 @@
 package com.ord.seeders.factories
 
+/*
+
 import com.ord.core.user.model.UserEntity
 import com.ord.features.bank_group.model.BankGroupEntity
 import com.ord.seeders.entities.UserSeeder
@@ -22,3 +24,5 @@ class BankGroupFactory(
         )
     }
 }
+
+ */

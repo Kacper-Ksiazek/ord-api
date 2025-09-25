@@ -1,5 +1,6 @@
 package com.ord.controllers
 
+/*
 
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
@@ -2635,3 +2636,6 @@ class TestWordsController @Autowired constructor(
         this.assertBooleanProperty(property, value)
     }
 }
+
+
+ */

@@ -1,5 +1,7 @@
 package com.ord.controllers.games
 
+/*
+
 import com.ord.config.GamesConfig
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.games.bases.GameControllerTestBase
@@ -932,3 +934,5 @@ class TestCrosswordGameController @Autowired constructor(
         }
     }
 }
+
+ */

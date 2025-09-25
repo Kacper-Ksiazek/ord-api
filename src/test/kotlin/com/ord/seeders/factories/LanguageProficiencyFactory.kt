@@ -1,5 +1,7 @@
 package com.ord.seeders.factories
 
+/*
+
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -29,3 +31,6 @@ class LanguageProficiencyFactory(
         )
     }
 }
+
+
+ */

@@ -7,4 +7,6 @@ import java.util.*
 
 interface UserRepositoryReactive : ReactiveCrudRepository<UserEntity, UUID> {
     fun findByEmail(email: String): Mono<UserEntity?>
+
+    fun deleteByEmail(email: String): Mono<Void>
 }

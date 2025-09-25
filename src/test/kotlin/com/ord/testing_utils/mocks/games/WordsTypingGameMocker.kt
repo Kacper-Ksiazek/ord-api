@@ -1,5 +1,7 @@
 package com.ord.testing_utils.mocks.games
 
+/*
+
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserMapper
 import com.ord.core.word.repository.WordRepository
@@ -62,3 +64,6 @@ class WordsTypingGameMocker(
         return ongoingGameDTO.properAnswers.values.toSet()
     }
 }
+
+
+ */

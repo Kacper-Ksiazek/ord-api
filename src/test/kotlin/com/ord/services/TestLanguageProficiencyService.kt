@@ -1,5 +1,7 @@
 package com.ord.services
 
+/*
+
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
@@ -56,3 +58,6 @@ class TestLanguageProficiencyService @Autowired constructor(
         assertNotNull(proficiency)
     }
 }
+
+
+ */

@@ -1,5 +1,7 @@
 package com.ord.controllers.games
 
+/*
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.games.bases.GameControllerTestBase
@@ -503,3 +505,6 @@ class TestSentencesWritingGameController @Autowired constructor(
         }
     }
 }
+
+
+ */

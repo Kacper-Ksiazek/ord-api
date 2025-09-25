@@ -1,5 +1,7 @@
 package com.ord.seeders.entities
 
+/*
+
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
@@ -40,3 +42,6 @@ class LanguageProficiencySeeder(
         return languageProficiencyRepository.save(data)
     }
 }
+
+
+ */

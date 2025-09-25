@@ -1,5 +1,7 @@
 package com.ord.testing_utils.mocks.games.sentences_writing
 
+/*
+
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ord.core.user.model.UserDTO
@@ -63,3 +65,6 @@ class SentencesWritingGameMocker(
         return ongoingGameDTO.properAnswers.map { it.word }.toSet()
     }
 }
+
+
+ */

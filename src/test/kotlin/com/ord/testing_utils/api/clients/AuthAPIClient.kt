@@ -5,11 +5,8 @@ import com.ord.core.auth.api.requests.dto.RegisterRequest
 import com.ord.core.user.model.UserDTO
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
-import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
-import org.springframework.test.web.reactive.server.EntityExchangeResult
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.test.web.reactive.server.returnResult
 
 class AuthAPIClient(
     webClient: WebTestClient

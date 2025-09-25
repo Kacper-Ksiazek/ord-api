@@ -6,8 +6,9 @@ import com.ord.controllers.bases.ControllerTestBaseUpdated
 import com.ord.core.auth.api.requests.dto.LoginRequest
 import com.ord.core.auth.api.requests.dto.RegisterRequest
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.security.UserRepositoryReactive
+import com.ord.core.security.UserSessionRepositoryReactive
 import com.ord.core.user.model.UserDTO
-import com.ord.core.user.service.UserService
 import com.ord.seeders.entities.UserSeeder
 import com.ord.testing_utils.api.clients.AuthAPIClient
 import com.ord.testing_utils.api.dto.APIClientResponse
@@ -28,10 +29,9 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 class TestAuthController @Autowired constructor(
-    private val userSessionService: UserSessionService,
-    private val userService: UserService,
     private val userSeeder: UserSeeder,
-    private val userRepository: UserRepository,
+    private val userRepository: UserRepositoryReactive,
+    private val userSessionRepository: UserSessionRepositoryReactive,
     webClient: WebTestClient,
 
     objectMapper: ObjectMapper,
@@ -64,7 +64,7 @@ class TestAuthController @Autowired constructor(
 
     @AfterEach
     fun cleanup() {
-        userRepository.deleteByEmail(TestData.EMAIL)
+        userRepository.deleteByEmail(TestData.EMAIL).block()
     }
 
     @Nested
@@ -77,7 +77,7 @@ class TestAuthController @Autowired constructor(
 
             @BeforeEach
             fun beforeEach() {
-                userService.findUserByEmail(TestData.EMAIL) shouldBe null
+                userRepository.findByEmail(TestData.EMAIL).block() shouldBe null
 
                 val rawResponse = authAPIClient.register(TestData.APIRequestPayloads.register)
 
@@ -89,7 +89,7 @@ class TestAuthController @Autowired constructor(
 
             @Test
             fun `201 - user with given email should be created`() {
-                userService.findUserByEmail(TestData.EMAIL) shouldNotBe null
+                userRepository.findByEmail(TestData.EMAIL).block() shouldNotBe null
 
                 response.body shouldNotBe null
                 response.body?.email shouldBe TestData.EMAIL
@@ -225,7 +225,7 @@ class TestAuthController @Autowired constructor(
                     user = authenticatedUser
                 )
 
-                userSessionService.findByToken(authenticatedUser.token) shouldBe null
+                userSessionRepository.findByToken(authenticatedUser.token).block() shouldBe null
 
                 response
                     .cookies[jwtProperties.authCookieName]
@@ -298,13 +298,16 @@ class TestAuthController @Autowired constructor(
                 it!!.value
             }
 
-        userSessionService
+        val session = userSessionRepository
             .findByToken(token)
-            .also {
-                it shouldNotBe null
+            .block()
 
-                it!!.token shouldBe token
-                it.user.email shouldBe TestData.EMAIL
-            }!!
+        session shouldNotBe null
+        session!!.token shouldBe token
+
+        // Verify user exists with the session
+        val user = userRepository.findById(session.userId).block()
+        user shouldNotBe null
+        user!!.email shouldBe TestData.EMAIL
     }
 }

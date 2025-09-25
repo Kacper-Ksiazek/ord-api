@@ -36,7 +36,7 @@ data class WordDBExportedRow(
             translatedFrom = translatedFrom,
             translatedTo = translatedTo,
             user = user,
-            userId = user.id
+            userId = user.id!!
         )
     }
 }

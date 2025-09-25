@@ -1,5 +1,7 @@
 package com.ord.controllers.games.bases
 
+/*
+
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
@@ -36,3 +38,5 @@ abstract class GameControllerTestBase(
 ) {
     val gameRequestFactory: GameRequestFactory = GameRequestFactory(objectMapper)
 }
+
+*/

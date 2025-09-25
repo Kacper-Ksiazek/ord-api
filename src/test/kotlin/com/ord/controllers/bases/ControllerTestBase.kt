@@ -1,5 +1,7 @@
 package com.ord.controllers.bases
 
+/*
+
 import com.ord.config.properties.JwtProperties
 import com.ord.core.auth.api.requests.dto.RegisterRequest
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
@@ -131,3 +133,5 @@ abstract class ControllerTestBase(
         return getResponseBody(objectMapper, source, typeReference)
     }
 }
+
+ */

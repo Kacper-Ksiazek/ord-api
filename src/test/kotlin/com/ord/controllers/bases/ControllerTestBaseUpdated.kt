@@ -7,7 +7,6 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.user.model.UserDTO
 import com.ord.testing_utils.dto.MockedAuthenticatedUserUpdated
-import com.ord.testing_utils.mocks.games.GameMockerBase
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseCookie
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -22,7 +21,8 @@ abstract class ControllerTestBaseUpdated(
         email: String = faker.internet().emailAddress(),
         nativeLanguage: LanguageName = LanguageName.ENGLISH,
         languages: Map<LanguageName, LanguageProficiencyLevel> = mapOf(
-            GameMockerBase.Companion.DefaultParams.language to LanguageProficiencyLevel.C1
+//            GameMockerBase.Companion.DefaultParams.language to LanguageProficiencyLevel.C1
+            LanguageName.ENGLISH to LanguageProficiencyLevel.C1
         )
     ): MockedAuthenticatedUserUpdated {
         val response = webClient

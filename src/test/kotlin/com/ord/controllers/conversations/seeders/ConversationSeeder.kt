@@ -1,5 +1,7 @@
 package com.ord.controllers.conversations.seeders
 
+/*
+
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.user.model.UserMapper
@@ -32,3 +34,5 @@ class ConversationSeeder(
         )
     ): ConversationEntity = conversationRepository.save(data)
 }
+
+ */

@@ -1,5 +1,7 @@
 package com.ord.seeders.entities
 
+/*
+
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.UserMapper
@@ -33,3 +35,5 @@ class BankGroupSeeder(
         bankGroupRepository.deleteAll()
     }
 }
+
+ */

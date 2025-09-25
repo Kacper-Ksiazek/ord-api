@@ -1,5 +1,7 @@
 package com.ord.seeders.entities
 
+/*
+
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
@@ -88,3 +90,6 @@ class WordSeeder(
         )
     }
 }
+
+
+ */
