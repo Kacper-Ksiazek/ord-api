@@ -15,8 +15,7 @@ class BankGroupMapper(
             name = dto.name,
             color = dto.color,
 
-            user = userMapper.toEntity(dto.user),
-            userId = dto.user.id,
+            userId = dto.userId,
 
             createdAt = dto.createdAt,
         )
@@ -29,7 +28,7 @@ class BankGroupMapper(
             name = entity.name,
             color = entity.color,
 
-            user = userMapper.toDTO(entity.user),
+            userId = entity.userId,
 
             createdAt = entity.createdAt,
         )

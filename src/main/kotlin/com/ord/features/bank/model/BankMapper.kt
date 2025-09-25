@@ -17,8 +17,7 @@ class BankMapper(
             name = dto.name,
             description = dto.description,
 
-            userId = dto.user.id,
-            user = userMapper.toEntity(dto.user),
+            userId = dto.userId,
 
             bankGroupId = dto.bankGroupId,
             bankGroup = bankGroupMapper.toEntityOrNull(dto.bankGroup),
@@ -35,7 +34,6 @@ class BankMapper(
             description = entity.description,
 
             userId = entity.userId,
-            user = userMapper.toDTO(entity.user!!),
 
             bankGroupId = entity.bankGroupId,
             bankGroup = bankGroupMapper.toDTOOrNull(entity.bankGroup),

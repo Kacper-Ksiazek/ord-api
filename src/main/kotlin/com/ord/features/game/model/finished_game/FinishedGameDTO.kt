@@ -22,8 +22,7 @@ data class FinishedGameDTO(
     val language: LanguageName,
     val difficulty: GameDifficulty,
 
-    var user: UserDTO,
-    var userId: UUID = user.id,
+    var userId: UUID,
 
     var createdAt: Instant = Instant.now()
 )

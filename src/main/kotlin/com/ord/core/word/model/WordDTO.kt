@@ -26,8 +26,7 @@ class WordDTO(
     var useCases: Set<String> = emptySet(),
     var exampleSentences: Set<ExampleSentence> = emptySet(),
 
-    val user: UserDTO,
-    val userId: UUID = user.id,
+    val userId: UUID,
 
     var bank: BankDTO? = null,
     var bankId: UUID? = bank?.id,

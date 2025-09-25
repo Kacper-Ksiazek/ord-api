@@ -27,7 +27,5 @@ data class OngoingGameEntity(
     override val userId: UUID,
 
     val createdAt: Instant = Instant.now(),
-
-    @Transient override var user: UserEntity? = null
 ) : IdentifiableUserResource
 

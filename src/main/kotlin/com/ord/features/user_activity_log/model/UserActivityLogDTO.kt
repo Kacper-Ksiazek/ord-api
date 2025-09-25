@@ -15,8 +15,7 @@ class UserActivityLogDTO(
     val language: LanguageName,
     val gameDifficulty: GameDifficulty? = null,
 
-    var user: UserDTO,
-    var userId: UUID = user.id,
+    var userId: UUID,
 
     var createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now()

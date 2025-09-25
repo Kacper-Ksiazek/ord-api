@@ -9,6 +9,8 @@ data class ConversationUserMessageFeedbackDTO(
     val vocabulary: Int,
     val answerLength: Int,
 
-    val suggestedAnswer: String? = null,
     val comment: String? = null,
+    val suggestedAnswer: String? = null,
+
+    val messageId: UUID,
 )

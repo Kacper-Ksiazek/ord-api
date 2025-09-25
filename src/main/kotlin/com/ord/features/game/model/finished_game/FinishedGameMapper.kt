@@ -22,7 +22,8 @@ class FinishedGameMapper(
             language = entity.language,
             difficulty = entity.difficulty,
 
-            user = userMapper.toDTO(entity.user!!),
+            userId = entity.userId,
+
             createdAt = entity.createdAt
         )
     }
@@ -41,8 +42,7 @@ class FinishedGameMapper(
             language = dto.language,
             difficulty = dto.difficulty,
 
-            user = userMapper.toEntity(dto.user),
-            userId = dto.user.id,
+            userId = dto.userId,
             createdAt = dto.createdAt
         )
     }

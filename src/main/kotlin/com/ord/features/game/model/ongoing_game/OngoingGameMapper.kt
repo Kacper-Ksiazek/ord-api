@@ -53,7 +53,6 @@ class OngoingGameMapper(
             difficulty = dto.difficulty,
             properAnswers = jsonObjectMapper.writeValueAsString(dto.properAnswers),
 
-            user = userMapper.toEntity(dto.user!!),
             userId = dto.userId,
             createdAt = dto.createdAt
         )
@@ -66,7 +65,6 @@ class OngoingGameMapper(
             type = type,
             language = language,
             difficulty = difficulty,
-            user = userMapper.toDTO(user!!),
             userId = userId,
             createdAt = createdAt
         )

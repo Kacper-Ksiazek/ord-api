@@ -10,7 +10,7 @@ data class BankGroupDTO(
     var name: String,
     var color: String,
 
-    val user: UserDTO,
+    val userId: UUID,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),

@@ -17,7 +17,6 @@ class LanguageProficiencyMapper(
             generativeContentLanguage = dto.generativeContentLanguage,
 
             userId = dto.userId,
-            user = userMapper.toEntityOrNull(dto.user),
 
             createdAt = dto.createdAt,
         )
@@ -32,7 +31,6 @@ class LanguageProficiencyMapper(
             generativeContentLanguage = entity.generativeContentLanguage,
 
             userId = entity.userId,
-            user = userMapper.toDTOOrNull(entity.user),
 
             createdAt = entity.createdAt,
         )

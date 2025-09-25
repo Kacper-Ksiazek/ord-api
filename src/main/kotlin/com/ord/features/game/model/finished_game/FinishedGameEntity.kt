@@ -33,7 +33,5 @@ data class FinishedGameEntity(
     override val userId: UUID,
 
     val createdAt: Instant = Instant.now(),
-
-    @Transient override val user: UserEntity? = null
 ) : IdentifiableUserResource
 

@@ -11,8 +11,7 @@ data class BankDTO(
     var name: String,
     var description: String,
 
-    val user: UserDTO,
-    val userId: UUID = user.id,
+    val userId: UUID,
 
     var bankGroup: BankGroupDTO? = null,
     var bankGroupId: UUID? = bankGroup?.id,

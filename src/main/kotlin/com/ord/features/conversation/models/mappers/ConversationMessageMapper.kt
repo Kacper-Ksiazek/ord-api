@@ -12,7 +12,7 @@ class ConversationMessageMapper(
 
     override fun toDTO(entity: ConversationMessageEntity): ConversationMessageDTO {
         return ConversationMessageDTO(
-            id = entity.id,
+            id = entity.id ?: error("Conversation id must not be null"),
             messageOrder = entity.messageOrder,
             sender = entity.sender,
             content = entity.content,

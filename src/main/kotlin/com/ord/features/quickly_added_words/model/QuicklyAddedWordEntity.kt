@@ -19,6 +19,4 @@ data class QuicklyAddedWordEntity(
     var createdAt: Instant = Instant.now(),
 
     override val userId: UUID,
-
-    @Transient override var user: UserEntity,
 ) : IdentifiableUserResource

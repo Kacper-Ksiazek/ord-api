@@ -14,7 +14,6 @@ data class LanguageProficiencyDTO(
     var generativeContentLanguage: LanguageName,
 
     val userId: UUID,
-    var user: UserDTO? = null,
 
     val createdAt: Instant = Instant.now(),
 )

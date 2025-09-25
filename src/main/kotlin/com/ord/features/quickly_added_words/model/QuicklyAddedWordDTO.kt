@@ -11,8 +11,7 @@ data class QuicklyAddedWordDTO(
     var word: String,
     var language: LanguageName,
 
-    val userId: UUID = user.id,
-    var user: UserDTO,
+    val userId: UUID,
 
     val createdAt: Instant = Instant.now(),
 )

@@ -43,7 +43,9 @@ data class WordEntity(
     var createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),
 
-    @Transient override var user: UserEntity? = null,
-    @Transient var bank: BankEntity? = null,
-    @Transient var bankGroup: BankGroupEntity? = null,
+    @Transient
+    var bank: BankEntity? = null,
+
+    @Transient
+    var bankGroup: BankGroupEntity? = null
 ) : IdentifiableUserResource

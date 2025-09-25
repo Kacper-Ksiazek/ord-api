@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 @Component
 class QuicklyAddedWordMapper(
     private val userMapper: UserMapper
-): BidirectionalEntityMapper<QuicklyAddedWordEntity, QuicklyAddedWordDTO> {
+) : BidirectionalEntityMapper<QuicklyAddedWordEntity, QuicklyAddedWordDTO> {
     override fun toEntity(dto: QuicklyAddedWordDTO): QuicklyAddedWordEntity {
         return QuicklyAddedWordEntity(
             id = dto.id,
@@ -17,8 +17,7 @@ class QuicklyAddedWordMapper(
 
             createdAt = dto.createdAt,
 
-            userId = dto.user.id,
-            user = userMapper.toEntity(dto.user)
+            userId = dto.userId,
         )
     }
 
@@ -30,7 +29,6 @@ class QuicklyAddedWordMapper(
             language = entity.language,
 
             userId = entity.userId,
-            user = userMapper.toDTO(entity.user),
 
             createdAt = entity.createdAt
         )

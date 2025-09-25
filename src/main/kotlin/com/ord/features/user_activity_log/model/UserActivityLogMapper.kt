@@ -17,7 +17,6 @@ class UserActivityLogMapper(
             gameDifficulty = dto.gameDifficulty,
             points = dto.points,
 
-            user = userMapper.toEntity(dto.user),
             userId = dto.userId,
 
             createdAt = dto.createdAt,
@@ -33,7 +32,7 @@ class UserActivityLogMapper(
             gameDifficulty = entity.gameDifficulty,
             points = entity.points,
 
-            user = userMapper.toDTO(entity.user!!),
+            userId = entity.userId,
 
             createdAt = entity.createdAt,
         )

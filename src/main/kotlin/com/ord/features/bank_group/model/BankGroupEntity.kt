@@ -18,6 +18,4 @@ data class BankGroupEntity(
     override val userId: UUID,
 
     var createdAt: Instant = Instant.now(),
-
-    @Transient override var user: UserEntity,
 ) : IdentifiableUserResource

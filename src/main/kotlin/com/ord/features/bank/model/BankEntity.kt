@@ -21,6 +21,5 @@ data class BankEntity(
 
     var createdAt: Instant = Instant.now(),
 
-    @Transient override var user: UserEntity? = null,
     @Transient var bankGroup: BankGroupEntity? = null
 ) : IdentifiableUserResource

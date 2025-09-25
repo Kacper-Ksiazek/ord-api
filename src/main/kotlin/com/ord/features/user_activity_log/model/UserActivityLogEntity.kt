@@ -23,6 +23,4 @@ data class UserActivityLogEntity(
     override val userId: UUID,
 
     var createdAt: Instant = Instant.now(),
-
-    @Transient override var user: UserEntity? = null,
 ) : IdentifiableUserResource
