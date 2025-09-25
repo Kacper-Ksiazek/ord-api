@@ -1,9 +1,7 @@
 package com.ord.features.game.variants.crossword.api
 
 import com.ord.config.GamesConfig
-import com.ord.core.security.UserRepositoryReactive
-import com.ord.core.user.model.UserEntity
-import com.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
+import com.ord.core.security.UserRepository
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.services.GameReviewService
@@ -14,7 +12,6 @@ import com.ord.features.game.variants.crossword.dto.api_responses.FinishedCrossw
 import com.ord.features.game.variants.crossword.dto.api_responses.StartedCrosswordGameResponse
 import com.ord.features.game.variants.shared.api.GameFacadeBase
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
-import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.ReviewedWordAnswer
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.calculatedWeightedModuleScore
 import com.ord.features.game.variants.shared.enums.WordAnswerScore
@@ -26,7 +23,7 @@ import java.util.UUID
 @Service
 class CrosswordGameFacade(
     private val crosswordAIGenerateGameService: CrosswordAIGenerateService,
-    private val userRepositoryReactive: UserRepositoryReactive,
+    private val userRepository: UserRepository,
 ) : GameFacadeBase<
         StartedCrosswordGameResponse,
         FinishCrosswordGameRequest,

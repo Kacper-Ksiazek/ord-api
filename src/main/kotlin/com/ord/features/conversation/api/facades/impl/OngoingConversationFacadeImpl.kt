@@ -153,13 +153,7 @@ class OngoingConversationFacadeImpl(
                             conversationId = conversation.id,
                             content = body.message,
                             messageOrder = body.messageOrder,
-                            feedback = ConversationUserMessageFeedbackEntity(
-                                grammar = aiFeedback.grammar,
-                                vocabulary = aiFeedback.vocabulary,
-                                answerLength = aiFeedback.answerLength,
-                                suggestedAnswer = aiFeedback.suggestedAnswer,
-                                comment = aiFeedback.comment
-                            )
+                            aiFeedback = aiFeedback
                         )
                             .then(Mono.fromCallable {
                                 ResponseEntity.ok(aiFeedback)
