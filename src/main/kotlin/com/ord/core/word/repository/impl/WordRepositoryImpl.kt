@@ -1,4 +1,8 @@
+@file:Suppress("DEPRECATION")
+
 package com.ord.core.word.repository.impl
+
+@Deprecated("This file is deprecated. Implementation moved to WordRepositoryImpl.")
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
