@@ -9,9 +9,10 @@ import java.util.*
 
 abstract class GenericUserResourceRepository<TEntity : Any>(
     protected val template: R2dbcEntityTemplate,
-    private val entityClass: Class<TEntity>
-)  {
-    fun findAllForUser(userId: UUID): Flux<TEntity> =
+) : UserResourceRepository<TEntity> {
+    protected abstract val entityClass: Class<TEntity>
+
+    override fun findAllForUser(userId: UUID): Flux<TEntity> =
         template.select(
             Query.query(
                 Criteria.where("user_id").`is`(userId)
@@ -19,8 +20,7 @@ abstract class GenericUserResourceRepository<TEntity : Any>(
             entityClass
         )
 
-
-    fun findAllForUser(ids: Set<UUID>, userId: UUID): Flux<TEntity> =
+    override fun findAllForUser(ids: Set<UUID>, userId: UUID): Flux<TEntity> =
         template.select(
             Query.query(
                 Criteria.where("user_id").`is`(userId)
@@ -29,8 +29,7 @@ abstract class GenericUserResourceRepository<TEntity : Any>(
             entityClass
         )
 
-
-    fun findOneForUser(userId: UUID, id: UUID): Mono<TEntity?> =
+    override fun findOneForUser(userId: UUID, id: UUID): Mono<TEntity?> =
         template.selectOne(
             Query.query(
                 Criteria.where("user_id").`is`(userId)
@@ -39,8 +38,7 @@ abstract class GenericUserResourceRepository<TEntity : Any>(
             entityClass
         )
 
-
-    fun deleteOneForUser(userId: UUID, id: UUID): Mono<Int> =
+    override fun deleteOneForUser(userId: UUID, id: UUID): Mono<Int> =
         template.delete(
             Query.query(
                 Criteria.where("user_id").`is`(userId)
@@ -48,4 +46,5 @@ abstract class GenericUserResourceRepository<TEntity : Any>(
             ),
             entityClass
         ).map { it.toInt() }
+
 }

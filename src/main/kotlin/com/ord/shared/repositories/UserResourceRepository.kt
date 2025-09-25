@@ -8,7 +8,7 @@ import java.util.*
  * Common interface for repositories that handle user-scoped resources.
  * Provides standard user-scoped operations that all user resources should support.
  */
-interface UserScopedRepository<TEntity : Any> {
+interface UserResourceRepository<TEntity : Any> {
     /**
      * Find all entities for a specific user
      */

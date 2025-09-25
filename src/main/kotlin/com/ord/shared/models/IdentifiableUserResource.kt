@@ -1,6 +1,5 @@
 package com.ord.shared.models
 
-import com.ord.core.user.model.UserEntity
 import java.util.*
 
 /**
@@ -28,14 +27,4 @@ interface IdentifiableUserResource {
      * It should always be non-null and correspond to an existing user's ID in the system.
      */
     val userId: UUID
-
-    /**
-     * Optional reference to the full user entity who owns or is associated with this resource.
-     *
-     * This field is typically marked as @Transient in entity implementations since it's not
-     * stored directly in the database. Instead, the relationship is maintained through the
-     * userId field. This field may be populated when the entity is loaded with its
-     * user relationship, or it may remain null when only the userId is needed.
-     */
-    val user: UserEntity?
 }
