@@ -1,6 +1,7 @@
 package com.ord.core.security
 
 import com.ord.config.properties.JwtProperties
+import com.ord.exceptions.REST.UnauthorizedException
 import org.springframework.http.ResponseCookie
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContext
@@ -20,19 +21,29 @@ class JwtSecurityContextRepository(
 
         val preAuth = UsernamePasswordAuthenticationToken(null, token)
 
-        return authManager.authenticate(preAuth)
+        return authManager
+            .authenticate(preAuth)
+            .cache()
             .doOnNext { auth ->
                 val details = auth.details
 
-                if (details is Map<*, *> && details["renewedToken"] is String) {
-                    exchange.attributes[JwtExchangeAttrs.RENEWED_TOKEN_ATTR] = details["renewedToken"] as String
+                if (details is Map<*, *> && details.containsKey("renewedToken")) {
+                    val renewedToken = details["renewedToken"] as? String
+
+                    if (!renewedToken.isNullOrBlank()) {
+                        exchange.addAuthTokenCookie(
+                            name = jwtProperties.authCookieName,
+                            value = renewedToken
+                        )
+                    }
                 }
             }
             .map<SecurityContext?> { SecurityContextImpl(it) }
             .onErrorResume { error ->
                 if (error is MissingUserSessionException) {
-                    clearAuthCookie(exchange)
-                    Mono.empty()
+                    exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
+
+                    Mono.error(UnauthorizedException("Please log in again"))
                 } else {
                     Mono.error(error)
                 }
@@ -40,13 +51,4 @@ class JwtSecurityContextRepository(
     }
 
     override fun save(exchange: ServerWebExchange?, context: SecurityContext?): Mono<Void?>? = Mono.empty()
-
-    private fun clearAuthCookie(exchange: ServerWebExchange) {
-        val expiredCookie = ResponseCookie.from(jwtProperties.authCookieName, "")
-            .maxAge(0)
-            .path("/")
-            .build()
-
-        exchange.response.addCookie(expiredCookie)
-    }
 }

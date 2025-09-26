@@ -23,27 +23,30 @@ class JwtReactiveAuthenticationManager(
     override fun authenticate(authentication: Authentication?): Mono<Authentication> {
         val token = (authentication?.credentials as? String)?.takeIf { it.isNotBlank() } ?: return Mono.empty()
 
-        return Mono.defer {
-            Mono.fromCallable { jwtService.parseAndValidate(token).body }
-        }.flatMap { claims: Claims ->
-            authenticateWithValidToken(token, claims)
-        }.onErrorResume { cause ->
-            if (cause is ExpiredJwtException || cause.cause is ExpiredJwtException) {
-                handleExpiredToken(token)
-            } else {
-                Mono.error(cause)
+        return Mono
+            .defer {
+                Mono.fromCallable { jwtService.parseAndValidate(token).body }
             }
-        }
+            .flatMap { claims: Claims ->
+                authenticateWithValidToken(token, claims)
+            }
+            .onErrorResume { cause ->
+                if (cause is ExpiredJwtException || cause.cause is ExpiredJwtException) {
+                    handleExpiredToken(token)
+                } else {
+                    Mono.error(cause)
+                }
+            }
     }
 
     private fun authenticateWithValidToken(token: String, claims: Claims): Mono<Authentication> {
         return sessionsRepository
             .findByToken(token)
-            .switchIfEmpty(Mono.error(BadCredentialsException("Invalid token")))
+            .switchIfEmpty(Mono.error(MissingUserSessionException("Invalid token - no corresponding session found")))
             .flatMap { session ->
                 userRepository
                     .findByEmail(claims.extractSubject())
-                    .switchIfEmpty(Mono.error(BadCredentialsException("Invalid token")))
+                    .switchIfEmpty(Mono.error(MissingUserSessionException("Invalid token - no corresponding user found")))
                     .map { user ->
                         authenticatedToken(user!!, null)
                     }
@@ -51,34 +54,36 @@ class JwtReactiveAuthenticationManager(
     }
 
     private fun handleExpiredToken(token: String): Mono<Authentication> {
-        return Mono.fromCallable {
-            jwtService.parseAllowExpired(token)
-        }.flatMap { claims ->
-            sessionsRepository
-                .findByToken(token)
-                .flatMap { session ->
-                    val subject = claims.extractSubject()
-                    val newToken = jwtService.createToken(subject = subject)
+        return Mono
+            .fromCallable {
+                jwtService.parseAllowExpired(token)
+            }
+            .flatMap { claims ->
+                sessionsRepository
+                    .findByToken(token)
+                    .flatMap { session ->
+                        val subject = claims.extractSubject()
+                        val newToken = jwtService.createToken(subject = subject)
 
-                    val updatedSession = session!!.copy(
-                        token = newToken,
-                    )
+                        val updatedSession = session!!.copy(
+                            token = newToken,
+                        )
 
-                    sessionsRepository
-                        .save(updatedSession)
-                        .then(userRepository.findByEmail(email = subject))
-                        .map { user ->
-                            authenticatedToken(user!!, newToken)
-                        }
-                }
-                .switchIfEmpty(Mono.error(MissingUserSessionException()))
-        }
+                        sessionsRepository
+                            .save(updatedSession)
+                            .then(userRepository.findByEmail(email = subject))
+                            .map { user ->
+                                authenticatedToken(user!!, newToken)
+                            }
+                    }
+                    .switchIfEmpty(Mono.error(MissingUserSessionException("Expired token - no corresponding session found")))
+            }
     }
 
     private fun authenticatedToken(user: UserEntity, renewedToken: String?): Authentication {
         val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
 
-        val auth: AbstractAuthenticationToken = UsernamePasswordAuthenticationToken(user, null, authorities)
+        val auth = UsernamePasswordAuthenticationToken(user, null, authorities)
 
         if (renewedToken != null) {
             auth.details = mapOf("renewedToken" to renewedToken)
