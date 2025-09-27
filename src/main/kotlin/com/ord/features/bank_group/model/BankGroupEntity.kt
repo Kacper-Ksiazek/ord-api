@@ -10,12 +10,12 @@ import java.util.*
 @Table("bank_groups")
 data class BankGroupEntity(
     @Id
-    override var id: UUID = UUID.randomUUID(),
+    override var id: UUID? = null,
 
     var name: String,
     var color: String,
 
     override val userId: UUID,
 
-    var createdAt: Instant = Instant.now(),
+    val createdAt: Instant = Instant.now(),
 ) : IdentifiableUserResource

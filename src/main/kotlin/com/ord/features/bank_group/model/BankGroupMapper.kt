@@ -23,7 +23,7 @@ class BankGroupMapper(
 
     override fun toDTO(entity: BankGroupEntity): BankGroupDTO {
         return BankGroupDTO(
-            id = entity.id,
+            id = entity.id ?: error("Bank group id must not be null"),
 
             name = entity.name,
             color = entity.color,
