@@ -8,6 +8,7 @@ import com.ord.core.user.model.UserMapper
 import com.ord.core.word.api.requests.dto.UnsafeGetManyWordsRequest
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
+import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
 import com.ord.core.word.model.WordDTO
 import com.ord.core.word.model.WordEntity
@@ -41,6 +42,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
@@ -591,7 +593,6 @@ class TestWordsController @Autowired constructor(
         }
     }
 
-    /* MIGRATION STEP 2
     @Nested
     @DisplayName("[GET] /api/v1/words/{id} - get a single word")
     inner class GetSingleWords {
@@ -600,20 +601,20 @@ class TestWordsController @Autowired constructor(
         inner class Positive {
             @Test
             fun `200 - Word without bank can be fetched by its owner`() {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-
-                val request = wordRequestFactory.getSingleWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id
+                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = null
                 )
 
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                    it.response
-                }
+                val response = wordsAPIClient.getWord(
+                    id = wordEntity.id!!,
+                    user = authenticatedUser
+                )
 
-                val fetchedWord = getResponseBody<SingleWordResponse>(response)
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
 
+                val fetchedWord = response.body!!
                 fetchedWord.id shouldBe wordEntity.id
             }
 
@@ -622,28 +623,24 @@ class TestWordsController @Autowired constructor(
                 val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
                 val wordWithBank = wordSeeder.seedOneEntityForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(bank)
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = bank.id
                 )
 
-                val request = wordRequestFactory.getSingleWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordWithBank.id
+                val response = wordsAPIClient.getWord(
+                    id = wordWithBank.id!!,
+                    user = authenticatedUser
                 )
 
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
 
-                val fetchedWord = getResponseBody<SingleWordResponse>(response)
-
+                val fetchedWord = response.body!!
                 fetchedWord.id shouldBe wordWithBank.id
                 fetchedWord.bank shouldNotBe null
-                fetchedWord.bank?.id shouldBe bank.id
+                fetchedWord.bank?.name shouldBe bank.name
                 fetchedWord.bank?.bankGroup shouldBe null
             }
-
 
             @Test
             fun `200 - Word with bank and bank group can be fetched by its owner`() {
@@ -654,27 +651,24 @@ class TestWordsController @Autowired constructor(
                 )
 
                 val wordWithBankAndGroup = wordSeeder.seedOneEntityForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(bank)
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = bank.id
                 )
 
-                val request = wordRequestFactory.getSingleWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordWithBankAndGroup.id
+                val response = wordsAPIClient.getWord(
+                    id = wordWithBankAndGroup.id!!,
+                    user = authenticatedUser
                 )
 
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
 
-                val fetchedWord = getResponseBody<SingleWordResponse>(response)
-
+                val fetchedWord = response.body!!
                 fetchedWord.id shouldBe wordWithBankAndGroup.id
                 fetchedWord.bank shouldNotBe null
-                fetchedWord.bank?.id shouldBe bank.id
+                fetchedWord.bank?.name shouldBe bank.name
                 fetchedWord.bank?.bankGroup shouldNotBe null
-                fetchedWord.bank?.bankGroup?.id shouldBe bankGroup.id
+                fetchedWord.bank?.bankGroup?.name shouldBe bankGroup.name
             }
         }
 
@@ -682,63 +676,56 @@ class TestWordsController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `403 - Anonymous user cannot fetch a word`() {
+            fun `401 - Anonymous user cannot fetch a word`() {
                 val word = wordSeeder.seedOneEntity()
 
-                val request = wordRequestFactory.getSingleWordRequest(
-                    authenticatedUser = null,
-                    wordId = word.id
+                val response = wordsAPIClient.getWord(
+                    id = word.id!!,
+                    user = null
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
             fun `404 - Word cannot be fetched by other user than the one who created it`() {
                 val anotherUser = userSeeder.seedOneEntity()
-
-                val word = wordSeeder.seedOneEntityForUser(anotherUser)
-
-                val request = wordRequestFactory.getSingleWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordId = word.id
+                val word = wordSeeder.seedOneEntityForUser(
+                    userId = anotherUser.id!!,
+                    bankId = null
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
+                val response = wordsAPIClient.getWord(
+                    id = word.id!!,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
 
             @Test
             fun `404 - Word cannot be fetched if it does not exist`() {
-                val request = wordRequestFactory.getSingleWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordId = UUID.randomUUID()
+                val response = wordsAPIClient.getWord(
+                    id = UUID.randomUUID(),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
 
             @ParameterizedTest
             @ValueSource(strings = ["abc", "-1", "123123123"])
             fun `400 - Word cannot be fetched if id is not a valid UUID`(id: String) {
-                val request = MockMvcRequestBuilders
-                    .get("/api/v1/words/$id")
-                    .apply {
-                        this.cookie(authenticatedUser.authCookie)
-                    }
+                val response = wordsAPIClient.get(
+                    url = "/api/v1/words/$id",
+                    user = authenticatedUser,
+                    responseBodyType = object : ParameterizedTypeReference<SingleWordResponse>() {}
+                )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }
-     */
 
     /* MIGRATION STEP 3
     @Nested
