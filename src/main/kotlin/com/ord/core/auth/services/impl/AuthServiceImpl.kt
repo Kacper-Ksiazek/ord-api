@@ -76,20 +76,13 @@ class AuthServiceImpl(
     override fun logout(
         exchange: ServerWebExchange
     ): Mono<Void> {
-        val tokenFromCookie = exchange.getCookieValue(
-            name = jwtProperties.authCookieName
-        )
+        val tokenFromCookie = exchange.getCookieValue(jwtProperties.authCookieName)
 
         if (tokenFromCookie == null) {
             return Mono.error(UnauthorizedException("Missing auth token"))
         }
 
         exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
-
-        val claims: Claims = jwtService.parseAllowExpired(tokenFromCookie)
-
-        val jti = claims.id
-            ?: return Mono.error(UnauthorizedException("Invalid auth token"))
 
         return sessionRepositoryReactive
             .deleteByToken(tokenFromCookie)

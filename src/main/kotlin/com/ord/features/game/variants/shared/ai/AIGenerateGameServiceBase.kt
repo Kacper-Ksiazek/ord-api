@@ -116,9 +116,10 @@ abstract class AIGenerateGameServiceBase<
                 userId = userId,
                 language = language,
                 perPage = 500,
-                sortBy = GetAllWordsSortOptions.ORIGIN,
+                sortBy = GetAllWordsSortOptions.CREATED_AT,
                 sortDirection = SortDirection.DESC,
-                completed = false
+                completed = false,
+
                 // TODO: Add more filters
             ).flatMap { paginatedWords ->
                 val words = paginatedWords.data
