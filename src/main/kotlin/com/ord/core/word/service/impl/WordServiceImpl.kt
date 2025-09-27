@@ -32,13 +32,12 @@ import java.util.*
 
 @Service
 class WordServiceImpl(
-    private val repository: WordRepository,
+    private val wordRepository: WordRepository,
     val wordMapper: WordMapper,
     val userActivityLogService: UserActivityLogService
 ) : WordService {
+    override val repository: WordRepository = wordRepository
 
-    override val userRepository: UserResourceRepository<WordEntity> = repository
-    override val crudRepository: ReactiveCrudRepository<WordEntity, UUID> = repository
     override fun changeBankForSingleWord(
         wordId: UUID,
         bankId: UUID?,
@@ -160,7 +159,7 @@ class WordServiceImpl(
         userId: UUID,
         property: WordToggleableProperty
     ): Mono<WordEntity> {
-        return repository.findOneForUser(id = wordId, userId = userId)
+        return repository.findByIdAndUserId(id = wordId, userId = userId)
             .switchIfEmpty(Mono.error(NotFoundException("Word with id $wordId not found")))
             .map { it!! }
             .map { wordEntity -> wordEntity.toggleProperty(property) }
@@ -172,7 +171,7 @@ class WordServiceImpl(
         userId: UUID,
         property: WordToggleableProperty
     ): Flux<WordEntity> {
-        return repository.findAllForUser(ids = wordIds, userId = userId)
+        return repository.findAllByIdInAndUserId(ids = wordIds, userId = userId)
             .collectList()
             .flatMap { words ->
                 if (words.isEmpty()) {

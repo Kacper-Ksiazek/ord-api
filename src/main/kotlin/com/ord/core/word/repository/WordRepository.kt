@@ -7,5 +7,4 @@ import java.util.*
 
 interface WordRepository :
     UserResourceRepository<WordEntity>,
-    ReactiveCrudRepository<WordEntity, UUID>,
     WordRepositoryCustomMethods
