@@ -16,8 +16,7 @@ import java.util.*
 class BankServiceImpl(
     private val bankRepository: BankRepository
 ) : BankService {
-    override val userRepository: UserResourceRepository<BankEntity> = bankRepository
-    override val crudRepository: ReactiveCrudRepository<BankEntity, UUID> = bankRepository
+    override val repository: BankRepository = bankRepository
 
     override fun findByIdOrCreate(
         bankId: UUID?,
@@ -30,8 +29,16 @@ class BankServiceImpl(
 
         return when {
             bankId != null -> {
-                bankRepository.findOneForUser(userId, bankId)
-                    .switchIfEmpty(Mono.error(NotFoundException("Bank with ID $bankId not found")))
+                bankRepository
+                    .findByIdAndUserId(
+                        id = bankId,
+                        userId = userId
+                    )
+                    .switchIfEmpty(
+                        Mono.error(
+                            NotFoundException("Bank with ID $bankId not found")
+                        )
+                    )
             }
 
             bankToCreate != null -> {

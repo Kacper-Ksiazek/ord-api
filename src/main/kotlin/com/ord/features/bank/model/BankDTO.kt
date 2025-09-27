@@ -1,6 +1,5 @@
 package com.ord.features.bank.model
 
-import com.ord.core.user.model.UserDTO
 import com.ord.features.bank_group.model.BankGroupDTO
 import java.time.Instant
 import java.util.*
@@ -13,8 +12,8 @@ data class BankDTO(
 
     val userId: UUID,
 
-    var bankGroup: BankGroupDTO? = null,
-    var bankGroupId: UUID? = bankGroup?.id,
+    var group: BankGroupDTO? = null,
+    var groupId: UUID? = group?.id,
 
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),

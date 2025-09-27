@@ -18,9 +18,7 @@ class BankMapper(
             description = dto.description,
 
             userId = dto.userId,
-
-            bankGroupId = dto.bankGroupId,
-            bankGroup = bankGroupMapper.toEntityOrNull(dto.bankGroup),
+            groupId = dto.groupId,
 
             createdAt = dto.createdAt,
         )
@@ -28,15 +26,13 @@ class BankMapper(
 
     override fun toDTO(entity: BankEntity): BankDTO {
         return BankDTO(
-            id = entity.id,
+            id = entity.id ?: error("Bank is must not be null"),
 
             name = entity.name,
             description = entity.description,
 
             userId = entity.userId,
-
-            bankGroupId = entity.bankGroupId,
-            bankGroup = bankGroupMapper.toDTOOrNull(entity.bankGroup),
+            groupId = entity.groupId,
 
             createdAt = entity.createdAt,
         )
