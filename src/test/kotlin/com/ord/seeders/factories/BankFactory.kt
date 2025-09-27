@@ -22,8 +22,8 @@ class BankFactory(
         return BankEntity(
             name = name,
             description = description,
-            user = user,
-            bankGroup = bankGroup
+            userId = user.id!!,
+            bankGroupId = bankGroup?.id,
         )
     }
 

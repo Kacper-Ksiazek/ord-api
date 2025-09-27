@@ -3,59 +3,64 @@ package com.ord.controllers
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
-import com.ord.core.security.UserRepository
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserMapper
-import com.ord.testing_utils.api.clients.WordsAPIClient
+import com.ord.core.word.api.requests.dto.UnsafeGetManyWordsRequest
+import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
+import com.ord.core.word.api.responses.dto.WordListItem
 import com.ord.core.word.model.WordDTO
 import com.ord.core.word.model.WordEntity
 import com.ord.core.word.model.WordMapper
+import com.ord.core.word.model.enums.WordExtraMark
+import com.ord.core.word.model.enums.WordType
 import com.ord.core.word.repository.WordRepository
-import com.ord.core.word.service.WordService
 import com.ord.features.bank.model.BankEntity
 import com.ord.features.bank.service.BankService
 import com.ord.seeders.entities.BankGroupSeeder
 import com.ord.seeders.entities.BankSeeder
 import com.ord.seeders.entities.UserSeeder
 import com.ord.seeders.entities.WordSeeder
-import com.ord.seeders.factories.BankFactory
 import com.ord.seeders.factories.WordFactory
+import com.ord.shared.api.dto.responses.PaginatedDataResponse
+import com.ord.shared.domain.enums.SortDirection
+import com.ord.testing_utils.api.clients.WordsAPIClient
+import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
-import com.ord.testing_utils.extensions.compareWith
+import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
 
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
 @DisplayName("- WordsController")
 class TestWordsController @Autowired constructor(
-    private val wordService: WordService,
     private val wordRepository: WordRepository,
     private val bankSeeder: BankSeeder,
-    private val bankMockFactory: BankFactory,
     private val bankService: BankService,
     private val userSeeder: UserSeeder,
     private val wordSeeder: WordSeeder,
     private val wordMapper: WordMapper,
     private val bankGroupSeeder: BankGroupSeeder,
     private var wordMockFactory: WordFactory,
+    private val userMapper: UserMapper,
 
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
-    userMapper: UserMapper,
-    userRepository: UserRepository,
     webClient: WebTestClient
 
 ) : ControllerTestBase(
@@ -72,7 +77,6 @@ class TestWordsController @Autowired constructor(
         authenticatedUser = mockAuthenticatedUser()
     }
 
-    /* MIGRATION STEP 1
     @Nested
     @DisplayName("[GET] /api/v1/words/ - get many words")
     inner class GetManyWords {
@@ -81,7 +85,7 @@ class TestWordsController @Autowired constructor(
         @BeforeEach
         fun seedDatabaseWithWords() {
             wordSeeder.seedMultipleEntitiesForUser(
-                user = authenticatedUser.userInfo,
+                userId = authenticatedUser.userInfo.id,
                 amount = 100,
                 language = learningLanguage
             )
@@ -106,32 +110,30 @@ class TestWordsController @Autowired constructor(
                 sortDirection: SortDirection? = null,
                 sortBy: GetAllWordsSortOptions? = null,
             ): PaginatedDataResponse<WordListItem> {
-                val request = wordRequestFactory.getManyWordsRequest(
-                    authenticatedUser = authenticatedUser,
+                val request = UnsafeGetManyWordsRequest(
                     language = learningLanguage,
-
                     page = page,
                     perPage = perPage,
-
                     wordType = wordType,
                     completed = completed,
                     searchingPhrase = searchingPhrase,
                     bookmarked = bookmarked,
                     wordExtraMark = wordExtraMark,
-
-                    banksIds = banksIds,
-                    bankGroupsIds = banksGroupsIds,
-
+                    banksIds = banksIds?.toList(),
+                    bankGroupsIds = banksGroupsIds?.toList(),
                     sortDirection = sortDirection,
                     sortBy = sortBy
                 )
 
-                val response: MockHttpServletResponse = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                    it.response
-                }
+                val response = wordsAPIClient.getManyWords(
+                    body = request,
+                    user = authenticatedUser
+                )
 
-                return getResponseBody<PaginatedDataResponse<WordListItem>>(response)
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+
+                return response.body!!
             }
 
 
@@ -146,12 +148,13 @@ class TestWordsController @Autowired constructor(
                 val anotherUser = userSeeder.seedOneEntity()
 
                 wordSeeder.seedMultipleEntitiesForUser(
-                    user = anotherUser,
+                    userId = anotherUser.id!!,
                     amount = 10,
                     language = learningLanguage
                 )
 
-                val expectedAmountOfAllWords = wordRepository.findAllForUser(authenticatedUser.userInfo.id).size
+                val expectedAmountOfAllWords =
+                    wordRepository.findAllByUserId(authenticatedUser.userInfo.id).collectList().block()!!.size
                 val actualAmountOfWords = makeManyWordsRequest(perPage = 500).data.size
 
                 actualAmountOfWords shouldBe expectedAmountOfAllWords
@@ -211,62 +214,61 @@ class TestWordsController @Autowired constructor(
 
             @Test
             fun `200 - Words can be fetched with filtering - by searching phrase`() {
-                val user = userMapper.toEntity(authenticatedUser.userInfo)
                 val expectedWordMark = "EXPECTED_WORD_MARK"
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
-                        user = user,
+                        userId = authenticatedUser.userInfo.id,
                         origin = "kacper1",
                         translation = expectedWordMark,
                         translatedFrom = learningLanguage
                     )
-                )
+                ).block()
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
-                        user = user,
+                        userId = authenticatedUser.userInfo.id,
                         origin = "KACPER2",
                         translation = expectedWordMark,
                         translatedFrom = learningLanguage
                     )
-                )
+                ).block()
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
-                        user = user,
+                        userId = authenticatedUser.userInfo.id,
                         origin = "per3",
                         translation = expectedWordMark,
                         translatedFrom = learningLanguage
                     )
-                )
+                ).block()
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
-                        user = user,
+                        userId = authenticatedUser.userInfo.id,
                         origin = expectedWordMark + "1",
                         translation = "kacper",
                         translatedFrom = learningLanguage
                     )
-                )
+                ).block()
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
-                        user = user,
+                        userId = authenticatedUser.userInfo.id,
                         origin = expectedWordMark + "2",
                         translation = "KACPER",
                         translatedFrom = learningLanguage
                     )
-                )
+                ).block()
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
-                        user = user,
+                        userId = authenticatedUser.userInfo.id,
                         origin = expectedWordMark + "3",
                         translation = "PER",
                         translatedFrom = learningLanguage
                     )
-                )
+                ).block()
 
                 val body = makeManyWordsRequest(
                     searchingPhrase = "kacper",
@@ -294,12 +296,13 @@ class TestWordsController @Autowired constructor(
             @ValueSource(booleans = [true, false])
             fun `200 - Words can be fetched with filtering - by bookmarked `(bookmarked: Boolean) {
                 val wordsToAdd = List(10) {
-                    wordMockFactory.mockEntity(
-                        user = userMapper.toEntity(authenticatedUser.userInfo),
-                    ).apply { isBookmarked = bookmarked }
+                    wordMockFactory
+                        .mockEntity(
+                            userId = authenticatedUser.userInfo.id,
+                        ).apply { isBookmarked = bookmarked }
                 }
 
-                wordRepository.saveAll(wordsToAdd)
+                wordRepository.saveAll(wordsToAdd).collectList().block()
 
                 val body = makeManyWordsRequest(
                     bookmarked = bookmarked,
@@ -316,11 +319,11 @@ class TestWordsController @Autowired constructor(
             fun `200 - Words can be fetched with filtering - by completed status `(completed: Boolean) {
                 val wordsToAdd = List(10) {
                     wordMockFactory.mockEntity(
-                        user = userMapper.toEntity(authenticatedUser.userInfo),
+                        userId = authenticatedUser.userInfo.id,
                     ).apply { isCompleted = completed }
                 }
 
-                wordRepository.saveAll(wordsToAdd)
+                wordRepository.saveAll(wordsToAdd).collectList().block()
 
                 val body: PaginatedDataResponse<WordListItem> = makeManyWordsRequest(
                     completed = completed,
@@ -340,25 +343,25 @@ class TestWordsController @Autowired constructor(
 
                 wordSeeder.seedMultipleEntitiesForUser(
                     amount = 10,
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
-                    bank = Optional(bankOne),
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = bankOne.id,
                     language = learningLanguage
                 )
 
                 wordSeeder.seedMultipleEntitiesForUser(
                     amount = 10,
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
-                    bank = Optional(bankTwo),
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = bankTwo.id,
                     language = learningLanguage
                 )
 
                 val body = makeManyWordsRequest(
-                    banksIds = setOf(bankOne.id),
+                    banksIds = setOf(bankOne.id!!),
                     perPage = 500
                 )
 
                 body.data.forEach {
-                    it.bank?.id shouldBe bankOne.id
+                    it.bank?.name shouldBe bankOne.name
                 }
             }
 
@@ -379,25 +382,25 @@ class TestWordsController @Autowired constructor(
 
                 wordSeeder.seedMultipleEntitiesForUser(
                     amount = 24,
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
-                    bank = Optional(bankOne),
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = bankOne.id,
                     language = learningLanguage
                 )
 
                 wordSeeder.seedMultipleEntitiesForUser(
                     amount = 5,
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
-                    bank = Optional(bankTwo),
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = bankTwo.id,
                     language = learningLanguage
                 )
 
                 val body = makeManyWordsRequest(
-                    banksGroupsIds = setOf(bankGroupOne.id),
+                    banksGroupsIds = setOf(bankGroupOne.id!!),
                     perPage = 500
                 )
 
                 body.data.forEach {
-                    it.bank?.bankGroup?.id shouldBe bankGroupOne.id
+                    it.bank?.bankGroup?.name shouldBe bankGroupOne.name
                 }
             }
         }
@@ -421,43 +424,37 @@ class TestWordsController @Autowired constructor(
 
                 sortDirection: Any? = null,
                 sortBy: Any? = null,
-            ) {
-                val request = wordRequestFactory.getManyWordsRequestUnsafe(
-                    authenticatedUser = authenticatedUser,
+                user: MockedAuthenticatedUser? = authenticatedUser,
+                expectedStatus: HttpStatus = HttpStatus.BAD_REQUEST
+            ): APIClientResponse<PaginatedDataResponse<WordListItem>?> {
+                val request = UnsafeGetManyWordsRequest(
                     language = language,
-
                     page = page,
                     perPage = perPage,
-
                     wordType = wordType,
                     completed = completed,
                     wordExtraMark = wordExtraMark,
                     bookmarked = bookmarked,
                     searchingPhrase = searchingPhrase,
-
                     banksIds = banksIds,
                     bankGroupsIds = bankGroupsIds,
-
                     sortDirection = sortDirection,
                     sortBy = sortBy
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
+                val response = wordsAPIClient.getManyWords(
+                    body = request,
+                    user = user
+                )
+
+                response.status shouldBe expectedStatus
+                return response
             }
 
 
             @Test
-            fun `403 - Anonymous user cannot fetch words`() {
-                val request = wordRequestFactory.getManyWordsRequestUnsafe(
-                    authenticatedUser = null
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
+            fun `401 - Anonymous user cannot fetch words`() {
+                makeManyWordsRequestUnsafe(user = null, expectedStatus = HttpStatus.UNAUTHORIZED)
             }
 
             @Test
@@ -593,7 +590,6 @@ class TestWordsController @Autowired constructor(
 
         }
     }
-     */
 
     /* MIGRATION STEP 2
     @Nested
@@ -2567,36 +2563,42 @@ class TestWordsController @Autowired constructor(
     }
      */
 
-    private fun assertThatWordActuallyExists(
-        response: MockHttpServletResponse,
-        authenticatedUser: MockedAuthenticatedUser
-    ): WordEntity {
-        val responseBody: WordDTO = getResponseBody<WordDTO>(response)
-        assertNotNull(responseBody.id)
-
-        assertEquals(authenticatedUser.userInfo.id, responseBody.user.id)
-
-        val valueSavedInDatabase: WordEntity? = wordRepository.findByIdOrNull(responseBody.id)
-
-        assertNotNull(valueSavedInDatabase)
-
-        valueSavedInDatabase!!.compareWith(
-            wordMapper.toEntity(responseBody)
-        )
-
-        return valueSavedInDatabase
-    }
-
-    private fun assertThatBankActuallyExists(
-        bankToVerify: BankEntity?,
-    ): BankEntity {
-        assertNotNull(bankToVerify)
-
-        return bankService.findById(id = bankToVerify!!.id).let {
-            assertNotNull(it)
-            it!!
-        }
-    }
+//    private fun assertThatWordActuallyExists(
+//        response: APIClientResponse<WordDTO>,
+//        authenticatedUser: MockedAuthenticatedUser
+//    ): WordEntity {
+//        assertNotNull(response.body)
+//
+//        assertEquals(authenticatedUser.userInfo.id, response.body!!.userId)
+//
+//        val valueSavedInDatabase: WordEntity? = wordRepository.findByIdAndUserId(
+//            id = response.body.id,
+//            userId = authenticatedUser.userInfo.id
+//        ).block()
+//
+//        assertNotNull(valueSavedInDatabase)
+//
+//        valueSavedInDatabase!!.compareWith(
+//            wordMapper.toEntity(response.body)
+//        )
+//
+//        return valueSavedInDatabase
+//    }
+//
+//    private fun assertThatBankActuallyExists(
+//        bankToVerify: BankEntity?,
+//    ): BankEntity {
+//        assertNotNull(bankToVerify)
+//
+//        return bankService
+//            .findById(id = bankToVerify!!.id!!)
+//            .map { bank ->
+//                assertNotNull(bank)
+//
+//                bank!!
+//            }
+//            .block()!!
+//    }
 
     // Register a utility function to assert the boolean property of a word
     private fun WordEntity.assertBooleanProperty(property: WordToggleableProperty, expectedValue: Boolean) {
@@ -2613,7 +2615,7 @@ class TestWordsController @Autowired constructor(
             WordToggleableProperty.IS_BOOKMARKED -> isBookmarked = value
         }
 
-        wordRepository.save(this)
+        wordRepository.save(this).block()
 
         this.assertBooleanProperty(property, value)
     }

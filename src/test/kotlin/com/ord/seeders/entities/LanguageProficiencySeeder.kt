@@ -31,12 +31,15 @@ class LanguageProficiencySeeder(
         generativeContentLanguage: LanguageName? = null,
         languageProficiency: LanguageProficiencyLevel? = null
     ): LanguageProficiencyEntity {
-        val data = languageProficiencyFactory.mockEntity(user)
+        val base = languageProficiencyFactory.mockEntity(user)
 
-        languageName?.also { data.language = it }
-        languageProficiency?.also { data.proficiency = it }
-        generativeContentLanguage?.also { data.generativeContentLanguage = it }
+        val data = base.copy(
+            language = languageName ?: base.language,
+            level = languageProficiency ?: base.level,
+            generativeContentLanguage = generativeContentLanguage ?: base.generativeContentLanguage
+        )
 
         return languageProficiencyRepository.save(data).block()!!
+
     }
 }
