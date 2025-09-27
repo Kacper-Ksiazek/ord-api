@@ -1,6 +1,7 @@
 package com.ord.core.word.repository.impl
 
-import com.ord.shared.repositories.GenericUserResourceRepository
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
@@ -18,6 +19,7 @@ import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.api.dto.responses.PaginationData
 import com.ord.shared.domain.enums.SortDirection
 import com.ord.shared.domain.dto.CountingSummary
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
@@ -28,10 +30,9 @@ import java.util.*
 @Repository
 class WordRepositoryImpl(
     template: R2dbcEntityTemplate
-) : GenericUserResourceRepository<WordEntity>(template), WordRepositoryCustomMethods {
-    override val entityClass: Class<WordEntity> = WordEntity::class.java
-
+) : WordRepositoryCustomMethods {
     private val databaseClient: DatabaseClient = template.databaseClient
+    private val objectMapper = jacksonObjectMapper()
 
     override fun findOneWord(
         wordId: UUID,
@@ -70,21 +71,16 @@ class WordRepositoryImpl(
                     translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
                     translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
 
-                    useCases = row.get("use_cases", Array<String>::class.java)?.toSet() ?: emptySet(),
-                    exampleSentences = row.get("example_sentences", Array<ExampleSentence>::class.java)?.toSet()
-                        ?: emptySet(),
+                    useCases = objectMapper.readValue(
+                        row.get("use_cases", String::class.java) ?: "[]",
+                        object : TypeReference<Set<String>>() {}
+                    ),
+                    exampleSentences = objectMapper.readValue(
+                        row.get("example_sentences", String::class.java) ?: "[]",
+                        object : TypeReference<Set<ExampleSentence>>() {}
+                    ),
 
-                    bank = if (hasBank) {
-                        BankCompact(
-                            name = row.get("bank_name", String::class.java)!!,
-                            bankGroup = if (hasBankGroup) {
-                                BankGroupCompact(
-                                    name = row.get("bank_group_name", String::class.java)!!,
-                                    color = row.get("bank_group_color", String::class.java)!!
-                                )
-                            } else null
-                        )
-                    } else null,
+                    bank = BankCompact.construct(row),
 
                     createdAt = row.get("created_at", Instant::class.java)!!,
                     updatedAt = row.get("updated_at", Instant::class.java)!!
@@ -188,9 +184,8 @@ class WordRepositoryImpl(
                     extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
                     translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
                     translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
-                    useCases = row.get("use_cases", Array<String>::class.java)?.toSet() ?: emptySet(),
-                    exampleSentences = row.get("example_sentences", Array<ExampleSentence>::class.java)?.toSet()
-                        ?: emptySet(),
+                    useCases = row.get("use_cases", Json::class.java)!!,
+                    exampleSentences = row.get("example_sentences", Json::class.java)!!,
                     userId = userId,
                     createdAt = row.get("created_at", Instant::class.java)!!,
                     updatedAt = row.get("updated_at", Instant::class.java)!!
@@ -204,7 +199,7 @@ class WordRepositoryImpl(
         language: LanguageName,
         userId: UUID
     ): Mono<CountingSummary> {
-        val selectQuery = """
+        val query = """
             SELECT * FROM count_words_by_field(
                 'created_at', 
                 cast(:language as text), 
@@ -212,18 +207,7 @@ class WordRepositoryImpl(
             )
         """
 
-        return databaseClient.sql(selectQuery)
-            .bind("language", language.name)
-            .bind("userId", userId)
-            .fetch()
-            .one()
-            .map { row ->
-                CountingSummary(
-                    today = (row.get("today") as? Number)?.toInt() ?: 0,
-                    week = (row.get("week") as? Number)?.toInt() ?: 0,
-                    month = (row.get("month") as? Number)?.toInt() ?: 0
-                )
-            }
+        return handleCountQuery(query, language, userId)
     }
 
 
@@ -231,7 +215,7 @@ class WordRepositoryImpl(
         language: LanguageName,
         userId: UUID
     ): Mono<CountingSummary> {
-        val selectQuery = """
+        val query = """
             SELECT * FROM count_words_by_field(
                 'completed_at', 
                 cast(:language as text), 
@@ -239,18 +223,7 @@ class WordRepositoryImpl(
             )
         """
 
-        return databaseClient.sql(selectQuery)
-            .bind("language", language.name)
-            .bind("userId", userId)
-            .fetch()
-            .one()
-            .map { row ->
-                CountingSummary(
-                    today = (row.get("today") as? Number)?.toInt() ?: 0,
-                    week = (row.get("week") as? Number)?.toInt() ?: 0,
-                    month = (row.get("month") as? Number)?.toInt() ?: 0
-                )
-            }
+        return handleCountQuery(query, language, userId)
     }
 
 
@@ -295,7 +268,6 @@ class WordRepositoryImpl(
             .map { it.toInt() }
     }
 
-
     override fun findManyWords(
         userId: UUID,
         language: LanguageName,
@@ -311,10 +283,37 @@ class WordRepositoryImpl(
         page: Int,
         perPage: Int
     ): Mono<PaginatedDataResponse<WordListItem>> {
-        val filters =
-            createFilters(completed, searchingPhrase, bookmarked, banksIds, bankGroupsIds, wordType, wordExtraMark)
+        val conditions =
+            createQueryConditions(
+                completed,
+                searchingPhrase,
+                bookmarked,
+                banksIds,
+                bankGroupsIds,
+                wordType,
+                wordExtraMark
+            )
 
-        val countQuery = StringBuilder("SELECT COUNT(*) FROM words WHERE $filters")
+        val valuesBindings = createValuesBindings(
+            userId,
+            language,
+            completed,
+            searchingPhrase,
+            bookmarked,
+            banksIds,
+            bankGroupsIds,
+            wordType,
+            wordExtraMark
+        )
+
+        val countQuery = StringBuilder(
+            """
+               SELECT 
+                   COUNT(*)
+               FROM words 
+               WHERE $conditions 
+            """
+        )
 
         val selectQuery = StringBuilder(
             """
@@ -325,28 +324,28 @@ class WordRepositoryImpl(
                 FROM words
                     LEFT JOIN banks ON words.bank_id = banks.id
                     LEFT JOIN bank_groups ON banks.group_id = bank_groups.id
-                WHERE $filters
+                WHERE $conditions
+                
                 ORDER BY ${sortBy.column} ${sortDirection.name}
                 LIMIT :limit OFFSET :offset 
             """
         )
 
         val countQueryResult: Mono<Long> = databaseClient.sql(countQuery.toString())
-            .bind("language", language.name)
-            .bind("userId", userId)
-            .applyFilters(completed, searchingPhrase, bookmarked, banksIds, bankGroupsIds, wordType, wordExtraMark)
+            .bindValues(valuesBindings)
             .map { row -> row.get(0, Long::class.java)!! }
             .one()
 
-        val selectQueryResult: Mono<List<WordListItem>> = databaseClient.sql(selectQuery.toString())
-            .bind("language", language.name)
-            .bind("userId", userId)
+        val selectQueryResult: Mono<List<WordListItem>> = databaseClient
+            .sql(selectQuery.toString())
+            .bindValues(valuesBindings)
             .bind("limit", perPage)
-            .bind("offset", (page - 1) * perPage)
+            .bind("offset", maxOf(0, (page - 1) * perPage))
+            .filter {
+                println("Executing query: $it")
+                it
+            }
             .map { row ->
-                val hasBank: Boolean = row.get("bank_name", String::class.java) != null
-                val hasBankGroup: Boolean = hasBank && row.get("bank_group_name", String::class.java) != null
-
                 WordListItem(
                     id = row.get("id", UUID::class.java)!!,
 
@@ -361,17 +360,7 @@ class WordRepositoryImpl(
                     translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
                     translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
 
-                    bank = if (hasBank) {
-                        BankCompact(
-                            name = row.get("bank_name", String::class.java)!!,
-                            bankGroup = if (hasBankGroup) {
-                                BankGroupCompact(
-                                    name = row.get("bank_group_name", String::class.java)!!,
-                                    color = row.get("bank_group_color", String::class.java)!!
-                                )
-                            } else null
-                        )
-                    } else null,
+                    bank = BankCompact.construct(row),
                 )
             }
             .all()
@@ -395,8 +384,27 @@ class WordRepositoryImpl(
             }
     }
 
+    private fun handleCountQuery(
+        query: String,
+        language: LanguageName,
+        userId: UUID
+    ): Mono<CountingSummary> {
+        return databaseClient.sql(query)
+            .bind("language", language.name)
+            .bind("userId", userId)
+            .fetch()
+            .one()
+            .map { row ->
+                CountingSummary(
+                    today = (row["today"] as? Number)?.toInt() ?: 0,
+                    week = (row["week"] as? Number)?.toInt() ?: 0,
+                    month = (row["month"] as? Number)?.toInt() ?: 0
+                )
+            }
+    }
 
-    private fun createFilters(
+
+    private fun createQueryConditions(
         completed: Boolean?,
         searchingPhrase: String?,
         bookmarked: Boolean?,
@@ -405,21 +413,26 @@ class WordRepositoryImpl(
         wordType: WordType?,
         wordExtraMark: WordExtraMark?
     ): String {
-        return StringBuilder().apply {
-            append("language = :language AND user_id = :userId")
+        val conditions = buildList {
+            add("words.translated_from = :language")
+            add("words.user_id = :userId")
 
-            if (completed != null) append(" AND completed = :completed")
-            if (searchingPhrase != null) append(" AND word ILIKE :searchingPhrase")
-            if (bookmarked != null) append(" AND bookmarked = :bookmarked")
-            if (!banksIds.isNullOrEmpty()) append(" AND bank_id = ANY(:banksIds)")
-            if (!bankGroupsIds.isNullOrEmpty()) append(" AND bank_group_id = ANY(:bankGroupsIds)")
-            if (wordType != null) append(" AND word_type = :wordType")
-            if (wordExtraMark != null) append(" AND word_extra_mark = :wordExtraMark")
-        }.toString()
+            completed?.let { add("words.is_completed = :completed") }
+            searchingPhrase?.let { add("words.origin ILIKE :searchingPhrase") }
+            bookmarked?.let { add("words.is_bookmarked = :bookmarked") }
+            banksIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_id = ANY(:banksIds)") }
+            bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_group_id = ANY(:bankGroupsIds)") }
+            wordType?.let { add("words.type = :wordType") }
+            wordExtraMark?.let { add("words.extra_mark = :wordExtraMark") }
+        }
+
+        return conditions.joinToString(" AND ")
     }
 
 
-    private fun DatabaseClient.GenericExecuteSpec.applyFilters(
+    private fun createValuesBindings(
+        userId: UUID,
+        language: LanguageName,
         completed: Boolean?,
         searchingPhrase: String?,
         bookmarked: Boolean?,
@@ -427,13 +440,21 @@ class WordRepositoryImpl(
         bankGroupsIds: Set<UUID>?,
         wordType: WordType?,
         wordExtraMark: WordExtraMark?
-    ): DatabaseClient.GenericExecuteSpec = this.apply {
-        if (completed != null) bind("completed", completed)
-        if (searchingPhrase != null) bind("searchingPhrase", "%$searchingPhrase%")
-        if (bookmarked != null) bind("bookmarked", bookmarked)
-        if (!banksIds.isNullOrEmpty()) bind("banksIds", banksIds.toTypedArray())
-        if (!bankGroupsIds.isNullOrEmpty()) bind("bankGroupsIds", bankGroupsIds.toTypedArray())
-        if (wordType != null) bind("wordType", wordType.name)
-        if (wordExtraMark != null) bind("wordExtraMark", wordExtraMark.name)
+    ): Map<String, Any> {
+        val params: Map<String, Any> = mutableMapOf<String, Any>(
+            "userId" to userId,
+            "language" to language.name
+        ).apply {
+            completed?.let { put("completed", it) }
+            searchingPhrase?.let { put("searchingPhrase", "%$it%") }
+            bookmarked?.let { put("bookmarked", it) }
+            wordType?.let { put("wordType", it.name) }
+            wordExtraMark?.let { put("wordExtraMark", it.name) }
+
+            banksIds?.takeIf { it.isNotEmpty() }?.let { put("banksIds", it.toTypedArray()) }
+            bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { put("bankGroupsIds", it.toTypedArray()) }
+        }
+
+        return params.toMap()
     }
 }

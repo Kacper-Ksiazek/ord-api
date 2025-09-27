@@ -1,5 +1,6 @@
 package com.ord.core.word.api.facades.impl
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.facades.WordCRUDFacade
 import com.ord.core.word.api.facades.internal.getBankFromRequestOrNull
@@ -15,6 +16,7 @@ import com.ord.core.word.service.WordService
 import com.ord.features.bank.service.BankService
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.extensions.convertToSetExplicitly
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -27,6 +29,7 @@ class WordCRUDFacadeImpl(
     private val wordMapper: WordMapper,
     private val wordService: WordService,
 ) : WordCRUDFacade {
+    private val objectMapper = jacksonObjectMapper()
     override fun getManyWords(
         requestBody: GetManyWordsRequest,
         userId: UUID
@@ -84,11 +87,11 @@ class WordCRUDFacadeImpl(
                     translatedTo = body.translatedTo ?: user.nativeLanguage,
                     translatedFrom = body.translatedFrom,
                     type = body.type,
-                    exampleSentences = body.exampleSentences,
+                    exampleSentences = Json.of(objectMapper.writeValueAsString(body.exampleSentences)),
                     translation = body.translation,
                     extraMark = body.extraMark,
                     definition = body.definition,
-                    useCases = body.useCases,
+                    useCases = Json.of(objectMapper.writeValueAsString(body.useCases)),
 
                     userId = user.id,
                     bankId = bank?.id
@@ -125,11 +128,14 @@ class WordCRUDFacadeImpl(
                         translatedTo = body.translatedTo ?: currentWord.translatedTo,
                         translatedFrom = body.translatedFrom ?: currentWord.translatedFrom,
                         type = body.type ?: currentWord.type,
-                        exampleSentences = body.exampleSentences ?: currentWord.exampleSentences,
                         translation = body.translation ?: currentWord.translation,
                         extraMark = body.extraMark ?: currentWord.extraMark,
                         definition = body.definition ?: currentWord.definition,
-                        useCases = body.useCases ?: currentWord.useCases,
+
+                        exampleSentences = body.exampleSentences?.let { Json.of(objectMapper.writeValueAsString(it)) }
+                            ?: currentWord.exampleSentences,
+                        useCases = body.useCases?.let { Json.of(objectMapper.writeValueAsString(it)) }
+                            ?: currentWord.useCases,
 
                         bankId = bank?.id ?: currentWord.bankId
                     )

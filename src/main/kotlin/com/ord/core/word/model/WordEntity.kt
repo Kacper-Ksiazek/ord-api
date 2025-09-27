@@ -8,6 +8,7 @@ import com.ord.core.word.model.json.ExampleSentence
 import com.ord.features.bank.model.BankEntity
 import com.ord.features.bank_group.model.BankGroupEntity
 import com.ord.shared.models.IdentifiableUserResource
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
@@ -16,7 +17,7 @@ import java.util.*
 @Table("words")
 data class WordEntity(
     @Id
-    override val id: UUID = UUID.randomUUID(),
+    override val id: UUID? = null,
 
     var origin: String,
     var translation: String,
@@ -32,8 +33,8 @@ data class WordEntity(
     var translatedTo: LanguageName,
     var translatedFrom: LanguageName,
 
-    var useCases: Set<String> = emptySet(),
-    var exampleSentences: Set<ExampleSentence> = emptySet(),
+    var useCases: Json = Json.of("[]"),
+    var exampleSentences: Json = Json.of("[]"),
 
     var bankId: UUID? = null,
     var bankGroupId: UUID? = null,
@@ -42,10 +43,4 @@ data class WordEntity(
     var completedAt: Instant? = null,
     var createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),
-
-    @Transient
-    var bank: BankEntity? = null,
-
-    @Transient
-    var bankGroup: BankGroupEntity? = null
 ) : IdentifiableUserResource
