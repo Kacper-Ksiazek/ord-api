@@ -28,5 +28,4 @@ interface ConversationRepositoryCustomMethods {
 
 interface ConversationRepository :
     UserResourceRepository<ConversationEntity>,
-    ReactiveCrudRepository<ConversationEntity, UUID>,
     ConversationRepositoryCustomMethods

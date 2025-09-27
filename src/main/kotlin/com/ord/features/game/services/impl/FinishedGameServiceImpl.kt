@@ -10,8 +10,7 @@ import java.util.UUID
 
 @Service
 class FinishedGameServiceImpl(
-    val repository: FinishedGameRepository
+    val finishedGameRepository: FinishedGameRepository
 ) : FinishedGameService {
-    override val userRepository: UserResourceRepository<FinishedGameEntity> = repository
-    override val crudRepository: ReactiveCrudRepository<FinishedGameEntity, UUID> = repository
+    override val repository: FinishedGameRepository = finishedGameRepository
 }

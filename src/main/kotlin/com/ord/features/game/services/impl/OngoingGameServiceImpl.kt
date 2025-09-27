@@ -20,14 +20,13 @@ import java.util.*
 
 @Service
 class OngoingGameServiceImpl(
-    val repository: OngoingGameRepository,
+    val ongoingGameRepository: OngoingGameRepository,
     val userActivityLogService: UserActivityLogService,
     val ongoingGameMapper: OngoingGameMapper,
     val finishedGameService: FinishedGameService,
     val transactionalOperator: TransactionalOperator
 ) : OngoingGameService {
-    override val userRepository: UserResourceRepository<OngoingGameEntity> = repository
-    override val crudRepository: ReactiveCrudRepository<OngoingGameEntity, UUID> = repository
+    override val repository: OngoingGameRepository = ongoingGameRepository
 
     override fun completeGame(
         ongoingGame: OngoingGameDTO<*>,

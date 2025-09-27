@@ -11,7 +11,6 @@ import com.ord.features.conversation.models.enums.ConversationGoal
 import com.ord.features.conversation.models.enums.ConversationMessageSender
 import com.ord.features.conversation.models.enums.ConversationTone
 import com.ord.features.conversation.repositories.ConversationRepositoryCustomMethods
-import com.ord.shared.repositories.GenericUserResourceRepository
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
@@ -21,10 +20,8 @@ import java.util.UUID
 
 @Repository
 class ConversationRepositoryImpl(
-    template: R2dbcEntityTemplate
-) : GenericUserResourceRepository<ConversationEntity>(template), ConversationRepositoryCustomMethods {
-    override val entityClass = ConversationEntity::class.java
-
+    private val template: R2dbcEntityTemplate
+) : ConversationRepositoryCustomMethods {
     override fun findRecentTopics(
         userId: UUID,
         goal: ConversationGoal,

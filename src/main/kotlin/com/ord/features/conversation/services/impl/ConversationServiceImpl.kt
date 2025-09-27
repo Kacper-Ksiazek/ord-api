@@ -20,8 +20,7 @@ import java.util.UUID
 class ConversationServiceImpl(
     private val conversationRepository: ConversationRepository
 ) : ConversationService {
-    override val userRepository: UserResourceRepository<ConversationEntity> = conversationRepository
-    override val crudRepository: ReactiveCrudRepository<ConversationEntity, UUID> = conversationRepository
+    override val repository: ConversationRepository = conversationRepository
 
     override fun findRecentTopics(
         userId: UUID,
