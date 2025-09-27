@@ -1,5 +1,6 @@
 package com.ord.shared.services
 
+import com.ord.exceptions.REST.InternalServerError
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.shared.models.IdentifiableUserResource
 import com.ord.shared.repositories.UserResourceRepository
@@ -9,11 +10,10 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 interface UserResourceService<TEntity : IdentifiableUserResource> {
-    val userRepository: UserResourceRepository<TEntity>
-    val crudRepository: ReactiveCrudRepository<TEntity, UUID>
+    val repository: UserResourceRepository<TEntity>
 
     fun save(t: TEntity): Mono<TEntity> {
-        return crudRepository.save(t)
+        return repository.save(t)
     }
 
 
@@ -26,7 +26,7 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
                 if (existing.userId != userId) {
                     Mono.error<TEntity>(NotFoundException("Entity not found"))
                 } else {
-                    crudRepository.save(t)
+                    repository.save(t)
                 }
             }
     }
@@ -36,11 +36,9 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
         id: UUID,
         userId: UUID,
     ): Mono<Void> {
-        return userRepository
-            .deleteOneForUser(userId, id)
-            .flatMap { deletedCount ->
-                if (deletedCount == 0) Mono.error(NotFoundException("Entity with id $id for user with id $userId not found"))
-                else Mono.empty<Void>()
+        return findByIdOrFail(id = id, userId = userId)
+            .flatMap { existing ->
+                repository.deleteByIdAndUserId(id = id, userId = userId)
             }
     }
 
@@ -50,9 +48,9 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
         userId: UUID? = null
     ): Mono<TEntity> {
         return if (userId == null) {
-            crudRepository.findById(id)
+            repository.findById(id)
         } else {
-            userRepository.findOneForUser(userId, id)
+            repository.findByIdAndUserId(id = id, userId = userId)
         }
     }
 
@@ -71,9 +69,9 @@ interface UserResourceService<TEntity : IdentifiableUserResource> {
         userId: UUID? = null
     ): Flux<TEntity> {
         return if (userId == null) {
-            crudRepository.findAll()
+            repository.findAll()
         } else {
-            userRepository.findAllForUser(userId)
+            repository.findAllByUserId(userId)
         }
     }
 }

@@ -1,32 +1,22 @@
 package com.ord.shared.repositories
 
+import org.springframework.data.repository.NoRepositoryBean
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.util.*
 
-/**
- * Common interface for repositories that handle user-scoped resources.
- * Provides standard user-scoped operations that all user resources should support.
- */
-interface UserResourceRepository<TEntity : Any> {
-    /**
-     * Find all entities for a specific user
-     */
-    fun findAllForUser(userId: UUID): Flux<TEntity>
+@NoRepositoryBean
+interface UserResourceRepository<TEntity : Any> : ReactiveCrudRepository<TEntity, UUID> {
+    fun findAllByUserId(userId: UUID): Flux<TEntity>
 
-    /**
-     * Find specific entities by their IDs for a specific user
-     */
-    fun findAllForUser(ids: Set<UUID>, userId: UUID): Flux<TEntity>
 
-    /**
-     * Find a single entity by ID for a specific user
-     */
-    fun findOneForUser(userId: UUID, id: UUID): Mono<TEntity?>
+    fun findAllByIdInAndUserId(ids: Set<UUID>, userId: UUID): Flux<TEntity>
 
-    /**
-     * Delete a single entity by ID for a specific user
-     * @return Number of deleted records (0 or 1)
-     */
-    fun deleteOneForUser(userId: UUID, id: UUID): Mono<Int>
+
+    fun findByIdAndUserId(id: UUID, userId: UUID): Mono<TEntity?>
+
+
+    fun deleteByIdAndUserId(id: UUID, userId: UUID): Mono<Void>
+
 }
