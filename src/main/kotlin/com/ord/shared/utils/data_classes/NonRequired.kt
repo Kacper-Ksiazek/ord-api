@@ -1,6 +1,6 @@
 package com.ord.shared.utils.data_classes
 
-data class Optional<T>(
+data class NonRequired<T>(
     val value: T?,
     val isPresent: Boolean = value != null,
 ) {
