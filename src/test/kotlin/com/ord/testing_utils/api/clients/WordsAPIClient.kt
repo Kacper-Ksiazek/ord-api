@@ -19,7 +19,7 @@ class WordsAPIClient(
     val baseUrl = "/api/v1/words"
 
     fun getManyWords(
-        body: GetManyWordsRequest,
+        body: UnsafeGetManyWordsRequest,
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<PaginatedDataResponse<WordListItem>?> {
         return post(

@@ -2,13 +2,9 @@ package com.ord.testing_utils.api_requests_factories.data
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.requests.dto.UpdateWordRequest
-import com.ord.core.word.model.WordEntity
 import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
 import com.ord.core.word.model.json.ExampleSentence
-import com.ord.testing_utils.extensions.detectChanges
-import io.kotest.matchers.shouldBe
-import java.util.*
 
 val UpdateWordData = UpdateWordRequest(
     origin = "UPDATED word in foraign language",
@@ -36,14 +32,14 @@ val UpdateWordData = UpdateWordRequest(
     bankToCreate = null
 )
 
-fun WordEntity.compareWithDefaultUpdateWordData(
-    idOfWordToUpdate: UUID,
-    differences: WordDataChanges = WordDataChanges()
-) {
-    id shouldBe idOfWordToUpdate
-
-    detectChanges(
-        before = UpdateWordData,
-        changes = differences
-    )
-}
+//fun WordEntity.compareWithDefaultUpdateWordData(
+//    idOfWordToUpdate: UUID,
+//    differences: WordDataChanges = WordDataChanges()
+//) {
+//    id shouldBe idOfWordToUpdate
+//
+//    detectChanges(
+//        before = UpdateWordData,
+//        changes = differences
+//    )
+//}
