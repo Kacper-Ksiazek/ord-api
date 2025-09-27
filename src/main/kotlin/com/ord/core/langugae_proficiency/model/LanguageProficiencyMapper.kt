@@ -24,7 +24,7 @@ class LanguageProficiencyMapper(
 
     override fun toDTO(entity: LanguageProficiencyEntity): LanguageProficiencyDTO {
         return LanguageProficiencyDTO(
-            id = entity.id,
+            id = entity.id ?: error("Language proficiency ID cannot be null"),
 
             language = entity.language,
             level = entity.level,

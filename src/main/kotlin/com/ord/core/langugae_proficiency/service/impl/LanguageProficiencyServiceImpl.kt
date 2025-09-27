@@ -13,10 +13,9 @@ import java.util.*
 
 @Service
 class LanguageProficiencyServiceImpl(
-    private val repository: LanguageProficiencyRepository,
+    private val languageProficiencyRepository: LanguageProficiencyRepository,
 ) : LanguageProficiencyService {
-    override val userRepository: UserResourceRepository<LanguageProficiencyEntity> = repository
-    override val crudRepository: ReactiveCrudRepository<LanguageProficiencyEntity, UUID> = repository
+    override val repository: LanguageProficiencyRepository = languageProficiencyRepository
 
     override fun findUserProficiencyInLanguage(
         userId: UUID,

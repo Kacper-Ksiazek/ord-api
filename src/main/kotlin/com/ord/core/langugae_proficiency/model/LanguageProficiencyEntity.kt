@@ -12,7 +12,7 @@ import java.util.*
 @Table("language_proficiencies")
 data class LanguageProficiencyEntity(
     @Id
-    override var id: UUID = UUID.randomUUID(),
+    override var id: UUID? = null,
 
     val language: LanguageName,
     var level: LanguageProficiencyLevel,

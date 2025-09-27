@@ -8,9 +8,8 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import java.util.*
 
-interface LanguageProficiencyRepository :
-    UserResourceRepository<LanguageProficiencyEntity>,
-    ReactiveCrudRepository<LanguageProficiencyEntity, UUID> {
+interface LanguageProficiencyRepository : UserResourceRepository<LanguageProficiencyEntity> {
+
     @Query(
         """
         SELECT * FROM language_proficiencies 
