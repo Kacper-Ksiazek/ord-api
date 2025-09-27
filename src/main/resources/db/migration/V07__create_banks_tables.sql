@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS bank_groups
 (
-    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id         UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
 
     name       VARCHAR(64) NOT NULL,
     -- Color in hex format, e.g. #FF0000 ( 7 characters  long )
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS bank_groups
 
 CREATE TABLE IF NOT EXISTS banks
 (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id          UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
 
     name        VARCHAR(64)  NOT NULL,
     description VARCHAR(255) NOT NULL,
