@@ -28,7 +28,7 @@ import java.time.Instant
 import java.util.*
 
 @Repository
-class WordRepositoryImpl(
+class WordRepositoryCustomMethodsImpl(
     template: R2dbcEntityTemplate
 ) : WordRepositoryCustomMethods {
     private val databaseClient: DatabaseClient = template.databaseClient
