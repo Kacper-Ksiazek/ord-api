@@ -61,7 +61,7 @@ class WordsAPIClient(
         body: UpdateWordRequest,
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<WordDTO?> {
-        return put(
+        return patch(
             url = "$baseUrl/$id",
             body = body,
             user = user,

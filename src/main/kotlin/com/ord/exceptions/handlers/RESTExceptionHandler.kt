@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.server.ServerWebInputException
+import org.springframework.web.server.MethodNotAllowedException
 
 
 @ControllerAdvice
@@ -117,6 +118,23 @@ class RESTExceptionHandler {
 
         Console.printRed("\n🚨 [$status] JSON Decoding Error: $message")
         logger.error("JSON decoding error: $message", e)
+
+        return ResponseEntity.status(status).body(errorResponse)
+    }
+
+    @ExceptionHandler(MethodNotAllowedException::class)
+    fun handleMethodNotAllowedException(e: MethodNotAllowedException): ResponseEntity<HTTPErrorResponse> {
+        val status = HttpStatus.METHOD_NOT_ALLOWED.value()
+        val supportedMethods = e.supportedMethods.joinToString(", ") { it.name() }
+        val message = "HTTP method is not supported for this endpoint. Supported methods: $supportedMethods"
+
+        val errorResponse = HTTPErrorResponse(
+            message = message,
+            status = status
+        )
+
+        Console.printRed("\n🚨 [$status] Method Not Allowed: $message")
+        logger.error("Method not allowed: $message", e)
 
         return ResponseEntity.status(status).body(errorResponse)
     }

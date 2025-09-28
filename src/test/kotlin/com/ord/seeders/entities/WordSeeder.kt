@@ -27,7 +27,7 @@ class WordSeeder(
 
     fun seedOneEntityForUser(
         userId: UUID,
-        bankId: UUID?,
+        bankId: UUID? = null,
         language: LanguageName = LanguageName.ENGLISH
     ): WordEntity {
         val mockEntity: WordEntity = wordMockFactory.mockEntity(userId = userId)

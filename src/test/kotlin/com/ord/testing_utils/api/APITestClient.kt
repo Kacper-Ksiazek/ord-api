@@ -79,6 +79,28 @@ abstract class APITestClient(
     }
 
 
+    fun <TResponseBody> patch(
+        url: String,
+        body: Any?,
+        user: MockedAuthenticatedUser?,
+        responseBodyType: ParameterizedTypeReference<TResponseBody>? = null,
+    ): APIClientResponse<TResponseBody?> {
+        return webClient
+            .patch()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .apply {
+                withAuth(user)
+
+                if (body != null) {
+                    this.bodyValue(body)
+                }
+            }
+            .exchange()
+            .toAPIClientResponse(responseBodyType)
+    }
+
+
     fun <TResponseBody> delete(
         url: String,
         user: MockedAuthenticatedUser?,
