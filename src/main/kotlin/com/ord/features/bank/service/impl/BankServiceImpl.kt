@@ -21,10 +21,6 @@ class BankServiceImpl(
         bankToCreate: CreateBankRequest?,
         userId: UUID
     ): Mono<BankEntity?> {
-        if (bankToCreate != null && bankId != null) {
-            return Mono.error(BadRequestException("You cannot create a new bank and use an existing bank at the same time"))
-        }
-
         return when {
             bankId != null -> {
                 bankRepository
@@ -49,10 +45,7 @@ class BankServiceImpl(
                 )
             }
 
-            else -> {
-                @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-                Mono.just(null as BankEntity?)
-            }
+            else -> Mono.error(BadRequestException("Either bankId or bankToCreate must be provided"))
         }
     }
 }

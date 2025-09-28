@@ -9,6 +9,7 @@ import com.ord.core.word.api.requests.dto.UnsafeGetManyWordsRequest
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.requests.dto.CreateWordRequest
 import com.ord.core.word.api.requests.dto.UpdateWordRequest
+import com.ord.core.word.api.requests.dto.ChangeBankForSingleWordRequest
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
@@ -21,6 +22,7 @@ import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
 import com.ord.core.word.repository.WordRepository
 import com.ord.features.bank.model.BankEntity
+import com.ord.features.bank.repository.BankRepository
 import com.ord.features.bank.service.BankService
 import com.ord.seeders.entities.BankGroupSeeder
 import com.ord.seeders.entities.BankSeeder
@@ -56,6 +58,7 @@ import java.util.*
 @DisplayName("- WordsController")
 class TestWordsController @Autowired constructor(
     private val wordRepository: WordRepository,
+    private val bankRepository: BankRepository,
     private val bankSeeder: BankSeeder,
     private val bankService: BankService,
     private val userSeeder: UserSeeder,
@@ -1400,7 +1403,6 @@ class TestWordsController @Autowired constructor(
         }
     }
 
-    /* MIGRATION STEP 5
     @Nested
     @DisplayName("[DELETE] /api/v1/words/{id} - delete a word")
     inner class DeleteWordTests {
@@ -1409,20 +1411,28 @@ class TestWordsController @Autowired constructor(
         inner class Positive {
             @Test
             fun `200 - Word can be deleted`() {
-                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id, bankId = null)
 
-                wordService.findById(id = word.id, userId = authenticatedUser.userInfo.id) shouldNotBe null
+                // Verify word exists before deletion
+                val wordBeforeDelete = wordRepository.findByIdAndUserId(
+                    id = word.id!!,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                wordBeforeDelete shouldNotBe null
 
-                val request = wordRequestFactory.deleteWordRequestWithNulls(
-                    wordId = word.id,
-                    authenticatedUser = authenticatedUser
+                val response = wordsAPIClient.deleteWord(
+                    id = word.id,
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
+                response.status shouldBe HttpStatus.OK
 
-                wordService.findById(id = word.id, userId = authenticatedUser.userInfo.id) shouldBe null
+                // Verify word was deleted
+                val wordAfterDelete = wordRepository.findByIdAndUserId(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                wordAfterDelete shouldBe null
             }
         }
 
@@ -1430,59 +1440,333 @@ class TestWordsController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `403 - Word cannot be deleted by an anonymous user`() {
-                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+            fun `401 - Word cannot be deleted by an anonymous user`() {
+                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id, bankId = null)
 
-                wordService.findById(id = word.id, userId = authenticatedUser.userInfo.id) shouldNotBe null
+                // Verify word exists before deletion attempt
+                val wordBeforeDelete = wordRepository.findByIdAndUserId(
+                    id = word.id!!,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                wordBeforeDelete shouldNotBe null
 
-                val request = wordRequestFactory.deleteWordRequestWithNulls(
-                    wordId = word.id
+                val response = wordsAPIClient.deleteWord(
+                    id = word.id,
+                    user = null
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
+                response.status shouldBe HttpStatus.UNAUTHORIZED
 
-
-                wordService.findById(id = word.id, userId = authenticatedUser.userInfo.id) shouldNotBe null
+                // Verify word still exists after failed deletion
+                val wordAfterDelete = wordRepository.findByIdAndUserId(
+                    id = word.id,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                wordAfterDelete shouldNotBe null
             }
 
             @Test
             fun `404 - Word can be deleted only by its owner`() {
-                val anotherUser: UserEntity = userSeeder.seedOneEntity()
+                val anotherUser = userSeeder.seedOneEntity()
+                val word = wordSeeder.seedOneEntityForUser(anotherUser.id!!, bankId = null)
 
-                val word = wordSeeder.seedOneEntityForUser(anotherUser)
+                // Verify word exists for the other user
+                val wordBeforeDelete = wordRepository.findByIdAndUserId(
+                    id = word.id!!,
+                    userId = anotherUser.id
+                ).block()
+                wordBeforeDelete shouldNotBe null
 
-                wordService.findById(id = word.id, userId = anotherUser.id) shouldNotBe null
-
-                val request = wordRequestFactory.deleteWordRequestWithNulls(
-                    wordId = word.id,
-                    authenticatedUser = authenticatedUser
+                val response = wordsAPIClient.deleteWord(
+                    id = word.id,
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
+                response.status shouldBe HttpStatus.NOT_FOUND
 
-                wordService.findById(id = word.id, userId = anotherUser.id) shouldNotBe null
+                // Verify word still exists for the other user
+                val wordAfterDelete = wordRepository.findByIdAndUserId(
+                    id = word.id,
+                    userId = anotherUser.id
+                ).block()
+                wordAfterDelete shouldNotBe null
             }
 
             @Test
             fun `404 - Cannot remove non existing word`() {
-                val request = wordRequestFactory.deleteWordRequestWithNulls(
-                    wordId = UUID.randomUUID(),
-                    authenticatedUser = authenticatedUser
+                val response = wordsAPIClient.deleteWord(
+                    id = UUID.randomUUID(),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
         }
     }
-     */
 
-    /* MIGRATION STEP 6
+    @Nested
+    @DisplayName("[POST] /api/v1/words/{id}/change-bank - change word's bank")
+    inner class ChangeSingleWordBankTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - Word's bank can be changed`() {
+                val firstBank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val secondBank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val wordEntity = wordSeeder.seedOneEntityForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = firstBank.id
+                )
+
+                val response = wordsAPIClient.changeWordBank(
+                    id = wordEntity.id!!,
+                    body = ChangeBankForSingleWordRequest(bankId = secondBank.id),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                // Verify word's bank was changed in database
+                val updatedWord = wordRepository.findByIdAndUserId(
+                    id = wordEntity.id,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                updatedWord shouldNotBe null
+                updatedWord!!.bankId shouldBe secondBank.id
+            }
+
+            @Test
+            fun `200 - Word's bank can be changed to newly created bank`() {
+                val newBankName = "NEW_EXTRA_BANK_NAME"
+                val initialBank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val wordEntity = wordSeeder.seedOneEntityForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = initialBank.id
+                )
+                initialBank.name shouldNotBe newBankName
+
+                val response = wordsAPIClient.changeWordBank(
+                    id = wordEntity.id!!,
+                    body = ChangeBankForSingleWordRequest(
+                        bankToCreate = CreateBankRequest(
+                            name = newBankName,
+                            description = "x".repeat(64)
+                        )
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                // Verify word's bank was changed to new bank in database
+                val updatedWord = wordRepository.findByIdAndUserId(
+                    id = wordEntity.id,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                updatedWord shouldNotBe null
+                updatedWord!!.bankId shouldNotBe initialBank.id
+                updatedWord.bankId shouldNotBe null
+                // Verify new bank was created with correct name
+                val newBank = bankRepository.findByIdAndUserId(
+                    id = updatedWord.bankId!!,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                newBank shouldNotBe null
+                newBank!!.name shouldBe newBankName
+            }
+
+            @Test
+            fun `200 - Word's bank can be change from null to already existing bank`() {
+                val wordEntity = wordSeeder.seedOneEntityForUser(
+                    userId = authenticatedUser.userInfo.id
+                )
+                val newBank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                // Verify word initially has no bank
+                val wordBeforeChange = wordRepository.findByIdAndUserId(
+                    id = wordEntity.id!!,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                wordBeforeChange shouldNotBe null
+                wordBeforeChange!!.bankId shouldBe null
+
+                val response = wordsAPIClient.changeWordBank(
+                    id = wordEntity.id,
+                    body = ChangeBankForSingleWordRequest(bankId = newBank.id),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                // Verify word's bank was set
+                val updatedWord = wordRepository.findByIdAndUserId(
+                    id = wordEntity.id,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                updatedWord shouldNotBe null
+                updatedWord!!.bankId shouldBe newBank.id
+            }
+
+            @Test
+            fun `200 - Word's bank can be change from null to newly created bank`() {
+                val newBankName = "NEW_EXTRA_BANK_NAME"
+                val wordEntity = wordSeeder.seedOneEntityForUser(
+                    userId = authenticatedUser.userInfo.id
+                )
+
+                val response = wordsAPIClient.changeWordBank(
+                    id = wordEntity.id!!,
+                    body = ChangeBankForSingleWordRequest(
+                        bankToCreate = CreateBankRequest(
+                            name = newBankName,
+                            description = "x".repeat(64)
+                        )
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                // Verify word's bank was set to new bank
+                val updatedWord = wordRepository.findByIdAndUserId(
+                    id = wordEntity.id,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                updatedWord shouldNotBe null
+                updatedWord!!.bankId shouldNotBe null
+                // Verify new bank was created with correct name
+                val newBank = bankRepository.findByIdAndUserId(
+                    id = updatedWord.bankId!!,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                newBank shouldNotBe null
+                newBank!!.name shouldBe newBankName
+            }
+
+            @Test
+            fun `200 - Word's bank can be unassigned`() {
+                val initialBank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val wordEntity = wordSeeder.seedOneEntityForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = initialBank.id
+                )
+                // Verify word initially has a bank
+                val wordBeforeChange = wordRepository.findByIdAndUserId(
+                    id = wordEntity.id!!,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                wordBeforeChange shouldNotBe null
+                wordBeforeChange!!.bankId shouldBe initialBank.id
+
+                val response = wordsAPIClient.changeWordBank(
+                    id = wordEntity.id,
+                    body = ChangeBankForSingleWordRequest(),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                // Verify word's bank was unassigned
+                val updatedWord = wordRepository.findByIdAndUserId(
+                    id = wordEntity.id,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                updatedWord shouldNotBe null
+                updatedWord!!.bankId shouldBe null
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `401 - Anonymous user cannot change word's bank`() {
+                val wordEntity = wordSeeder.seedOneEntity()
+
+                val response = wordsAPIClient.changeWordBank(
+                    id = wordEntity.id!!,
+                    body = ChangeBankForSingleWordRequest(),
+                    user = null
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `404 - Word's bank cannot be changed by other user than the one who created it`() {
+                val anotherUser = userSeeder.seedOneEntity()
+                val wordEntity = wordSeeder.seedOneEntityForUser(anotherUser.id!!)
+
+                val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
+
+                val response = wordsAPIClient.changeWordBank(
+                    id = wordEntity.id!!,
+                    body = ChangeBankForSingleWordRequest(
+                        bankId = bankOfAnotherUser.id
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
+            }
+
+            @Test
+            fun `404 - Word's bank cannot be changed if word does not exist`() {
+                val response = wordsAPIClient.changeWordBank(
+                    id = UUID.randomUUID(),
+                    body = ChangeBankForSingleWordRequest(),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
+            }
+
+            @Test
+            fun `404 - Word's bank cannot be changed if bank does not exist`() {
+                val wordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
+
+                val response = wordsAPIClient.changeWordBank(
+                    id = wordEntity.id!!,
+                    body = ChangeBankForSingleWordRequest(bankId = UUID.randomUUID()),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
+            }
+
+            @Test
+            fun `404 - Word's bank cannot be changed if bank does not belong to the user`() {
+                val anotherUser = userSeeder.seedOneEntity()
+                val wordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
+                val bank = bankSeeder.seedOneEntityForUser(anotherUser)
+
+                val response = wordsAPIClient.changeWordBank(
+                    id = wordEntity.id!!,
+                    body = ChangeBankForSingleWordRequest(bankId = bank.id),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
+            }
+
+            @Test
+            fun `400 - Word's bank cannot be changed if both bankId and bankToCreate are specified`() {
+                val wordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
+                val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val response = wordsAPIClient.changeWordBank(
+                    id = wordEntity.id!!,
+                    body = ChangeBankForSingleWordRequest(
+                        bankId = bank.id,
+                        bankToCreate = CreateBankRequest(
+                            name = "Test Bank",
+                            description = "Test Description"
+                        )
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+        }
+    }
+
+    /*
     @Nested
     @DisplayName("[POST] /api/v1/words/{id}/change-bank - change word's bank")
     inner class ChangeSingleWordBankTests {

@@ -238,11 +238,17 @@ class WordRepositoryImpl(
             WHERE id = :wordId AND user_id = :userId
         """
 
-        return databaseClient.sql(updateQuery)
+        val spec = databaseClient.sql(updateQuery)
             .bind("wordId", wordId)
-            .apply { if (bankId != null) bind("bankId", bankId) else bindNull("bankId", UUID::class.java) }
             .bind("userId", userId)
-            .fetch()
+
+        val finalSpec = if (bankId != null) {
+            spec.bind("bankId", bankId)
+        } else {
+            spec.bindNull("bankId", UUID::class.java)
+        }
+
+        return finalSpec.fetch()
             .rowsUpdated()
             .map { it.toInt() }
     }
