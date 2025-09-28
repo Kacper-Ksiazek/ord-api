@@ -69,14 +69,15 @@ class ConversationCRUDFacadeImpl(
         userId: UUID,
         conversationId: UUID
     ): Mono<ResponseEntity<ConversationDTO>> {
-        return conversationService.findByIdOrFail(
-            id = conversationId,
-            userId = userId
-        )
-            .map { conversationEntity ->
+        return conversationService
+            .findByIdOrFailWithMessages(
+                id = conversationId,
+                userId = userId
+            )
+            .map { conversation ->
                 ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(conversationEntity.toDTO())
+                    .body(conversation)
             }
     }
 
