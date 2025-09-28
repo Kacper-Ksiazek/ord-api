@@ -13,6 +13,7 @@ import com.ord.core.word.model.WordDTO
 import com.ord.core.word.model.WordEntity
 import com.ord.core.word.model.WordMapper
 import com.ord.core.word.service.WordService
+import com.ord.features.bank.model.BankEntity
 import com.ord.features.bank.service.BankService
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.extensions.convertToSetExplicitly
@@ -20,6 +21,7 @@ import io.r2dbc.postgresql.codec.Json
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
+import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
 import java.util.*
 
@@ -94,7 +96,7 @@ class WordCRUDFacadeImpl(
                     useCases = Json.of(objectMapper.writeValueAsString(body.useCases)),
 
                     userId = user.id,
-                    bankId = bank?.id
+                    bankId = bank.value?.id
                 )
 
                 wordService.saveNewWord(
@@ -137,7 +139,7 @@ class WordCRUDFacadeImpl(
                         useCases = body.useCases?.let { Json.of(objectMapper.writeValueAsString(it)) }
                             ?: currentWord.useCases,
 
-                        bankId = bank?.id ?: currentWord.bankId
+                        bankId = bank.value?.id ?: currentWord.bankId
                     )
                 }
             }

@@ -6,8 +6,6 @@ import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.model.BankEntity
 import com.ord.features.bank.repository.BankRepository
 import com.ord.features.bank.service.BankService
-import com.ord.shared.repositories.UserResourceRepository
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.util.*
@@ -51,7 +49,10 @@ class BankServiceImpl(
                 )
             }
 
-            else -> Mono.error(BadRequestException("Either bankId or bankToCreate must be provided"))
+            else -> {
+                @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+                Mono.just(null as BankEntity?)
+            }
         }
     }
 }

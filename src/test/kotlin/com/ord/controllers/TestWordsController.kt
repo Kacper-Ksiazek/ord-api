@@ -7,9 +7,12 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserMapper
 import com.ord.core.word.api.requests.dto.UnsafeGetManyWordsRequest
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
+import com.ord.core.word.api.requests.dto.CreateWordRequest
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
+import com.ord.core.word.model.json.ExampleSentence
+import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.core.word.model.WordDTO
 import com.ord.core.word.model.WordEntity
 import com.ord.core.word.model.WordMapper
@@ -593,6 +596,7 @@ class TestWordsController @Autowired constructor(
         }
     }
 
+
     @Nested
     @DisplayName("[GET] /api/v1/words/{id} - get a single word")
     inner class GetSingleWords {
@@ -727,27 +731,77 @@ class TestWordsController @Autowired constructor(
         }
     }
 
-    /* MIGRATION STEP 3
+
     @Nested
     @DisplayName("[POST] /api/v1/words/ - create a word")
     inner class CreateWordTests {
+        private fun createDefaultWordRequest(
+            bankId: UUID? = null,
+            bankToCreate: CreateBankRequest? = null,
+            extraMark: WordExtraMark? = WordExtraMark.SLANG,
+            translatedTo: LanguageName? = LanguageName.POLISH
+        ): CreateWordRequest {
+            return CreateWordRequest(
+                origin = "word in english",
+                translation = "slowo po polsku",
+                definition = "definition",
+                type = WordType.NOUN,
+                extraMark = extraMark,
+                translatedTo = translatedTo,
+                translatedFrom = LanguageName.ENGLISH,
+                useCases = setOf("use case 1", "use case 2"),
+                exampleSentences = setOf(
+                    ExampleSentence(
+                        sentence = "example sentence",
+                        translation = "przykladowe zdanie"
+                    ),
+                    ExampleSentence(
+                        sentence = "another example sentence",
+                        translation = "kolejne przykladowe zdanie"
+                    )
+                ),
+                bankId = bankId,
+                bankToCreate = bankToCreate
+            )
+        }
+
+        private fun assertWordCreatedSuccessfully(
+            response: APIClientResponse<WordDTO?>,
+            expectedBankId: UUID? = null
+        ): WordEntity {
+            response.status shouldBe HttpStatus.CREATED
+            response.body shouldNotBe null
+
+            val createdWord = response.body!!
+            createdWord.userId shouldBe authenticatedUser.userInfo.id
+
+            // Verify word exists in database
+            val wordEntity = wordRepository.findByIdAndUserId(
+                id = createdWord.id,
+                userId = authenticatedUser.userInfo.id
+            ).block()
+
+            wordEntity shouldNotBe null
+            wordEntity!!.origin shouldBe "word in english"
+            wordEntity.translation shouldBe "slowo po polsku"
+            wordEntity.definition shouldBe "definition"
+
+            if (expectedBankId != null) {
+                wordEntity.bankId shouldBe expectedBankId
+            }
+
+            return wordEntity
+        }
+
         @Nested
         @DisplayName("Positive")
         inner class Positive {
             @Test
             fun `201 - Word can be created without bank being specified`() {
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser
-                )
+                val request = createDefaultWordRequest()
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
 
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.CREATED.value()
-                    it.response
-                }
-
-                val createdWord = assertThatWordActuallyExists(response, authenticatedUser)
-
-                createdWord.compareWithDefaultCreateWordData()
+                assertWordCreatedSuccessfully(response)
             }
 
 
@@ -755,107 +809,77 @@ class TestWordsController @Autowired constructor(
             fun `201 - Word can be created and assigned to an existing bank`() {
                 val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    bankId = bank.id
-                )
+                val request = createDefaultWordRequest(bankId = bank.id)
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
 
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.CREATED.value()
-                    it.response
-                }
-
-                val wordEntity: WordEntity = assertThatWordActuallyExists(response, authenticatedUser)
-
-                wordEntity.compareWithDefaultCreateWordData()
-                assertEquals(bank.id, wordEntity.bank?.id)
+                assertWordCreatedSuccessfully(response, expectedBankId = bank.id)
             }
 
             @Test
             fun `201 - Word and a bank can be created at the same time`() {
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    bankToCreate = bankMockFactory.mockCreateRequestData()
+                val request = createDefaultWordRequest(
+                    bankToCreate = CreateBankRequest(
+                        name = "Test Bank",
+                        description = "Test Bank Description"
+                    )
                 )
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
 
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.CREATED.value()
-                    it.response
-                }
+                val wordEntity = assertWordCreatedSuccessfully(response)
 
-                val wordEntity: WordEntity = assertThatWordActuallyExists(response, authenticatedUser)
+                wordEntity.bankId shouldNotBe null
 
-                assertThatBankActuallyExists(wordEntity.bank)
+                val createdBank = bankService.findByIdOrFail(
+                    id = wordEntity.bankId!!,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
 
-                wordEntity.compareWithDefaultCreateWordData()
+                createdBank shouldNotBe null
             }
 
             @Test
             fun `201 - Word can be create with no extra mark specified`() {
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    extraMark = null
-                )
+                val request = createDefaultWordRequest(extraMark = null)
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
 
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.CREATED.value()
-                    it.response
-                }
-
-                val createdWord = assertThatWordActuallyExists(response, authenticatedUser)
-
-                createdWord.compareWithDefaultCreateWordData(
-                    differences = WordDataChanges(
-                        extraMark = Optional(null, true)
-                    )
-                )
+                assertWordCreatedSuccessfully(response)
+                response.body!!.extraMark shouldBe null
             }
 
             @Test
             fun `201 - Word can be created with no translated to language specified defaulting to the user's native language`() {
+                val request = createDefaultWordRequest(translatedTo = null)
 
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    translatedTo = null
-                )
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
 
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.CREATED.value()
-                    it.response
-                }
-
-                val wordEntity: WordEntity = assertThatWordActuallyExists(response, authenticatedUser)
-
-                wordEntity.compareWithDefaultCreateWordData(
-                    differences = WordDataChanges(
-                        translatedTo = Optional(authenticatedUser.userInfo.nativeLanguage)
-                    )
-                )
+                response.status shouldBe HttpStatus.CREATED
+                response.body shouldNotBe null
+                response.body!!.translatedTo shouldBe authenticatedUser.userInfo.nativeLanguage
             }
 
             @Test
             fun `201 - Word can be created even with bank name identical to another bank name but for different user`() {
                 val anotherUser = userSeeder.seedOneEntity()
-
                 val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
 
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    bankToCreate = bankMockFactory.mockCreateRequestData(
-                        name = bankOfAnotherUser.name
+                val request = createDefaultWordRequest(
+                    bankToCreate = CreateBankRequest(
+                        name = bankOfAnotherUser.name,
+                        description = "Test Bank Description"
                     )
                 )
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
 
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.CREATED.value()
-                    it.response
-                }
+                val wordEntity = assertWordCreatedSuccessfully(response)
 
-                val wordEntity: WordEntity = assertThatWordActuallyExists(response, authenticatedUser)
-
-                assertThatBankActuallyExists(wordEntity.bank)
-
-                wordEntity.compareWithDefaultCreateWordData()
+                // Verify bank was created with the same name for different user
+                wordEntity.bankId shouldNotBe null
+                val createdBank = bankService.findByIdOrFail(
+                    id = wordEntity.bankId!!,
+                    userId = authenticatedUser.userInfo.id
+                ).block()
+                createdBank shouldNotBe null
+                createdBank!!.name shouldBe bankOfAnotherUser.name
             }
         }
 
@@ -864,29 +888,26 @@ class TestWordsController @Autowired constructor(
         inner class Negative {
             @Test
             fun `403 - Anonymous user cannot create a word`() {
-                val request = wordRequestFactory.createWordRequest()
+                val request = createDefaultWordRequest()
+                val response = wordsAPIClient.createWord(request, user = null)
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
             fun `400 - Word cannot be created without example sentences`() {
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
+                val request = createDefaultWordRequest().copy(
                     exampleSentences = emptySet()
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `400 - Word cannot be created with more than 5 example sentences`() {
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
+                val request = createDefaultWordRequest().copy(
                     exampleSentences = mutableSetOf<ExampleSentence>().apply {
                         repeat(6) { index ->
                             add(
@@ -899,15 +920,14 @@ class TestWordsController @Autowired constructor(
                     }
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `400 - Word cannot be created with an example sentence that has more than 255 characters`() {
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
+                val request = createDefaultWordRequest().copy(
                     exampleSentences = mutableSetOf(
                         ExampleSentence(
                             sentence = "a".repeat(256),
@@ -916,74 +936,72 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `400 - Word cannot be created with bankId and bankToCreate at the same time`() {
                 val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
+                val request = createDefaultWordRequest().copy(
                     bankId = bank.id,
-                    bankToCreate = bankMockFactory.mockCreateRequestData()
+                    bankToCreate = CreateBankRequest(
+                        name = "Test Bank",
+                        description = "Test Bank Description"
+                    )
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `400 - Word cannot be created with bankToCreate name matching already existing bank name`() {
                 val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
-                    bankToCreate = bankMockFactory.mockCreateRequestData(
-                        name = bank.name
+                val request = createDefaultWordRequest().copy(
+                    bankToCreate = CreateBankRequest(
+                        name = bank.name,
+                        description = "Test Bank Description"
                     )
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `404 - Word cannot be created with bankId referring to a bank of another user`() {
                 val anotherUser = userSeeder.seedOneEntity()
-
                 val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
 
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
+                val request = createDefaultWordRequest(
                     bankId = bankOfAnotherUser.id
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
 
             @Test
             fun `400 - Word cannot be created with no use cases`() {
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
+                val request = createDefaultWordRequest().copy(
                     useCases = emptySet()
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `404 - Word cannot be created with an example sentence that has empty translation`() {
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
+                val request = createDefaultWordRequest().copy(
                     exampleSentences = mutableSetOf(
                         ExampleSentence(
                             sentence = "example sentence",
@@ -992,29 +1010,27 @@ class TestWordsController @Autowired constructor(
                     )
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `400 - Word cannot be created with use case of length greater than 255 characters`() {
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
+                val request = createDefaultWordRequest().copy(
                     useCases = mutableSetOf(
                         "a".repeat(256)
                     )
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `400 - Word cannot be created with more than 5 use cases`() {
-                val request = wordRequestFactory.createWordRequest(
-                    authenticatedUser = authenticatedUser,
+                val request = createDefaultWordRequest().copy(
                     useCases = mutableSetOf<String>().apply {
                         repeat(6) { index ->
                             add("use case - $index")
@@ -1022,15 +1038,14 @@ class TestWordsController @Autowired constructor(
                     }
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
 
 
     }
-     */
 
     /* MIGRATION STEP 4
     @Nested

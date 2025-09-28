@@ -121,8 +121,26 @@ abstract class APITestClient(
             }
         } catch (ex: Exception) {
             Console.printRed("\uD83D\uDEA8 [e2e] Failed to convert response body")
+            Console.printRed("Exception type: ${ex::class.simpleName}")
+            Console.printRed("Exception message: ${ex.message}")
+            Console.printRed("HTTP Status: ${result.status}")
+            Console.printRed("Expected response type: ${responseBodyType?.type}")
+            Console.printRed("Response headers: ${result.responseHeaders}")
+            Console.printRed("Raw response body:")
 
-            println(result.responseBody)
+            val rawBody = try {
+                // Try to get the raw response as string for debugging
+                this.expectBody(String::class.java)
+                    .returnResult()
+                    .responseBody ?: "Empty response body"
+            } catch (bodyEx: Exception) {
+                "Failed to read raw body: ${bodyEx.message}"
+            }
+
+            Console.printRed("  $rawBody")
+            Console.printRed("Stack trace:")
+            ex.printStackTrace()
+            Console.printRed("--- End of error details ---")
 
             null
         }

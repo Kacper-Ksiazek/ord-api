@@ -1,10 +1,10 @@
 package com.ord.core.word.api.facades.internal
 
-import com.ord.core.user.model.UserEntity
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.model.BankEntity
 import com.ord.features.bank.service.BankService
+import com.ord.shared.utils.data_classes.NonRequired
 import org.springframework.dao.DataIntegrityViolationException
 import reactor.core.publisher.Mono
 import java.util.*
@@ -15,10 +15,6 @@ internal fun getBankFromRequest(
     bankToCreate: CreateBankRequest?,
     userId: UUID,
 ): Mono<BankEntity> {
-    if (bankToCreate == null && bankId == null) {
-        return Mono.error(BadRequestException("Either bankToCreate or bankId has to be specifed"))
-    }
-
     if (bankToCreate != null && bankId != null) {
         return Mono.error(BadRequestException("You cannot create a new bank and use an existing bank at the same time"))
     }
@@ -39,18 +35,21 @@ internal fun getBankFromRequestOrNull(
     bankId: UUID?,
     bankToCreate: CreateBankRequest?,
     userId: UUID,
-): Mono<BankEntity?> {
-    if (bankToCreate != null && bankId != null) {
-        return Mono.error(BadRequestException("You cannot create a new bank and use an existing bank at the same time"))
+): Mono<NonRequired<BankEntity>> {
+    return Mono.defer {
+        if (bankToCreate != null && bankId != null) {
+            Mono.error(BadRequestException("You cannot create a new bank and use an existing bank at the same time"))
+        } else if (bankToCreate == null && bankId == null) {
+            Mono.just(NonRequired(null))
+        } else bankService
+            .findByIdOrCreate(
+                bankId = bankId,
+                bankToCreate = bankToCreate,
+                userId = userId
+            )
+            .map { NonRequired(it) }
+            .onErrorMap(DataIntegrityViolationException::class.java) {
+                BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
+            }
     }
-
-    return bankService
-        .findByIdOrCreate(
-            bankId = bankId,
-            bankToCreate = bankToCreate,
-            userId = userId
-        )
-        .onErrorMap(DataIntegrityViolationException::class.java) {
-            BadRequestException("The bank with name ${bankToCreate!!.name} already exists for this user")
-        }
 }

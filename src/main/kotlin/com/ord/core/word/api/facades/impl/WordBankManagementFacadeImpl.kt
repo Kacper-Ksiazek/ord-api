@@ -31,7 +31,7 @@ class WordBankManagementFacadeImpl(
         ).flatMap { bank ->
             wordService.changeBankForSingleWord(
                 wordId = id,
-                bankId = bank?.id,
+                bankId = bank.value?.id,
                 userId = user.id
             )
         }.then()
@@ -49,7 +49,7 @@ class WordBankManagementFacadeImpl(
         ).flatMap { bank ->
             wordService.changeBankForMultipleWords(
                 wordIds = body.wordIds,
-                bankId = bank.id,
+                bankId = bank!!.id,
                 userId = user.id
             )
         }.then()
