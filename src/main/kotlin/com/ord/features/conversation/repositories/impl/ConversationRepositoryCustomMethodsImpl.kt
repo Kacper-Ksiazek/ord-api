@@ -5,7 +5,6 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.features.conversation.models.dto.ConversationDTO
 import com.ord.features.conversation.models.dto.ConversationMessageDTO
 import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
-import com.ord.features.conversation.models.entities.ConversationEntity
 import com.ord.features.conversation.models.enums.ConversationAIResponseLength
 import com.ord.features.conversation.models.enums.ConversationGoal
 import com.ord.features.conversation.models.enums.ConversationMessageSender
@@ -15,11 +14,11 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.time.Instant
-import java.util.UUID
+import java.time.OffsetDateTime
+import java.util.*
 
 @Repository
-class ConversationRepositoryImpl(
+class ConversationRepositoryCustomMethodsImpl(
     private val template: R2dbcEntityTemplate
 ) : ConversationRepositoryCustomMethods {
     override fun findRecentTopics(
@@ -111,7 +110,7 @@ class ConversationRepositoryImpl(
                                 sender = ConversationMessageSender.valueOf(row["sender"] as String),
                                 content = row["content"] as String,
                                 feedback = feedback,
-                                createdAt = row["message_created_at"] as Instant
+                                createdAt = (row["message_created_at"] as OffsetDateTime).toInstant()
                             )
                         }.toMutableList()
 
@@ -126,8 +125,8 @@ class ConversationRepositoryImpl(
                             aiResponseLength = ConversationAIResponseLength.valueOf(firstRow["ai_response_length"] as String),
                             additionalContext = firstRow["additional_context"] as String?,
                             messages = messages,
-                            createdAt = firstRow["created_at"] as Instant,
-                            updatedAt = firstRow["updated_at"] as Instant
+                            createdAt = (firstRow["created_at"] as OffsetDateTime).toInstant(),
+                            updatedAt = (firstRow["updated_at"] as OffsetDateTime).toInstant()
                         )
                     )
                 }
