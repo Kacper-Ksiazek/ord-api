@@ -41,7 +41,7 @@ class WordBankManagementFacadeImpl(
         body: ChangeBankForMultipleWordsRequest,
         user: UserDTO
     ): Mono<Void> {
-        return getBankFromRequest(
+        return getBankFromRequestOrNull(
             bankService = bankService,
             userId = user.id,
             bankId = body.bankId,
@@ -49,7 +49,7 @@ class WordBankManagementFacadeImpl(
         ).flatMap { bank ->
             wordService.changeBankForMultipleWords(
                 wordIds = body.wordIds,
-                bankId = bank!!.id,
+                bankId = bank.value?.id,
                 userId = user.id
             )
         }.then()

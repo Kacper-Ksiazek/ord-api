@@ -68,7 +68,6 @@ class WordServiceImpl(
         ).flatMap { result ->
             when {
                 result == 0 -> Mono.error(NotFoundException("No words found for user with id $userId"))
-                result != wordIds.size -> Mono.error(NotFoundException("Not all words found for user with id $userId"))
                 else -> Mono.just(result)
             }
         }

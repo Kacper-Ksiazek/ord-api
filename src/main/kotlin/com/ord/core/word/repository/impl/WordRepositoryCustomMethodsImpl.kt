@@ -199,6 +199,7 @@ class WordRepositoryCustomMethodsImpl(
         language: LanguageName,
         userId: UUID
     ): Mono<CountingSummary> {
+        // language=SQL
         val query = """
             SELECT * FROM count_words_by_field(
                 'created_at', 
@@ -215,6 +216,7 @@ class WordRepositoryCustomMethodsImpl(
         language: LanguageName,
         userId: UUID
     ): Mono<CountingSummary> {
+        // language=SQL
         val query = """
             SELECT * FROM count_words_by_field(
                 'completed_at', 
@@ -232,25 +234,19 @@ class WordRepositoryCustomMethodsImpl(
         bankId: UUID?,
         userId: UUID
     ): Mono<Int> {
-        val updateQuery = """
+        // language=SQL
+        val query = """
             UPDATE words 
             SET bank_id = :bankId 
             WHERE id = :wordId AND user_id = :userId
         """
 
-        val spec = databaseClient.sql(updateQuery)
-            .bind("wordId", wordId)
-            .bind("userId", userId)
-
-        val finalSpec = if (bankId != null) {
-            spec.bind("bankId", bankId)
-        } else {
-            spec.bindNull("bankId", UUID::class.java)
-        }
-
-        return finalSpec.fetch()
-            .rowsUpdated()
-            .map { it.toInt() }
+        return handleChangeBankQuery(
+            query = query,
+            userId = userId,
+            bankId = bankId,
+            params = mapOf("wordId" to wordId)
+        )
     }
 
 
@@ -259,19 +255,19 @@ class WordRepositoryCustomMethodsImpl(
         wordIds: List<UUID>,
         userId: UUID
     ): Mono<Int> {
+        // language=SQL
         val updateQuery = """
             UPDATE words 
             SET bank_id = :bankId 
             WHERE id = ANY(:wordIds) AND user_id = :userId
         """
 
-        return databaseClient.sql(updateQuery)
-            .apply { if (bankId != null) bind("bankId", bankId) else bindNull("bankId", UUID::class.java) }
-            .bind("wordIds", wordIds.toTypedArray())
-            .bind("userId", userId)
-            .fetch()
-            .rowsUpdated()
-            .map { it.toInt() }
+        return handleChangeBankQuery(
+            query = updateQuery,
+            userId = userId,
+            bankId = bankId,
+            params = mapOf("wordIds" to wordIds.toTypedArray())
+        )
     }
 
     override fun findManyWords(
@@ -313,6 +309,7 @@ class WordRepositoryCustomMethodsImpl(
         )
 
         val countQuery = StringBuilder(
+            // language=SQL
             """
                SELECT 
                    COUNT(*)
@@ -322,6 +319,7 @@ class WordRepositoryCustomMethodsImpl(
         )
 
         val selectQuery = StringBuilder(
+            // language=SQL
             """
                 SELECT 
                     ${WordListItem.fields.joinToString(", ") { "words.$it" }},
@@ -390,6 +388,7 @@ class WordRepositoryCustomMethodsImpl(
             }
     }
 
+
     private fun handleCountQuery(
         query: String,
         language: LanguageName,
@@ -407,6 +406,29 @@ class WordRepositoryCustomMethodsImpl(
                     month = (row["month"] as? Number)?.toInt() ?: 0
                 )
             }
+    }
+
+
+    private fun handleChangeBankQuery(
+        query: String,
+        userId: UUID,
+        bankId: UUID?,
+        params: Map<String, Any>
+    ): Mono<Int> {
+        val spec = databaseClient.sql(query)
+            .bind("userId", userId)
+            .bindValues(params)
+
+
+        val finalSpec = if (bankId != null) {
+            spec.bind("bankId", bankId)
+        } else {
+            spec.bindNull("bankId", UUID::class.java)
+        }
+
+        return finalSpec.fetch()
+            .rowsUpdated()
+            .map { it.toInt() }
     }
 
 
@@ -462,5 +484,7 @@ class WordRepositoryCustomMethodsImpl(
         }
 
         return params.toMap()
+
     }
+
 }

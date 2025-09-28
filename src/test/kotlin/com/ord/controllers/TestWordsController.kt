@@ -10,6 +10,7 @@ import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.requests.dto.CreateWordRequest
 import com.ord.core.word.api.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.requests.dto.ChangeBankForSingleWordRequest
+import com.ord.core.word.api.requests.dto.ChangeBankForMultipleWordsRequest
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
@@ -1762,6 +1763,501 @@ class TestWordsController @Autowired constructor(
                 )
 
                 response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/words/change-bank-for-multiple-words - change bank for multiple words")
+    inner class ChangeBankForManyWordsAtTheSameTime {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - Words' bank can be changed from null to an existing bank`() {
+                val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    amount = 5
+                )
+
+                // Verify words initially have no bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe null
+                }
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankId = bank.id,
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+
+                // Verify all words now have the correct bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe bank.id
+                }
+            }
+
+            @Test
+            fun `200 - Words' bank can be changed from null to a newly created bank`() {
+                val bankName = "NEW_EXTRA_BANK_NAME"
+
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    amount = 5
+                )
+
+                // Verify words initially have no bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe null
+                }
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankToCreate = CreateBankRequest(
+                            name = bankName,
+                            description = "x".repeat(64)
+                        ),
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+
+                // Verify all words now have the correct bank and the bank was created
+                var createdBankId: UUID? = null
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldNotBe null
+
+                    if (createdBankId == null) {
+                        createdBankId = word.bankId
+                        val createdBank = bankRepository.findByIdAndUserId(
+                            id = word.bankId!!,
+                            userId = authenticatedUser.userInfo.id
+                        ).block()
+                        createdBank shouldNotBe null
+                        createdBank!!.name shouldBe bankName
+                    } else {
+                        word.bankId shouldBe createdBankId
+                    }
+                }
+            }
+
+            @Test
+            fun `200 - Words' bank can be changed from an existing bank to another existing bank`() {
+                val firstBank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val secondBank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = firstBank.id,
+                    amount = 5
+                )
+
+                // Verify words initially have the first bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe firstBank.id
+                }
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankId = secondBank.id,
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+
+                // Verify all words now have the second bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe secondBank.id
+                }
+            }
+
+            @Test
+            fun `200 - Words' bank can be changed from an existing bank to a newly created bank`() {
+                val newBankName = "NEW_EXTRA_BANK_NAME"
+                val firstBank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = firstBank.id,
+                    amount = 5
+                )
+
+                // Verify words initially have the first bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe firstBank.id
+                }
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankToCreate = CreateBankRequest(
+                            name = newBankName,
+                            description = "x".repeat(64)
+                        ),
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+
+                // Verify all words now have the new bank and the bank was created
+                var createdBankId: UUID? = null
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldNotBe null
+                    word.bankId shouldNotBe firstBank.id
+
+                    if (createdBankId == null) {
+                        createdBankId = word.bankId
+                        val createdBank = bankRepository.findByIdAndUserId(
+                            id = word.bankId!!,
+                            userId = authenticatedUser.userInfo.id
+                        ).block()
+                        createdBank shouldNotBe null
+                        createdBank!!.name shouldBe newBankName
+                    } else {
+                        word.bankId shouldBe createdBankId
+                    }
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `401 - Anonymous user cannot change words' bank`() {
+                val anotherUser = userSeeder.seedOneEntity()
+                val initialBank = bankSeeder.seedOneEntityForUser(anotherUser)
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = anotherUser.id!!,
+                    bankId = initialBank.id,
+                    amount = 3
+                )
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = null
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+
+                // Verify words still have the original bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = anotherUser.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe initialBank.id
+                }
+            }
+
+            @Test
+            fun `404 - Words' bank cannot be changed by other user than the one who created them`() {
+                val anotherUser = userSeeder.seedOneEntity()
+                val initialBank = bankSeeder.seedOneEntityForUser(anotherUser)
+                val bankToChange = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = anotherUser.id!!,
+                    bankId = initialBank.id,
+                    amount = 3
+                )
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankId = bankToChange.id,
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
+
+                // Verify words still have the original bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = anotherUser.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe initialBank.id
+                }
+            }
+
+            @Test
+            fun `404 - Words' bank cannot be changed if bank does not exist`() {
+                val initialBank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = initialBank.id,
+                    amount = 3
+                )
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankId = UUID.randomUUID(),
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
+
+                // Verify words still have the original bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe initialBank.id
+                }
+            }
+
+            @Test
+            fun `404 - Words' bank cannot be changed if bank does not belong to the user`() {
+                val anotherUser = userSeeder.seedOneEntity()
+                val initialBank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
+
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    bankId = initialBank.id,
+                    amount = 3
+                )
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankId = bankOfAnotherUser.id,
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
+
+                // Verify words still have the original bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe initialBank.id
+                }
+            }
+
+            @Test
+            fun `400 - Words' bank cannot be changed if both bankId and bankToCreate are specified`() {
+                val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    amount = 3
+                )
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankId = bank.id,
+                        bankToCreate = CreateBankRequest(
+                            name = "Test Bank",
+                            description = "Test Description"
+                        ),
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+
+                // Verify words still have no bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe null
+                }
+            }
+
+            @Test
+            fun `400 - Words' bank cannot be changed if bankToCreate name is empty`() {
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    amount = 3
+                )
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankToCreate = CreateBankRequest(
+                            name = "",
+                            description = "Test Description"
+                        ),
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+
+                // Verify words still have no bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe null
+                }
+            }
+
+            @Test
+            fun `400 - Words' bank cannot be changed if bankToCreate name is identical to already existing bank name`() {
+                val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    amount = 3
+                )
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankToCreate = CreateBankRequest(
+                            name = bank.name,
+                            description = "Test Description"
+                        ),
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+
+                // Verify words still have no bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe null
+                }
+            }
+
+            @Test
+            fun `400 - Words' bank cannot be changed if bankToCreate description is longer than 255 characters`() {
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    amount = 3
+                )
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankToCreate = CreateBankRequest(
+                            name = "Test Bank",
+                            description = "x".repeat(256)
+                        ),
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+
+                // Verify words still have no bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe null
+                }
+            }
+
+            @Test
+            fun `400 - Words' bank cannot be changed if bankToCreate description is empty`() {
+                val wordEntities = wordSeeder.seedMultipleEntitiesForUser(
+                    userId = authenticatedUser.userInfo.id,
+                    amount = 3
+                )
+
+                val response = wordsAPIClient.changeBankForMultipleWords(
+                    body = ChangeBankForMultipleWordsRequest(
+                        bankToCreate = CreateBankRequest(
+                            name = "Test Bank",
+                            description = ""
+                        ),
+                        wordIds = wordEntities.map { it.id!! }
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+
+                // Verify words still have no bank
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.bankId shouldBe null
+                }
             }
         }
     }
