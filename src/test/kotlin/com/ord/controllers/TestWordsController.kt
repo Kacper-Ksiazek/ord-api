@@ -4,6 +4,7 @@ import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.UserMapper
 import com.ord.core.word.api.requests.dto.UnsafeGetManyWordsRequest
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
@@ -11,6 +12,7 @@ import com.ord.core.word.api.requests.dto.CreateWordRequest
 import com.ord.core.word.api.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.requests.dto.ChangeBankForSingleWordRequest
 import com.ord.core.word.api.requests.dto.ChangeBankForMultipleWordsRequest
+import com.ord.core.word.api.requests.dto.WordBulkActionRequest
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
@@ -45,6 +47,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -1046,6 +1049,7 @@ class TestWordsController @Autowired constructor(
 
     }
 
+
     @Nested
     @DisplayName("[PATCH] /api/v1/words/{id} - update a word")
     inner class UpdateWordTests {
@@ -1404,6 +1408,7 @@ class TestWordsController @Autowired constructor(
         }
     }
 
+
     @Nested
     @DisplayName("[DELETE] /api/v1/words/{id} - delete a word")
     inner class DeleteWordTests {
@@ -1504,6 +1509,7 @@ class TestWordsController @Autowired constructor(
             }
         }
     }
+
 
     @Nested
     @DisplayName("[POST] /api/v1/words/{id}/change-bank - change word's bank")
@@ -1766,6 +1772,7 @@ class TestWordsController @Autowired constructor(
             }
         }
     }
+
 
     @Nested
     @DisplayName("[POST] /api/v1/words/change-bank-for-multiple-words - change bank for multiple words")
@@ -2262,783 +2269,6 @@ class TestWordsController @Autowired constructor(
         }
     }
 
-    /*
-    @Nested
-    @DisplayName("[POST] /api/v1/words/{id}/change-bank - change word's bank")
-    inner class ChangeSingleWordBankTests {
-        @Nested
-        @DisplayName("Positive")
-        inner class Positive {
-            @Test
-            fun `200 - Word's bank can be changed`() {
-                val firstBank: BankEntity = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-                val secondBank: BankEntity = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(firstBank, true)
-                )
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankId = secondBank.id
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
-
-                wordService.findByIdOrFail(
-                    id = wordEntity.id,
-                    userId = authenticatedUser.userInfo.id
-                ).let {
-                    it.bank shouldNotBe null
-                    it.bank!!.id shouldBe secondBank.id
-                }
-            }
-
-            @Test
-            fun `200 - Word's bank can be changed to newly created bank`() {
-                val newBankName = "NEW_EXTRA_BANK_NAME"
-
-                val initialBank: BankEntity = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(initialBank, true)
-                )
-
-                initialBank.name shouldNotBe newBankName
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankToCreate = CreateBankRequest(
-                        name = newBankName,
-                        description = "x".repeat(64)
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
-
-                wordService.findByIdOrFail(
-                    id = wordEntity.id,
-                    userId = authenticatedUser.userInfo.id
-                ).let {
-                    it.bank shouldNotBe null
-                    it.bank!!.id shouldNotBe initialBank.id
-                    it.bank!!.name shouldBe newBankName
-                }
-            }
-
-            @Test
-            fun `200 - Word's bank can be change from null to already existing bank`() {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(null, true)
-                )
-                val newBank: BankEntity = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                wordService.findByIdOrFail(
-                    id = wordEntity.id,
-                    userId = authenticatedUser.userInfo.id
-                ).let {
-                    it.bank shouldBe null
-                }
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankId = newBank.id
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
-
-                wordService.findByIdOrFail(
-                    id = wordEntity.id,
-                    userId = authenticatedUser.userInfo.id
-                ).let {
-                    it.bank shouldNotBe null
-                    it.bank!!.id shouldBe newBank.id
-                }
-            }
-
-            @Test
-            fun `200 - Word's bank can be change from null to newly created bank`() {
-                val newBankName = "NEW_EXTRA_BANK_NAME"
-
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(null, true)
-                )
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankToCreate = CreateBankRequest(
-                        name = newBankName,
-                        description = "x".repeat(64)
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
-
-                wordService.findByIdOrFail(
-                    id = wordEntity.id,
-                    userId = authenticatedUser.userInfo.id
-                ).let {
-                    it.bank shouldNotBe null
-                    it.bank!!.name shouldBe newBankName
-                }
-            }
-
-            @Test
-            fun `200 - Word's bank can be unassigned`() {
-                val initialBank: BankEntity = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(initialBank, true)
-                )
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankToCreate = null,
-                    bankId = null
-                )
-
-                wordService.findByIdOrFail(
-                    id = wordEntity.id,
-                    userId = authenticatedUser.userInfo.id
-                ).let {
-                    it.bank shouldNotBe null
-                }
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
-
-                wordService.findByIdOrFail(
-                    id = wordEntity.id,
-                    userId = authenticatedUser.userInfo.id
-                ).let {
-                    it.bank shouldBe null
-                }
-            }
-        }
-
-        @Nested
-        @DisplayName("Negative")
-        inner class Negative {
-            @Test
-            fun `403 - Anonymous user cannot change word's bank`() {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntity()
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    wordId = wordEntity.id,
-                    authenticatedUser = null
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
-            }
-
-            @Test
-            fun `404 - Word's bank cannot be changed by other user than the one who created it`() {
-                val anotherUser: UserEntity = userSeeder.seedOneEntity()
-
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(anotherUser)
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
-            }
-
-            @Test
-            fun `404 - Word's bank cannot be changed if word does not exist`() {
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = UUID.randomUUID()
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
-            }
-
-            @Test
-            fun `404 - Word's bank cannot be changed if bank does not exist`() {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankId = UUID.randomUUID()
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
-            }
-
-            @Test
-            fun `404 - Word's bank cannot be changed if bank does not belong to the user`() {
-                val anotherUser: UserEntity = userSeeder.seedOneEntity()
-
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-                val bank: BankEntity = bankSeeder.seedOneEntityForUser(anotherUser)
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankId = bank.id
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
-            }
-
-            @Test
-            fun `400 - Word's bank cannot be changed if both bankId and bankToCreate are specified`() {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-                val bank: BankEntity = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankId = bank.id,
-                    bankToCreate = bankMockFactory.mockCreateRequestData()
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-            }
-
-            @Test
-            fun `400 - Word's bank cannot be changed if bankToCreate name is empty`() {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankToCreate = bankMockFactory.mockCreateRequestData(
-                        name = ""
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-            }
-
-            @Test
-            fun `400 - Word's bank cannot be changed if bankToCreate name is identical to already existing bank name`() {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-                val bank: BankEntity = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankToCreate = bankMockFactory.mockCreateRequestData(
-                        name = bank.name
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-            }
-
-            @Test
-            fun `400 - Word's bank cannot be changed if bankToCreate description is longer than 255 characters`() {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankToCreate = bankMockFactory.mockCreateRequestData(
-                        description = "x".repeat(256)
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-            }
-
-            @Test
-            fun `400 - Word's bank cannot be changed if bankToCreate description is empty`() {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
-
-                val request = wordRequestFactory.changeBankForSingleWord(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    bankToCreate = bankMockFactory.mockCreateRequestData(
-                        description = ""
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-            }
-        }
-    }
-     */
-
-    /* MIGRATION STEP 7
-    @Nested
-    @DisplayName("[POST] /api/v1/words/change-bank-for-multiple-words - change bank for multiple words")
-    inner class ChangeBankForManyWordsAtTheSameTime {
-        @Nested
-        @DisplayName("Positive")
-        inner class Positive {
-            @Test
-            fun `200 - Words' bank can be changed from null to an existing bank`() {
-                val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(null, true)
-                )
-
-                wordEntities.forEach {
-                    it.bank shouldBe null
-                }
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankId = bank.id
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
-
-                wordEntities.forEach {
-                    wordService.findByIdOrFail(
-                        id = it.id,
-                        userId = authenticatedUser.userInfo.id
-                    ).let {
-                        bank shouldNotBe null
-                        bank.id shouldBe bank.id
-                    }
-                }
-            }
-
-            @Test
-            fun `200 - Words' bank can be changed from null to a newly created bank`() {
-                val bankName = "NEW_EXTRA_BANK_NAME"
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(null, true)
-                )
-
-                wordEntities.forEach {
-                    it.bank shouldBe null
-                }
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankToCreate = CreateBankRequest(
-                        name = bankName,
-                        description = "x".repeat(64)
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
-
-                wordEntities.forEach {
-                    wordService.findByIdOrFail(
-                        id = it.id,
-                        userId = authenticatedUser.userInfo.id
-                    ).let { word ->
-                        word.bank shouldNotBe null
-                        word.bank!!.name shouldBe bankName
-                    }
-                }
-            }
-
-            @Test
-            fun `200 - Words' bank can be changed from an existing bank to another existing bank`() {
-                val firstBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-                val secondBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(firstBank, true)
-                )
-
-                wordEntities.forEach {
-                    it.bank shouldNotBe null
-                    it.bank!!.id shouldBe firstBank.id
-                }
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankId = secondBank.id
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
-
-                wordEntities.forEach {
-                    wordService.findByIdOrFail(
-                        id = it.id,
-                        userId = authenticatedUser.userInfo.id
-                    ).let { word ->
-                        word.bank shouldNotBe null
-                        word.bank!!.id shouldBe secondBank.id
-                    }
-                }
-            }
-
-            @Test
-            fun `200 - Words' bank can be changed from an existing bank to a newly created bank`() {
-                val newBankName = "NEW_EXTRA_BANK_NAME"
-
-                val firstBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(firstBank, true)
-                )
-
-                wordEntities.forEach {
-                    it.bank shouldNotBe null
-                    it.bank!!.id shouldBe firstBank.id
-                }
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankToCreate = CreateBankRequest(
-                        name = newBankName,
-                        description = "x".repeat(64)
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
-
-                wordEntities.forEach {
-                    wordService.findByIdOrFail(
-                        id = it.id,
-                        userId = authenticatedUser.userInfo.id
-                    ).let { word ->
-                        word.bank shouldNotBe null
-                        word.bank!!.name shouldBe newBankName
-                    }
-                }
-            }
-        }
-
-        @Nested
-        @DisplayName("Negative")
-        inner class Negative {
-            @Test
-            fun `403 - Anonymous user cannot change words' bank`() {
-                val user: UserEntity = userSeeder.seedOneEntity()
-
-                val initialBank = bankSeeder.seedOneEntityForUser(user = user)
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = user,
-                    bank = Optional(initialBank, true)
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    wordEntityIds = wordEntities,
-                    authenticatedUser = null
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank!!.id shouldBe initialBank.id
-                }
-            }
-
-            @Test
-            fun `404 - Words' bank cannot be changed by other user than the one who created them`() {
-                val anotherUser: UserEntity = userSeeder.seedOneEntity()
-
-                val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-                val bankToChange = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = anotherUser,
-                    bank = Optional(initialBank, true)
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankId = bankToChange.id
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank!!.id shouldBe initialBank.id
-                }
-            }
-
-            @Test
-            fun `404 - Words' bank cannot be changed if one of the words does not exist`() {
-                val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-                val bankToChange = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(initialBank, true),
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordIds = wordEntities.map { it.id } + UUID.randomUUID(),
-                    bankId = bankToChange.id
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank!!.id shouldBe initialBank.id
-                }
-            }
-
-            @Test
-            fun `404 - Words' bank cannot be changed if bank does not exist`() {
-                val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(initialBank, true)
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankId = UUID.randomUUID()
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank!!.id shouldBe initialBank.id
-                }
-            }
-
-            @Test
-            fun `404 - Words' bank cannot be changed if bank does not belong to the user`() {
-                val anotherUser: UserEntity = userSeeder.seedOneEntity()
-
-                val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-                val bankOfAnotherUser: BankEntity = bankSeeder.seedOneEntityForUser(anotherUser)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(initialBank, true)
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankId = bankOfAnotherUser.id
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank!!.id shouldBe initialBank.id
-                }
-            }
-
-            @Test
-            fun `400 - Words' bank cannot be changed if both bankId and bankToCreate are specified`() {
-                val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(null, true)
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankId = bank.id,
-                    bankToCreate = bankMockFactory.mockCreateRequestData()
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank shouldBe null
-                }
-            }
-
-            @Test
-            fun `400 - Words' bank cannot be changed if neither bankId nor bankToCreate are specified`() {
-                val initialBank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(initialBank, true)
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankId = null,
-                    bankToCreate = null
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank!!.id shouldBe initialBank.id
-                }
-            }
-
-            @Test
-            fun `400 - Words' bank cannot be changed if bankToCreate name is empty`() {
-                bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(null, true)
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankToCreate = bankMockFactory.mockCreateRequestData(
-                        name = ""
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank shouldBe null
-                }
-            }
-
-            @Test
-            fun `400 - Words' bank cannot be changed if bankToCreate name is identical to already existing bank name`() {
-                val bank = bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(null, true)
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankToCreate = bankMockFactory.mockCreateRequestData(
-                        name = bank.name
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank shouldBe null
-                }
-            }
-
-            @Test
-            fun `400 - Words' bank cannot be changed if bankToCreate description is longer than 255 characters`() {
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(null, true)
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankToCreate = bankMockFactory.mockCreateRequestData(
-                        description = "x".repeat(256)
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank shouldBe null
-                }
-            }
-
-            @Test
-            fun `400 - Words' bank cannot be changed if bankToCreate description is empty`() {
-                bankSeeder.seedOneEntityForUser(user = authenticatedUser.userInfo)
-
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                    bank = Optional(null, true)
-                )
-
-                val request = wordRequestFactory.changeBankForMultipleWords(
-                    authenticatedUser = authenticatedUser,
-                    wordEntityIds = wordEntities,
-                    bankToCreate = bankMockFactory.mockCreateRequestData(
-                        description = ""
-                    )
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id) }.forEach {
-                    it.bank shouldBe null
-                }
-            }
-        }
-    }
-     */
-
     /* MIGRATION STEP 8
     @Nested
     @DisplayName("[POST] /api/v1/words/{id}/toggle-property - toggle word's property")
@@ -3164,7 +2394,6 @@ class TestWordsController @Autowired constructor(
     }
      */
 
-    /* MIGRATION STEP 9
     @Nested
     @DisplayName("[POST] /api/v1/words/toggle-property-for-multiple-words - toggle property for multiple words")
     inner class TogglePropertyForManyWordsTests {
@@ -3175,25 +2404,29 @@ class TestWordsController @Autowired constructor(
             @EnumSource(WordToggleableProperty::class)
             fun `200 - Words' boolean properties can be toggled from false to true`(property: WordToggleableProperty) {
                 val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
+                    userId = authenticatedUser.userInfo.id,
                 )
 
                 wordEntities.forEach {
                     it.updateBooleanProperty(property, false)
                 }
 
-                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordEntities = wordEntities,
-                    property = property
+                val response = wordsAPIClient.togglePropertyForManyWords(
+                    property = property,
+                    body = WordBulkActionRequest(ids = wordEntities.map { it.id!! }),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
+                response.status shouldBe HttpStatus.OK
 
-                wordEntities.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
-                    it.assertBooleanProperty(property, true)
+                // Verify all words are toggled
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.assertBooleanProperty(property, true)
                 }
             }
 
@@ -3201,25 +2434,29 @@ class TestWordsController @Autowired constructor(
             @EnumSource(WordToggleableProperty::class)
             fun `200 - Words' boolean properties can be toggled from true to false`(property: WordToggleableProperty) {
                 val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
+                    userId = authenticatedUser.userInfo.id,
                 )
 
                 wordEntities.forEach {
                     it.updateBooleanProperty(property, true)
                 }
 
-                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordEntities = wordEntities,
-                    property = property
+                val response = wordsAPIClient.togglePropertyForManyWords(
+                    property = property,
+                    body = WordBulkActionRequest(ids = wordEntities.map { it.id!! }),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
+                response.status shouldBe HttpStatus.OK
 
-                wordEntities.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
-                    it.assertBooleanProperty(property, false)
+                // Verify all words are toggled
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.assertBooleanProperty(property, false)
                 }
             }
 
@@ -3227,65 +2464,77 @@ class TestWordsController @Autowired constructor(
             @EnumSource(WordToggleableProperty::class)
             fun `200 - All words should be toggled even if one word does not exist`(property: WordToggleableProperty) {
                 val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
+                    userId = authenticatedUser.userInfo.id,
                 )
 
                 wordEntities.forEach {
                     it.updateBooleanProperty(property, false)
                 }
 
-                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordEntities = wordEntities + wordSeeder.seedOneEntity(),
-                    property = property
+                val nonExistentWordEntity = wordSeeder.seedOneEntity()
+
+                val response = wordsAPIClient.togglePropertyForManyWords(
+                    property = property,
+                    body = WordBulkActionRequest(ids = wordEntities.map { it.id!! } + nonExistentWordEntity.id!!),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
+                response.status shouldBe HttpStatus.OK
 
-                }
-
-                wordEntities.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
-                    it.assertBooleanProperty(property, true)
+                // Verify existing words are toggled
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.assertBooleanProperty(property, true)
                 }
             }
 
             @ParameterizedTest
             @EnumSource(WordToggleableProperty::class)
-            fun `200 - Word of another user should no te toggled`(property: WordToggleableProperty) {
+            fun `200 - Word of another user should not be toggled`(property: WordToggleableProperty) {
                 val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo
+                    userId = authenticatedUser.userInfo.id
                 )
 
                 val wordsFromAnotherUser: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = anotherUser
+                    userId = anotherUser.id!!
                 )
 
                 (wordEntities + wordsFromAnotherUser).forEach {
                     it.updateBooleanProperty(property, true)
                 }
 
-
-                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordEntities = wordEntities + wordsFromAnotherUser,
-                    property = property
+                val response = wordsAPIClient.togglePropertyForManyWords(
+                    property = property,
+                    body = WordBulkActionRequest(ids = (wordEntities + wordsFromAnotherUser).map { it.id!! }),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
+                response.status shouldBe HttpStatus.OK
 
                 // All words from authenticated user should be toggled
-                wordEntities.map { wordService.findByIdOrFail(it.id, authenticatedUser.userInfo.id) }.forEach {
-                    it.assertBooleanProperty(property, false)
+                wordEntities.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = authenticatedUser.userInfo.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.assertBooleanProperty(property, false)
                 }
 
                 // All words from another user should not be toggled
-                wordsFromAnotherUser.map { wordService.findByIdOrFail(it.id, anotherUser.id) }.forEach {
-                    it.assertBooleanProperty(property, true)
+                wordsFromAnotherUser.forEach { wordEntity ->
+                    val word = wordRepository.findByIdAndUserId(
+                        id = wordEntity.id!!,
+                        userId = anotherUser.id
+                    ).block()
+                    word shouldNotBe null
+                    word!!.assertBooleanProperty(property, true)
                 }
             }
         }
@@ -3294,102 +2543,82 @@ class TestWordsController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `403 - Anonymous user cannot toggle words' property`() {
+            fun `401 - Anonymous user cannot toggle words' property`() {
                 val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo
+                    userId = authenticatedUser.userInfo.id
                 )
 
-                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                    wordEntities = wordEntities,
-                    authenticatedUser = null
+                val response = wordsAPIClient.togglePropertyForManyWords(
+                    property = WordToggleableProperty.IS_BOOKMARKED,
+                    body = WordBulkActionRequest(ids = wordEntities.map { it.id!! }),
+                    user = null
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
-            fun `400 - not found when no words' ids are provided`() {
+            fun `400 - Bad request when no words' ids are provided`() {
+                val response = wordsAPIClient.togglePropertyForManyWords(
+                    property = WordToggleableProperty.IS_BOOKMARKED,
+                    body = WordBulkActionRequest(ids = emptyList()),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - Cannot change non boolean property for multiple words`() {
                 val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
+                    userId = authenticatedUser.userInfo.id,
                 )
 
                 wordEntities.forEach {
-                    it.updateBooleanProperty(WordToggleableProperty.IS_COMPLETED, false)
+                    it.updateBooleanProperty(WordToggleableProperty.IS_BOOKMARKED, false)
                 }
 
-                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordEntities = listOf(),
-                    property = WordToggleableProperty.IS_COMPLETED
+                // Test with null property to trigger BAD_REQUEST
+                val response = wordsAPIClient.togglePropertyForManyWords(
+                    property = null,
+                    body = WordBulkActionRequest(ids = wordEntities.map { it.id!! }),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
-            fun `400 - cannot change non boolean property for multiple words`() {
-                val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = authenticatedUser.userInfo,
-                )
-
-                wordEntities.forEach {
-                    it.updateBooleanProperty(WordToggleableProperty.IS_COMPLETED, false)
-                }
-
-                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordEntities = wordEntities,
-                    property = null
-                )
-
-                request.param("property", "not_boolean")
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
-            }
-
-            @Test
-            fun `404 - when all words do not belong to the user`() {
+            fun `404 - When all words do not belong to the user`() {
                 val anotherUser: UserEntity = userSeeder.seedOneEntity()
 
                 val wordEntities: List<WordEntity> = wordSeeder.seedMultipleEntitiesForUser(
-                    user = anotherUser
+                    userId = anotherUser.id!!
                 )
 
-                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordEntities = wordEntities,
-                    property = WordToggleableProperty.IS_COMPLETED
+                val response = wordsAPIClient.togglePropertyForManyWords(
+                    property = WordToggleableProperty.IS_BOOKMARKED,
+                    body = WordBulkActionRequest(ids = wordEntities.map { it.id!! }),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
 
             @Test
-            fun `404 - when all words do not exist`() {
-                val wordEntities: List<WordEntity> = List(5, init = { wordMockFactory.mockEntity() })
+            fun `404 - When all words do not exist`() {
+                val nonExistentIds = List(5) { UUID.randomUUID() }
 
-                val request = wordRequestFactory.togglePropertyForMultipleWordsRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordEntities = wordEntities,
-                    property = WordToggleableProperty.IS_COMPLETED
+                val response = wordsAPIClient.togglePropertyForManyWords(
+                    property = WordToggleableProperty.IS_BOOKMARKED,
+                    body = WordBulkActionRequest(ids = nonExistentIds),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
         }
-
     }
-     */
 
 //    private fun assertThatWordActuallyExists(
 //        response: APIClientResponse<WordDTO>,
@@ -3431,7 +2660,6 @@ class TestWordsController @Autowired constructor(
     // Register a utility function to assert the boolean property of a word
     private fun WordEntity.assertBooleanProperty(property: WordToggleableProperty, expectedValue: Boolean) {
         when (property) {
-            WordToggleableProperty.IS_COMPLETED -> isCompleted shouldBe expectedValue
             WordToggleableProperty.IS_BOOKMARKED -> isBookmarked shouldBe expectedValue
         }
     }
@@ -3439,7 +2667,6 @@ class TestWordsController @Autowired constructor(
     // Register a utility function to update the boolean property of a word and also assert its new value
     private fun WordEntity.updateBooleanProperty(property: WordToggleableProperty, value: Boolean) {
         when (property) {
-            WordToggleableProperty.IS_COMPLETED -> isCompleted = value
             WordToggleableProperty.IS_BOOKMARKED -> isBookmarked = value
         }
 
