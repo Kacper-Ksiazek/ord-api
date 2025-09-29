@@ -2269,7 +2269,6 @@ class TestWordsController @Autowired constructor(
         }
     }
 
-    /* MIGRATION STEP 8
     @Nested
     @DisplayName("[POST] /api/v1/words/{id}/toggle-property - toggle word's property")
     inner class TogglePropertyForOneWordTests {
@@ -2279,49 +2278,49 @@ class TestWordsController @Autowired constructor(
             @ParameterizedTest
             @EnumSource(WordToggleableProperty::class)
             fun `200 - Word's boolean properties can be toggled from false to true`(property: WordToggleableProperty) {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
 
                 wordEntity.updateBooleanProperty(property, false)
 
-                val request = wordRequestFactory.togglePropertyRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    property = property
+                val response = wordsAPIClient.togglePropertyForOneWord(
+                    id = wordEntity.id!!,
+                    property = property,
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
+                response.status shouldBe HttpStatus.OK
 
-                wordService.findByIdOrFail(
+                // Verify word property was toggled in database
+                val word = wordRepository.findByIdAndUserId(
                     id = wordEntity.id,
                     userId = authenticatedUser.userInfo.id
-                ).assertBooleanProperty(property, true)
+                ).block()
+                word shouldNotBe null
+                word!!.assertBooleanProperty(property, true)
             }
 
             @ParameterizedTest
             @EnumSource(WordToggleableProperty::class)
             fun `200 - Word's boolean properties can be toggled from true to false`(property: WordToggleableProperty) {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(
-                    user = authenticatedUser.userInfo,
-                )
+                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
 
                 wordEntity.updateBooleanProperty(property, true)
 
-                val request = wordRequestFactory.togglePropertyRequest(
-                    authenticatedUser = authenticatedUser,
-                    wordId = wordEntity.id,
-                    property = property
+                val response = wordsAPIClient.togglePropertyForOneWord(
+                    id = wordEntity.id!!,
+                    property = property,
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                }
+                response.status shouldBe HttpStatus.OK
 
-                wordService.findByIdOrFail(
+                // Verify word property was toggled in database
+                val word = wordRepository.findByIdAndUserId(
                     id = wordEntity.id,
                     userId = authenticatedUser.userInfo.id
-                ).assertBooleanProperty(property, false)
+                ).block()
+                word shouldNotBe null
+                word!!.assertBooleanProperty(property, false)
             }
         }
 
@@ -2329,70 +2328,57 @@ class TestWordsController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `403 - Anonymous user cannot toggle word's property`() {
+            fun `401 - Anonymous user cannot toggle word's property`() {
                 val wordEntity: WordEntity = wordSeeder.seedOneEntity()
 
-                val request = wordRequestFactory.togglePropertyRequest(
-                    wordId = wordEntity.id,
-                    property = WordToggleableProperty.IS_COMPLETED,
-                    authenticatedUser = null
+                val response = wordsAPIClient.togglePropertyForOneWord(
+                    id = wordEntity.id!!,
+                    property = WordToggleableProperty.IS_BOOKMARKED,
+                    user = null
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
             fun `404 - Word's property cannot be toggled by other user than the one who created it`() {
                 val anotherUser: UserEntity = userSeeder.seedOneEntity()
+                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(anotherUser.id!!)
 
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(anotherUser)
-
-                val request = wordRequestFactory.togglePropertyRequest(
-                    wordId = wordEntity.id,
-                    property = WordToggleableProperty.IS_COMPLETED,
-                    authenticatedUser = authenticatedUser
+                val response = wordsAPIClient.togglePropertyForOneWord(
+                    id = wordEntity.id!!,
+                    property = WordToggleableProperty.IS_BOOKMARKED,
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
 
             @Test
             fun `404 - Word's property cannot be toggled if word does not exist`() {
-                val request = wordRequestFactory.togglePropertyRequest(
-                    wordId = UUID.randomUUID(),
-                    property = WordToggleableProperty.IS_COMPLETED,
-                    authenticatedUser = authenticatedUser
+                val response = wordsAPIClient.togglePropertyForOneWord(
+                    id = UUID.randomUUID(),
+                    property = WordToggleableProperty.IS_BOOKMARKED,
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                }
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
 
             @Test
-            fun `400 - Word's property cannot be toggled if property is not boolean`() {
-                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
+            fun `400 - Word's property cannot be toggled if property is not provided`() {
+                val wordEntity: WordEntity = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
 
-                val request = wordRequestFactory.togglePropertyRequest(
-                    wordId = wordEntity.id,
+                val response = wordsAPIClient.togglePropertyForOneWord(
+                    id = wordEntity.id!!,
                     property = null,
-                    authenticatedUser = authenticatedUser
+                    user = authenticatedUser
                 )
 
-                // Override the property param
-                request.param("property", "not_boolean")
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }
-     */
 
     @Nested
     @DisplayName("[POST] /api/v1/words/toggle-property-for-multiple-words - toggle property for multiple words")
