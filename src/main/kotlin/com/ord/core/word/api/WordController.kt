@@ -112,7 +112,7 @@ class WordController(
     fun togglePropertyForOneWord(
         @PathVariable id: UUID,
         @AuthenticatedUser user: UserDTO,
-        @RequestParam(required = false) property: WordToggleableProperty
+        @RequestParam(required = true) property: WordToggleableProperty
     ): Mono<ResponseEntity<Unit>> = wordPropertyToggleFacade.togglePropertyForOneWord(
         id = id,
         property = property,
@@ -122,7 +122,7 @@ class WordController(
 
     @PostMapping("/toggle-property-for-multiple-words")
     fun togglePropertyForManyWords(
-        @RequestParam(required = false) property: WordToggleableProperty,
+        @RequestParam(required = true) property: WordToggleableProperty,
         @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: WordBulkActionRequest
     ): Mono<ResponseEntity<Unit>> =
