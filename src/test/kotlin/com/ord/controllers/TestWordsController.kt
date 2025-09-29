@@ -6,25 +6,19 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.UserMapper
-import com.ord.core.word.api.requests.dto.UnsafeGetManyWordsRequest
+import com.ord.core.word.api.requests.dto.*
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
-import com.ord.core.word.api.requests.dto.CreateWordRequest
-import com.ord.core.word.api.requests.dto.UpdateWordRequest
-import com.ord.core.word.api.requests.dto.ChangeBankForSingleWordRequest
-import com.ord.core.word.api.requests.dto.ChangeBankForMultipleWordsRequest
-import com.ord.core.word.api.requests.dto.WordBulkActionRequest
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
-import com.ord.core.word.model.json.ExampleSentence
-import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.core.word.model.WordDTO
 import com.ord.core.word.model.WordEntity
 import com.ord.core.word.model.WordMapper
 import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
+import com.ord.core.word.model.json.ExampleSentence
 import com.ord.core.word.repository.WordRepository
-import com.ord.features.bank.model.BankEntity
+import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.repository.BankRepository
 import com.ord.features.bank.service.BankService
 import com.ord.seeders.entities.BankGroupSeeder
@@ -40,8 +34,6 @@ import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -2269,6 +2261,7 @@ class TestWordsController @Autowired constructor(
         }
     }
 
+
     @Nested
     @DisplayName("[POST] /api/v1/words/{id}/toggle-property - toggle word's property")
     inner class TogglePropertyForOneWordTests {
@@ -2379,6 +2372,7 @@ class TestWordsController @Autowired constructor(
             }
         }
     }
+
 
     @Nested
     @DisplayName("[POST] /api/v1/words/toggle-property-for-multiple-words - toggle property for multiple words")
@@ -2605,43 +2599,6 @@ class TestWordsController @Autowired constructor(
             }
         }
     }
-
-//    private fun assertThatWordActuallyExists(
-//        response: APIClientResponse<WordDTO>,
-//        authenticatedUser: MockedAuthenticatedUser
-//    ): WordEntity {
-//        assertNotNull(response.body)
-//
-//        assertEquals(authenticatedUser.userInfo.id, response.body!!.userId)
-//
-//        val valueSavedInDatabase: WordEntity? = wordRepository.findByIdAndUserId(
-//            id = response.body.id,
-//            userId = authenticatedUser.userInfo.id
-//        ).block()
-//
-//        assertNotNull(valueSavedInDatabase)
-//
-//        valueSavedInDatabase!!.compareWith(
-//            wordMapper.toEntity(response.body)
-//        )
-//
-//        return valueSavedInDatabase
-//    }
-//
-//    private fun assertThatBankActuallyExists(
-//        bankToVerify: BankEntity?,
-//    ): BankEntity {
-//        assertNotNull(bankToVerify)
-//
-//        return bankService
-//            .findById(id = bankToVerify!!.id!!)
-//            .map { bank ->
-//                assertNotNull(bank)
-//
-//                bank!!
-//            }
-//            .block()!!
-//    }
 
     // Register a utility function to assert the boolean property of a word
     private fun WordEntity.assertBooleanProperty(property: WordToggleableProperty, expectedValue: Boolean) {
