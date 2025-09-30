@@ -8,15 +8,13 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import java.util.*
 
-/*
-
 fun UserActivityLogRepository.assertUserActivityLogForCompletingGame(
     expectedType: UserActivityType,
     language: LanguageName,
     difficulty: GameDifficulty,
     userId: UUID,
 ) {
-    val logs = findAllForUser(userId)
+    val logs = findAllByUserId(userId).collectList().block()!!
 
     logs shouldHaveSize 1
 
@@ -27,6 +25,3 @@ fun UserActivityLogRepository.assertUserActivityLogForCompletingGame(
         it.gameDifficulty shouldBe difficulty
     }
 }
-
-
- */

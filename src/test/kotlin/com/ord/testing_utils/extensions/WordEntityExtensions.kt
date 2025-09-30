@@ -2,7 +2,6 @@ package com.ord.testing_utils.extensions
 
 import com.ord.core.word.api.requests.dto.UpdateWordRequest
 import com.ord.core.word.model.WordEntity
-import com.ord.testing_utils.api_requests_factories.data.WordDataChanges
 import io.kotest.matchers.shouldBe
 
 //fun WordEntity.compareWith(anotherEntity: WordEntity) {

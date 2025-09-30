@@ -1,7 +1,5 @@
 package com.ord.testing_utils.extensions
 
-/*
-
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.repository.WordRepository
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
@@ -17,11 +15,11 @@ fun WordRepository.assertDBPointsWereUpdatedProperly(
     properAnswers: Set<IdentifiableReviewedWordAnswer>,
     alteredAnswers: Set<AlteredWordProperAnswer> = emptySet()
 ) {
-    val wordsUsedInGame = this.findAllWordByTheirOrigins(
+    val wordsUsedInGame = findAllWordByTheirOrigins(
         origins = words,
         language = language,
         userId = userId,
-    )
+    ).collectList().block()!!
 
     wordsUsedInGame shouldHaveSize words.size
 
@@ -39,6 +37,3 @@ fun WordRepository.assertDBPointsWereUpdatedProperly(
         }
     }
 }
-
-
- */
