@@ -1,10 +1,8 @@
 package com.ord.testing_utils.mocks.games
 
-/*
-
-import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserMapper
+import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.word.repository.WordRepository
+import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.OngoingWordsTypingGameDTO
 import com.ord.features.game.model.ongoing_game.enums.GameType
@@ -12,51 +10,43 @@ import com.ord.features.game.repositories.OngoingGameRepository
 import com.ord.features.game.variants.words_typing.dto.WordsTypingInstruction
 import com.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
 import com.ord.seeders.factories.WordFactory
-import com.ord.testing_utils.api_requests_factories.GameRequestFactory
+import com.ord.testing_utils.api.clients.bases.GameAPIClient
 import com.ord.testing_utils.dto.resources.mocks.games.WordsTypingGameInJson
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.test.web.servlet.MockMvc
-
+import java.util.*
 
 class WordsTypingGameMocker(
-    override val mockMvc: MockMvc,
-    override val userMapper: UserMapper,
-    override val objectMapper: ObjectMapper,
-    override val wordRepository: WordRepository,
-    override val ongoingGameMapper: OngoingGameMapper,
-    override val ongoingGameRepository: OngoingGameRepository,
-    override val wordMockFactory: WordFactory,
+    val apiClient: GameAPIClient<StartedWordsTypingGameResponse, *, *>,
+    val ongoingGameMapper: OngoingGameMapper,
+    val ongoingGameRepository: OngoingGameRepository,
+    val wordMockFactory: WordFactory,
+    val wordRepository: WordRepository,
 ) : GameMockerBase<
         WordsTypingGameInJson,
         OngoingWordsTypingGameDTO,
         WordsTypingInstruction,
         StartedWordsTypingGameResponse
-        > {
-    // Properties:
-    override val mockingGameType: GameType = GameType.WORDS_TYPING
+        >(
+    ongoingGameMapper = ongoingGameMapper,
+    ongoingGameRepository = ongoingGameRepository,
+    wordMockFactory = wordMockFactory,
+    wordRepository = wordRepository,
+    apiClient = apiClient,
+) {
     override val pathToJsonFile: String = "mocks/games/words_typing.json"
-
-    // Classes & type references:
-    override val apiResponseTypeRef: TypeReference<StartedWordsTypingGameResponse> =
-        object : TypeReference<StartedWordsTypingGameResponse>() {}
 
     override val jsonFileContentTypeRef: TypeReference<List<WordsTypingGameInJson>> =
         object : TypeReference<List<WordsTypingGameInJson>>() {}
 
-    // Dependencies:
-    override val gameRequestFactory: GameRequestFactory = GameRequestFactory(objectMapper)
-
-    override fun createOngoingGameDTO(
+    override fun createOngoingGameEntity(
         jsonData: WordsTypingGameInJson,
-        userDTO: UserDTO
-    ): OngoingWordsTypingGameDTO {
-        return OngoingWordsTypingGameDTO(
-            properAnswers = jsonData.properAnswers,
-            type = mockingGameType,
+        userId: UUID,
+    ): OngoingGameEntity {
+        return OngoingGameEntity(
+            properAnswers = ongoingGameMapper.serializeProperAnswers(jsonData.properAnswers),
+            type = GameType.WORDS_TYPING,
             language = jsonData.language,
             difficulty = jsonData.difficulty,
-            user = userDTO
+            userId = userId
         )
     }
 
@@ -64,6 +54,3 @@ class WordsTypingGameMocker(
         return ongoingGameDTO.properAnswers.values.toSet()
     }
 }
-
-
- */
