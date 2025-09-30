@@ -51,11 +51,16 @@ class OngoingGameMapper(
             type = dto.type,
             language = dto.language,
             difficulty = dto.difficulty,
-            properAnswers = jsonObjectMapper.writeValueAsString(dto.properAnswers),
+            properAnswers = serializeProperAnswers(dto.properAnswers),
 
             userId = dto.userId,
             createdAt = dto.createdAt
         )
+    }
+
+
+    fun <T> serializeProperAnswers(properAnswers: T): String {
+        return jsonObjectMapper.writeValueAsString(properAnswers)
     }
 
     private fun <T : Any> OngoingGameEntity.convertToCertainDTO(typeReference: TypeReference<T>): OngoingGameDTO<T> {

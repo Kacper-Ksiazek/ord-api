@@ -17,7 +17,7 @@ import java.util.UUID
 @Table("finished_games")
 data class FinishedGameEntity(
     @Id
-    override val id: UUID = UUID.randomUUID(),
+    override val id: UUID? = null,
 
     val score: Int,
     val accuracy: Float,

@@ -10,7 +10,7 @@ class FinishedGameMapper(
 ) : BidirectionalEntityMapper<FinishedGameEntity, FinishedGameDTO> {
     override fun toDTO(entity: FinishedGameEntity): FinishedGameDTO {
         return FinishedGameDTO(
-            id = entity.id,
+            id = entity.id ?: error("Finished game ID must not be null"),
 
             score = entity.score,
             duration = entity.duration,

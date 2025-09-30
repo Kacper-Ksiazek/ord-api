@@ -5,7 +5,6 @@ import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
-import com.ord.core.user.model.UserMapper
 import com.ord.core.word.api.requests.dto.*
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
@@ -13,7 +12,6 @@ import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
 import com.ord.core.word.model.WordDTO
 import com.ord.core.word.model.WordEntity
-import com.ord.core.word.model.WordMapper
 import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
 import com.ord.core.word.model.json.ExampleSentence
@@ -59,10 +57,8 @@ class TestWordsController @Autowired constructor(
     private val bankService: BankService,
     private val userSeeder: UserSeeder,
     private val wordSeeder: WordSeeder,
-    private val wordMapper: WordMapper,
     private val bankGroupSeeder: BankGroupSeeder,
     private var wordMockFactory: WordFactory,
-    private val userMapper: UserMapper,
 
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,

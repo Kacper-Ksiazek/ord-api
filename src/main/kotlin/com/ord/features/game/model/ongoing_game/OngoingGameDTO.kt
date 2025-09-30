@@ -11,7 +11,7 @@ import java.time.Instant
 import java.util.*
 
 data class OngoingGameDTO<TProperAnswers>(
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID,
 
     val properAnswers: TProperAnswers,
 
