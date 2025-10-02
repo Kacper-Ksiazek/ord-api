@@ -1,11 +1,9 @@
 package com.ord.controllers.games
 
-/*
-
 import com.ord.config.properties.JwtProperties
-import com.ord.controllers.games.bases.GameControllerTestBase
+import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
-import com.ord.core.user.model.UserMapper
+import com.ord.core.security.UserRepository
 import com.ord.core.word.repository.WordRepository
 import com.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
@@ -15,64 +13,47 @@ import com.ord.features.game.repositories.OngoingGameRepository
 import com.ord.features.user_activity_log.model.enums.UserActivityType
 import com.ord.features.user_activity_log.repository.UserActivityLogRepository
 import com.ord.seeders.factories.WordFactory
+import com.ord.testing_utils.api.clients.games.CrosswordGameAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.ord.testing_utils.mocks.games.CrosswordGameMocker
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.reactive.server.WebTestClient
 
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@AutoConfigureMockMvc
 @DisplayName("- GameController")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient(timeout = "180000") // 3 minutes
 class TestGameController @Autowired constructor(
     private val userActivityLogRepository: UserActivityLogRepository,
     private val wordMockFactory: WordFactory,
-
-    objectMapper: ObjectMapper,
-    mockMvc: MockMvc,
+    private val userRepository: UserRepository,
+    private val wordRepository: WordRepository,
+    private val ongoingGameMapper: OngoingGameMapper,
+    private val ongoingGameRepository: OngoingGameRepository,
+    private val finishedGameRepository: FinishedGameRepository,
+    webClient: WebTestClient,
     jwtProperties: JwtProperties,
-    languageProficiencyRepository: LanguageProficiencyRepository,
-    userMapper: UserMapper,
-    userRepository: UserRepository,
-
-    wordRepository: WordRepository,
-    ongoingGameMapper: OngoingGameMapper,
-    ongoingGameRepository: OngoingGameRepository,
-    finishedGameRepository: FinishedGameRepository
-
-) : GameControllerTestBase(
-    objectMapper = objectMapper,
-    mockMvc = mockMvc,
+    languageProficiencyRepository: LanguageProficiencyRepository
+) : ControllerTestBase(
+    webClient,
     jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository,
-    userMapper = userMapper,
-    userRepository = userRepository,
-
-    wordRepository = wordRepository,
-    ongoingGameMapper = ongoingGameMapper,
-    ongoingGameRepository = ongoingGameRepository,
-    finishedGameRepository = finishedGameRepository
+    languageProficiencyRepository = languageProficiencyRepository
 ) {
-    val crosswordGameMocker = CrosswordGameMocker(
-        objectMapper = objectMapper,
-        userMapper = userMapper,
-        wordRepository = wordRepository,
+    private val crosswordGameAPIClient = CrosswordGameAPIClient(webClient)
+
+    private val crosswordGameMocker = CrosswordGameMocker(
+        apiClient = crosswordGameAPIClient,
         ongoingGameMapper = ongoingGameMapper,
         ongoingGameRepository = ongoingGameRepository,
         wordMockFactory = wordMockFactory,
-        mockMvc = mockMvc,
+        wordRepository = wordRepository
     )
 
     @Nested
@@ -85,28 +66,25 @@ class TestGameController @Autowired constructor(
         fun beforeEach() {
             authenticatedUser = mockAuthenticatedUser()
 
-            ongoingCrosswordSavedInDb = crosswordGameMocker.mockFromJsonSource(authenticatedUser.userInfo).first
+            ongoingCrosswordSavedInDb = crosswordGameMocker.mockFromJsonSource(authenticatedUser.userInfo.id).first
         }
 
         @AfterEach
         fun afterEach() {
-            userRepository.deleteById(authenticatedUser.userInfo.id)
+            userRepository.deleteById(authenticatedUser.userInfo.id).block()
         }
 
         private fun cancelGame(
             authenticatedUser: MockedAuthenticatedUser? = this.authenticatedUser,
-            expectedStatus: Int = HttpStatus.NO_CONTENT.value()
+            expectedStatus: HttpStatus = HttpStatus.NO_CONTENT
         ) {
-            mockMvc.perform(
-                gameRequestFactory.cancelGameRequest(
-                    authenticatedUser = authenticatedUser,
-                    gameId = ongoingCrosswordSavedInDb.id
-                )
-            ).andReturn().let {
-                it.response.status shouldBe expectedStatus
-            }
-        }
+            val response = crosswordGameAPIClient.cancelGame(
+                gameId = ongoingCrosswordSavedInDb.id,
+                user = authenticatedUser
+            )
 
+            response.status shouldBe expectedStatus
+        }
 
         @Nested
         @DisplayName("Positive")
@@ -117,8 +95,8 @@ class TestGameController @Autowired constructor(
             fun `200 - Crossword game can be canceled`() {
                 cancelGame()
 
-                ongoingGameRepository.findByIdOrNull(ongoingCrosswordSavedInDb.id) shouldBe null
-                finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).first().let {
+                ongoingGameRepository.findById(ongoingCrosswordSavedInDb.id).block() shouldBe null
+                finishedGameRepository.findAllByUserId(authenticatedUser.userInfo.id).collectList().block()!!.first().let {
                     it shouldNotBe null
 
                     it.result shouldBe GameResult.CANCELLED
@@ -131,7 +109,7 @@ class TestGameController @Autowired constructor(
             fun `200 - User activity log should be assigned after canceling the game`() {
                 cancelGame()
 
-                val logs = userActivityLogRepository.findAllForUser(authenticatedUser.userInfo.id)
+                val logs = userActivityLogRepository.findAllByUserId(authenticatedUser.userInfo.id).collectList().block()!!
                 logs shouldHaveSize 1
 
                 logs.first().let {
@@ -153,34 +131,29 @@ class TestGameController @Autowired constructor(
                 cancelGame()
 
                 cancelGame(
-                    expectedStatus = HttpStatus.NOT_FOUND.value()
+                    expectedStatus = HttpStatus.NOT_FOUND
                 )
             }
 
             @Test
-            fun `403 - Unauthorized user cannot cancel a crossword game`() {
+            fun `401 - Unauthorized user cannot cancel a crossword game`() {
                 cancelGame(
                     authenticatedUser = null,
-                    expectedStatus = HttpStatus.FORBIDDEN.value()
+                    expectedStatus = HttpStatus.UNAUTHORIZED
                 )
 
-                ongoingGameRepository.findByIdOrNull(ongoingCrosswordSavedInDb.id) shouldNotBe null
+                ongoingGameRepository.findById(ongoingCrosswordSavedInDb.id).block() shouldNotBe null
             }
 
             @Test
             fun `404 - User cannot cancel somebody else game`() {
                 cancelGame(
                     authenticatedUser = mockAuthenticatedUser(),
-                    expectedStatus = HttpStatus.NOT_FOUND.value()
+                    expectedStatus = HttpStatus.NOT_FOUND
                 )
 
-                ongoingGameRepository.findByIdOrNull(ongoingCrosswordSavedInDb.id) shouldNotBe null
+                ongoingGameRepository.findById(ongoingCrosswordSavedInDb.id).block() shouldNotBe null
             }
-
         }
-
-
     }
 }
-
- */
