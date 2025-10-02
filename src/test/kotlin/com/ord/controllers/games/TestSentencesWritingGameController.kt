@@ -1,13 +1,10 @@
 package com.ord.controllers.games
 
-/*
-
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ord.config.properties.JwtProperties
-import com.ord.controllers.games.bases.GameControllerTestBase
+import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserMapper
+import com.ord.core.security.UserRepository
 import com.ord.core.word.model.WordEntity
 import com.ord.core.word.repository.WordRepository
 import com.ord.features.game.model.finished_game.FinishedGameDTO
@@ -18,86 +15,65 @@ import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.repositories.FinishedGameRepository
 import com.ord.features.game.repositories.OngoingGameRepository
+import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameRequest
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.FinishedSentencesWritingGameResponse
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.StartedSentencesWritingGameResponse
+import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
+import com.ord.features.game.variants.shared.dto.api_requests.UnsafeStartGameRequestData
 import com.ord.features.game.variants.shared.enums.WordAnswerScore
-import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
-import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository.GameTokensUsageRepository
 import com.ord.features.user_activity_log.model.enums.UserActivityType
 import com.ord.features.user_activity_log.repository.UserActivityLogRepository
 import com.ord.seeders.entities.UserSeeder
 import com.ord.seeders.factories.WordFactory
-import com.ord.testing_utils.api_requests_factories.GameRequestFactory
+import com.ord.testing_utils.api.clients.games.SentencesWritingGameAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.ord.testing_utils.mocks.games.GameMockerBase
 import com.ord.testing_utils.mocks.games.sentences_writing.SentencesWritingAnswersMockLoader
 import com.ord.testing_utils.mocks.games.sentences_writing.SentencesWritingGameMocker
 import com.ord.utils.resource_readers.loadWordsFromResourceFile
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.collections.shouldNotHaveSize
 import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.UUID
 
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@AutoConfigureMockMvc
 @DisplayName("- SentencesWritingGameController")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient(timeout = "180000") // 3 minutes
 class TestSentencesWritingGameController @Autowired constructor(
-    private val gameTokensUsageRepository: GameTokensUsageRepository,
     private val userActivityLogRepository: UserActivityLogRepository,
     private val userSeeder: UserSeeder,
     private val wordMockFactory: WordFactory,
     private val finishedGameMapper: FinishedGameMapper,
-
-    objectMapper: ObjectMapper,
-    mockMvc: MockMvc,
+    private val userRepository: UserRepository,
+    private val wordRepository: WordRepository,
+    private val ongoingGameMapper: OngoingGameMapper,
+    private val ongoingGameRepository: OngoingGameRepository,
+    private val finishedGameRepository: FinishedGameRepository,
+    webClient: WebTestClient,
     jwtProperties: JwtProperties,
-    languageProficiencyRepository: LanguageProficiencyRepository,
-    userMapper: UserMapper,
-    userRepository: UserRepository,
-
-    wordRepository: WordRepository,
-    ongoingGameMapper: OngoingGameMapper,
-    ongoingGameRepository: OngoingGameRepository,
-    finishedGameRepository: FinishedGameRepository
-) : GameControllerTestBase(
-    objectMapper = objectMapper,
-    mockMvc = mockMvc,
+    languageProficiencyRepository: LanguageProficiencyRepository
+) : ControllerTestBase(
+    webClient,
     jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository,
-    userMapper = userMapper,
-    userRepository = userRepository,
-
-    wordRepository = wordRepository,
-    ongoingGameMapper = ongoingGameMapper,
-    ongoingGameRepository = ongoingGameRepository,
-    finishedGameRepository = finishedGameRepository
+    languageProficiencyRepository = languageProficiencyRepository
 ) {
-    @Autowired
-    private lateinit var authenticationManager: AuthenticationManager
-    val sentencesWritingGameMocker = SentencesWritingGameMocker(
-        objectMapper = objectMapper,
-        userMapper = userMapper,
-        wordRepository = wordRepository,
+    private val sentencesWritingGameAPIClient = SentencesWritingGameAPIClient(webClient)
+
+    private val sentencesWritingGameMocker = SentencesWritingGameMocker(
+        apiClient = sentencesWritingGameAPIClient,
         ongoingGameMapper = ongoingGameMapper,
         ongoingGameRepository = ongoingGameRepository,
         wordMockFactory = wordMockFactory,
-        mockMvc = mockMvc,
+        wordRepository = wordRepository
     )
 
     @Nested
@@ -115,7 +91,6 @@ class TestSentencesWritingGameController @Autowired constructor(
             @BeforeAll
             fun beforeAll() {
                 authenticatedUser = mockAuthenticatedUser()
-                // Replace with actual mocker for sentences writing game
                 with(sentencesWritingGameMocker.mockThroughApiFlow(authenticatedUser)) {
                     gameSavedInDb = first
                     gameSentToUser = second
@@ -130,7 +105,7 @@ class TestSentencesWritingGameController @Autowired constructor(
                 gameSavedInDb.language shouldBe GameMockerBase.Companion.DefaultParams.language
                 gameSavedInDb.difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
 
-                gameSavedInDb.user.id shouldBe authenticatedUser.userInfo.id
+                gameSavedInDb.userId shouldBe authenticatedUser.userInfo.id
             }
 
             @Test
@@ -143,20 +118,6 @@ class TestSentencesWritingGameController @Autowired constructor(
             }
 
             @Test
-            fun `GPT use logs are properly saved in the DB`() {
-                val logs = gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id)
-
-                logs shouldNotHaveSize 0
-
-                logs.forEach {
-                    it.gameType shouldBe GameType.SENTENCES_WRITING
-                    it.consumptionType shouldBe GamesGPTTokensConsumptionType.GENERATE
-                    it.language shouldBe GameMockerBase.Companion.DefaultParams.language
-                    it.gameDifficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
-                }
-            }
-
-            @Test
             fun `All words should be unique`() {
                 gameSavedInDb.properAnswers.map { it.word }.distinct().size shouldBe gameSavedInDb.properAnswers.size
             }
@@ -165,40 +126,27 @@ class TestSentencesWritingGameController @Autowired constructor(
         @Nested
         @DisplayName("Negative")
         inner class Negative {
-            internal fun GameRequestFactory.startGameRequest(
-                authenticatedUser: MockedAuthenticatedUser?,
-                language: LanguageName? = LanguageName.ENGLISH,
-                difficulty: GameDifficulty? = GameDifficulty.HARD,
-            ): MockHttpServletRequestBuilder {
-                return startGameRequest(
-                    gameType = GameType.SENTENCES_WRITING,
-                    language = language,
-                    difficulty = difficulty,
-                    authenticatedUser = authenticatedUser
-                )
-            }
 
             @Test
-            fun `403 - Anonymous user cannot start a sentences writing game`() {
-                val request = gameRequestFactory.startGameRequest(
-                    authenticatedUser = null,
+            fun `401 - Anonymous user cannot start a sentences writing game`() {
+                val response = sentencesWritingGameAPIClient.startGame(
+                    body = StartGameRequest(language = LanguageName.ENGLISH, difficulty = GameDifficulty.HARD),
+                    user = null
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                }
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
             fun `400 - User with no words assigned cannot start a sentences writing game`() {
                 val authenticatedUser = mockAuthenticatedUser()
-                val request = gameRequestFactory.startGameRequest(
-                    authenticatedUser = authenticatedUser,
+
+                val response = sentencesWritingGameAPIClient.startGame(
+                    body = StartGameRequest(language = LanguageName.ENGLISH, difficulty = GameDifficulty.HARD),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
@@ -207,18 +155,17 @@ class TestSentencesWritingGameController @Autowired constructor(
                 val authenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository,
                     numberOfWordsToLoad = requiredNumberOfWords - 1
                 )
 
-                val request = gameRequestFactory.startGameRequest(
-                    authenticatedUser = authenticatedUser,
+                val response = sentencesWritingGameAPIClient.startGame(
+                    body = StartGameRequest(language = LanguageName.ENGLISH, difficulty = GameDifficulty.HARD),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
@@ -227,34 +174,32 @@ class TestSentencesWritingGameController @Autowired constructor(
                 val authenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository
                 )
 
-                val request = gameRequestFactory.startGameRequest(
-                    language = unknownForUserLanguage,
-                    authenticatedUser = authenticatedUser,
+                val response = sentencesWritingGameAPIClient.startGame(
+                    body = StartGameRequest(language = unknownForUserLanguage, difficulty = GameDifficulty.HARD),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `400 - Cannot start a game without providing difficulty`() {
                 val authenticatedUser = mockAuthenticatedUser()
                 loadWordsFromResourceFile(
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository
                 )
-                val request = gameRequestFactory.startGameRequest(
-                    difficulty = null,
-                    authenticatedUser = authenticatedUser,
+
+                val response = sentencesWritingGameAPIClient.startGame(
+                    body = UnsafeStartGameRequestData(language = LanguageName.ENGLISH, difficulty = null),
+                    user = authenticatedUser
                 )
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
@@ -262,17 +207,16 @@ class TestSentencesWritingGameController @Autowired constructor(
                 val authenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository
                 )
 
-                val request = gameRequestFactory.startGameRequest(
-                    language = null,
-                    authenticatedUser = authenticatedUser,
+                val response = sentencesWritingGameAPIClient.startGame(
+                    body = UnsafeStartGameRequestData(language = null, difficulty = GameDifficulty.HARD),
+                    user = authenticatedUser
                 )
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                }
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }
@@ -293,42 +237,33 @@ class TestSentencesWritingGameController @Autowired constructor(
             val gameAnswerLoader = SentencesWritingAnswersMockLoader()
 
             private fun finishSentencesWritingGame(game: OngoingSentencesWritingGameDTO): FinishedSentencesWritingGameResponse {
-                val request = gameRequestFactory.finishGameRequest(
-                    gameType = GameType.SENTENCES_WRITING,
-                    authenticatedUser = authenticatedUser,
-                    gameId = game.id,
-                    answers = gameAnswerLoader.mockAnswers(game.difficulty),
+                val response = sentencesWritingGameAPIClient.finishGame(
+                    body = FinishSentencesWritingGameRequest(
+                        gameId = game.id,
+                        duration = "00:01:00",
+                        answers = gameAnswerLoader.mockAnswers(game.difficulty)
+                    ),
+                    user = authenticatedUser
                 )
 
-                val response: FinishedSentencesWritingGameResponse = with(
-                    mockMvc
-                        .perform(request)
-                        .andReturn()
-                        .let {
-                            it.response.status shouldBe HttpStatus.OK.value()
-                            it.response
-                        }) {
-                    getResponseBody(this)
-                }
+                response.status shouldBe HttpStatus.OK
 
-                finishedGameInDb = with(
-                    finishedGameRepository
-                        .findAllForUser(authenticatedUser.userInfo.id)
-                        .firstOrNull()
-                ) {
-                    finishedGameMapper.toDTOOrNull(this)
-                }
+                finishedGameInDb = finishedGameRepository
+                    .findAllByUserId(authenticatedUser.userInfo.id)
+                    .collectList()
+                    .block()!!
+                    .firstOrNull()
+                    ?.let { finishedGameMapper.toDTOOrNull(it) }
 
-                return response
+                return response.body!!
             }
-
 
             @BeforeAll
             fun beforeAll() {
                 authenticatedUser = mockAuthenticatedUser()
 
                 val ongoingGame: OngoingSentencesWritingGameDTO = sentencesWritingGameMocker
-                    .mockFromJsonSource(authenticatedUser.userInfo)
+                    .mockFromJsonSource(authenticatedUser.userInfo.id)
                     .first
                     .apply {
                         completedOngoingGameId = this.id
@@ -336,7 +271,6 @@ class TestSentencesWritingGameController @Autowired constructor(
 
                 finishedGameResponse = finishSentencesWritingGame(ongoingGame)
             }
-
 
             @Test
             fun `Game is finished and marked as finished in the DB`() {
@@ -359,7 +293,7 @@ class TestSentencesWritingGameController @Autowired constructor(
 
             @Test
             fun `Word points are updated in the DB`() {
-                val words = wordRepository.findAllForUser(authenticatedUser.userInfo.id)
+                val words = wordRepository.findAllByUserId(authenticatedUser.userInfo.id).collectList().block()!!
 
                 val wordsUsedInGame: List<String> = finishedGameResponse.reviewedAnswers.map { it.word }
                 val usedWordEntities: List<WordEntity> =
@@ -378,32 +312,18 @@ class TestSentencesWritingGameController @Autowired constructor(
 
             @Test
             fun `Ongoing game record is deleted upon finish`() {
-                ongoingGameRepository.findByIdOrNull(completedOngoingGameId) shouldBe null
-            }
-
-            @Test
-            fun `GPT use logs are updated after finishing the game`() {
-                val logs = gameTokensUsageRepository
-                    .findAllForUser(
-                        userId = authenticatedUser.userInfo.id
-                    ).filter {
-                        it.consumptionType == GamesGPTTokensConsumptionType.REVIEW
-                                && it.gameType == GameType.SENTENCES_WRITING
-                                && it.language == GameMockerBase.Companion.DefaultParams.language
-                                && it.gameDifficulty == GameMockerBase.Companion.DefaultParams.difficulty
-                    }
-
-                logs shouldHaveSize 1
+                ongoingGameRepository.findById(completedOngoingGameId).block() shouldBe null
             }
 
             @Test
             fun `User activity log is created after finishing the game`() {
                 val userActivityLogs = userActivityLogRepository
-                    .findAllForUser(authenticatedUser.userInfo.id)
+                    .findAllByUserId(authenticatedUser.userInfo.id)
+                    .collectList()
+                    .block()!!
                     .filter {
                         it.type == UserActivityType.SENTENCES_WRITING_GAME_COMPLETED_FLAWLESSLY ||
                                 it.type == UserActivityType.SENTENCES_WRITING_GAME_COMPLETED_WITH_MISTAKES
-
                     }
 
                 userActivityLogs shouldHaveSize 1
@@ -413,52 +333,41 @@ class TestSentencesWritingGameController @Autowired constructor(
         @Nested
         @DisplayName("Negative")
         inner class Negative {
-            internal fun GameRequestFactory.finishGameRequest(
-                gameId: UUID,
-                authenticatedUser: MockedAuthenticatedUser?,
-                answers: Map<UUID, String> = mapOf(UUID.randomUUID() to "answer"),
-                duration: String = "00:01:00"
-            ): MockHttpServletRequestBuilder {
-                return finishGameRequest(
-                    gameType = GameType.SENTENCES_WRITING,
-                    authenticatedUser = authenticatedUser,
-                    gameId = gameId,
-                    answers = answers,
-                    duration = duration
-                )
-            }
 
             @Test
-            fun `403 - Anonymous user cannot finish a sentences writing game`() {
-                val request = gameRequestFactory.finishGameRequest(
-                    authenticatedUser = null,
-                    gameId = UUID.randomUUID(),
+            fun `401 - Anonymous user cannot finish a sentences writing game`() {
+                val response = sentencesWritingGameAPIClient.finishGame(
+                    body = FinishSentencesWritingGameRequest(
+                        gameId = UUID.randomUUID(),
+                        duration = "00:01:00",
+                        answers = mapOf(UUID.randomUUID() to "answer")
+                    ),
+                    user = null
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
             fun `404 - User cannot finish a game that does not belong to them`() {
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
+                val otherUserId = userSeeder.seedOneEntity().id
                 val sentencesWritingSavedInDb = sentencesWritingGameMocker.mockFromJsonSource(
-                    userDTO = userMapper.toDTO(userSeeder.seedOneEntity()),
+                    userId = otherUserId!!,
                     difficulty = GameDifficulty.MEDIUM
                 ).first
 
-                val request = gameRequestFactory.finishGameRequest(
-                    authenticatedUser = authenticatedUser,
-                    gameId = sentencesWritingSavedInDb.id,
+                val response = sentencesWritingGameAPIClient.finishGame(
+                    body = FinishSentencesWritingGameRequest(
+                        gameId = sentencesWritingSavedInDb.id,
+                        duration = "00:01:00",
+                        answers = mapOf(UUID.randomUUID() to "answer")
+                    ),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
 
             @Test
@@ -466,20 +375,20 @@ class TestSentencesWritingGameController @Autowired constructor(
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 val sentencesWritingSavedInDb = sentencesWritingGameMocker.mockFromJsonSource(
-                    userDTO = authenticatedUser.userInfo,
+                    userId = authenticatedUser.userInfo.id,
                     difficulty = GameDifficulty.MEDIUM
                 ).first
 
-                val request = gameRequestFactory.finishGameRequest(
-                    authenticatedUser = authenticatedUser,
-                    gameId = sentencesWritingSavedInDb.id,
-                    answers = mapOf(UUID.randomUUID() to "x".repeat(1025))
+                val response = sentencesWritingGameAPIClient.finishGame(
+                    body = FinishSentencesWritingGameRequest(
+                        gameId = sentencesWritingSavedInDb.id,
+                        duration = "00:01:00",
+                        answers = mapOf(UUID.randomUUID() to "x".repeat(1025))
+                    ),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
@@ -487,24 +396,21 @@ class TestSentencesWritingGameController @Autowired constructor(
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 val sentencesWritingSavedInDb = sentencesWritingGameMocker.mockFromJsonSource(
-                    userDTO = authenticatedUser.userInfo,
+                    userId = authenticatedUser.userInfo.id,
                     difficulty = GameDifficulty.MEDIUM
                 ).first
 
-                val request = gameRequestFactory.finishGameRequest(
-                    authenticatedUser = authenticatedUser,
-                    gameId = sentencesWritingSavedInDb.id,
-                    duration = "invalid duration format",
+                val response = sentencesWritingGameAPIClient.finishGame(
+                    body = FinishSentencesWritingGameRequest(
+                        gameId = sentencesWritingSavedInDb.id,
+                        duration = "invalid duration format",
+                        answers = mapOf(UUID.randomUUID() to "answer")
+                    ),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }
 }
-
-
- */
