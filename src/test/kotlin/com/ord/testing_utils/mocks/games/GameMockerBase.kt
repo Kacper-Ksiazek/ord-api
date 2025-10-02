@@ -12,7 +12,7 @@ import com.ord.features.game.variants.shared.dto.api_responses.StartedGameRespon
 import com.ord.seeders.factories.WordFactory
 import com.ord.seeders.mocks.bases.ResourceJSONFileReader
 import com.ord.seeders.mocks.bases.RootDir
-import com.ord.testing_utils.api.clients.bases.GameAPIClient
+import com.ord.testing_utils.api.clients.games.bases.GameAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.ord.testing_utils.dto.resources.mocks.games.GameInJson
 import com.ord.utils.resource_readers.loadWordsFromResourceFile

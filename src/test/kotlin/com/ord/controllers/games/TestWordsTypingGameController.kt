@@ -28,7 +28,7 @@ import com.ord.features.user_activity_log.model.enums.UserActivityType
 import com.ord.features.user_activity_log.repository.UserActivityLogRepository
 import com.ord.seeders.entities.UserSeeder
 import com.ord.seeders.factories.WordFactory
-import com.ord.testing_utils.api.clients.WordsTypingGameAPIClient
+import com.ord.testing_utils.api.clients.games.WordsTypingGameAPIClient
 import com.ord.testing_utils.dto.AlteredWordProperAnswer
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.ord.testing_utils.dto.toRequestBody

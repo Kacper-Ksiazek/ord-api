@@ -10,7 +10,7 @@ import com.ord.features.game.repositories.OngoingGameRepository
 import com.ord.features.game.variants.words_typing.dto.WordsTypingInstruction
 import com.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
 import com.ord.seeders.factories.WordFactory
-import com.ord.testing_utils.api.clients.bases.GameAPIClient
+import com.ord.testing_utils.api.clients.games.bases.GameAPIClient
 import com.ord.testing_utils.dto.resources.mocks.games.WordsTypingGameInJson
 import java.util.*
 
