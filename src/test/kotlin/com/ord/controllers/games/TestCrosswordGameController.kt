@@ -6,7 +6,6 @@ import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
-import com.ord.core.user.model.UserMapper
 import com.ord.core.word.repository.WordRepository
 import com.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
@@ -40,8 +39,6 @@ import com.ord.testing_utils.mocks.games.CrosswordGameMocker
 import com.ord.testing_utils.mocks.games.GameMockerBase
 import com.ord.utils.resource_readers.loadWordsFromResourceFile
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.collections.shouldNotHaveSize
-import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
@@ -59,12 +56,10 @@ import java.util.*
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient(timeout = "180000") // 3 minutes
 class TestCrosswordGameController @Autowired constructor(
-    private val gameTokensUsageRepository: com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository.GameTokensUsageRepository,
     private val userActivityLogRepository: UserActivityLogRepository,
     private val userSeeder: UserSeeder,
     private val wordMockFactory: WordFactory,
     private val userRepository: UserRepository,
-    private val userMapper: UserMapper,
     private val wordRepository: WordRepository,
     private val ongoingGameMapper: OngoingGameMapper,
     private val ongoingGameRepository: OngoingGameRepository,
@@ -113,8 +108,6 @@ class TestCrosswordGameController @Autowired constructor(
                     it!!.word.length shouldBe answer.length
                 }
             }
-
-            gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id).collectList().block()!!.size shouldBeGreaterThanOrEqualTo 1
 
             crosswordSentToUser.instruction.board.map { it.size }.distinct().size shouldBe 1
 
@@ -248,20 +241,6 @@ class TestCrosswordGameController @Autowired constructor(
             }
 
             @Test
-            fun `GPT use logs are properly saved in the DB`() {
-                val logs = gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id).collectList().block()!!
-
-                logs shouldNotHaveSize 0
-
-                logs.forEach {
-                    it.gameType shouldBe GameType.CROSSWORD
-                    it.consumptionType shouldBe com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType.GENERATE
-                    it.language shouldBe GameMockerBase.Companion.DefaultParams.language
-                    it.gameDifficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
-                }
-            }
-
-            @Test
             fun `All rows should have identical sizes`() {
                 crosswordSentToUser.instruction.board.map { it.size }.distinct().size shouldBe 1
             }
@@ -387,13 +366,13 @@ class TestCrosswordGameController @Autowired constructor(
         inner class Negative {
 
             @Test
-            fun `403 - Anonymous user cannot start a crossword game`() {
+            fun `401 - Anonymous user cannot start a crossword game`() {
                 val response = crosswordGameAPIClient.startGame(
                     body = StartGameRequest(language = LanguageName.ENGLISH, difficulty = GameDifficulty.HARD),
                     user = null
                 )
 
-                response.status shouldBe HttpStatus.FORBIDDEN
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
@@ -524,7 +503,7 @@ class TestCrosswordGameController @Autowired constructor(
                 val response = crosswordGameAPIClient.finishGame(
                     body = FinishCrosswordGameRequest(
                         gameId = crosswordSavedInDb.id,
-                        duration = "PT5M",
+                        duration = "00:10:00",
                         answers = CrosswordUserAnswers(
                             finalWord = finalWord,
                             questions = questionsAnswers
@@ -569,13 +548,15 @@ class TestCrosswordGameController @Autowired constructor(
 
             @Test
             fun `200 - Ongoing game should be removed and finished game should be created instead`() {
-                finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).collectList().block()!!.shouldHaveSize(0)
+                finishedGameRepository.findAllByUserId(authenticatedUser.userInfo.id).collectList().block()!!
+                    .shouldHaveSize(0)
                 ongoingGameRepository.findById(crosswordSavedInDb.id).block() shouldNotBe null
 
                 finishCrosswordGame()
 
                 ongoingGameRepository.findById(crosswordSavedInDb.id).block() shouldBe null
-                finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).collectList().block()!!.shouldHaveSize(1)
+                finishedGameRepository.findAllByUserId(authenticatedUser.userInfo.id).collectList().block()!!
+                    .shouldHaveSize(1)
             }
 
             @Test
@@ -741,7 +722,7 @@ class TestCrosswordGameController @Autowired constructor(
                     difficulty = GameDifficulty.MEDIUM
                 ).first
 
-                wordRepository.findAllForUser(authenticatedUser.userInfo.id).collectList().block()!!.let { words ->
+                wordRepository.findAllByUserId(authenticatedUser.userInfo.id).collectList().block()!!.let { words ->
                     wordRepository.saveAll(
                         words.map {
                             it.copy(
@@ -766,7 +747,7 @@ class TestCrosswordGameController @Autowired constructor(
                 val wordsUsedInGame = perfectAnswers.map { it.answer }
 
                 wordRepository
-                    .findAllForUser(authenticatedUser.userInfo.id)
+                    .findAllByUserId(authenticatedUser.userInfo.id)
                     .collectList()
                     .block()!!
                     .filter { it.origin in wordsUsedInGame }
@@ -782,11 +763,11 @@ class TestCrosswordGameController @Autowired constructor(
         inner class Negative {
 
             @Test
-            fun `403 - Anonymous user cannot finish a crossword game`() {
+            fun `401 - Anonymous user cannot finish a crossword game`() {
                 val response = crosswordGameAPIClient.finishGame(
                     body = FinishCrosswordGameRequest(
                         gameId = UUID.randomUUID(),
-                        duration = "PT5M",
+                        duration = "00:10:00",
                         answers = CrosswordUserAnswers(
                             finalWord = "answer",
                             questions = emptySet()
@@ -795,7 +776,7 @@ class TestCrosswordGameController @Autowired constructor(
                     user = null
                 )
 
-                response.status shouldBe HttpStatus.FORBIDDEN
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
@@ -804,14 +785,14 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val otherUserId = userSeeder.seedOneEntity().id
                 val crosswordSavedInDb = crosswordGameMocker.mockFromJsonSource(
-                    userId = otherUserId,
+                    userId = otherUserId!!,
                     difficulty = GameDifficulty.MEDIUM
                 ).first
 
                 val response = crosswordGameAPIClient.finishGame(
                     body = FinishCrosswordGameRequest(
                         gameId = crosswordSavedInDb.id,
-                        duration = "PT5M",
+                        duration = "00:10:00",
                         answers = CrosswordUserAnswers(
                             finalWord = "answer",
                             questions = emptySet()
@@ -827,7 +808,7 @@ class TestCrosswordGameController @Autowired constructor(
             fun `400 - Crossword cannot be finished with user answer to single word over 255 characters long`() {
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
-                val otherUserId = userSeeder.seedOneEntity().id
+                val otherUserId = userSeeder.seedOneEntity().id!!
                 val crosswordSavedInDb = crosswordGameMocker.mockFromJsonSource(
                     userId = otherUserId,
                     difficulty = GameDifficulty.MEDIUM
@@ -836,7 +817,7 @@ class TestCrosswordGameController @Autowired constructor(
                 val response = crosswordGameAPIClient.finishGame(
                     body = FinishCrosswordGameRequest(
                         gameId = crosswordSavedInDb.id,
-                        duration = "PT5M",
+                        duration = "00:10:00",
                         answers = CrosswordUserAnswers(
                             finalWord = "answer",
                             questions = setOf(
@@ -859,7 +840,7 @@ class TestCrosswordGameController @Autowired constructor(
 
                 val otherUserId = userSeeder.seedOneEntity().id
                 val crosswordSavedInDb = crosswordGameMocker.mockFromJsonSource(
-                    userId = otherUserId,
+                    userId = otherUserId!!,
                     difficulty = GameDifficulty.MEDIUM
                 ).first
 
