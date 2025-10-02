@@ -1,6 +1,6 @@
 package com.ord.features.conversation.models.enums
 
-enum class ConversationGoal(
+enum class ConversationType(
     val contextForAI: String,
     val examplesForAI: List<String>
 ) {

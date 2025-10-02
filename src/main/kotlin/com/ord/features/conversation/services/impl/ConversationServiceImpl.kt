@@ -3,14 +3,9 @@ package com.ord.features.conversation.services.impl
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.conversation.models.dto.ConversationDTO
-import com.ord.features.conversation.models.dto.ConversationMessageDTO
-import com.ord.features.conversation.models.entities.ConversationEntity
-import com.ord.features.conversation.models.enums.ConversationGoal
-import com.ord.features.conversation.models.mappers.ConversationMessageMapper
+import com.ord.features.conversation.models.enums.ConversationType
 import com.ord.features.conversation.repositories.ConversationRepository
 import com.ord.features.conversation.services.ConversationService
-import com.ord.shared.repositories.UserResourceRepository
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -24,7 +19,7 @@ class ConversationServiceImpl(
 
     override fun findRecentTopics(
         userId: UUID,
-        goal: ConversationGoal,
+        goal: ConversationType,
         language: LanguageName,
         limit: Int
     ): Flux<String> {

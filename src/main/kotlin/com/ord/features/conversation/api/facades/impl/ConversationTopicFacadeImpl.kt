@@ -37,7 +37,7 @@ class ConversationTopicFacadeImpl(
                     userId = userId,
                     language = body.language,
                     limit = 10,
-                    goal = body.conversationGoal
+                    goal = body.conversationType
                 ).collectList()
             )
             .flatMapMany { tuple ->
@@ -49,9 +49,9 @@ class ConversationTopicFacadeImpl(
                         "language" to body.language.toString(),
                         "level" to languageProficiency.level.toString(),
                         "clue" to (body.clueFromUser ?: "NONE"),
-                        "goal" to body.conversationGoal.toString(),
-                        "goalExplanation" to body.conversationGoal.contextForAI,
-                        "examples" to body.conversationGoal.examplesForAI.toParamString(tabulated = true),
+                        "type" to body.conversationType.toString(),
+                        "typeExplanation" to body.conversationType.contextForAI,
+                        "examples" to body.conversationType.examplesForAI.toParamString(tabulated = true),
                         "recentConversations" to recentTopics.toParamString(tabulated = true),
                         "separator" to OpenAIAPIClientService.STREAMING_CONTENT_SEPARATOR
                     )

@@ -37,9 +37,10 @@ class ConversationCRUDFacadeImpl(
                         additionalContext = body.additionalContext ?: "",
                         language = body.language,
                         proficiencyLevel = proficiency.level,
-                        goal = body.goal,
+                        type = body.type,
                         aiTone = body.tone,
-                        aiResponseLength = body.aiResponseLength,
+                        aiInterlocutorName = body.aiInterlocutorName,
+                        aiInterlocutorAvatarId = body.aiInterlocutorAvatarId,
                         userId = userId,
                     )
                 )

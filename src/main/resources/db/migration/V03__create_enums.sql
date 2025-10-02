@@ -163,7 +163,7 @@ CALL create_enum_type(
 
 ---  ConversationGoal
 CALL create_enum_type(
-        'conversation_goal',
+        'conversation_type',
         ARRAY [
             'SMALL_TALK', -- Light and casual practice
             'SCENARIO_ROLEPLAY', -- Role-based: doctor visit, interview, travel
@@ -183,15 +183,5 @@ CALL create_enum_type(
             'NEUTRAL', -- Straightforward and balanced tone
             'ENCOURAGING', -- Motivational and supportive, great for shy learners
             'CHALLENGING' -- Pushes the user with harder questions and fewer hints
-            ]
-     );
-
----  ConversationAiResponseLength
-CALL create_enum_type(
-        'conversation_ai_response_length',
-        ARRAY [
-            'BRIEF', -- Short and to the point
-            'NORMAL', -- Default
-            'DETAILED' -- Longer replies, good for immersive practice
             ]
      );

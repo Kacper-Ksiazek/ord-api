@@ -2,8 +2,7 @@ package com.ord.features.conversation.models.dto
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.ord.features.conversation.models.enums.ConversationAIResponseLength
-import com.ord.features.conversation.models.enums.ConversationGoal
+import com.ord.features.conversation.models.enums.ConversationType
 import com.ord.features.conversation.models.enums.ConversationTone
 import java.time.Instant
 import java.util.*
@@ -16,9 +15,10 @@ data class ConversationDTO(
     val language: LanguageName,
     val proficiencyLevel: LanguageProficiencyLevel,
 
-    val goal: ConversationGoal,
+    val type: ConversationType,
     val aiTone: ConversationTone,
-    val aiResponseLength: ConversationAIResponseLength,
+    val aiInterlocutorName: String? = null,
+    val aiInterlocutorAvatarId: String? = null,
 
     val additionalContext: String? = null,
     val messages: MutableList<ConversationMessageDTO>,

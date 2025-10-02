@@ -17,9 +17,10 @@ class ConversationMapper(
             topic = entity.topic,
             language = entity.language,
             proficiencyLevel = entity.proficiencyLevel,
-            goal = entity.goal,
+            type = entity.type,
             aiTone = entity.aiTone,
-            aiResponseLength = entity.aiResponseLength,
+            aiInterlocutorName = entity.aiInterlocutorName,
+            aiInterlocutorAvatarId = entity.aiInterlocutorAvatarId,
             additionalContext = entity.additionalContext,
 
             messages = entity.messages.map { conversationMessageMapper.toDTO(it) }.toMutableList(),

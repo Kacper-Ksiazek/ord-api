@@ -1,20 +1,21 @@
 CREATE TABLE IF NOT EXISTS conversations
 (
-    id                 UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+    id                        UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
 
-    topic              TEXT                            NOT NULL,
-    additional_context TEXT                     DEFAULT NULL,
+    topic                     TEXT                 NOT NULL,
+    additional_context        TEXT                     DEFAULT NULL,
 
-    language           language_name                   NOT NULL,
-    proficiency_level  language_proficiency            NOT NULL,
-    goal               conversation_goal               NOT NULL,
-    ai_tone            conversation_tone               NOT NULL,
-    ai_response_length conversation_ai_response_length NOT NULL,
+    language                  language_name        NOT NULL,
+    proficiency_level         language_proficiency NOT NULL,
+    type                      conversation_type    NOT NULL,
+    ai_tone                   conversation_tone    NOT NULL,
+    ai_interlocutor_name      TEXT                     DEFAULT NULL,
+    ai_interlocutor_avatar_id VARCHAR(64)              DEFAULT NULL,
 
-    user_id            UUID                            NOT NULL,
+    user_id                   UUID                 NOT NULL,
 
-    created_at         TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at         TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at                TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at                TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );

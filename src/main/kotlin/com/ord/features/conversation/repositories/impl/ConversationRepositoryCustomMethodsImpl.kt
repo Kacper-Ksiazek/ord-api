@@ -5,8 +5,7 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.features.conversation.models.dto.ConversationDTO
 import com.ord.features.conversation.models.dto.ConversationMessageDTO
 import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
-import com.ord.features.conversation.models.enums.ConversationAIResponseLength
-import com.ord.features.conversation.models.enums.ConversationGoal
+import com.ord.features.conversation.models.enums.ConversationType
 import com.ord.features.conversation.models.enums.ConversationMessageSender
 import com.ord.features.conversation.models.enums.ConversationTone
 import com.ord.features.conversation.repositories.ConversationRepositoryCustomMethods
@@ -23,7 +22,7 @@ class ConversationRepositoryCustomMethodsImpl(
 ) : ConversationRepositoryCustomMethods {
     override fun findRecentTopics(
         userId: UUID,
-        goal: ConversationGoal,
+        goal: ConversationType,
         language: LanguageName,
         limit: Int
     ): Flux<String> {
@@ -120,10 +119,11 @@ class ConversationRepositoryCustomMethodsImpl(
                             topic = firstRow["topic"] as String,
                             language = LanguageName.valueOf(firstRow["language"] as String),
                             proficiencyLevel = LanguageProficiencyLevel.valueOf(firstRow["proficiency_level"] as String),
-                            goal = ConversationGoal.valueOf(firstRow["goal"] as String),
+                            type = ConversationType.valueOf(firstRow["goal"] as String),
                             aiTone = ConversationTone.valueOf(firstRow["ai_tone"] as String),
-                            aiResponseLength = ConversationAIResponseLength.valueOf(firstRow["ai_response_length"] as String),
                             additionalContext = firstRow["additional_context"] as String?,
+                            aiInterlocutorName =  firstRow["ai_interlocutor_name"] as String?,
+                            aiInterlocutorAvatarId =   firstRow["ai_interlocutor_avatar"] as String?,
                             messages = messages,
                             createdAt = (firstRow["created_at"] as OffsetDateTime).toInstant(),
                             updatedAt = (firstRow["updated_at"] as OffsetDateTime).toInstant()

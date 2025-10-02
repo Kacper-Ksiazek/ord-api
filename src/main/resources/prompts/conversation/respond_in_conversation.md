@@ -7,7 +7,7 @@ Your task is to continue a conversation with the user ( your student ) in the la
 
 1. Language: **%%language%%** at the level of **%%level%%**.
 2. Conversation topic: **%%topic%%**.
-3. Conversation type:  **%%goal%%** - **%%goalExplanation%%**.
+3. Conversation type:  **%%type%%** - **%%typeExplanation%%**.
 4. Additional context for the conversation: **%%additionalContext%%**.
  
 ### Conversation history so far

@@ -2,14 +2,11 @@ package com.ord.features.conversation.models.entities
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.ord.core.user.model.UserEntity
-import com.ord.features.conversation.models.enums.ConversationAIResponseLength
-import com.ord.features.conversation.models.enums.ConversationGoal
+import com.ord.features.conversation.models.enums.ConversationType
 import com.ord.features.conversation.models.enums.ConversationTone
 import com.ord.shared.models.IdentifiableUserResource
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
-import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 import java.util.*
@@ -25,9 +22,10 @@ data class ConversationEntity(
     val language: LanguageName,
     val proficiencyLevel: LanguageProficiencyLevel,
 
-    val goal: ConversationGoal,
+    val type: ConversationType,
     val aiTone: ConversationTone,
-    val aiResponseLength: ConversationAIResponseLength,
+    val aiInterlocutorName: String? = null,
+    val aiInterlocutorAvatarId: String? = null,
 
     override var userId: UUID,
 

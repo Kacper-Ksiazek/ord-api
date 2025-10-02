@@ -1,9 +1,7 @@
 package com.ord.features.conversation.api.requests
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.ord.features.conversation.models.enums.ConversationAIResponseLength
-import com.ord.features.conversation.models.enums.ConversationGoal
+import com.ord.features.conversation.models.enums.ConversationType
 import com.ord.features.conversation.models.enums.ConversationTone
 
 data class CreateConversationRequest(
@@ -13,6 +11,7 @@ data class CreateConversationRequest(
     val language: LanguageName,
 
     val tone: ConversationTone,
-    val goal: ConversationGoal,
-    val aiResponseLength: ConversationAIResponseLength,
+    val type: ConversationType,
+    val aiInterlocutorName: String? = null,
+    val aiInterlocutorAvatarId: String? = null,
 )
