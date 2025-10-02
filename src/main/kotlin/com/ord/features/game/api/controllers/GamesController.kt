@@ -52,7 +52,7 @@ class GamesController(
     // 14. @GetMapping("/games-history")
     // 15. @GetMapping("/statistics")
 
-    @DeleteMapping("/cancel/{gameId}")
+    @PostMapping("/cancel/{gameId}")
     fun cancelGame(
         @PathVariable gameId: UUID,
         @AuthenticatedUser user: UserDTO,
