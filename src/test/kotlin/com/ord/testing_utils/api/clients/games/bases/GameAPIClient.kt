@@ -6,6 +6,7 @@ import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.reactive.server.WebTestClient
+import java.util.*
 
 abstract class GameAPIClient<
         TStartedGameResponseBody,
@@ -51,5 +52,14 @@ abstract class GameAPIClient<
         body = body,
         user = user,
         responseBodyType = finishedGameTypeReference
+    )
+
+    fun cancelGame(
+        gameId: UUID,
+        user: MockedAuthenticatedUser? = null
+    ) = delete(
+        url = "/api/v1/games/cancel/$gameId",
+        user = user,
+        responseBodyType = null
     )
 }
