@@ -1,4 +1,4 @@
-package com.ord.testing_utils.api.clients.bases
+package com.ord.testing_utils.api.clients.games.bases
 
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.ord.features.game.variants.shared.dto.api_requests.UnsafeStartGameRequestData
