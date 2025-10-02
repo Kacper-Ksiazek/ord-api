@@ -1,5 +1,6 @@
 package com.ord.testing_utils.api.clients.games.bases
 
+import com.ord.features.game.variants.shared.dto.api_requests.CancelGameRequest
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.ord.features.game.variants.shared.dto.api_requests.UnsafeStartGameRequestData
 import com.ord.testing_utils.api.APITestClient
@@ -18,8 +19,8 @@ abstract class GameAPIClient<
     private val startedGameTypeReference: ParameterizedTypeReference<TStartedGameResponseBody>,
     private val finishedGameTypeReference: ParameterizedTypeReference<TFinishedGameResponseBody>
 ) : APITestClient(webClient) {
-
     val baseUrl: String = "/api/v1/games/$gameSlugName"
+
 
     fun startGame(
         body: UnsafeStartGameRequestData,
@@ -54,12 +55,17 @@ abstract class GameAPIClient<
         responseBodyType = finishedGameTypeReference
     )
 
+
     fun cancelGame(
         gameId: UUID,
-        user: MockedAuthenticatedUser? = null
-    ) = delete(
+        user: MockedAuthenticatedUser? = null,
+        body: CancelGameRequest = CancelGameRequest(
+            duration = "00:00:00"
+        ),
+    ) = post(
         url = "/api/v1/games/cancel/$gameId",
         user = user,
-        responseBodyType = null
+        body = body,
+        responseBodyType = object : ParameterizedTypeReference<Unit>() {},
     )
 }
