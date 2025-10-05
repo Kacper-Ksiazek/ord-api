@@ -40,11 +40,10 @@ class OngoingConversationFacadeImpl(
         userId: UUID,
     ): Flux<String> {
         return conversationService
-            .findByIdOrFail(
+            .findByIdOrFailWithMessages(
                 id = conversationId,
                 userId = userId
             )
-            .map { conversationMapper.toDTO(it) }
             .flatMapMany { conversation ->
                 if (conversation.messages.isNotEmpty()) {
                     return@flatMapMany Flux.error(
@@ -79,11 +78,8 @@ class OngoingConversationFacadeImpl(
         userId: UUID,
         body: CreateAIConversationMessageRequest
     ): Flux<String> {
-        // TODO: Fetch with JOINED messages
-
         return conversationService
-            .findByIdOrFail(body.conversationId, userId)
-            .map { conversationMapper.toDTO(it) }
+            .findByIdOrFailWithMessages(body.conversationId, userId)
             .flatMapMany { conversation ->
                 val serializedConversationHistory: List<String> =
                     conversation.messages
