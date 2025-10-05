@@ -19,7 +19,7 @@ interface OpenAIAPIClientService {
 
         prompt: String,
 
-        saveLog: (openAIResponse: OpenAIResponse) -> Unit,
+        saveLog: (openAIResponse: OpenAIResponse) -> Unit = {},
         validateResponseBody: (parsedResponseBody: T?) -> Boolean = { it != null },
         parseResponseBody: (responseBody: T) -> T = { it }
     ): Mono<T>
