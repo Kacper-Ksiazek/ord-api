@@ -599,6 +599,142 @@ class TestConversationController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.BAD_REQUEST
             }
+
+            @Test
+            fun `400 - empty topic should fail`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val request = CreateConversationRequest(
+                    topic = "",
+                    additionalContext = null,
+                    language = TestData.LANGUAGE,
+                    tone = TestData.TONE,
+                    type = TestData.TYPE
+                )
+
+                val response = conversationAPIClient.createConversation(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - extremely long topic should fail`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val request = CreateConversationRequest(
+                    topic = "a".repeat(501),
+                    additionalContext = null,
+                    language = TestData.LANGUAGE,
+                    tone = TestData.TONE,
+                    type = TestData.TYPE
+                )
+
+                val response = conversationAPIClient.createConversation(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - extremely long additional context should fail`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val request = CreateConversationRequest(
+                    topic = TestData.TOPIC,
+                    additionalContext = "a".repeat(5001),
+                    language = TestData.LANGUAGE,
+                    tone = TestData.TONE,
+                    type = TestData.TYPE
+                )
+
+                val response = conversationAPIClient.createConversation(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - invalid aiInterlocutorAvatarId should fail`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val request = CreateConversationRequest(
+                    topic = TestData.TOPIC,
+                    additionalContext = null,
+                    language = TestData.LANGUAGE,
+                    tone = TestData.TONE,
+                    type = TestData.TYPE,
+                    aiInterlocutorName = "Dr. Smith",
+                    aiInterlocutorAvatarId = "INVALID_AVATAR_ID"
+                )
+
+                val response = conversationAPIClient.createConversation(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - extremely long aiInterlocutorName should fail`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val request = CreateConversationRequest(
+                    topic = TestData.TOPIC,
+                    additionalContext = null,
+                    language = TestData.LANGUAGE,
+                    tone = TestData.TONE,
+                    type = TestData.TYPE,
+                    aiInterlocutorName = "a".repeat(201),
+                    aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
+                )
+
+                val response = conversationAPIClient.createConversation(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - user with only one language cannot create in different language`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.C2)
+                )
+
+                val request = CreateConversationRequest(
+                    topic = "Conversation en français",
+                    additionalContext = null,
+                    language = LanguageName.FRENCH,
+                    tone = TestData.TONE,
+                    type = TestData.TYPE
+                )
+
+                val response = conversationAPIClient.createConversation(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
         }
     }
 

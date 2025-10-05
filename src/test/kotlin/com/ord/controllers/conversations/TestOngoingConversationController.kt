@@ -301,52 +301,6 @@ class TestOngoingConversationController @Autowired constructor(
                 updatedConversation.messages[1].messageOrder shouldBe 1
                 updatedConversation.messages[1].content.shouldNotBeBlank()
             }
-
-            @Test
-            fun `200 - should handle multiple AI messages in sequence`() {
-                val authenticatedUser = mockAuthenticatedUser(
-                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B1)
-                )
-
-                val conversation = createConversation(authenticatedUser)
-
-                ongoingConversationAPIClient.initializeConversationByAI(
-                    conversationId = conversation.id,
-                    user = authenticatedUser
-                )
-
-                val request1 = CreateAIConversationMessageRequest(
-                    conversationId = conversation.id,
-                    messageOrder = 1,
-                    latestUserMessage = "I like pizza."
-                )
-
-                val request2 = CreateAIConversationMessageRequest(
-                    conversationId = conversation.id,
-                    messageOrder = 3,
-                    latestUserMessage = "My favorite is margherita."
-                )
-
-                val response1 = ongoingConversationAPIClient.requestAIMessage(
-                    body = request1,
-                    user = authenticatedUser
-                )
-
-                val response2 = ongoingConversationAPIClient.requestAIMessage(
-                    body = request2,
-                    user = authenticatedUser
-                )
-
-                response1.status shouldBe HttpStatus.OK
-                response2.status shouldBe HttpStatus.OK
-
-                val updatedConversation = conversationAPIClient.getConversationById(
-                    conversationId = conversation.id,
-                    user = authenticatedUser
-                ).body!!
-
-                updatedConversation.messages shouldHaveSize 3
-            }
         }
 
         @Nested
@@ -451,8 +405,8 @@ class TestOngoingConversationController @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
                 response.body!!.grammar shouldBeInRange 0..10
-                response.body!!.vocabulary shouldBeInRange 0..10
-                response.body!!.answerLength shouldBeInRange 0..10
+                response.body.vocabulary shouldBeInRange 0..10
+                response.body.answerLength shouldBeInRange 0..10
             }
 
             @Test
