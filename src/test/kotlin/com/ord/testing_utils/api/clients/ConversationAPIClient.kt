@@ -1,6 +1,8 @@
 package com.ord.testing_utils.api.clients
 
+import com.ord.features.conversation.api.facades.helpers.ai_responses.GeneratedAIInterlocutorData
 import com.ord.features.conversation.api.requests.CreateConversationRequest
+import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
 import com.ord.features.conversation.models.dto.ConversationDTO
 import com.ord.testing_utils.api.APITestClient
@@ -24,6 +26,18 @@ class ConversationAPIClient(
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<String>() {}
+        )
+    }
+
+    fun generateAIInterlocutor(
+        body: GenerateAIInterlocutorDataRequest,
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<GeneratedAIInterlocutorData?> {
+        return post(
+            url = "$baseUrl/suggest-ai-interlocutor",
+            body = body,
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<GeneratedAIInterlocutorData>() {}
         )
     }
 
