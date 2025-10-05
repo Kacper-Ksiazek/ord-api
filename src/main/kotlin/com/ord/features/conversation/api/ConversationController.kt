@@ -3,8 +3,9 @@ package com.ord.features.conversation.api
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.conversation.api.facades.ConversationCRUDFacade
-import com.ord.features.conversation.api.facades.ConversationTopicFacade
+import com.ord.features.conversation.api.facades.ConversationAuxiliaryFacade
 import com.ord.features.conversation.api.requests.CreateConversationRequest
+import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
 import com.ord.features.conversation.models.dto.ConversationDTO
 import jakarta.validation.Valid
@@ -17,7 +18,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/v1/conversations")
 class ConversationController(
-    val conversationTopicFacade: ConversationTopicFacade,
+    val conversationTopicFacade: ConversationAuxiliaryFacade,
     val conversationCRUDFacade: ConversationCRUDFacade,
 ) {
     //
@@ -29,6 +30,15 @@ class ConversationController(
         @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: SuggestConversationTopicRequest
     ) = conversationTopicFacade.suggestTopics(
+        userId = user.id,
+        body = body
+    )
+
+    @PostMapping("/suggest-ai-interlocutor")
+    fun generateAIInterlocutorData(
+        @AuthenticatedUser user: UserDTO,
+        @Valid @RequestBody body: GenerateAIInterlocutorDataRequest
+    ) = conversationTopicFacade.generateAIInterlocutorData(
         userId = user.id,
         body = body
     )

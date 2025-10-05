@@ -7,22 +7,26 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.ai_provider.dto.helpers.StreamSimpleItem
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
-import com.ord.features.conversation.api.facades.ConversationTopicFacade
+import com.ord.features.conversation.api.facades.ConversationAuxiliaryFacade
+import com.ord.features.conversation.api.facades.helpers.ai_responses.GeneratedAIInterlocutorData
+import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
+import com.ord.features.conversation.models.enums.ConversationAIBotAvatar
 import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.toParamString
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
 
 @Service
-class ConversationTopicFacadeImpl(
+class ConversationAuxiliaryFacadeImpl(
     private val conversationService: ConversationService,
     private val openAIStreamClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService
-) : ConversationTopicFacade {
+) : ConversationAuxiliaryFacade {
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
@@ -37,7 +41,7 @@ class ConversationTopicFacadeImpl(
                     userId = userId,
                     language = body.language,
                     limit = 10,
-                    goal = body.conversationType
+                    type = body.conversationType
                 ).collectList()
             )
             .flatMapMany { tuple ->
@@ -58,7 +62,7 @@ class ConversationTopicFacadeImpl(
                 )
 
                 openAIStreamClientService
-                    .openStructuredArrayStream<StreamSimpleItem>(
+                    .openStructuredArrayStream(
                         prompt = prompt.toString(),
                         streamedItemType = object : TypeReference<StreamSimpleItem>() {},
                         onComplete = { (payload, emitter) ->
@@ -68,6 +72,34 @@ class ConversationTopicFacadeImpl(
                                 )
                             )
                         }
+                    )
+            }
+    }
+
+    override fun generateAIInterlocutorData(
+        userId: UUID,
+        body: GenerateAIInterlocutorDataRequest
+    ): Mono<GeneratedAIInterlocutorData> {
+        return languageProficiencyService
+            .findUserProficiencyInLanguageOrThrow(userId, body.language)
+            .flatMap { languageProficiency ->
+                val prompt = Prompt(
+                    variant = AvailablePrompts.CONVERSATION_GENERATE_AI_INTERLOCUTOR,
+                    params = mapOf(
+                        "language" to body.language.toString(),
+                        "level" to languageProficiency.level.toString(),
+                        "topic" to body.topic,
+                        "type" to body.conversationType.toString(),
+                        "typeExplanation" to body.conversationType.contextForAI,
+                        "additionalContext" to (body.additionalContext ?: "NONE"),
+                        "availableAvatars" to ConversationAIBotAvatar.toPromptList()
+                    )
+                )
+
+                openAIStreamClientService
+                    .makeRequest(
+                        prompt = prompt.toString(),
+                        aiResponseType = object : TypeReference<GeneratedAIInterlocutorData>() {}
                     )
             }
     }
