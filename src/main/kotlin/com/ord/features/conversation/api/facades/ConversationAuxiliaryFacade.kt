@@ -4,7 +4,7 @@ import com.ord.features.conversation.api.requests.SuggestConversationTopicReques
 import reactor.core.publisher.Flux
 import java.util.UUID
 
-interface ConversationTopicFacade {
+interface ConversationAuxiliaryFacade {
     fun suggestTopics(
         userId: UUID,
         body: SuggestConversationTopicRequest
