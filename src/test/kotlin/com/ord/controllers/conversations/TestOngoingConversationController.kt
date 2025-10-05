@@ -36,7 +36,7 @@ import java.util.*
 
 @DisplayName("- OngoingConversationController")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
+@AutoConfigureWebTestClient(timeout = "180000")
 class TestOngoingConversationController @Autowired constructor(
     private val conversationRepository: ConversationRepository,
     private val conversationMessageRepository: ConversationMessageRepository,

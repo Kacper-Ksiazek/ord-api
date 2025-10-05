@@ -23,7 +23,7 @@ class WordAIController(
     @PostMapping("/generate-manual")
     fun generateAIManual(
         @AuthenticatedUser user: UserDTO,
-        @Valid @RequestBody body: GenerateWordManualRequest
+    @Valid @RequestBody body: GenerateWordManualRequest
     ): Mono<ResponseEntity<AIGeneratedWordManual>> {
         return wordAIFacade.generateWordManual(body, user)
             .map { ResponseEntity.status(HttpStatus.OK).body(it) }
