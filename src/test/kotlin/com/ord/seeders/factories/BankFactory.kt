@@ -23,7 +23,7 @@ class BankFactory(
             name = name,
             description = description,
             userId = user.id!!,
-            bankGroupId = bankGroup?.id,
+            groupId = bankGroup?.id,
         )
     }
 
