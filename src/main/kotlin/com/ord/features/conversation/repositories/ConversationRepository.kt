@@ -12,7 +12,7 @@ import java.util.*
 interface ConversationRepositoryCustomMethods {
     fun findRecentTopics(
         userId: UUID,
-        goal: ConversationType,
+        type: ConversationType,
         language: LanguageName,
         limit: Int
     ): Flux<String>

@@ -19,13 +19,13 @@ class ConversationServiceImpl(
 
     override fun findRecentTopics(
         userId: UUID,
-        goal: ConversationType,
+        type: ConversationType,
         language: LanguageName,
         limit: Int
     ): Flux<String> {
         return conversationRepository.findRecentTopics(
             userId = userId,
-            goal = goal,
+            type = type,
             language = language,
             limit = limit
         )

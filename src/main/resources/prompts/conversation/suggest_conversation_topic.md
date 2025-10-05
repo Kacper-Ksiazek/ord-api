@@ -8,7 +8,7 @@ The topics should be relevant to selected conversation type and to the instructi
 
 1. Language: **%%language%%** at the level of **%%level%%**.
 2. User’s instruction for the conversation: **%%clue%%**
-3. Type of the conversation: **%%goal%%** - **%%goalExplanation%%**.
+3. Type of the conversation: **%%type%%** - **%%typeExplanation%%**.
 4. Example topics of this conversation type in English for various levels:
 **%%examples%%**
 5. Most recent similar topic for this user:

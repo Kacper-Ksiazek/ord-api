@@ -22,7 +22,7 @@ class ConversationRepositoryCustomMethodsImpl(
 ) : ConversationRepositoryCustomMethods {
     override fun findRecentTopics(
         userId: UUID,
-        goal: ConversationType,
+        type: ConversationType,
         language: LanguageName,
         limit: Int
     ): Flux<String> {
@@ -30,7 +30,7 @@ class ConversationRepositoryCustomMethodsImpl(
             SELECT c.topic
             FROM conversations c
             WHERE c.user_id = :userId
-                AND c.goal = :goal
+                AND c.type= :type
                 AND c.language = :language
             ORDER BY c.created_at DESC
             LIMIT :limit
@@ -39,7 +39,7 @@ class ConversationRepositoryCustomMethodsImpl(
         return template.databaseClient
             .sql(query)
             .bind("userId", userId)
-            .bind("goal", goal.name)
+            .bind("type", type.name)
             .bind("language", language.name)
             .bind("limit", limit)
             .map { row -> row.get("topic", String::class.java)!! }
@@ -119,11 +119,11 @@ class ConversationRepositoryCustomMethodsImpl(
                             topic = firstRow["topic"] as String,
                             language = LanguageName.valueOf(firstRow["language"] as String),
                             proficiencyLevel = LanguageProficiencyLevel.valueOf(firstRow["proficiency_level"] as String),
-                            type = ConversationType.valueOf(firstRow["goal"] as String),
+                            type = ConversationType.valueOf(firstRow["type"] as String),
                             aiTone = ConversationTone.valueOf(firstRow["ai_tone"] as String),
                             additionalContext = firstRow["additional_context"] as String?,
-                            aiInterlocutorName =  firstRow["ai_interlocutor_name"] as String?,
-                            aiInterlocutorAvatarId =   firstRow["ai_interlocutor_avatar"] as String?,
+                            aiInterlocutorName = firstRow["ai_interlocutor_name"] as String?,
+                            aiInterlocutorAvatarId = firstRow["ai_interlocutor_avatar"] as String?,
                             messages = messages,
                             createdAt = (firstRow["created_at"] as OffsetDateTime).toInstant(),
                             updatedAt = (firstRow["updated_at"] as OffsetDateTime).toInstant()

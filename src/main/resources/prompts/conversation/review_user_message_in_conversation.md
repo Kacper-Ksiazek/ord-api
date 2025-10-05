@@ -7,7 +7,7 @@ Your task is to review the user message in the conversation and provide feedback
 
 1. Language: **%%language%%** at the level of **%%level%%**.
 2. Conversation topic: **%%topic%%**.
-3. Conversation type:  **%%goal%%** - **%%goalExplanation%%**.
+3. Conversation type:  **%%type%%** - **%%typeExplanation%%**.
 4. Additional context for the conversation: **%%additionalContext%%**.
 5. Last AI message ( second person in convo ): **%%latestAIMessage%%**.
 
@@ -30,7 +30,7 @@ type ExpectedResult = {
      * 1. User is using a language that is not the target language of the conversation
      * 2. User answer is EXTREMELY short (e.g. "yes", "no", "ok", "thanks")
      * 3. User answer is EXTREMALY offensive and inappropriate. Take into account here
-     *    the goal of the conversation, in less formal conversations, some offensive words might be acceptable
+     *    the type of the conversation, in less formal conversations, some offensive words might be acceptable
      * 4. User answer is not related to the topic of the conversation at all
      *
      * Any of such cases should return a string with a reason why the user is trying to sabotage the conversation and rate everything as 0.
