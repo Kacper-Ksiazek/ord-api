@@ -11,6 +11,9 @@ Your task is to review the user message in the conversation and provide feedback
 4. Additional context for the conversation: **%%additionalContext%%**.
 5. Last AI message ( second person in convo ): **%%latestAIMessage%%**.
 
+### USER MESSAGE TO REVIEW:
+**%%userMessage%%**
+
 ### TASK INSTRUCTIONS:
 
 Review the user message in the conversation and provide feedback on it. 
