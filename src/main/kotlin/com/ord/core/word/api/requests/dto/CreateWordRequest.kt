@@ -1,6 +1,7 @@
 package com.ord.core.word.api.requests.dto
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.langugae_proficiency.validators.annotations.ValidLanguageName
 import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
 import com.ord.core.word.model.json.ExampleSentence
@@ -38,9 +39,12 @@ data class CreateWordRequest(
     val type: WordType,
 
     @field:NotNull(message = "Translated from cannot be blank")
+    @field:ValidLanguageName
     val translatedFrom: LanguageName,
 
     val extraMark: WordExtraMark? = null,
+
+    @field:ValidLanguageName
     val translatedTo: LanguageName? = null,
 
     @field:Size(min = 1, max = 5, message = "Example sentences must be between 1 and 5")
