@@ -75,8 +75,6 @@ CALL create_enum_type(
         ARRAY [
             'WORDS_TYPING',
             'CROSSWORD',
-            'GAPS_FILLING',
-            'IMMERSIVE_STORY',
             'SENTENCES_WRITING'
             ]
      );
