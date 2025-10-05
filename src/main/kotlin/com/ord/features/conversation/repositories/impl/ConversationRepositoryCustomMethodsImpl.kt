@@ -2,6 +2,7 @@ package com.ord.features.conversation.repositories.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
+import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.conversation.models.dto.ConversationDTO
 import com.ord.features.conversation.models.dto.ConversationMessageDTO
 import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
@@ -83,7 +84,7 @@ class ConversationRepositoryCustomMethodsImpl(
             .collectList()
             .flatMap { rows ->
                 if (rows.isEmpty()) {
-                    Mono.error(RuntimeException("Conversation not found"))
+                    Mono.error(NotFoundException("Conversation not found"))
                 } else {
                     val firstRow = rows[0]
 
@@ -123,7 +124,7 @@ class ConversationRepositoryCustomMethodsImpl(
                             aiTone = ConversationTone.valueOf(firstRow["ai_tone"] as String),
                             additionalContext = firstRow["additional_context"] as String?,
                             aiInterlocutorName = firstRow["ai_interlocutor_name"] as String?,
-                            aiInterlocutorAvatarId = firstRow["ai_interlocutor_avatar"] as String?,
+                            aiInterlocutorAvatarId = firstRow["ai_interlocutor_avatar_id"] as String?,
                             messages = messages,
                             createdAt = (firstRow["created_at"] as OffsetDateTime).toInstant(),
                             updatedAt = (firstRow["updated_at"] as OffsetDateTime).toInstant()
