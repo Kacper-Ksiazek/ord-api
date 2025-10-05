@@ -88,8 +88,6 @@ class HandlerMethodValidationExceptionHandler {
     fun handleInvalidParameterTypeException(
         exception: MethodArgumentTypeMismatchException
     ): ResponseEntity<BadRequestResponse> {
-        // TODO: Verify that it also works properly with enum types
-
         return ResponseEntity(
             BadRequestResponse(
                 status = HttpStatus.BAD_REQUEST.value(),
