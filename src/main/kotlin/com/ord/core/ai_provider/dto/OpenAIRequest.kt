@@ -6,6 +6,8 @@ data class OpenAIRequest(
     val instructions: String? = null,
     val temperature: Float,
     val stream: Boolean = false,
-
+//    val reasoning: Map<String, String> = mapOf(
+//        "effort" to "low"
+//    ),
     val max_output_tokens: Int,
 )
