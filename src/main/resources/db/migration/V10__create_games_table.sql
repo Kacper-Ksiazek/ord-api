@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS ongoing_games
 (
-    id             UUID PRIMARY KEY,
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     proper_answers TEXT            NOT NULL,
 
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS ongoing_games
 
 CREATE TABLE IF NOT EXISTS finished_games
 (
-    id         UUID PRIMARY KEY,
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     duration   varchar(8)      NOT NULL,
     accuracy   REAL            NOT NULL CHECK ( accuracy >= 0 AND accuracy <= 1 ),

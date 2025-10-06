@@ -24,19 +24,21 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
+            <version>3.3.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
+            <artifactId>r2dbc-postgresql</artifactId>
+            <version>1.0.7.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -61,26 +63,6 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
             <version>10.4.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-            <version>9.37.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.flywaydb.flyway-test-extensions</groupId>
-            <artifactId>flyway-spring-test</artifactId>
-            <version>9.5.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.2.220</version>
-            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -126,6 +108,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
             <version>1.0.2</version>
@@ -148,6 +135,10 @@
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
             <version>2.14.2</version>
@@ -157,12 +148,6 @@
             <artifactId>kotest-assertions-core-jvm</artifactId>
             <version>5.7.2</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.arrow-kt</groupId>
-            <artifactId>arrow-core</artifactId>
-            <version>1.2.0</version>
         </dependency>
 
         <dependency>
@@ -208,14 +193,11 @@
                             <goal>compile</goal>
                         </goals>
                         <configuration>
+                            <jvmTarget>17</jvmTarget>
                             <compilerPlugins>
                                 <plugin>spring</plugin>
-                                <plugin>jpa</plugin>
                                 <plugin>no-arg</plugin>
                             </compilerPlugins>
-                            <pluginOptions>
-                                <option>no-arg:annotation=jakarta.persistence.Entity</option>
-                            </pluginOptions>
                         </configuration>
                     </execution>
                     <execution>
@@ -225,20 +207,17 @@
                             <goal>test-compile</goal>
                         </goals>
                         <configuration>
+                            <jvmTarget>17</jvmTarget>
                             <compilerPlugins>
                                 <plugin>no-arg</plugin>
                             </compilerPlugins>
-                            <pluginOptions>
-                                <option>no-arg:annotation=jakarta.persistence.Entity</option>
-                            </pluginOptions>
                         </configuration>
                     </execution>
                 </executions>
                 <configuration>
-                    <jvmTarget>1.8</jvmTarget>
+                    <jvmTarget>17</jvmTarget>
                     <compilerPlugins>
                         <plugin>spring</plugin>
-                        <plugin>jpa</plugin>
                     </compilerPlugins>
                 </configuration>
 

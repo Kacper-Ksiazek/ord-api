@@ -5,7 +5,7 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.core.env.Environment
-import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.net.URI
 
@@ -13,7 +13,7 @@ import java.net.URI
 @EnableTransactionManagement
 class Application(
     private val environment: Environment,
-    private val jdbcTemplate: JdbcTemplate
+    private val dbClient: DatabaseClient,
 ) : CommandLineRunner {
 
     override fun run(vararg args: String) {
@@ -39,23 +39,31 @@ class Application(
 
     private fun verifyDatabaseConnection() {
         Console.ensureFunctionSuccess("2. Verify database connection") {
-            jdbcTemplate.execute("SELECT 1")
+            dbClient.sql("SELECT 1")
+                .fetch()
+                .first()
+                .block() ?: throw RuntimeException("Database connection verification failed")
         }
     }
 }
 
 fun convertHerokuDatabaseUrl() {
-     val databaseUrl = System.getenv("DATABASE_URL")
+    val databaseUrl = System.getenv("DATABASE_URL")
         ?: throw IllegalStateException("❌ Missing environment variable DATABASE_URL. Please make sure it is set!")
 
     try {
         val uri = URI(databaseUrl.replace("postgres://", "postgresql://"))
         val (username, password) = uri.userInfo.split(":")
-        val jdbcUrl = "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}"
 
-        System.setProperty("JDBC_DATABASE_URL", jdbcUrl)
-        System.setProperty("JDBC_DATABASE_USERNAME", username)
-        System.setProperty("JDBC_DATABASE_PASSWORD", password)
+        val jdbcUrl = "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}"
+        val r2dbcUrl = "r2dbc:postgresql://${uri.host}:${uri.port}${uri.path}"
+
+
+        System.setProperty("DATABASE_URL_JDBC", jdbcUrl)     // For Flyway migrations
+        System.setProperty("DATABASE_URL_R2DBC", r2dbcUrl)   // For Application running on WebFlux with R2DBC
+        System.setProperty("DATABASE_USERNAME", username)
+        System.setProperty("DATABASE_PASSWORD", password)
+
     } catch (e: Exception) {
         throw IllegalStateException("❌ Failed to parse DATABASE_URL: $databaseUrl", e)
     }

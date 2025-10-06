@@ -9,5 +9,6 @@ class JwtProperties(
     var authCookieName: String = "",
     var userIdClaimName: String = "",
     var secretKey: String = "",
-    var expirationTime: Long = 0
+    var expirationTime: Long = 900,
+    val issuer: String = "ord-api"
 )

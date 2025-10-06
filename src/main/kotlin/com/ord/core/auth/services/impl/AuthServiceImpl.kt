@@ -3,90 +3,120 @@ package com.ord.core.auth.services.impl
 import com.ord.config.properties.JwtProperties
 import com.ord.core.auth.api.requests.dto.LoginRequest
 import com.ord.core.auth.api.requests.dto.RegisterRequest
-import com.ord.core.auth.jwt.JwtFactory
-import com.ord.core.auth.jwt.JwtService
+import com.ord.core.auth.models.UserSessionEntity
 import com.ord.core.auth.services.AuthService
-import com.ord.core.auth.services.UserSessionService
-import com.ord.core.user.UserRepository
+import com.ord.core.security.JwtService
+import com.ord.core.security.UserRepository
+import com.ord.core.security.UserSessionRepositoryReactive
+import com.ord.core.security.addAuthTokenCookie
+import com.ord.core.security.getCookieValue
+import com.ord.core.security.invalidateAuthTokenCookie
+import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
-import com.ord.core.user.model.enums.UserRole
-import com.ord.exceptions.ForbiddenException
-import com.ord.exceptions.UserNotFoundException
-import com.ord.shared.utils.CookieUtils
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import com.ord.core.user.model.toDTO
+import com.ord.exceptions.REST.BadRequestException
+import com.ord.exceptions.REST.NotFoundException
+import com.ord.exceptions.REST.UnauthorizedException
+import io.jsonwebtoken.Claims
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ServerWebExchange
+import reactor.core.publisher.Mono
+import java.util.UUID
 
 @Service
 class AuthServiceImpl(
-    private val jwtService: JwtService,
     private val jwtProperties: JwtProperties,
-    private val passwordEncoder: PasswordEncoder,
-    private val authenticationManager: AuthenticationManager,
-    private val jwtFactory: JwtFactory,
+    private val jwtService: JwtService,
+    private val encoder: PasswordEncoder,
+
     private val userRepository: UserRepository,
-    private val userSessionService: UserSessionService
+    private val sessionRepositoryReactive: UserSessionRepositoryReactive
 ) : AuthService {
-
-    @Throws(UserNotFoundException::class)
     override fun register(
-        request: RegisterRequest,
-        response: HttpServletResponse
-    ): UserEntity {
-        // Save user to database
-        val user = userRepository.save( // Create user object
-            UserEntity(
-                name = request.name,
-                email = request.email,
-                password = passwordEncoder.encode(request.password),
-                role = UserRole.USER,
-                nativeLanguage = request.nativeLanguage
+        body: RegisterRequest,
+        exchange: ServerWebExchange
+    ): Mono<UserDTO> {
+        return userRepository
+            .save(
+                UserEntity(
+                    name = body.name,
+                    email = body.email,
+                    password = encoder.encode(body.password),
+                    nativeLanguage = body.nativeLanguage
+                )
             )
-        )
-
-        // Generate and assign a JWT token
-        jwtFactory.createTokenForUser(user, response)
-
-        return user
+            .map { it.toDTO() }
+            .flatMap { createUserSession(it) }
+            .map { createAuthTokenCookie(it, exchange) }
+            .doOnError { cause ->
+                if (cause is DataIntegrityViolationException) {
+                    throw BadRequestException("User already exists")
+                } else {
+                    throw cause
+                }
+            }
     }
 
-
-    @Throws(UserNotFoundException::class)
     override fun login(
-        request: LoginRequest,
-        response: HttpServletResponse
-    ): UserEntity {
-        val user = userRepository.findByEmail(request.email)
-            ?: throw UserNotFoundException(email = request.email)
+        body: LoginRequest,
+        exchange: ServerWebExchange
+    ): Mono<UserDTO> {
+        return userRepository
+            .findByEmail(body.email)
+            .filter { encoder.matches(body.password, it?.password) }
+            .map { it!!.toDTO() }
+            .switchIfEmpty(Mono.error(NotFoundException("Invalid email or password")))
+            .flatMap { createUserSession(it) }
+            .map { createAuthTokenCookie(it, exchange) }
 
-        authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(
-                request.email,
-                request.password
-            )
-        )
-
-        jwtFactory.createTokenForUser(user, response)
-
-        return user
     }
 
-    @Throws(ForbiddenException::class)
     override fun logout(
-        request: HttpServletRequest,
-        response: HttpServletResponse
-    ) {
-        val token = jwtService
-            .getJWTFromRequest(request)
-            ?: throw ForbiddenException("No JWT token found in request")
+        exchange: ServerWebExchange
+    ): Mono<Void> {
+        val tokenFromCookie = exchange.getCookieValue(jwtProperties.authCookieName)
 
-        // Delete session from database
-        userSessionService.deleteSessionByToken(token)
+        if (tokenFromCookie == null) {
+            return Mono.error(UnauthorizedException("Missing auth token"))
+        }
 
-        // Delete JWT cookie
-        CookieUtils.deleteCookie(jwtProperties.authCookieName, response)
+        exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
+
+        return sessionRepositoryReactive
+            .deleteByToken(tokenFromCookie)
+    }
+
+
+    private fun createUserSession(user: UserDTO): Mono<Pair<UserDTO, String>> {
+        val token = jwtService.createToken(
+            jti = UUID.randomUUID().toString(),
+            subject = user.email,
+        )
+
+        return sessionRepositoryReactive
+            .save(
+                UserSessionEntity(
+                    userId = user.id,
+                    token = token
+                )
+            )
+            .thenReturn(Pair(user, token))
+    }
+
+
+    private fun createAuthTokenCookie(
+        payload: Pair<UserDTO, String>,
+        exchange: ServerWebExchange
+    ): UserDTO {
+        val (user, token) = payload
+
+        exchange.addAuthTokenCookie(
+            name = jwtProperties.authCookieName,
+            value = token
+        )
+
+        return user
     }
 }

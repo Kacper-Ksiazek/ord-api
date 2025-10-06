@@ -2,12 +2,6 @@
 --- |       USERS       |
 --- +-------------------+
 
----  UserRole
-CALL create_enum_type(
-        'user_role',
-        ARRAY ['ADMIN', 'USER']
-     );
-
 ---  LanguageName
 CALL create_enum_type(
         'language_name',
@@ -81,8 +75,6 @@ CALL create_enum_type(
         ARRAY [
             'WORDS_TYPING',
             'CROSSWORD',
-            'GAPS_FILLING',
-            'IMMERSIVE_STORY',
             'SENTENCES_WRITING'
             ]
      );
@@ -157,4 +149,37 @@ CALL create_enum_type(
      );
 
 
+--- +---------------------+
+--- |    CONVERSATIONS    |
+--- +---------------------+
 
+---  ConversationMessageSender
+CALL create_enum_type(
+        'conversation_message_sender',
+        ARRAY ['AI', 'USER']
+     );
+
+---  ConversationGoal
+CALL create_enum_type(
+        'conversation_type',
+        ARRAY [
+            'SMALL_TALK', -- Light and casual practice
+            'SCENARIO_ROLEPLAY', -- Role-based: doctor visit, interview, travel
+            'EXAM_PRACTICE', -- More academic/formal conversation, useful for test prep
+            'TOPIC_EXPLORATION', -- Discussing a specific topic in depth (e.g., culture, history, etc.
+            'OXFORD_DEBATE' -- Structured debate with pros/cons, great for advanced learners
+            ]
+     );
+
+---  ConversationTone
+CALL create_enum_type(
+        'conversation_tone',
+        ARRAY [
+            'FRIENDLY', -- Casual, upbeat, like a friend
+            'FORMAL', -- Polite and structured, like a teacher
+            'HUMOROUS', -- Light sarcasm and jokes (mild)
+            'NEUTRAL', -- Straightforward and balanced tone
+            'ENCOURAGING', -- Motivational and supportive, great for shy learners
+            'CHALLENGING' -- Pushes the user with harder questions and fewer hints
+            ]
+     );

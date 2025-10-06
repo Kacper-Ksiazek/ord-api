@@ -1,6 +1,9 @@
 package com.ord.controllers
 
-import com.ord.controllers.games.AllGameControllersTests
+import com.ord.controllers.auth.TestAuthController
+import com.ord.controllers.conversations.AllConversationControllersTestsSuite
+import com.ord.controllers.games.AllGameControllersTestsSuite
+import com.ord.controllers.words.AllWordControllersTestsSuite
 import org.junit.platform.suite.api.SelectClasses
 import org.junit.platform.suite.api.Suite
 import org.junit.platform.suite.api.SuiteDisplayName
@@ -10,8 +13,9 @@ import org.junit.platform.suite.api.SuiteDisplayName
 @SelectClasses(
     value = [
         TestAuthController::class,
-        TestWordsController::class,
-        AllGameControllersTests::class
+        AllWordControllersTestsSuite::class,
+        AllGameControllersTestsSuite::class,
+        AllConversationControllersTestsSuite::class
     ]
 )
 class AllControllersTestsSuite

@@ -1,40 +1,38 @@
 package com.ord.core.langugae_proficiency.model
 
 import com.ord.core.user.model.UserMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class LanguageProficiencyMapper(
     private val userMapper: UserMapper
-) : MapperBase<LanguageProficiencyEntity, LanguageProficiencyDTO> {
+) : BidirectionalEntityMapper<LanguageProficiencyEntity, LanguageProficiencyDTO> {
     override fun toEntity(dto: LanguageProficiencyDTO): LanguageProficiencyEntity {
         return LanguageProficiencyEntity(
             id = dto.id,
 
             language = dto.language,
-            proficiency = dto.proficiency,
+            level = dto.level,
             generativeContentLanguage = dto.generativeContentLanguage,
 
-            user = userMapper.toEntity(dto.user),
+            userId = dto.userId,
 
             createdAt = dto.createdAt,
-            updatedAt = dto.updatedAt
         )
     }
 
     override fun toDTO(entity: LanguageProficiencyEntity): LanguageProficiencyDTO {
         return LanguageProficiencyDTO(
-            id = entity.id,
+            id = entity.id ?: error("Language proficiency ID cannot be null"),
 
             language = entity.language,
-            proficiency = entity.proficiency,
+            level = entity.level,
             generativeContentLanguage = entity.generativeContentLanguage,
 
-            user = userMapper.toDTO(entity.user),
+            userId = entity.userId,
 
             createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt
         )
     }
 }

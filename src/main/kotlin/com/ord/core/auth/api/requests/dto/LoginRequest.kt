@@ -1,6 +1,13 @@
 package com.ord.core.auth.api.requests.dto
 
-class LoginRequest(
+import com.ord.shared.api.annotations.validators.SafeString
+import jakarta.validation.constraints.Email
+
+data class LoginRequest(
+    @field:Email(message = "Invalid email address")
+    @field:SafeString(fieldName = "Email")
     val email: String,
+
+    @field:SafeString(fieldName = "Password")
     val password: String
 )

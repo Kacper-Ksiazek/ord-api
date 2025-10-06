@@ -1,7 +1,6 @@
 package com.ord.core.word.model
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserDTO
 import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
 import com.ord.core.word.model.json.ExampleSentence
@@ -26,13 +25,12 @@ class WordDTO(
     var useCases: Set<String> = emptySet(),
     var exampleSentences: Set<ExampleSentence> = emptySet(),
 
-    val user: UserDTO,
-    val userId: UUID = user.id,
+    val userId: UUID,
 
     var bank: BankDTO? = null,
     var bankId: UUID? = bank?.id,
 
-    var bankGroupId: UUID? = bank?.bankGroupId,
+    var bankGroupId: UUID? = bank?.groupId,
 
     var completedAt: Instant? = null,
     val createdAt: Instant = Instant.now(),

@@ -4,11 +4,13 @@ import com.ord.exceptions.REST.*
 import com.ord.exceptions.dto.api_responses.HTTPErrorResponse
 import com.ord.shared.utils.Console
 import org.slf4j.LoggerFactory
+import org.springframework.core.codec.DecodingException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.server.ServerWebInputException
+import org.springframework.web.server.MethodNotAllowedException
 
 
 @ControllerAdvice
@@ -54,19 +56,89 @@ class RESTExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<HTTPErrorResponse> {
+    @ExceptionHandler(ServerWebInputException::class)
+    fun handleServerWebInputException(e: ServerWebInputException): ResponseEntity<HTTPErrorResponse> {
         val status = HttpStatus.BAD_REQUEST.value()
+        val rootCause = e.cause
+        val message = when (rootCause) {
+            is DecodingException -> {
+                // Extract meaningful error from JSON decoding errors
+                val originalMessage = rootCause.message ?: "Invalid JSON format"
+                when {
+                    originalMessage.contains("Cannot deserialize value of type") -> {
+                        val enumMatch = Regex("Cannot deserialize value of type `([^`]+)` from String \"([^\"]+)\"").find(originalMessage)
+                        if (enumMatch != null) {
+                            val (enumType, invalidValue) = enumMatch.destructured
+                            val enumName = enumType.substringAfterLast('.')
+                            "Invalid value '$invalidValue' for field of type $enumName"
+                        } else {
+                            "Invalid JSON format in request body"
+                        }
+                    }
+                    else -> "Invalid JSON format in request body"
+                }
+            }
+            else -> e.reason ?: "Invalid request body"
+        }
+
         val errorResponse = HTTPErrorResponse(
-            message = e.bindingResult.allErrors.joinToString { it.defaultMessage ?: "" },
+            message = message,
             status = status
         )
 
-        Console.printRed("\n\uD83D\uDEA8 [$status] Exception: ${e.message}")
-        logger.error("Validation error: ${errorResponse.message}", e)
+        Console.printRed("\n🚨 [$status] Bad Request: $message")
+        logger.error("Request parsing error: $message", e)
 
         return ResponseEntity.status(status).body(errorResponse)
     }
+
+    @ExceptionHandler(DecodingException::class)
+    fun handleDecodingException(e: DecodingException): ResponseEntity<HTTPErrorResponse> {
+        val status = HttpStatus.BAD_REQUEST.value()
+        val message = e.message?.let { originalMessage ->
+            when {
+                originalMessage.contains("Cannot deserialize value of type") -> {
+                    val enumMatch = Regex("Cannot deserialize value of type `([^`]+)` from String \"([^\"]+)\"").find(originalMessage)
+                    if (enumMatch != null) {
+                        val (enumType, invalidValue) = enumMatch.destructured
+                        val enumName = enumType.substringAfterLast('.')
+                        "Invalid value '$invalidValue' for field of type $enumName"
+                    } else {
+                        "Invalid JSON format in request body"
+                    }
+                }
+                else -> "Invalid JSON format in request body"
+            }
+        } ?: "Invalid request format"
+
+        val errorResponse = HTTPErrorResponse(
+            message = message,
+            status = status
+        )
+
+        Console.printRed("\n🚨 [$status] JSON Decoding Error: $message")
+        logger.error("JSON decoding error: $message", e)
+
+        return ResponseEntity.status(status).body(errorResponse)
+    }
+
+    @ExceptionHandler(MethodNotAllowedException::class)
+    fun handleMethodNotAllowedException(e: MethodNotAllowedException): ResponseEntity<HTTPErrorResponse> {
+        val status = HttpStatus.METHOD_NOT_ALLOWED.value()
+        val supportedMethods = e.supportedMethods.joinToString(", ") { it.name() }
+        val message = "HTTP method is not supported for this endpoint. Supported methods: $supportedMethods"
+
+        val errorResponse = HTTPErrorResponse(
+            message = message,
+            status = status
+        )
+
+        Console.printRed("\n🚨 [$status] Method Not Allowed: $message")
+        logger.error("Method not allowed: $message", e)
+
+        return ResponseEntity.status(status).body(errorResponse)
+    }
+
 
     private fun getStatusForException(e: Exception): Int = when (e) {
         is BadRequestException -> HttpStatus.BAD_REQUEST.value() // 400

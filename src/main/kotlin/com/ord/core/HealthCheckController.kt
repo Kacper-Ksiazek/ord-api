@@ -1,15 +1,16 @@
 package com.ord.core
 
 import org.springframework.http.ResponseEntity
-import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/v1/health-check")
 class HealthCheckController(
-    private val jdbcTemplate: JdbcTemplate
+    private val databaseClient: DatabaseClient
 ) {
 
     enum class HealthStatus {
@@ -18,22 +19,19 @@ class HealthCheckController(
     }
 
     @GetMapping
-    fun healthCheck(): ResponseEntity<Map<String, HealthStatus>> {
-        val databaseStatus = run {
-            try {
-                jdbcTemplate.execute("SELECT 1")
-
-                return@run HealthStatus.UP
-            } catch (_: Exception) {
-                return@run HealthStatus.DOWN
+    fun healthCheck(): Mono<ResponseEntity<Map<String, HealthStatus>>> {
+        return databaseClient.sql("SELECT 1")
+            .fetch()
+            .first()
+            .map { HealthStatus.UP }
+            .onErrorReturn(HealthStatus.DOWN)
+            .map { databaseStatus ->
+                ResponseEntity.ok(
+                    mapOf(
+                        "application" to HealthStatus.UP,
+                        "database" to databaseStatus
+                    )
+                )
             }
-        }
-
-        return ResponseEntity.ok(
-            mapOf(
-                "application" to HealthStatus.UP,
-                "database" to databaseStatus
-            )
-        )
     }
 }

@@ -60,25 +60,25 @@ class HandlerMethodValidationExceptionHandler {
     /**
      * Required parameter is missing
      */
-    @ExceptionHandler(MissingServletRequestParameterException::class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun handleMissingParametersException(
-        exception: MissingServletRequestParameterException
-    ): ResponseEntity<BadRequestResponse> {
-        return ResponseEntity(
-            BadRequestResponse(
-                status = HttpStatus.BAD_REQUEST.value(),
-                message = "Missing request parameter",
-                errors = listOf(
-                    FieldError(
-                        field = exception.parameterName,
-                        errorMessage = exception.message ?: "Missing request parameter"
-                    )
-                )
-            ),
-            HttpStatus.BAD_REQUEST
-        )
-    }
+//    @ExceptionHandler(MissingServletRequestParameterException::class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    fun handleMissingParametersException(
+//        exception: MissingServletRequestParameterException
+//    ): ResponseEntity<BadRequestResponse> {
+//        return ResponseEntity(
+//            BadRequestResponse(
+//                status = HttpStatus.BAD_REQUEST.value(),
+//                message = "Missing request parameter",
+//                errors = listOf(
+//                    FieldError(
+//                        field = exception.parameterName,
+//                        errorMessage = exception.message ?: "Missing request parameter"
+//                    )
+//                )
+//            ),
+//            HttpStatus.BAD_REQUEST
+//        )
+//    }
 
     /**
      * Parameter's type is invalid
@@ -88,8 +88,6 @@ class HandlerMethodValidationExceptionHandler {
     fun handleInvalidParameterTypeException(
         exception: MethodArgumentTypeMismatchException
     ): ResponseEntity<BadRequestResponse> {
-        // TODO: Verify that it also works properly with enum types
-
         return ResponseEntity(
             BadRequestResponse(
                 status = HttpStatus.BAD_REQUEST.value(),

@@ -18,11 +18,11 @@ class LanguageProficiencySeeder(
     override fun seedOneEntity(data: LanguageProficiencyEntity?): LanguageProficiencyEntity {
         return languageProficiencyRepository.save(
             data ?: languageProficiencyFactory.mockEntity()
-        )
+        ).block()!!
     }
 
     override fun deleteAll() {
-        languageProficiencyRepository.deleteAll()
+        languageProficiencyRepository.deleteAll().block()
     }
 
     fun seedOneEntity(
@@ -31,12 +31,15 @@ class LanguageProficiencySeeder(
         generativeContentLanguage: LanguageName? = null,
         languageProficiency: LanguageProficiencyLevel? = null
     ): LanguageProficiencyEntity {
-        val data = languageProficiencyFactory.mockEntity(user)
+        val base = languageProficiencyFactory.mockEntity(user)
 
-        languageName?.also { data.language = it }
-        languageProficiency?.also { data.proficiency = it }
-        generativeContentLanguage?.also { data.generativeContentLanguage = it }
+        val data = base.copy(
+            language = languageName ?: base.language,
+            level = languageProficiency ?: base.level,
+            generativeContentLanguage = generativeContentLanguage ?: base.generativeContentLanguage
+        )
 
-        return languageProficiencyRepository.save(data)
+        return languageProficiencyRepository.save(data).block()!!
+
     }
 }

@@ -1,16 +1,16 @@
 package com.ord.features.game.model.finished_game
 
 import com.ord.core.user.model.UserMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class FinishedGameMapper(
     private val userMapper: UserMapper,
-) : MapperBase<FinishedGameEntity, FinishedGameDTO> {
+) : BidirectionalEntityMapper<FinishedGameEntity, FinishedGameDTO> {
     override fun toDTO(entity: FinishedGameEntity): FinishedGameDTO {
         return FinishedGameDTO(
-            id = entity.id,
+            id = entity.id ?: error("Finished game ID must not be null"),
 
             score = entity.score,
             duration = entity.duration,
@@ -22,7 +22,8 @@ class FinishedGameMapper(
             language = entity.language,
             difficulty = entity.difficulty,
 
-            user = userMapper.toDTO(entity.user),
+            userId = entity.userId,
+
             createdAt = entity.createdAt
         )
     }
@@ -41,7 +42,7 @@ class FinishedGameMapper(
             language = dto.language,
             difficulty = dto.difficulty,
 
-            user = userMapper.toEntity(dto.user),
+            userId = dto.userId,
             createdAt = dto.createdAt
         )
     }

@@ -1,6 +1,7 @@
 package com.ord.core.word.api
 
-import com.ord.core.auth.security.AuthenticatedUser
+import com.ord.core.auth.annotations.AuthenticatedUser
+import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.facades.WordAIFacade
 import com.ord.core.word.api.requests.dto.GenerateWordManualRequest
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/v1/words/ai")
@@ -20,11 +22,10 @@ class WordAIController(
 ) {
     @PostMapping("/generate-manual")
     fun generateAIManual(
-        @AuthenticatedUser user: UserEntity,
-        @Valid @RequestBody body: GenerateWordManualRequest
-    ): ResponseEntity<AIGeneratedWordManual> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(wordAIFacade.generateWordManual(body, user))
+        @AuthenticatedUser user: UserDTO,
+    @Valid @RequestBody body: GenerateWordManualRequest
+    ): Mono<ResponseEntity<AIGeneratedWordManual>> {
+        return wordAIFacade.generateWordManual(body, user)
+            .map { ResponseEntity.status(HttpStatus.OK).body(it) }
     }
 }

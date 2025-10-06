@@ -1,6 +1,7 @@
 package com.ord.core.word.api.requests.dto
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.langugae_proficiency.validators.annotations.ValidLanguageName
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
@@ -13,6 +14,7 @@ import java.util.*
 
 data class GetManyWordsRequest(
     @field:NotNull(message = "Language is required")
+    @field:ValidLanguageName
     val language: LanguageName,
 
     @field:Min(value = 0, message = "Page must be greater than or equal to 0")

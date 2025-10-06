@@ -2,14 +2,14 @@ package com.ord.features.bank.model
 
 import com.ord.core.user.model.UserMapper
 import com.ord.features.bank_group.model.BankGroupMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class BankMapper(
     private val userMapper: UserMapper,
     private val bankGroupMapper: BankGroupMapper
-) : MapperBase<BankEntity, BankDTO> {
+) : BidirectionalEntityMapper<BankEntity, BankDTO> {
     override fun toEntity(dto: BankDTO): BankEntity {
         return BankEntity(
             id = dto.id,
@@ -17,30 +17,24 @@ class BankMapper(
             name = dto.name,
             description = dto.description,
 
-            user = userMapper.toEntity(dto.user),
-
-            bankGroupId = dto.bankGroupId,
-            bankGroup = bankGroupMapper.toEntityOrNull(dto.bankGroup),
+            userId = dto.userId,
+            groupId = dto.groupId,
 
             createdAt = dto.createdAt,
-            updatedAt = dto.updatedAt
         )
     }
 
     override fun toDTO(entity: BankEntity): BankDTO {
         return BankDTO(
-            id = entity.id,
+            id = entity.id ?: error("Bank is must not be null"),
 
             name = entity.name,
             description = entity.description,
 
-            user = userMapper.toDTO(entity.user),
-
-            bankGroupId = entity.bankGroupId,
-            bankGroup = bankGroupMapper.toDTOOrNull(entity.bankGroup),
+            userId = entity.userId,
+            groupId = entity.groupId,
 
             createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt
         )
     }
 }

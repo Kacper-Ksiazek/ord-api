@@ -14,7 +14,7 @@ fun UserActivityLogRepository.assertUserActivityLogForCompletingGame(
     difficulty: GameDifficulty,
     userId: UUID,
 ) {
-    val logs = findAllForUser(userId)
+    val logs = findAllByUserId(userId).collectList().block()!!
 
     logs shouldHaveSize 1
 

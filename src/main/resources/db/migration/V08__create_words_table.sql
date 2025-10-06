@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS words
 (
-    id                UUID PRIMARY KEY,
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     -- Describes word's kind, such as `noun` or `verb`
     type              word_type     NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS words
     -- This property is not a FK, because it is only used to streamline the process of fetching words from the same bank group
     bank_group_id     UUID                     DEFAULT NULL,
 
-    completed_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    completed_at      TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 
     created_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

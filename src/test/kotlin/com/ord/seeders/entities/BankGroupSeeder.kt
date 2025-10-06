@@ -16,11 +16,11 @@ class BankGroupSeeder(
     private val userMapper: UserMapper
 ) : SeederInterface<BankGroupEntity> {
     override fun seedOneEntity(data: BankGroupEntity?): BankGroupEntity {
-        return bankGroupRepository.save(data ?: bankGroupMockFactory.mockEntity())
+        return bankGroupRepository.save(data ?: bankGroupMockFactory.mockEntity()).block()!!
     }
 
     fun seedOneEntityForUser(user: UserEntity): BankGroupEntity {
-        return bankGroupRepository.save(bankGroupMockFactory.mockEntity(user = user))
+        return bankGroupRepository.save(bankGroupMockFactory.mockEntity(user = user)).block()!!
     }
 
     fun seedOneEntityForUser(user: UserDTO): BankGroupEntity {
@@ -30,6 +30,6 @@ class BankGroupSeeder(
     }
 
     override fun deleteAll() {
-        bankGroupRepository.deleteAll()
+        bankGroupRepository.deleteAll().block()
     }
 }

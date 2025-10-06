@@ -15,11 +15,11 @@ fun WordRepository.assertDBPointsWereUpdatedProperly(
     properAnswers: Set<IdentifiableReviewedWordAnswer>,
     alteredAnswers: Set<AlteredWordProperAnswer> = emptySet()
 ) {
-    val wordsUsedInGame = this.findAllWordByTheirOrigins(
+    val wordsUsedInGame = findAllWordByTheirOrigins(
         origins = words,
         language = language,
         userId = userId,
-    )
+    ).collectList().block()!!
 
     wordsUsedInGame shouldHaveSize words.size
 

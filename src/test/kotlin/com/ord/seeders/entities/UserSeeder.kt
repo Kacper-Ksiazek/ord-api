@@ -1,6 +1,6 @@
 package com.ord.seeders.entities
 
-import com.ord.core.user.UserRepository
+import com.ord.core.security.UserRepository
 import com.ord.core.user.model.UserEntity
 import com.ord.seeders.entities.bases.SeederInterface
 import com.ord.seeders.factories.UserFactory
@@ -12,7 +12,7 @@ class UserSeeder(
     private val userMockFactory: UserFactory
 ) : SeederInterface<UserEntity> {
     override fun seedOneEntity(data: UserEntity?): UserEntity {
-        return userRepository.save(data ?: userMockFactory.mockEntity())
+        return userRepository.save(data ?: userMockFactory.mockEntity()).block()!!
     }
 
     fun insertRowWithCredentials(email: String, password: String): UserEntity {
@@ -21,10 +21,10 @@ class UserSeeder(
                 email = email,
                 password = password
             )
-        )
+        ).block()!!
     }
 
     override fun deleteAll() {
-        userRepository.deleteAll()
+        userRepository.deleteAll().block()
     }
 }

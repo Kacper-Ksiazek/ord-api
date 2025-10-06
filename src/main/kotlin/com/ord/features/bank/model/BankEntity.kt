@@ -1,55 +1,21 @@
 package com.ord.features.bank.model
 
-import com.ord.core.user.model.UserEntity
-import com.ord.features.bank_group.model.BankGroupEntity
 import com.ord.shared.models.IdentifiableUserResource
-import jakarta.persistence.*
-import jakarta.validation.constraints.Size
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.UpdateTimestamp
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 import java.util.*
 
-@Entity
-@Table(name = "banks")
+@Table("banks")
 data class BankEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    override var id: UUID = UUID.randomUUID(),
+    override val id: UUID? = null,
 
-    @field:Size(max = 64)
-    @Column(name = "name", nullable = false, length = 64)
-    var name: String,
+    val name: String,
+    val description: String,
 
-    @field:Size(max = 255)
-    @Column(name = "description", nullable = false)
-    var description: String,
+    override val userId: UUID,
+    var groupId: UUID? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id", nullable = false)
-    override var user: UserEntity,
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "group_id")
-    var bankGroup: BankGroupEntity? = null,
-
-    @Column(name = "group_id", nullable = true, insertable = false, updatable = false)
-    var bankGroupId: UUID? = bankGroup?.id,
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp
-    var createdAt: Instant = Instant.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    @UpdateTimestamp
-    var updatedAt: Instant = Instant.now()
-) : IdentifiableUserResource {
-    @PostLoad
-    fun populateBankGroupId(){
-        bankGroupId = bankGroup?.id
-    }
-}
+    val createdAt: Instant = Instant.now(),
+) : IdentifiableUserResource

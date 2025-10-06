@@ -2,13 +2,14 @@ package com.ord.controllers.games
 
 import com.ord.config.GamesConfig
 import com.ord.config.properties.JwtProperties
-import com.ord.controllers.games.bases.GameControllerTestBase
+import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.ord.core.user.UserRepository
+import com.ord.core.security.UserRepository
 import com.ord.core.user.model.UserMapper
 import com.ord.core.word.repository.WordRepository
+import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.OngoingWordsTypingGameDTO
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
@@ -16,85 +17,67 @@ import com.ord.features.game.model.ongoing_game.enums.GameGrade
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.repositories.FinishedGameRepository
 import com.ord.features.game.repositories.OngoingGameRepository
+import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
+import com.ord.features.game.variants.shared.dto.api_requests.UnsafeStartGameRequestData
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer
 import com.ord.features.game.variants.shared.enums.WordAnswerScore
+import com.ord.features.game.variants.words_typing.dto.api_requests.FinishWordsTypingGameRequest
 import com.ord.features.game.variants.words_typing.dto.api_responses.FinishedWordsTypingGameResponse
 import com.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
-import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.model.enums.GamesGPTTokensConsumptionType
-import com.ord.features.gpt_tokens_usage_log.variants.game_tokens_usage.repository.GameTokensUsageRepository
 import com.ord.features.user_activity_log.model.enums.UserActivityType
 import com.ord.features.user_activity_log.repository.UserActivityLogRepository
 import com.ord.seeders.entities.UserSeeder
 import com.ord.seeders.factories.WordFactory
-import com.ord.testing_utils.api_requests_factories.GameRequestFactory
+import com.ord.testing_utils.api.clients.games.WordsTypingGameAPIClient
 import com.ord.testing_utils.dto.AlteredWordProperAnswer
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.ord.testing_utils.dto.toRequestBody
 import com.ord.testing_utils.extensions.*
-import com.ord.testing_utils.mocks.games.GameMockerBase
 import com.ord.testing_utils.mocks.games.WordsTypingGameMocker
 import com.ord.utils.resource_readers.loadWordsFromResourceFile
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.collections.shouldNotHaveSize
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.repository.findByIdOrNull
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
 
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@AutoConfigureMockMvc
 @DisplayName("- WordsTypingGameController")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient(timeout = "180000") // 3 minutes
 class TestWordsTypingGameController @Autowired constructor(
-    private val gameTokensUsageRepository: GameTokensUsageRepository,
     private val userActivityLogRepository: UserActivityLogRepository,
     private val userSeeder: UserSeeder,
     private val wordMockFactory: WordFactory,
-
-    objectMapper: ObjectMapper,
-    mockMvc: MockMvc,
+    private val userRepository: UserRepository,
+    private val userMapper: UserMapper,
+    private val wordRepository: WordRepository,
+    private val ongoingGameMapper: OngoingGameMapper,
+    private val ongoingGameRepository: OngoingGameRepository,
+    private val finishedGameRepository: FinishedGameRepository,
+    webClient: WebTestClient,
     jwtProperties: JwtProperties,
-    languageProficiencyRepository: LanguageProficiencyRepository,
-    userMapper: UserMapper,
-    userRepository: UserRepository,
-
-    wordRepository: WordRepository,
-    ongoingGameMapper: OngoingGameMapper,
-    ongoingGameRepository: OngoingGameRepository,
-    finishedGameRepository: FinishedGameRepository
-) : GameControllerTestBase(
-    objectMapper = objectMapper,
-    mockMvc = mockMvc,
+    languageProficiencyRepository: LanguageProficiencyRepository
+) : ControllerTestBase(
+    webClient,
     jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository,
-    userMapper = userMapper,
-    userRepository = userRepository,
-
-    wordRepository = wordRepository,
-    ongoingGameMapper = ongoingGameMapper,
-    ongoingGameRepository = ongoingGameRepository,
-    finishedGameRepository = finishedGameRepository
+    languageProficiencyRepository = languageProficiencyRepository
 ) {
-    val wordsTypingGameMocker = WordsTypingGameMocker(
-        objectMapper = objectMapper,
-        userMapper = userMapper,
-        wordRepository = wordRepository,
+    private val wordsTypingGameAPIClient = WordsTypingGameAPIClient(webClient)
+
+    private val wordsTypingGameMocker = WordsTypingGameMocker(
+        apiClient = wordsTypingGameAPIClient,
         ongoingGameMapper = ongoingGameMapper,
         ongoingGameRepository = ongoingGameRepository,
         wordMockFactory = wordMockFactory,
-        mockMvc = mockMvc,
+        wordRepository = wordRepository
     )
 
     @Nested
@@ -106,13 +89,27 @@ class TestWordsTypingGameController @Autowired constructor(
         fun `Words typing game can be properly stared - function encapsulates the entire process`() {
             val authenticatedUser = mockAuthenticatedUser()
 
-            lateinit var gameSavedInDb: OngoingWordsTypingGameDTO
-            lateinit var gameSentToUser: StartedWordsTypingGameResponse
+            loadWordsFromResourceFile(
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository
+            )
 
-            with(wordsTypingGameMocker.mockThroughApiFlow(authenticatedUser)) {
-                gameSavedInDb = first
-                gameSentToUser = second
-            }
+            val gameResponse = wordsTypingGameAPIClient.startGame(
+                body = StartGameRequest(
+                    language = LanguageName.ENGLISH,
+                    difficulty = GameDifficulty.HARD
+                ),
+                user = authenticatedUser
+            )
+
+            gameResponse.status shouldBe HttpStatus.OK
+            gameResponse.body shouldNotBe null
+
+            val gameSentToUser = gameResponse.body!!
+
+            val gameSavedInDb: OngoingWordsTypingGameDTO = ongoingGameMapper.toWordsTypingDTO(
+                entity = ongoingGameRepository.findById(gameSentToUser.gameId).block()!!
+            )
 
             with(gameSavedInDb.properAnswers.values) {
                 this.distinct().size shouldBe this.size
@@ -122,10 +119,10 @@ class TestWordsTypingGameController @Autowired constructor(
 
             with(gameSavedInDb) {
                 type shouldBe GameType.WORDS_TYPING
-                language shouldBe GameMockerBase.Companion.DefaultParams.language
-                difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
+                language shouldBe LanguageName.ENGLISH
+                difficulty shouldBe GameDifficulty.HARD
 
-                user.id shouldBe authenticatedUser.userInfo.id
+                userId shouldBe authenticatedUser.userInfo.id
             }
 
             gameSavedInDb.properAnswers.size shouldBe gameSentToUser.instruction.size
@@ -135,17 +132,6 @@ class TestWordsTypingGameController @Autowired constructor(
                     this shouldNotBe null
                     this!!.word.length shouldBe answer.length
                 }
-            }
-
-            val logs = gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id)
-
-            logs shouldNotHaveSize 0
-
-            logs.forEach {
-                it.gameType shouldBe GameType.WORDS_TYPING
-                it.consumptionType shouldBe GamesGPTTokensConsumptionType.GENERATE
-                it.language shouldBe GameMockerBase.Companion.DefaultParams.language
-                it.gameDifficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
             }
         }
 
@@ -161,10 +147,26 @@ class TestWordsTypingGameController @Autowired constructor(
 
             @BeforeAll
             fun beforeAll() {
-                with(wordsTypingGameMocker.mockThroughApiFlow(authenticatedUser)) {
-                    gameSavedInDb = first
-                    gameSentToUser = second
-                }
+                loadWordsFromResourceFile(
+                    userId = authenticatedUser.userInfo.id,
+                    wordsRepository = wordRepository
+                )
+
+                val gameResponse = wordsTypingGameAPIClient.startGame(
+                    body = StartGameRequest(
+                        language = LanguageName.ENGLISH,
+                        difficulty = GameDifficulty.HARD
+                    ),
+                    user = authenticatedUser
+                )
+
+                gameResponse.status shouldBe HttpStatus.OK
+                gameResponse.body shouldNotBe null
+
+                gameSentToUser = gameResponse.body!!
+                gameSavedInDb = ongoingGameMapper.toWordsTypingDTO(
+                    entity = ongoingGameRepository.findById(gameSentToUser.gameId).block()!!
+                )
             }
 
             @Test
@@ -183,10 +185,10 @@ class TestWordsTypingGameController @Autowired constructor(
             fun `Game is properly saved in the DB`() {
                 with(gameSavedInDb) {
                     type shouldBe GameType.WORDS_TYPING
-                    language shouldBe GameMockerBase.Companion.DefaultParams.language
-                    difficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
+                    language shouldBe LanguageName.ENGLISH
+                    difficulty shouldBe GameDifficulty.HARD
 
-                    user.id shouldBe authenticatedUser.userInfo.id
+                    userId shouldBe authenticatedUser.userInfo.id
                 }
             }
 
@@ -201,89 +203,64 @@ class TestWordsTypingGameController @Autowired constructor(
                     }
                 }
             }
-
-            @Test
-            fun `GPT use logs are properly saved in the DB`() {
-                val logs = gameTokensUsageRepository.findAllForUser(userId = authenticatedUser.userInfo.id)
-
-                logs shouldNotHaveSize 0
-
-                logs.forEach {
-                    it.gameType shouldBe GameType.WORDS_TYPING
-                    it.consumptionType shouldBe GamesGPTTokensConsumptionType.GENERATE
-                    it.language shouldBe GameMockerBase.Companion.DefaultParams.language
-                    it.gameDifficulty shouldBe GameMockerBase.Companion.DefaultParams.difficulty
-                }
-            }
         }
 
         @Nested
         @DisplayName("Negative")
         inner class Negative {
-
-            internal fun GameRequestFactory.startGameRequest(
-                authenticatedUser: MockedAuthenticatedUser?,
-                language: LanguageName? = LanguageName.ENGLISH,
-                difficulty: GameDifficulty? = GameDifficulty.HARD,
-            ): MockHttpServletRequestBuilder {
-                return startGameRequest(
-                    gameType = GameType.WORDS_TYPING,
-                    language = language,
-                    difficulty = difficulty,
-                    authenticatedUser = authenticatedUser
+            @Test
+            fun `401 - Anonymous user cannot start a words typing game`() {
+                val response = wordsTypingGameAPIClient.startGame(
+                    body = StartGameRequest(
+                        language = LanguageName.ENGLISH,
+                        difficulty = GameDifficulty.HARD
+                    ),
+                    user = null
                 )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
-            fun `403 - Anonymous user cannot start a words typing game`() {
-                val request = gameRequestFactory.startGameRequest(
-                    authenticatedUser = null,
-                )
-
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                    it.response
-                }
-            }
-
-            @Test
-            fun `400 - User with no words assigned cannot start a crossword game`() {
+            fun `400 - User with no words assigned cannot start a words typing game`() {
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
-                val request = gameRequestFactory.startGameRequest(
-                    authenticatedUser = authenticatedUser,
+                val response = wordsTypingGameAPIClient.startGame(
+                    body = StartGameRequest(
+                        language = LanguageName.ENGLISH,
+                        difficulty = GameDifficulty.HARD
+                    ),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
-            fun `400 - User with insufficient number of words assigned cannot start a crossword game`() {
+            fun `400 - User with insufficient number of words assigned cannot start a words typing game`() {
                 val requiredNumberOfWords = 12
 
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository,
                     numberOfWordsToLoad = requiredNumberOfWords - 1
                 )
 
-                val request = gameRequestFactory.startGameRequest(
-                    authenticatedUser = authenticatedUser,
+                val response = wordsTypingGameAPIClient.startGame(
+                    body = StartGameRequest(
+                        language = LanguageName.ENGLISH,
+                        difficulty = GameDifficulty.HARD
+                    ),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
-            fun `400 - User with no proficiency in the language cannot start a crossword game`() {
+            fun `400 - User with no proficiency in the language cannot start a words typing game`() {
                 val unknownForUserLanguage = LanguageName.ITALIAN
 
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser(
@@ -293,19 +270,19 @@ class TestWordsTypingGameController @Autowired constructor(
                 )
 
                 loadWordsFromResourceFile(
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository
                 )
 
-                val request = gameRequestFactory.startGameRequest(
-                    language = unknownForUserLanguage,
-                    authenticatedUser = authenticatedUser,
+                val response = wordsTypingGameAPIClient.startGame(
+                    body = StartGameRequest(
+                        language = unknownForUserLanguage,
+                        difficulty = GameDifficulty.HARD
+                    ),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
@@ -317,19 +294,22 @@ class TestWordsTypingGameController @Autowired constructor(
                 )
 
                 loadWordsFromResourceFile(
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository
                 )
 
-                val request = gameRequestFactory.startGameRequest(
-                    difficulty = null,
-                    authenticatedUser = authenticatedUser,
+                val response = wordsTypingGameAPIClient.post(
+                    url = "/api/v1/games/words-typing/start",
+                    body = UnsafeStartGameRequestData(
+                        language = LanguageName.ENGLISH,
+                        difficulty = null
+                    ),
+                    user = authenticatedUser,
+                    responseBodyType = object :
+                        ParameterizedTypeReference<StartedWordsTypingGameResponse>() {}
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
@@ -341,19 +321,22 @@ class TestWordsTypingGameController @Autowired constructor(
                 )
 
                 loadWordsFromResourceFile(
-                    user = userMapper.toEntity(authenticatedUser.userInfo),
+                    userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository
                 )
 
-                val request = gameRequestFactory.startGameRequest(
-                    language = null,
-                    authenticatedUser = authenticatedUser,
+                val response = wordsTypingGameAPIClient.post(
+                    url = "/api/v1/games/words-typing/start",
+                    body = UnsafeStartGameRequestData(
+                        language = null,
+                        difficulty = GameDifficulty.HARD
+                    ),
+                    user = authenticatedUser,
+                    responseBodyType = object :
+                        ParameterizedTypeReference<StartedWordsTypingGameResponse>() {}
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
 
@@ -374,12 +357,19 @@ class TestWordsTypingGameController @Autowired constructor(
             @BeforeEach
             fun beforeAll() {
                 authenticatedUser = mockAuthenticatedUser()
-                gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(authenticatedUser.userInfo).first
+
+                val a = wordsTypingGameMocker.mockFromJsonSource(
+                    userId = authenticatedUser.userInfo.id,
+                )
+
+                gameSavedInDb = ongoingGameMapper.toWordsTypingDTO(
+                    entity = ongoingGameRepository.findById(a.first.id).block()!!
+                )
             }
 
             @AfterEach
             fun afterEach() {
-                userRepository.deleteById(authenticatedUser.userInfo.id)
+                userRepository.deleteById(authenticatedUser.userInfo.id).block()
             }
 
             private fun getPerfectAnswersForQuestions(
@@ -391,26 +381,25 @@ class TestWordsTypingGameController @Autowired constructor(
             }
 
             private fun finishWordsTypingGame(
+                gameId: UUID = gameSavedInDb.id,
                 numberOfProperAnswers: Int? = null,
                 answers: Set<WordUserAnswer> = getPerfectAnswersForQuestions(
                     numberOfProperAnswers
                 )
             ): FinishedWordsTypingGameResponse {
-                val request = gameRequestFactory.finishGameRequest(
-                    gameType = GameType.WORDS_TYPING,
-                    authenticatedUser = authenticatedUser,
-                    gameId = gameSavedInDb.id,
-                    answers = answers
+                val response = wordsTypingGameAPIClient.finishGame(
+                    body = FinishWordsTypingGameRequest(
+                        gameId = gameId,
+                        duration = "00:10:00",
+                        answers = answers
+                    ),
+                    user = authenticatedUser
                 )
 
-                val response = mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.OK.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
 
-                response.status shouldBe HttpStatus.OK.value()
-
-                return getResponseBody<FinishedWordsTypingGameResponse>(response)
+                return response.body!!
             }
 
             private fun assertUserActivityLogForCompletingCrossword(expectedType: UserActivityType) {
@@ -445,13 +434,22 @@ class TestWordsTypingGameController @Autowired constructor(
 
             @Test
             fun `200 - Ongoing game should be removed and finished game should be created instead`() {
-                finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).shouldHaveSize(0)
-                ongoingGameRepository.findByIdOrNull(gameSavedInDb.id) shouldNotBe null
+                finishedGameRepository
+                    .findAllByUserId(authenticatedUser.userInfo.id)
+                    .collectList()
+                    .block()!!
+                    .shouldHaveSize(0)
+
+                ongoingGameRepository.findById(gameSavedInDb.id).block() shouldNotBe null
 
                 finishWordsTypingGame()
 
-                ongoingGameRepository.findByIdOrNull(gameSavedInDb.id) shouldBe null
-                finishedGameRepository.findAllForUser(authenticatedUser.userInfo.id).shouldHaveSize(1)
+                ongoingGameRepository.findById(gameSavedInDb.id).block() shouldBe null
+                finishedGameRepository
+                    .findAllByUserId(authenticatedUser.userInfo.id)
+                    .collectList()
+                    .block()!!
+                    .shouldHaveSize(1)
             }
 
             @Test
@@ -574,13 +572,17 @@ class TestWordsTypingGameController @Autowired constructor(
 
             @Test
             fun `200 - Points should be properly assigned - both HALF_CORRECT and INCORRECT`() {
-                gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(
-                    userDTO = authenticatedUser.userInfo,
-                    difficulty = GameDifficulty.MEDIUM
-                ).first
+                userRepository.deleteById(authenticatedUser.userInfo.id).block()
+                authenticatedUser = mockAuthenticatedUser()
+
+                gameSavedInDb = wordsTypingGameMocker
+                    .mockFromJsonSource(
+                        userId = authenticatedUser.userInfo.id,
+                        difficulty = GameDifficulty.MEDIUM,
+                    )
+                    .first
 
                 val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
-
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
                         WordAnswerScore.HALF_CORRECT to 3,
@@ -597,35 +599,53 @@ class TestWordsTypingGameController @Autowired constructor(
 
             @Test
             fun `200 - Words can be marked as completed`() {
-                gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(
-                    userDTO = authenticatedUser.userInfo,
-                    difficulty = GameDifficulty.MEDIUM
-                ).first
+                userRepository.deleteById(authenticatedUser.userInfo.id).block()
+                authenticatedUser = mockAuthenticatedUser()
 
-                wordRepository.saveAll(
-                    wordRepository.findAllForUser(authenticatedUser.userInfo.id).map {
-                        it.copy(
-                            points = GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD - 1
-                        )
-                    }
-                )
+                gameSavedInDb = wordsTypingGameMocker
+                    .mockFromJsonSource(
+                        userId = authenticatedUser.userInfo.id,
+                        difficulty = GameDifficulty.MEDIUM,
+                    )
+                    .first
+
+                wordRepository
+                    .saveAll(
+                        wordRepository
+                            .findAllByUserId(authenticatedUser.userInfo.id)
+                            .collectList()
+                            .block()!!
+                            .map {
+                                it.copy(
+                                    points = GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD - 1
+                                )
+                            }
+                    )
+                    .collectList()
+                    .block()!!
 
                 val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
-
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
                     mistakes = mapOf(
                         WordAnswerScore.HALF_CORRECT to 3,
                     )
                 )
 
-                finishWordsTypingGame(
-                    answers = alteredAnswers.toRequestBody(perfectAnswers)
+                wordsTypingGameAPIClient.finishGame(
+                    body = FinishWordsTypingGameRequest(
+                        gameId = gameSavedInDb.id,
+                        duration = "00:10:00",
+                        answers = alteredAnswers.toRequestBody(perfectAnswers)
+                    ),
+                    user = authenticatedUser
                 )
 
                 val wordsUsedInGame = perfectAnswers.map { it.answer }
 
                 wordRepository
-                    .findAllForUser(authenticatedUser.userInfo.id)
+                    .findAllByUserId(authenticatedUser.userInfo.id)
+                    .collectList()
+                    .block()!!
                     .filter { it.origin in wordsUsedInGame }
                     .forEach {
                         it.points shouldBeGreaterThanOrEqual GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
@@ -638,104 +658,100 @@ class TestWordsTypingGameController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
 
-            internal fun GameRequestFactory.finishGameRequest(
-                gameId: UUID,
-                authenticatedUser: MockedAuthenticatedUser?,
-                answers: Set<WordUserAnswer> = emptySet()
-            ): MockHttpServletRequestBuilder {
-                return finishGameRequest(
-                    gameType = GameType.WORDS_TYPING,
-                    authenticatedUser = authenticatedUser,
-                    gameId = gameId,
-                    answers = answers
-                )
-            }
-
             @Test
-            fun `403 - Anonymous user cannot finish a words typing game`() {
-                val request = gameRequestFactory.finishGameRequest(
-                    authenticatedUser = null,
-                    gameId = UUID.randomUUID(),
+            fun `401 - Anonymous user cannot finish a words typing game`() {
+                val response = wordsTypingGameAPIClient.finishGame(
+                    body = FinishWordsTypingGameRequest(
+                        gameId = UUID.randomUUID(),
+                        duration = "00:10:00",
+                        answers = emptySet()
+                    ),
+                    user = null
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.FORBIDDEN.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
             fun `404 - User cannot finish a game that does not belong to them`() {
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
+                val otherUser = userSeeder.seedOneEntity()
 
-                val gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(
-                    userDTO = userMapper.toDTO(userSeeder.seedOneEntity()),
-                    difficulty = GameDifficulty.MEDIUM
-                ).first
+                val otherUserDTO = userMapper.toDTO(otherUser)
 
-                val request = gameRequestFactory.finishGameRequest(
-                    authenticatedUser = authenticatedUser,
-                    gameId = gameSavedInDb.id,
+                val gameId: UUID = wordsTypingGameMocker
+                    .mockFromJsonSource(
+                        userId = otherUserDTO.id,
+                        difficulty = GameDifficulty.MEDIUM,
+                    )
+                    .first.id
+
+                val response = wordsTypingGameAPIClient.finishGame(
+                    body = FinishWordsTypingGameRequest(
+                        gameId = gameId,
+                        duration = "00:30:00",
+                        answers = emptySet()
+                    ),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.NOT_FOUND.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
 
             @Test
             fun `400 - Words typing game cannot be finished with user answer to single word over 255 characters long`() {
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
-                val gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(
-                    userDTO = userMapper.toDTO(userSeeder.seedOneEntity()),
-                    difficulty = GameDifficulty.MEDIUM
-                ).first
-
-                val request = gameRequestFactory.finishGameRequest(
-                    authenticatedUser = authenticatedUser,
-                    gameId = gameSavedInDb.id,
-                    answers = setOf(
-                        WordUserAnswer(
-                            id = UUID.randomUUID(),
-                            answer = "x".repeat(256)
-                        )
+                val gameId: UUID = wordsTypingGameMocker
+                    .mockFromJsonSource(
+                        userId = authenticatedUser.userInfo.id,
+                        difficulty = GameDifficulty.MEDIUM,
                     )
+                    .first.id
+
+                val response = wordsTypingGameAPIClient.finishGame(
+                    body = FinishWordsTypingGameRequest(
+                        gameId = gameId,
+                        duration = "00:10:00",
+                        answers = setOf(
+                            WordUserAnswer(
+                                id = UUID.randomUUID(),
+                                answer = "x".repeat(256)
+                            )
+                        )
+                    ),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
             fun `400 - Words typing game cannot be finished with duration not in a proper format`() {
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
-                val gameSavedInDb = wordsTypingGameMocker.mockFromJsonSource(
-                    userDTO = userMapper.toDTO(userSeeder.seedOneEntity()),
-                    difficulty = GameDifficulty.MEDIUM
-                ).first
-
-                val request = gameRequestFactory.finishGameRequest(
-                    authenticatedUser = authenticatedUser,
-                    gameId = gameSavedInDb.id,
-                    duration = "not a number",
-                    gameType = GameType.WORDS_TYPING,
-                    answers = setOf(
-                        WordUserAnswer(
-                            id = UUID.randomUUID(),
-                            answer = "test"
-                        )
+                val gameId: UUID = wordsTypingGameMocker
+                    .mockFromJsonSource(
+                        userId = authenticatedUser.userInfo.id,
+                        difficulty = GameDifficulty.MEDIUM,
                     )
+                    .first.id
+
+                val response = wordsTypingGameAPIClient.finishGame(
+                    body = FinishWordsTypingGameRequest(
+                        gameId = gameId,
+                        duration = "not a number",
+                        answers = setOf(
+                            WordUserAnswer(
+                                id = UUID.randomUUID(),
+                                answer = "test"
+                            )
+                        )
+                    ),
+                    user = authenticatedUser
                 )
 
-                mockMvc.perform(request).andReturn().let {
-                    it.response.status shouldBe HttpStatus.BAD_REQUEST.value()
-                    it.response
-                }
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }

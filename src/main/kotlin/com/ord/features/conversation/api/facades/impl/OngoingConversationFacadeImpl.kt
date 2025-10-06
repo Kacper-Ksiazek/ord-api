@@ -1,0 +1,176 @@
+package com.ord.features.conversation.api.facades.impl
+
+import com.fasterxml.jackson.core.type.TypeReference
+import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.user.model.UserEntity
+import com.ord.exceptions.REST.BadRequestException
+import com.ord.features.conversation.api.facades.OngoingConversationFacade
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
+import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
+import com.ord.features.conversation.models.dto.ConversationDTO
+import com.ord.features.conversation.models.dto.ConversationMessageDTO
+import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
+import com.ord.features.conversation.models.entities.ConversationEntity
+import com.ord.features.conversation.models.entities.ConversationMessageEntity
+import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
+import com.ord.features.conversation.models.enums.ConversationMessageSender
+import com.ord.features.conversation.models.extensions.convertToPromptParams
+import com.ord.features.conversation.models.mappers.ConversationMapper
+import com.ord.features.conversation.services.ConversationMessageService
+import com.ord.features.conversation.services.ConversationService
+import com.ord.shared.prompts.AvailablePrompts
+import com.ord.shared.prompts.Prompt
+import com.ord.shared.prompts.toParamString
+import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import java.util.*
+
+@Service
+class OngoingConversationFacadeImpl(
+    private val openAIAPIClientService: OpenAIAPIClientService,
+    private val conversationService: ConversationService,
+    private val conversationMessageService: ConversationMessageService,
+    private val conversationMapper: ConversationMapper,
+) : OngoingConversationFacade {
+    override fun initializeConversationByAI(
+        conversationId: UUID,
+        userId: UUID,
+    ): Flux<String> {
+        return conversationService
+            .findByIdOrFailWithMessages(
+                id = conversationId,
+                userId = userId
+            )
+            .flatMapMany { conversation ->
+                if (conversation.messages.isNotEmpty()) {
+                    return@flatMapMany Flux.error(
+                        BadRequestException("Conversation with id ${conversation.id} has been already initialized.")
+                    )
+                }
+
+                val prompt = Prompt(
+                    variant = AvailablePrompts.CONVERSATION_INITIALIZE,
+                    params = conversation.convertToPromptParams()
+                )
+
+                openAIAPIClientService
+                    .openSimpleStringStream(
+                        prompt = prompt.toString(),
+                        onComplete = { (payload) ->
+                            // TODO: Save logs here
+
+                            conversationMessageService.createMessage(
+                                conversationId = conversation.id,
+                                sender = ConversationMessageSender.AI,
+                                content = payload.finalContent,
+                                messageOrder = 0
+                            ).subscribe()
+                        }
+                    )
+            }
+    }
+
+
+    override fun requestAIMessage(
+        userId: UUID,
+        body: CreateAIConversationMessageRequest
+    ): Flux<String> {
+        return conversationService
+            .findByIdOrFailWithMessages(body.conversationId, userId)
+            .flatMapMany { conversation ->
+                val serializedConversationHistory: List<String> =
+                    conversation.messages
+                        .mapIndexed { index, message -> message.serialize(index) }
+                        .toMutableList()
+                        .apply {
+                            add(
+                                serializeMessage(
+                                    index = this.size,
+                                    sender = ConversationMessageSender.USER,
+                                    message = body.latestUserMessage
+                                )
+                            )
+                        }
+
+                val prompt = Prompt(
+                    variant = AvailablePrompts.CONVERSATION_REQUEST_AI_RESPONSE,
+                    params = conversation.convertToPromptParams() + mapOf(
+                        "serializedConversationHistory" to serializedConversationHistory.toParamString(tabulated = true),
+                    )
+                )
+
+                openAIAPIClientService
+                    .openSimpleStringStream(
+                        prompt = prompt.toString(),
+                        onComplete = { (payload, emitter) ->
+                            // TODO: Save logs here
+
+                            conversationMessageService.createMessage(
+                                conversationId = conversation.id,
+                                sender = ConversationMessageSender.AI,
+                                content = payload.finalContent,
+                                messageOrder = body.messageOrder
+                            ).subscribe()
+                        }
+                    )
+            }
+    }
+
+
+    override fun saveUserMessageAndGetFeedback(
+        userId: UUID,
+        body: ReviewUserConversationMessageRequest
+    ): Mono<ResponseEntity<ReviewedUserConversationMessage>> {
+        return conversationService
+            .findByIdOrFail(body.conversationId, userId)
+            .map { conversationMapper.toDTO(it) }
+            .flatMap { conversation ->
+                val prompt = Prompt(
+                    variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
+                    params = conversation.convertToPromptParams() + mapOf(
+                        "userMessage" to body.message,
+                        "latestAIMessage" to (body.latestAIMessage
+                            ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
+                    )
+                )
+
+                openAIAPIClientService.makeRequest(
+                    prompt = prompt.toString(),
+                    aiResponseType = object : TypeReference<ReviewedUserConversationMessage>() {},
+                    saveLog = { openAIResponse ->
+                        // TODO
+                    }
+                )
+                    .flatMap { aiFeedback ->
+                        conversationMessageService.createMessageWithFeedback(
+                            conversationId = conversation.id,
+                            content = body.message,
+                            messageOrder = body.messageOrder,
+                            aiFeedback = aiFeedback
+                        )
+                            .then(Mono.fromCallable {
+                                ResponseEntity.ok(aiFeedback)
+                            })
+                    }
+            }
+    }
+
+    //
+    // Utility functions
+    //
+
+    private fun ConversationMessageDTO.serialize(index: Int): String {
+        return serializeMessage(index, sender, content)
+    }
+
+    private fun serializeMessage(
+        index: Int,
+        sender: ConversationMessageSender,
+        message: String
+    ): String {
+        return "Message $index. - ROLE: $sender; MESSAGE: $message"
+    }
+}

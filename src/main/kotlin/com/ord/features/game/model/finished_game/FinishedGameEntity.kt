@@ -7,63 +7,31 @@ import com.ord.features.game.model.ongoing_game.enums.GameGrade
 import com.ord.features.game.model.ongoing_game.enums.GameResult
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.shared.models.IdentifiableUserResource
-import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
+import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Transient
+import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
-@Entity
-@Table(name = "finished_games")
+@Table("finished_games")
 data class FinishedGameEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    override var id: UUID = UUID.randomUUID(),
+    override val id: UUID? = null,
 
-    @Column(name = "duration", nullable = false)
-    var duration: String,
+    val score: Int,
+    val accuracy: Float,
+    val duration: String,
 
-    @Column(name = "score", nullable = false)
-    var score: Int,
+    val language: LanguageName,
 
-    @Column(name = "accuracy", nullable = false)
-    var accuracy: Float,
+    val type: GameType,
+    val result: GameResult,
+    val difficulty: GameDifficulty,
+    val grade: GameGrade = GameGrade.NA,
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", columnDefinition = "game_type(0, 0) not null", nullable = false)
-    var type: GameType,
+    override val userId: UUID,
 
-    @Column(name = "language", columnDefinition = "language_name(0, 0) not null")
-    @Enumerated(EnumType.STRING)
-    var language: LanguageName,
+    val createdAt: Instant = Instant.now(),
+) : IdentifiableUserResource
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "difficulty", columnDefinition = "game_difficulty(0, 0) not null", nullable = false)
-    var difficulty: GameDifficulty,
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "result", columnDefinition = "game_result(0, 0) not null", nullable = false)
-    var result: GameResult,
-
-    @Column(name = "grade", columnDefinition = "game_grade(0, 0) not null")
-    @Enumerated(EnumType.STRING)
-    var grade: GameGrade = GameGrade.NA,
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "user_id", nullable = false)
-    override var user: UserEntity,
-
-    @Column(name = "user_id", insertable = false, updatable = false)
-    var userId: UUID = user.id,
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp
-    var createdAt: Instant = Instant.now(),
-) : IdentifiableUserResource {
-    @PostLoad
-    fun populateUserId() {
-        userId = user.id
-    }
-}

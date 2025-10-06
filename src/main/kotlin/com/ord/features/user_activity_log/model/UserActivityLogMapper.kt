@@ -1,13 +1,13 @@
 package com.ord.features.user_activity_log.model
 
 import com.ord.core.user.model.UserMapper
-import com.ord.shared.models.mappers.MapperBase
+import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component
 class UserActivityLogMapper(
     private val userMapper: UserMapper,
-) : MapperBase<UserActivityLogEntity, UserActivityLogDTO> {
+) : BidirectionalEntityMapper<UserActivityLogEntity, UserActivityLogDTO> {
     override fun toEntity(dto: UserActivityLogDTO): UserActivityLogEntity {
         return UserActivityLogEntity(
             id = dto.id,
@@ -17,26 +17,24 @@ class UserActivityLogMapper(
             gameDifficulty = dto.gameDifficulty,
             points = dto.points,
 
-            user = userMapper.toEntity(dto.user),
+            userId = dto.userId,
 
             createdAt = dto.createdAt,
-            updatedAt = dto.updatedAt
         )
     }
 
     override fun toDTO(entity: UserActivityLogEntity): UserActivityLogDTO {
         return UserActivityLogDTO(
-            id = entity.id,
+            id = entity.id ?: error("UserActivityLog id must not be null"),
 
             type = entity.type,
             language = entity.language,
             gameDifficulty = entity.gameDifficulty,
             points = entity.points,
 
-            user = userMapper.toDTO(entity.user),
+            userId = entity.userId,
 
             createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.ord.core.word.service.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
@@ -21,53 +22,54 @@ import com.ord.features.user_activity_log.service.UserActivityLogService
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.domain.dto.CountingSummary
 import com.ord.shared.domain.enums.SortDirection
-import jakarta.transaction.Transactional
+import com.ord.shared.repositories.UserResourceRepository
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
 
 @Service
 class WordServiceImpl(
-    override val repository: WordRepository,
-
+    private val wordRepository: WordRepository,
     val wordMapper: WordMapper,
     val userActivityLogService: UserActivityLogService
 ) : WordService {
-    @Transactional
+    override val repository: WordRepository = wordRepository
+
     override fun changeBankForSingleWord(
         wordId: UUID,
         bankId: UUID?,
         userId: UUID
-    ): Int {
+    ): Mono<Int> {
         return repository.changeBankForSingleWord(
             bankId = bankId,
             wordId = wordId,
             userId = userId
-        ).let {
-            if (it == 0) {
-                throw NotFoundException("Word with id $wordId for user with id $userId not found")
+        ).flatMap { result ->
+            if (result == 0) {
+                Mono.error(NotFoundException("Word with id $wordId for user with id $userId not found"))
+            } else {
+                Mono.just(result)
             }
-            it
         }
     }
 
-    @Transactional
     override fun changeBankForMultipleWords(
         wordIds: List<UUID>,
         bankId: UUID?,
         userId: UUID
-    ): Int {
+    ): Mono<Int> {
         return repository.changeBankForMultipleWords(
             bankId = bankId,
             wordIds = wordIds,
             userId = userId
-        ).let {
-            if (it == 0) {
-                throw NotFoundException("No words found for user with id $userId")
-            } else if (it != wordIds.size) {
-                throw NotFoundException("Not all words found for user with id $userId")
+        ).flatMap { result ->
+            when {
+                result == 0 -> Mono.error(NotFoundException("No words found for user with id $userId"))
+                else -> Mono.just(result)
             }
-            it
         }
     }
 
@@ -75,28 +77,30 @@ class WordServiceImpl(
         language: LanguageName,
         amountOfLatestWord: Int,
         amountOfProblematicWord: Int
-    ): Set<String> {
+    ): Mono<Set<String>> {
         val latestWords = repository.findNOfLatestWords(
             language = language,
-            pageable = PageRequest.of(0, amountOfLatestWord)
-        )
+            limit = amountOfLatestWord
+        ).collectList()
 
         val problematicWords = repository.findNOfMostDifficultWords(
             language = language,
-            pageable = PageRequest.of(0, amountOfProblematicWord)
-        )
+            limit = amountOfProblematicWord
+        ).collectList()
 
-        return (latestWords + problematicWords).toSet()
+        return Mono.zip(latestWords, problematicWords) { latest, problematic ->
+            (latest + problematic).toSet()
+        }
     }
 
     override fun getWordsForPromptGeneration(
         language: LanguageName,
         banksIds: List<UUID>
-    ): Set<String> {
+    ): Mono<Set<String>> {
         return repository.findAllWordsFromBanks(
             language = language,
             banksIds = banksIds
-        ).toSet()
+        ).collectList().map { it.toSet() }
     }
 
     override fun findManyWords(
@@ -113,12 +117,13 @@ class WordServiceImpl(
         wordExtraMark: WordExtraMark?,
         sortBy: GetAllWordsSortOptions?,
 
-        user: UserEntity,
+        userId: UUID,
 
         page: Int,
         perPage: Int
-    ): PaginatedDataResponse<WordListItem> {
+    ): Mono<PaginatedDataResponse<WordListItem>> {
         return repository.findManyWords(
+            userId = userId,
             language = language,
             completed = completed,
             bookmarked = bookmarked,
@@ -133,8 +138,6 @@ class WordServiceImpl(
             banksIds = banksIds,
             bankGroupsIds = bankGroupsIds,
 
-            user = user,
-
             page = page,
             perPage = perPage
         )
@@ -142,11 +145,11 @@ class WordServiceImpl(
 
     override fun findOneWord(
         wordId: UUID,
-        user: UserEntity,
-    ): SingleWordResponse {
+        userId: UUID
+    ): Mono<SingleWordResponse> {
         return repository.findOneWord(
             wordId = wordId,
-            user = user
+            userId = userId
         )
     }
 
@@ -154,83 +157,81 @@ class WordServiceImpl(
         wordId: UUID,
         userId: UUID,
         property: WordToggleableProperty
-    ): WordEntity {
-        val wordEntity: WordEntity = repository.findOneForUser(id = wordId, userId = userId)
-            ?: throw NotFoundException("Word with id $wordId not found")
-
-        return repository.save(
-            wordEntity.toggleProperty(property)
-        )
+    ): Mono<WordEntity> {
+        return repository.findByIdAndUserId(id = wordId, userId = userId)
+            .switchIfEmpty(Mono.error(NotFoundException("Word with id $wordId not found")))
+            .map { it!! }
+            .map { wordEntity -> wordEntity.toggleProperty(property) }
+            .flatMap { updatedEntity -> repository.save(updatedEntity) }
     }
 
     override fun togglePropertyForManyWords(
         wordIds: Set<UUID>,
         userId: UUID,
         property: WordToggleableProperty
-    ): List<WordEntity> {
-        val words = repository.findAllForUser(ids = wordIds, userId = userId)
-
-        // Handle partial save
-        if (words.isEmpty()) {
-            throw NotFoundException("No requested words found for user with id $userId")
-        }
-
-        return repository.saveAll(
-            words.map {
-                it.toggleProperty(property)
+    ): Flux<WordEntity> {
+        return repository.findAllByIdInAndUserId(ids = wordIds, userId = userId)
+            .collectList()
+            .flatMap { words ->
+                if (words.isEmpty()) {
+                    Mono.error(NotFoundException("No requested words found for user with id $userId"))
+                } else {
+                    repository.saveAll(
+                        words.map { it.toggleProperty(property) }
+                    ).collectList()
+                }
             }
-        )
+            .flatMapMany { Flux.fromIterable(it) }
     }
 
     override fun saveNewWord(
-        word: WordDTO,
-        user: UserEntity
-    ): WordDTO {
-        val result = repository.save(wordMapper.toEntity(word))
+        word: WordEntity,
+        userId: UUID,
+    ): Mono<WordDTO> {
         val language = word.translatedFrom
 
-        val userActivityLogsToSaveEntity: MutableSet<UserActivityLogEntity> = mutableSetOf()
+        return repository.save(word)
+            .flatMap { savedEntity ->
+                countCreated(language = language, userId = userId)
+                    .map { countingSummary ->
+                        val userActivityLogsToSaveEntity: MutableSet<UserActivityLogEntity> = mutableSetOf()
 
-        countCreated(language = language, userId = user.id).let {
-            if (it.today >= 10) {
-                userActivityLogsToSaveEntity.add(
-                    UserActivityLogEntity(
-                        user = user,
-                        type = UserActivityType.WORDS_ADDED_IN_ONE_DAY_10,
-                        language = language,
-                    )
-                )
+                        if (countingSummary.today >= 10) {
+                            userActivityLogsToSaveEntity.add(
+                                UserActivityLogEntity(
+                                    userId = userId,
+                                    type = UserActivityType.WORDS_ADDED_IN_ONE_DAY_10,
+                                    language = language,
+                                )
+                            )
+                        }
+
+                        if (countingSummary.week >= 50) {
+                            userActivityLogsToSaveEntity.add(
+                                UserActivityLogEntity(
+                                    userId = userId,
+                                    type = UserActivityType.WORDS_ADDED_IN_ONE_WEEK_50,
+                                    language = language,
+                                )
+                            )
+                        }
+
+                        wordMapper.toDTO(savedEntity)
+                    }
             }
-
-            if (it.week >= 50) {
-                userActivityLogsToSaveEntity.add(
-                    UserActivityLogEntity(
-                        user = user,
-                        type = UserActivityType.WORDS_ADDED_IN_ONE_WEEK_50,
-                        language = language,
-                    )
-                )
-            }
-        }
-
-        return wordMapper.toDTO(result)
     }
 
     override fun countCreated(
         language: LanguageName,
         userId: UUID
-    ): CountingSummary {
-        return CountingSummary(
-            repository.countCreated(language = language, userId = userId)
-        )
+    ): Mono<CountingSummary> {
+        return repository.countCreated(language = language, userId = userId)
     }
 
     override fun countCompleted(
         language: LanguageName,
         userId: UUID
-    ): CountingSummary {
-        return CountingSummary(
-            repository.countCompleted(language = language, userId = userId)
-        )
+    ): Mono<CountingSummary> {
+        return repository.countCompleted(language = language, userId = userId)
     }
 }

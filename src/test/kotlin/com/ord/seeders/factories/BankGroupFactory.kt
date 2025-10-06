@@ -18,7 +18,7 @@ class BankGroupFactory(
         return BankGroupEntity(
             name = name,
             color = color,
-            user = user
+            userId = user.id!!,
         )
     }
 }

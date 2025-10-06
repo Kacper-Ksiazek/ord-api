@@ -1,6 +1,7 @@
 package com.ord.features.game.api.controllers
 
-import com.ord.core.auth.security.AuthenticatedUser
+import com.ord.core.auth.annotations.AuthenticatedUser
+import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.variants.words_typing.dto.api_requests.FinishWordsTypingGameRequest
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/v1/games/words-typing")
@@ -21,13 +23,13 @@ class WordsTypingGameController(
 ) {
     @PostMapping("/start")
     fun startWordsTypingGame(
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: StartGameRequest
-    ): ResponseEntity<StartedWordsTypingGameResponse> = wordsTypingGameFacade.startGame(user = user, body = body)
+    ): Mono<ResponseEntity<StartedWordsTypingGameResponse>> = wordsTypingGameFacade.startGame(user.id, body = body)
 
     @PostMapping("/finish")
     fun finishWordsTypingGame(
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: FinishWordsTypingGameRequest
-    ): ResponseEntity<FinishedWordsTypingGameResponse> = wordsTypingGameFacade.finishGame(user, body)
+    ): Mono<ResponseEntity<FinishedWordsTypingGameResponse>> = wordsTypingGameFacade.finishGame(user.id, body)
 }

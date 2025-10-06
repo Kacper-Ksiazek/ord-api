@@ -1,20 +1,19 @@
 package com.ord.features.game.api.controllers
 
-import com.ord.core.auth.jwt.JwtService
-import com.ord.core.auth.security.AuthenticatedUser
+import com.ord.core.auth.annotations.AuthenticatedUser
+import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.services.OngoingGameService
 import com.ord.features.game.variants.shared.dto.api_requests.CancelGameRequest
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Mono
 import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/games")
 class GamesController(
-    private val jwtService: JwtService,
     private val ongoingGameService: OngoingGameService,
 ) {
     // +-----------------------------+
@@ -53,18 +52,20 @@ class GamesController(
     // 14. @GetMapping("/games-history")
     // 15. @GetMapping("/statistics")
 
-    @DeleteMapping("/cancel/{gameId}")
+    @PostMapping("/cancel/{gameId}")
     fun cancelGame(
         @PathVariable gameId: UUID,
-        @AuthenticatedUser user: UserEntity,
+        @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: CancelGameRequest
-    ): ResponseEntity<Unit> {
-        ongoingGameService.cancelGame(
-            ongoingGameId = gameId,
-            userId = user.id,
-            duration = body.duration
-        )
-
-        return ResponseEntity.noContent().build()
+    ): Mono<ResponseEntity<Unit>> {
+        return ongoingGameService
+            .cancelGame(
+                ongoingGameId = gameId,
+                userId = user.id,
+                duration = body.duration
+            )
+            .then(Mono.fromCallable {
+                ResponseEntity.noContent().build<Unit>()
+            })
     }
 }

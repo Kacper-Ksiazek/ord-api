@@ -1,9 +1,0 @@
-package com.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.repository
-
-import com.ord.features.gpt_tokens_usage_log.variants.shared.repository.TokensUsageRepository
-import com.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.WordTokensUsageEntity
-import com.ord.features.gpt_tokens_usage_log.variants.word_tokens_usage.model.enums.WordsGPTTokensConsumptionType
-import org.springframework.stereotype.Repository
-
-@Repository
-interface WordTokensUsageRepository : TokensUsageRepository<WordTokensUsageEntity, WordsGPTTokensConsumptionType>

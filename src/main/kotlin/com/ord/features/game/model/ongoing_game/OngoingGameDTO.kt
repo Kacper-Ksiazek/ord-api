@@ -11,7 +11,7 @@ import java.time.Instant
 import java.util.*
 
 data class OngoingGameDTO<TProperAnswers>(
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID,
 
     val properAnswers: TProperAnswers,
 
@@ -19,8 +19,7 @@ data class OngoingGameDTO<TProperAnswers>(
     val language: LanguageName,
     val difficulty: GameDifficulty,
 
-    val user: UserDTO,
-    val userId: UUID = user.id,
+    val userId: UUID,
 
     var createdAt: Instant = Instant.now()
 )

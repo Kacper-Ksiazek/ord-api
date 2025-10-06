@@ -1,9 +1,10 @@
 package com.ord.core.word.repository.impl
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
-import com.ord.core.word.api.requests.enums.toSQLColumnName
 import com.ord.core.word.api.responses.dto.SingleWordResponse
 import com.ord.core.word.api.responses.dto.WordListItem
 import com.ord.core.word.model.WordEntity
@@ -13,408 +14,477 @@ import com.ord.core.word.model.json.ExampleSentence
 import com.ord.core.word.repository.WordRepositoryCustomMethods
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.bank.dto.BankCompact
-import com.ord.features.bank.model.BankEntity
 import com.ord.features.bank_group.dto.BankGroupCompact
-import com.ord.features.bank_group.model.BankGroupEntity
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.api.dto.responses.PaginationData
 import com.ord.shared.domain.enums.SortDirection
-import com.ord.shared.domain.enums.isDesc
-import jakarta.persistence.EntityManager
-import jakarta.persistence.Tuple
-import jakarta.persistence.TypedQuery
-import jakarta.persistence.criteria.CriteriaQuery
-import jakarta.persistence.criteria.JoinType
-import jakarta.persistence.criteria.Predicate
-import jakarta.persistence.criteria.Root
+import com.ord.shared.domain.dto.CountingSummary
+import io.r2dbc.postgresql.codec.Json
+import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.time.Instant
 import java.util.*
 
 @Repository
 class WordRepositoryCustomMethodsImpl(
-    private val entityManager: EntityManager
+    template: R2dbcEntityTemplate
 ) : WordRepositoryCustomMethods {
-    private val criteriaBuilder = entityManager.criteriaBuilder
+    private val databaseClient: DatabaseClient = template.databaseClient
+    private val objectMapper = jacksonObjectMapper()
 
     override fun findOneWord(
         wordId: UUID,
-        user: UserEntity
-    ): SingleWordResponse {
-        val criteriaQuery = criteriaBuilder.createTupleQuery()
+        userId: UUID,
+    ): Mono<SingleWordResponse> {
+        val selectQuery = """
+            SELECT 
+                ${SingleWordResponse.fields.joinToString(", ") { "words.$it" }},
+                ${BankCompact.fields.joinToString(", ") { "banks.$it AS bank_$it" }},
+                ${BankGroupCompact.fields.joinToString(", ") { "bank_groups.$it AS bank_group_$it" }}
+            FROM words
+                LEFT JOIN banks ON words.bank_id = banks.id
+                LEFT JOIN bank_groups ON banks.group_id = bank_groups.id
+            WHERE words.id = :wordId AND words.user_id = :userId
+        """
 
-        val root = criteriaQuery.from(WordEntity::class.java)
-        val bankJoin = root.join<WordEntity, BankEntity>("bank", JoinType.LEFT)
-        val bankGroupJoin = bankJoin.join<BankEntity, BankGroupEntity>("bankGroup", JoinType.LEFT)
+        return databaseClient
+            .sql(selectQuery)
+            .bind("wordId", wordId)
+            .bind("userId", userId)
+            .map { row ->
+                val hasBank: Boolean = row.get("bank_name", String::class.java) != null
+                val hasBankGroup: Boolean = hasBank && row.get("bank_group_name", String::class.java) != null
 
-        criteriaQuery.multiselect(
-            root.get<UUID>("id"),                       // 0
+                SingleWordResponse(
+                    id = row.get("id", UUID::class.java)!!,
+                    points = row.get("points", Int::class.java)!!,
+                    origin = row.get("origin", String::class.java)!!,
+                    translation = row.get("translation", String::class.java)!!,
+                    definition = row.get("definition", String::class.java) ?: "",
+                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
+                    isCompleted = row.get("is_completed", Boolean::class.java)!!,
 
-            // Primitive type fields
-            root.get<Int>("points"),                    // 1
-            root.get<String>("origin"),                 // 2
-            root.get<String>("translation"),            // 3
-            root.get<String>("definition"),             // 4
-            root.get<Boolean>("isBookmarked"),          // 5
-            root.get<Boolean>("isCompleted"),           // 6
+                    type = WordType.valueOf(row.get("type", String::class.java)!!),
+                    extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
+                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
+                    translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
 
-            // Enum types
-            root.get<WordType>("type"),                 // 7
-            root.get<WordExtraMark?>("extraMark"),      // 8
-            root.get<LanguageName>("translatedTo"),     // 9
-            root.get<LanguageName>("translatedFrom"),   // 10
+                    useCases = objectMapper.readValue(
+                        row.get("use_cases", String::class.java) ?: "[]",
+                        object : TypeReference<Set<String>>() {}
+                    ),
+                    exampleSentences = objectMapper.readValue(
+                        row.get("example_sentences", String::class.java) ?: "[]",
+                        object : TypeReference<Set<ExampleSentence>>() {}
+                    ),
 
-            // Lists fields
-            root.get<String>("useCases"),               // 11
-            root.get<Int>("exampleSentences"),          // 12
+                    bank = BankCompact.construct(row),
 
-            // Bank fields
-            bankJoin.get<UUID?>("id"),                  // 13
-            bankJoin.get<String?>("name"),              // 14
-            bankJoin.get<String?>("description"),       // 15
-
-            // BankGroup fields
-            bankGroupJoin.get<UUID?>("id"),             // 16
-            bankGroupJoin.get<String?>("name"),         // 17
-            bankGroupJoin.get<String?>("color"),        // 18
-
-            // Timestamps
-            root.get<Instant>("createdAt"),             // 19
-            root.get<Instant>("updatedAt")              // 20
-        )
-
-        criteriaQuery.where(
-            criteriaBuilder.equal(root.get<UUID>("id"), wordId),
-            criteriaBuilder.equal(root.get<UUID>("userId"), user.id)
-        )
-
-        val query: TypedQuery<Tuple> = entityManager.createQuery(criteriaQuery)
-
-        if (query.resultList.isEmpty()) {
-            throw NotFoundException("Word with id $wordId not found for user with id ${user.id}")
-        }
-
-        val result: Tuple = query.singleResult!!
-
-        val bankId = result.get(13, UUID::class.java)
-        val bankGroupId = result.get(16, UUID::class.java)
-
-        @Suppress("UNCHECKED_CAST")
-        return SingleWordResponse(
-            id = result.get(0, UUID::class.java),
-
-            points = result.get(1, Int::class.java),
-            origin = result.get(2, String::class.java),
-            translation = result.get(3, String::class.java),
-            definition = result.get(4, String::class.java),
-            isBookmarked = result.get(5, Boolean::class.java),
-            isCompleted = result.get(6, Boolean::class.java),
-
-            type = result.get(7, WordType::class.java),
-            extraMark = result.get(8, WordExtraMark::class.java),
-            translatedTo = result.get(9, LanguageName::class.java),
-            translatedFrom = result.get(10, LanguageName::class.java),
-
-            useCases = result.get(11, Set::class.java) as Set<String>,
-            exampleSentences = result.get(12, Set::class.java) as Set<ExampleSentence>,
-
-            bank = if (bankId != null) {
-                BankCompact(
-                    id = bankId,
-                    name = result.get(14, String::class.java) ?: "",
-                    description = result.get(15, String::class.java) ?: "",
-                    bankGroup = if (bankGroupId != null) {
-                        BankGroupCompact(
-                            id = bankGroupId,
-                            name = result.get(17, String::class.java) ?: "",
-                            color = result.get(18, String::class.java) ?: ""
-                        )
-                    } else null
+                    createdAt = row.get("created_at", Instant::class.java)!!,
+                    updatedAt = row.get("updated_at", Instant::class.java)!!
                 )
-            } else null,
+            }
+            .one()
+            .switchIfEmpty(
+                Mono.error(NotFoundException("Word with id $wordId not found for user with id $userId"))
+            )
+    }
 
-            createdAt = result.get(19, Instant::class.java),
-            updatedAt = result.get(20, Instant::class.java)
+
+    override fun findNOfLatestWords(
+        language: LanguageName,
+        limit: Int
+    ): Flux<String> {
+        val selectQuery = """
+            SELECT origin 
+            FROM words 
+            WHERE translated_from = :language 
+            ORDER BY created_at DESC 
+            LIMIT :limit
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("language", language.name)
+            .bind("limit", limit)
+            .map { row -> row.get("origin", String::class.java)!! }
+            .all()
+    }
+
+
+    override fun findNOfMostDifficultWords(
+        language: LanguageName,
+        limit: Int
+    ): Flux<String> {
+        val selectQuery = """
+            SELECT origin 
+            FROM words 
+            WHERE translated_from = :language 
+            ORDER BY points DESC 
+            LIMIT :limit
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("language", language.name)
+            .bind("limit", limit)
+            .map { row -> row.get("origin", String::class.java)!! }
+            .all()
+    }
+
+
+    override fun findAllWordsFromBanks(
+        language: LanguageName,
+        banksIds: List<UUID>
+    ): Flux<String> {
+        val selectQuery = """
+            SELECT origin 
+            FROM words 
+            WHERE translated_from = :language 
+            AND bank_id = ANY(:banksIds)
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("language", language.name)
+            .bind("banksIds", banksIds.toTypedArray())
+            .map { row -> row.get("origin", String::class.java)!! }
+            .all()
+    }
+
+
+    override fun findAllWordByTheirOrigins(
+        origins: Set<String>,
+        language: LanguageName,
+        userId: UUID
+    ): Flux<WordEntity> {
+        val selectQuery = """
+            SELECT id, origin, translation, definition, points, is_bookmarked, is_completed,
+                   type, extra_mark, translated_to, translated_from, use_cases, example_sentences,
+                   bank_id, user_id, created_at, updated_at
+            FROM words 
+            WHERE translated_from = :language 
+            AND origin = ANY(:origins) 
+            AND user_id = :userId
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("language", language.name)
+            .bind("origins", origins.toTypedArray())
+            .bind("userId", userId)
+            .map { row ->
+                WordEntity(
+                    id = row.get("id", UUID::class.java)!!,
+                    origin = row.get("origin", String::class.java)!!,
+                    translation = row.get("translation", String::class.java)!!,
+                    definition = row.get("definition", String::class.java) ?: "",
+                    points = row.get("points", Int::class.java)!!,
+                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
+                    isCompleted = row.get("is_completed", Boolean::class.java)!!,
+                    type = WordType.valueOf(row.get("type", String::class.java)!!),
+                    extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
+                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
+                    translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
+                    useCases = row.get("use_cases", Json::class.java)!!,
+                    exampleSentences = row.get("example_sentences", Json::class.java)!!,
+                    userId = userId,
+                    createdAt = row.get("created_at", Instant::class.java)!!,
+                    updatedAt = row.get("updated_at", Instant::class.java)!!
+                )
+            }
+            .all()
+    }
+
+
+    override fun countCreated(
+        language: LanguageName,
+        userId: UUID
+    ): Mono<CountingSummary> {
+        // language=SQL
+        val query = """
+            SELECT * FROM count_words_by_field(
+                'created_at', 
+                cast(:language as text), 
+                :userId
+            )
+        """
+
+        return handleCountQuery(query, language, userId)
+    }
+
+
+    override fun countCompleted(
+        language: LanguageName,
+        userId: UUID
+    ): Mono<CountingSummary> {
+        // language=SQL
+        val query = """
+            SELECT * FROM count_words_by_field(
+                'completed_at', 
+                cast(:language as text), 
+                :userId
+            )
+        """
+
+        return handleCountQuery(query, language, userId)
+    }
+
+
+    override fun changeBankForSingleWord(
+        wordId: UUID,
+        bankId: UUID?,
+        userId: UUID
+    ): Mono<Int> {
+        // language=SQL
+        val query = """
+            UPDATE words 
+            SET bank_id = :bankId 
+            WHERE id = :wordId AND user_id = :userId
+        """
+
+        return handleChangeBankQuery(
+            query = query,
+            userId = userId,
+            bankId = bankId,
+            params = mapOf("wordId" to wordId)
+        )
+    }
+
+
+    override fun changeBankForMultipleWords(
+        bankId: UUID?,
+        wordIds: List<UUID>,
+        userId: UUID
+    ): Mono<Int> {
+        // language=SQL
+        val updateQuery = """
+            UPDATE words 
+            SET bank_id = :bankId 
+            WHERE id = ANY(:wordIds) AND user_id = :userId
+        """
+
+        return handleChangeBankQuery(
+            query = updateQuery,
+            userId = userId,
+            bankId = bankId,
+            params = mapOf("wordIds" to wordIds.toTypedArray())
         )
     }
 
     override fun findManyWords(
-        completed: Boolean?,
-        searchingPhrase: String?,
-        bookmarked: Boolean?,
-
-        banksIds: Set<UUID>?,
-        bankGroupsIds: Set<UUID>?,
-
-        wordType: WordType?,
-        language: LanguageName,
-        sortDirection: SortDirection,
-        wordExtraMark: WordExtraMark?,
-        sortBy: GetAllWordsSortOptions,
-
-        user: UserEntity,
-
-        page: Int,
-        perPage: Int
-    ): PaginatedDataResponse<WordListItem> {
-        // ---
-        // 1. Create and CriteriaQuery
-        // ---
-        val criteriaQuery = criteriaBuilder.createTupleQuery()
-
-        // ---
-        // 2. Prepare root and joins
-        // ---
-        val root = criteriaQuery.from(WordEntity::class.java)
-        val bankJoin = root.join<WordEntity, BankEntity>("bank", JoinType.LEFT)
-        val bankGroupJoin = bankJoin.join<BankEntity, BankGroupEntity>("bankGroup", JoinType.LEFT)
-
-
-        // ---
-        // 3. Prepare predicates
-        // ---
-        applyPredicatesToQuery<Tuple>(
-            query = criteriaQuery,
-            root = root,
-
-            userId = user.id,
-            language = language,
-
-            wordType = wordType,
-            completed = completed,
-            wordExtraMark = wordExtraMark,
-            bookmarked = bookmarked,
-            searchingPhrase = searchingPhrase,
-
-            banksIds = banksIds,
-            bankGroupsIds = bankGroupsIds
-        )
-
-        // ---
-        // 4. Prepare sorting
-        // ---
-        val sortByColumn = sortBy.toSQLColumnName()
-
-        if (sortDirection.isDesc()) {
-            criteriaQuery.orderBy(criteriaBuilder.desc(root.get<Any>(sortByColumn)))
-        } else {
-            criteriaQuery.orderBy(criteriaBuilder.asc(root.get<Any>(sortByColumn)))
-        }
-
-        // ---
-        // 5. Count total amount of results and calculate total amount of pages
-        // ---
-        val countCriteriaQuery = criteriaBuilder.createQuery(Long::class.java)
-        val countRoot = countCriteriaQuery.from(WordEntity::class.java)
-        countCriteriaQuery.select(criteriaBuilder.count(countRoot))
-
-        applyPredicatesToQuery<Long>(
-            query = countCriteriaQuery,
-            root = countRoot,
-
-            userId = user.id,
-            language = language,
-
-            wordType = wordType,
-            banksIds = banksIds,
-            completed = completed,
-            wordExtraMark = wordExtraMark,
-            bookmarked = bookmarked,
-            searchingPhrase = searchingPhrase,
-
-            bankGroupsIds = bankGroupsIds
-        )
-
-        val totalRecords: Long = entityManager.createQuery(countCriteriaQuery).singleResult
-
-        // ---
-        // 6. Select fields using multiselect
-        // ---
-        criteriaQuery.multiselect(
-            // Word fields
-            root.get<UUID>("id"),                       // 0
-            root.get<Int>("points"),                    // 1
-            root.get<String>("origin"),                 // 2
-            root.get<String>("translation"),            // 3
-            root.get<Boolean>("isBookmarked"),          // 4
-            root.get<Boolean>("isCompleted"),           // 5
-            root.get<WordType>("type"),                 // 6
-            root.get<WordExtraMark?>("extraMark"),      // 7
-            root.get<LanguageName>("translatedFrom"),   // 8
-            root.get<LanguageName>("translatedTo"),     // 9
-            root.get<UUID?>("bankId"),                  // 10
-            // Bank fields
-            bankJoin.get<UUID?>("id"),                  // 11
-            bankJoin.get<String?>("name"),              // 12
-            bankJoin.get<String?>("description"),       // 13
-            // BankGroup fields
-            bankGroupJoin.get<UUID?>("id"),             // 14
-            bankGroupJoin.get<String?>("name"),         // 15
-            bankGroupJoin.get<String?>("color"),        // 16
-            // Timestamps
-            root.get<Instant>("createdAt"),             // 17
-            root.get<Instant>("updatedAt")              // 18
-        )
-
-        // 6.1 Execute query with pagination
-        val query: TypedQuery<Tuple> = entityManager.createQuery(criteriaQuery)
-            .setFirstResult(page * perPage)
-            .setMaxResults(perPage)
-
-
-        // 6.2 Map results to DTOs
-        val responseData = query.resultList.map { tuple ->
-            val id = tuple.get(0, UUID::class.java)
-            val points = tuple.get(1, Int::class.java)
-            val origin = tuple.get(2, String::class.java)
-            val translation = tuple.get(3, String::class.java)
-            val isBookmarked = tuple.get(4, Boolean::class.java)
-            val isCompleted = tuple.get(5, Boolean::class.java)
-            val type = tuple.get(6, WordType::class.java)
-            val extraMark = tuple.get(7, WordExtraMark::class.java)
-            val translatedFrom = tuple.get(8, LanguageName::class.java)
-            val translatedTo = tuple.get(9, LanguageName::class.java)
-            val bankId = tuple.get(10, UUID::class.java)
-            // Bank fields
-            val bankIdParam = tuple.get(11, UUID::class.java)
-            val bankName = tuple.get(12, String::class.java)
-            val bankDescription = tuple.get(13, String::class.java)
-            // BankGroup fields
-            val bankGroupId = tuple.get(14, UUID::class.java)
-            val bankGroupName = tuple.get(15, String::class.java)
-            val bankGroupColor = tuple.get(16, String::class.java)
-            // Timestamps
-            val createdAt = tuple.get(17, Instant::class.java)
-            val updatedAt = tuple.get(18, Instant::class.java)
-
-            // Construct BankGroupCompact
-            val bankGroupCompact = if (bankGroupId != null) {
-                BankGroupCompact(
-                    id = bankGroupId,
-                    name = bankGroupName ?: "",
-                    color = bankGroupColor ?: ""
-                )
-            } else null
-
-            // Construct BankCompact
-            val bankCompact = if (bankIdParam != null) {
-                BankCompact(
-                    id = bankIdParam,
-                    name = bankName ?: "",
-                    description = bankDescription ?: "",
-                    bankGroup = bankGroupCompact
-                )
-            } else null
-
-            WordListItem(
-                id = id,
-
-                points = points,
-                origin = origin,
-                isCompleted = isCompleted,
-                translation = translation,
-                isBookmarked = isBookmarked,
-
-                type = type,
-                extraMark = extraMark,
-                translatedTo = translatedTo,
-                translatedFrom = translatedFrom,
-
-                bank = bankCompact,
-
-                bankId = bankId,
-
-                createdAt = createdAt,
-                updatedAt = updatedAt
-            )
-        }
-
-        return PaginatedDataResponse(
-            data = responseData,
-            pagination = PaginationData(
-                page = page,
-                perPage = perPage,
-                totalRecords = totalRecords,
-                recordsOnCurrentPage = responseData.size
-            )
-        )
-    }
-
-    private fun <T> applyPredicatesToQuery(
-        query: CriteriaQuery<T>,
-        root: Root<WordEntity>,
-
         userId: UUID,
         language: LanguageName,
-
+        completed: Boolean?,
+        bookmarked: Boolean?,
+        searchingPhrase: String?,
+        banksIds: Set<UUID>?,
+        bankGroupsIds: Set<UUID>?,
         wordType: WordType?,
+        wordExtraMark: WordExtraMark?,
+        sortDirection: SortDirection,
+        sortBy: GetAllWordsSortOptions,
+        page: Int,
+        perPage: Int
+    ): Mono<PaginatedDataResponse<WordListItem>> {
+        val conditions =
+            createQueryConditions(
+                completed,
+                searchingPhrase,
+                bookmarked,
+                banksIds,
+                bankGroupsIds,
+                wordType,
+                wordExtraMark
+            )
+
+        val valuesBindings = createValuesBindings(
+            userId,
+            language,
+            completed,
+            searchingPhrase,
+            bookmarked,
+            banksIds,
+            bankGroupsIds,
+            wordType,
+            wordExtraMark
+        )
+
+        val countQuery = StringBuilder(
+            // language=SQL
+            """
+               SELECT 
+                   COUNT(*)
+               FROM words 
+               WHERE $conditions 
+            """
+        )
+
+        val selectQuery = StringBuilder(
+            // language=SQL
+            """
+                SELECT 
+                    ${WordListItem.fields.joinToString(", ") { "words.$it" }},
+                    ${BankCompact.fields.joinToString(", ") { "banks.$it AS bank_$it" }},
+                    ${BankGroupCompact.fields.joinToString(", ") { "bank_groups.$it AS bank_group_$it" }}
+                FROM words
+                    LEFT JOIN banks ON words.bank_id = banks.id
+                    LEFT JOIN bank_groups ON banks.group_id = bank_groups.id
+                WHERE $conditions
+                
+                ORDER BY ${sortBy.column} ${sortDirection.name}
+                LIMIT :limit OFFSET :offset 
+            """
+        )
+
+        val countQueryResult: Mono<Long> = databaseClient.sql(countQuery.toString())
+            .bindValues(valuesBindings)
+            .map { row -> row.get(0, Long::class.java)!! }
+            .one()
+
+        val selectQueryResult: Mono<List<WordListItem>> = databaseClient
+            .sql(selectQuery.toString())
+            .bindValues(valuesBindings)
+            .bind("limit", perPage)
+            .bind("offset", maxOf(0, (page - 1) * perPage))
+            .filter {
+                println("Executing query: $it")
+                it
+            }
+            .map { row ->
+                WordListItem(
+                    id = row.get("id", UUID::class.java)!!,
+
+                    points = row.get("points", Int::class.java)!!,
+                    origin = row.get("origin", String::class.java)!!,
+                    translation = row.get("translation", String::class.java)!!,
+                    isCompleted = row.get("is_completed", Boolean::class.java)!!,
+                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
+
+                    type = WordType.valueOf(row.get("type", String::class.java)!!),
+                    extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
+                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
+                    translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
+
+                    bank = BankCompact.construct(row),
+                )
+            }
+            .all()
+            .collectList()
+
+        return Mono
+            .zip(selectQueryResult, countQueryResult)
+            .map { t ->
+                val words = t.t1
+                val totalItems = t.t2
+
+                PaginatedDataResponse(
+                    data = words,
+                    pagination = PaginationData(
+                        page = page,
+                        perPage = perPage,
+                        totalResults = totalItems,
+                        resultsOnCurrentPage = words.size
+                    )
+                )
+            }
+    }
+
+
+    private fun handleCountQuery(
+        query: String,
+        language: LanguageName,
+        userId: UUID
+    ): Mono<CountingSummary> {
+        return databaseClient.sql(query)
+            .bind("language", language.name)
+            .bind("userId", userId)
+            .fetch()
+            .one()
+            .map { row ->
+                CountingSummary(
+                    today = (row["today"] as? Number)?.toInt() ?: 0,
+                    week = (row["week"] as? Number)?.toInt() ?: 0,
+                    month = (row["month"] as? Number)?.toInt() ?: 0
+                )
+            }
+    }
+
+
+    private fun handleChangeBankQuery(
+        query: String,
+        userId: UUID,
+        bankId: UUID?,
+        params: Map<String, Any>
+    ): Mono<Int> {
+        val spec = databaseClient.sql(query)
+            .bind("userId", userId)
+            .bindValues(params)
+
+
+        val finalSpec = if (bankId != null) {
+            spec.bind("bankId", bankId)
+        } else {
+            spec.bindNull("bankId", UUID::class.java)
+        }
+
+        return finalSpec.fetch()
+            .rowsUpdated()
+            .map { it.toInt() }
+    }
+
+
+    private fun createQueryConditions(
         completed: Boolean?,
         searchingPhrase: String?,
         bookmarked: Boolean?,
-
-        wordExtraMark: WordExtraMark?,
-
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
-    ) {
-        val predicates = mutableListOf<Predicate>()
+        wordType: WordType?,
+        wordExtraMark: WordExtraMark?
+    ): String {
+        val conditions = buildList {
+            add("words.translated_from = :language")
+            add("words.user_id = :userId")
 
-        // 1. Mandatory predicates
-        predicates.add(criteriaBuilder.equal(root.get<UUID>("userId"), userId))
-        predicates.add(criteriaBuilder.equal(root.get<LanguageName>("translatedFrom"), language))
-
-        // 2 Optional predicates
-
-        // 2.1 - isBookmarked
-        bookmarked?.let {
-            predicates.add(criteriaBuilder.equal(root.get<Boolean>("isBookmarked"), bookmarked))
+            completed?.let { add("words.is_completed = :completed") }
+            searchingPhrase?.let { add("words.origin ILIKE :searchingPhrase") }
+            bookmarked?.let { add("words.is_bookmarked = :bookmarked") }
+            banksIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_id = ANY(:banksIds)") }
+            bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_group_id = ANY(:bankGroupsIds)") }
+            wordType?.let { add("words.type = :wordType") }
+            wordExtraMark?.let { add("words.extra_mark = :wordExtraMark") }
         }
 
-        // 2.2 - completed
-        completed?.let {
-            predicates.add(criteriaBuilder.equal(root.get<Boolean>("isCompleted"), completed))
-        }
-
-        // 2.3 - wordType
-        wordType?.let {
-            predicates.add(criteriaBuilder.equal(root.get<WordType>("type"), it))
-        }
-
-        // 2.4 - wordExtraMark
-        wordExtraMark?.let {
-            predicates.add(criteriaBuilder.equal(root.get<WordExtraMark>("extraMark"), it))
-        }
-
-        // 2.5 - searchingPhrase
-        searchingPhrase?.let {
-            predicates.add(
-                criteriaBuilder.or(
-                    // Search by origin - in learning language
-                    criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get<String>("origin")),
-                        "%${it.lowercase()}%"
-                    ),
-                    // Search by translation - in translated to ( native ) language
-                    criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get<String>("translation")),
-                        "%${it.lowercase()}%"
-                    )
-                )
-            )
-        }
-
-        // 2.6 - banksIds
-        banksIds?.let {
-            val bankIdPath = root.get<UUID>("bankId")
-            predicates.add(bankIdPath.`in`(it))
-        }
-
-        // 2.7 - bankGroupsIds
-        bankGroupsIds?.let {
-            val bankGroupIdPath = root.get<UUID>("bankGroupId")
-            predicates.add(bankGroupIdPath.`in`(it))
-        }
-
-        query.where(*predicates.toTypedArray())
+        return conditions.joinToString(" AND ")
     }
+
+
+    private fun createValuesBindings(
+        userId: UUID,
+        language: LanguageName,
+        completed: Boolean?,
+        searchingPhrase: String?,
+        bookmarked: Boolean?,
+        banksIds: Set<UUID>?,
+        bankGroupsIds: Set<UUID>?,
+        wordType: WordType?,
+        wordExtraMark: WordExtraMark?
+    ): Map<String, Any> {
+        val params: Map<String, Any> = mutableMapOf<String, Any>(
+            "userId" to userId,
+            "language" to language.name
+        ).apply {
+            completed?.let { put("completed", it) }
+            searchingPhrase?.let { put("searchingPhrase", "%$it%") }
+            bookmarked?.let { put("bookmarked", it) }
+            wordType?.let { put("wordType", it.name) }
+            wordExtraMark?.let { put("wordExtraMark", it.name) }
+
+            banksIds?.takeIf { it.isNotEmpty() }?.let { put("banksIds", it.toTypedArray()) }
+            bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { put("bankGroupsIds", it.toTypedArray()) }
+        }
+
+        return params.toMap()
+
+    }
+
 }

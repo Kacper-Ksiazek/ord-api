@@ -1,16 +1,16 @@
 package com.ord.seeders.factories
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserEntity
 import com.ord.core.word.model.WordEntity
 import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
 import com.ord.core.word.model.json.ExampleSentence
-import com.ord.features.bank.model.BankEntity
 import com.ord.seeders.entities.UserSeeder
 import com.ord.seeders.factories.bases.FactoryBase
 import com.ord.shared.utils.EnumUtils.getRandomValue
 import com.ord.shared.utils.EnumUtils.getRandomValueOrNull
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -18,6 +18,8 @@ import java.util.*
 class WordFactory(
     private val userSeeder: UserSeeder,
 ) : FactoryBase() {
+    private val objectMapper = jacksonObjectMapper()
+
     fun mockEntity(
         origin: String = UUID.randomUUID().toString(),
         translation: String = faker.name().title(),
@@ -43,26 +45,27 @@ class WordFactory(
                 )
             }
         },
-        user: UserEntity = userSeeder.seedOneEntity(),
-        bank: BankEntity? = null
+        userId: UUID? = null,
+        bankId: UUID? = null,
+        bankGroupId: UUID? = null,
     ): WordEntity {
+        val userIdToUse = userId ?: userSeeder.seedOneEntity().id!!
+
         return WordEntity(
             origin = origin,
             translation = translation,
             definition = definition,
-            useCases = useCases,
+            useCases = Json.of(objectMapper.writeValueAsString(useCases)),
             isBookmarked = isBookmarked,
             points = points,
             type = type,
             extraMark = extraMark,
             translatedFrom = translatedFrom,
             translatedTo = translatedTo,
-            exampleSentences = exampleSentences,
-            user = user,
-            userId = user.id,
-            bank = bank,
-            bankId = bank?.id,
-            bankGroupId = bank?.bankGroupId
+            exampleSentences = Json.of(objectMapper.writeValueAsString(exampleSentences)),
+            userId = userIdToUse,
+            bankId = bankId,
+            bankGroupId = bankGroupId,
         )
     }
 }

@@ -51,21 +51,26 @@ class OngoingGameMapper(
             type = dto.type,
             language = dto.language,
             difficulty = dto.difficulty,
-            properAnswers = jsonObjectMapper.writeValueAsString(dto.properAnswers),
+            properAnswers = serializeProperAnswers(dto.properAnswers),
 
-            user = userMapper.toEntity(dto.user),
+            userId = dto.userId,
             createdAt = dto.createdAt
         )
     }
 
+
+    fun <T> serializeProperAnswers(properAnswers: T): String {
+        return jsonObjectMapper.writeValueAsString(properAnswers)
+    }
+
     private fun <T : Any> OngoingGameEntity.convertToCertainDTO(typeReference: TypeReference<T>): OngoingGameDTO<T> {
         return OngoingGameDTO(
-            id = id,
+            id = id ?: error("OngoingGame id must not be null"),
             properAnswers = jsonObjectMapper.readValue(properAnswers, typeReference),
             type = type,
             language = language,
             difficulty = difficulty,
-            user = userMapper.toDTO(user),
+            userId = userId,
             createdAt = createdAt
         )
     }

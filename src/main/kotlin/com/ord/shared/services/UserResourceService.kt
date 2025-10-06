@@ -1,65 +1,78 @@
 package com.ord.shared.services
 
+import com.ord.exceptions.REST.InternalServerError
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.shared.models.IdentifiableUserResource
 import com.ord.shared.repositories.UserResourceRepository
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
 
-interface UserResourceService<T : IdentifiableUserResource> {
-    val repository: UserResourceRepository<T>
+interface UserResourceService<TEntity : IdentifiableUserResource> {
+    val repository: UserResourceRepository<TEntity>
 
-    fun save(t: T): T {
+    fun save(t: TEntity): Mono<TEntity> {
         return repository.save(t)
     }
+
 
     fun update(
-        t: T,
+        t: TEntity,
         userId: UUID,
-    ): T {
-        // Verify that user is the owner of the entity
-        this.findByIdOrFail(t.id, userId).let {
-            if (it.user.id != userId) throw NotFoundException("Entity not found")
-        }
-
-        return repository.save(t)
+    ): Mono<TEntity> {
+        return findByIdOrFail(t.id!!, userId)
+            .flatMap { existing ->
+                if (existing.userId != userId) {
+                    Mono.error<TEntity>(NotFoundException("Entity not found"))
+                } else {
+                    repository.save(t)
+                }
+            }
     }
 
-    @Transactional
+
     fun deleteById(
         id: UUID,
         userId: UUID,
-    ) {
-        repository.deleteOneForUser(userId, id).let {
-            if (it == 0) throw NotFoundException("Entity with id $id for user with id $userId not found")
-        }
+    ): Mono<Void> {
+        return findByIdOrFail(id = id, userId = userId)
+            .flatMap { existing ->
+                repository.deleteByIdAndUserId(id = id, userId = userId)
+            }
     }
+
 
     fun findById(
         id: UUID,
         userId: UUID? = null
-    ): T? {
-        if (userId == null) {
-            return repository.findByIdOrNull(id)
+    ): Mono<TEntity> {
+        return if (userId == null) {
+            repository.findById(id)
+        } else {
+            repository.findByIdAndUserId(id = id, userId = userId)
         }
-
-        return repository.findOneForUser(userId, id)
     }
+
 
     fun findByIdOrFail(
         id: UUID,
         userId: UUID? = null,
         message: String = "Entity not found"
-    ): T {
-        return this.findById(id, userId) ?: throw NotFoundException(message)
+    ): Mono<TEntity> {
+        return findById(id, userId)
+            .switchIfEmpty(Mono.error(NotFoundException(message)))
     }
 
-    fun findAll(userId: UUID? = null): List<T> {
-        if (userId == null) {
-            return repository.findAll()
-        }
 
-        return repository.findAllForUser(userId)
+    fun findAll(
+        userId: UUID? = null
+    ): Flux<TEntity> {
+        return if (userId == null) {
+            repository.findAll()
+        } else {
+            repository.findAllByUserId(userId)
+        }
     }
 }
+

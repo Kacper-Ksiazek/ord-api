@@ -2,6 +2,8 @@ package com.ord.core.word.api.requests.dto
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
+import com.ord.core.langugae_proficiency.validators.annotations.ValidLanguageName
+import com.ord.core.langugae_proficiency.validators.annotations.ValidLanguageProficiencyLevel
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
@@ -14,6 +16,9 @@ data class GenerateWordManualRequest(
     @field:NotNull(message = "Language cannot be null")
     val language: LanguageName,
 
+    @field:ValidLanguageName
     val targetLanguage: LanguageName? = null,
+
+    @field:ValidLanguageProficiencyLevel
     val proficiencyLevel: LanguageProficiencyLevel? = null
 )

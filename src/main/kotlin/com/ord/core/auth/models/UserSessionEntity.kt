@@ -1,35 +1,21 @@
 package com.ord.core.auth.models
 
-import com.ord.core.user.model.UserEntity
 import com.ord.shared.models.IdentifiableUserResource
-import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.OnDelete
-import org.hibernate.annotations.OnDeleteAction
-import org.hibernate.annotations.UpdateTimestamp
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 import java.util.*
 
-@Entity
 @Table(name = "user_sessions")
 data class UserSessionEntity(
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    override var id: UUID = UUID.randomUUID(),
-
-    @Column(name = "token", nullable = false, updatable = false, unique = true)
     var token: String,
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    override var user: UserEntity,
+    @Column("user_id")
+    override var userId: UUID,
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreationTimestamp
     var createdAt: Instant = Instant.now(),
 
-    @Column(name = "updated_at", nullable = false)
-    @UpdateTimestamp
-    var updatedAt: Instant = Instant.now()
+    @Id
+    override var id: UUID? = null
 ) : IdentifiableUserResource

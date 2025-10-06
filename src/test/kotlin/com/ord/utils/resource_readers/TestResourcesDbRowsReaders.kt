@@ -6,6 +6,7 @@ import com.ord.core.word.repository.WordRepository
 import com.ord.shared.utils.JsonReader
 import com.ord.testing_utils.dto.resources.db_rows.WordDBExportedRow
 import com.fasterxml.jackson.core.type.TypeReference
+import java.util.UUID
 
 private const val ROOT = "./src/test/resources/db_rows"
 
@@ -22,8 +23,8 @@ private fun getAbsolutePath(path: String): String {
  * The file contains 12 rows of words.
  */
 fun loadWordsFromResourceFile(
-    user: UserEntity,
-    wordsRepository: WordRepository? = null,
+    userId: UUID,
+    wordsRepository: WordRepository,
     /** If null, all words will be loaded */
     numberOfWordsToLoad: Int? = null
 ): List<WordEntity> {
@@ -34,7 +35,7 @@ fun loadWordsFromResourceFile(
         pathToJSONFile = path,
         typeReference = typeReference
     ).map {
-        it.convertIntoWordEntity(user)
+        it.convertIntoWordEntity(userId)
     }.let {
         if (numberOfWordsToLoad != null) {
             it.take(numberOfWordsToLoad)
@@ -43,7 +44,7 @@ fun loadWordsFromResourceFile(
         }
     }
 
-    wordsRepository?.saveAll(result)
+    wordsRepository.saveAll(result).collectList().block()
 
     return result
 }

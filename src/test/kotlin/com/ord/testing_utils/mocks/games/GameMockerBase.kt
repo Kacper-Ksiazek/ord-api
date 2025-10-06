@@ -1,54 +1,49 @@
 package com.ord.testing_utils.mocks.games
 
-import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserMapper
 import com.ord.core.word.repository.WordRepository
 import com.ord.features.game.model.ongoing_game.OngoingGameDTO
+import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
-import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.repositories.OngoingGameRepository
+import com.ord.features.game.variants.shared.dto.api_requests.UnsafeStartGameRequestData
 import com.ord.features.game.variants.shared.dto.api_responses.StartedGameResponseBase
 import com.ord.seeders.factories.WordFactory
 import com.ord.seeders.mocks.bases.ResourceJSONFileReader
 import com.ord.seeders.mocks.bases.RootDir
-import com.ord.testing_utils.api_requests_factories.GameRequestFactory
+import com.ord.testing_utils.api.clients.games.bases.GameAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.ord.testing_utils.dto.resources.mocks.games.GameInJson
 import com.ord.utils.resource_readers.loadWordsFromResourceFile
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import io.kotest.matchers.shouldBe
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
-import org.springframework.test.web.servlet.MockMvc
+import java.util.*
 
-interface GameMockerBase<
+abstract class GameMockerBase<
         TJSONDataModelType : GameInJson<TGameInstruction, *>,        // eg. CrosswordInJson
         TOngoingGameDTO : OngoingGameDTO<*>,                         // eg. OngoingCrosswordGameDTO
         TGameInstruction,                                            // eg. CrosswordInstruction
-        TAPIResponseDTO : StartedGameResponseBase<TGameInstruction, *>   // eg. StartedCrosswordGameResponse
-        > : ResourceJSONFileReader<List<TJSONDataModelType>, TJSONDataModelType> {
-    override val root: RootDir
-        get() = RootDir.TEST_RESOURCES
+        TStartedGameResponseBody : StartedGameResponseBase<TGameInstruction, *>   // eg. StartedCrosswordGameResponse
+        >(
+    private val ongoingGameMapper: OngoingGameMapper,
+    private val ongoingGameRepository: OngoingGameRepository,
+    private val wordMockFactory: WordFactory,
+    private val wordRepository: WordRepository,
+    private val apiClient: GameAPIClient<TStartedGameResponseBody, *, *>,
+) : ResourceJSONFileReader<List<TJSONDataModelType>, TJSONDataModelType> {
+    override val root: RootDir = RootDir.TEST_RESOURCES
 
-    // Properties
-    val mockingGameType: GameType
+    /**
+     * Utility function to process the JSON row into an ongoing game DTO.
+     */
+    abstract fun createOngoingGameEntity(
+        jsonData: TJSONDataModelType,
+        userId: UUID
+    ): OngoingGameEntity
 
-    // Class references:
-    val apiResponseTypeRef: TypeReference<TAPIResponseDTO>
-
-    // Dependencies:
-    val mockMvc: MockMvc
-    val userMapper: UserMapper
-    val objectMapper: ObjectMapper
-    val wordRepository: WordRepository
-    val wordMockFactory: WordFactory
-    val ongoingGameMapper: OngoingGameMapper
-    val gameRequestFactory: GameRequestFactory
-    val ongoingGameRepository: OngoingGameRepository
+    /**
+     * Utility function to extract the list of used words from the ongoing game DTO.
+     */
+    abstract fun getListOfUsedWords(ongoingGameDTO: TOngoingGameDTO): Set<String>
 
     // Static
     companion object {
@@ -63,39 +58,42 @@ interface GameMockerBase<
      * Loads predefined data from JSON file, saves it to the database and returns it.
      */
     fun mockFromJsonSource(
-        userDTO: UserDTO,
+        userId: UUID,
         difficulty: GameDifficulty = GameDifficulty.HARD
     ): Pair<TOngoingGameDTO, TGameInstruction> {
-        val (ongoingGameDTO, instruction) = loadDataFromJsonFile(userDTO)
+        val (ongoingGameDTO, instruction) = loadDataFromJsonFile(userId)
             .filter { it.first.difficulty == difficulty }
             .random()
             .let {
-                val savedOngoingGame = ongoingGameRepository.save(
-                    ongoingGameMapper.toEntity(it.first)
-                )
-
-                val updatedDTO = it.first.copy(id = savedOngoingGame.id)
+                val savedOngoingGame = ongoingGameRepository.save(it.first).block()!!
 
                 @Suppress("UNCHECKED_CAST")
-                Pair(updatedDTO as TOngoingGameDTO, it.second)
+                val ongoingGameDTO = ongoingGameMapper.toDTO(savedOngoingGame) as TOngoingGameDTO
+
+                Pair(ongoingGameDTO, it.second)
             }
 
         val currentWords = wordRepository
-            .findAllForUser(userDTO.id)
+            .findAllByUserId(userId)
+            .collectList()
+            .block()!!
             .filter { it.translatedFrom == ongoingGameDTO.language }
             .map { it.origin }
 
-        wordRepository.saveAll(
-            getListOfUsedWords(ongoingGameDTO)
-                .filter { it !in currentWords }
-                .map {
-                    wordMockFactory.mockEntity(
-                        origin = it,
-                        translatedFrom = ongoingGameDTO.language,
-                        user = userMapper.toEntity(userDTO),
-                    )
-                }
-        )
+        wordRepository
+            .saveAll(
+                getListOfUsedWords(ongoingGameDTO)
+                    .filter { it !in currentWords }
+                    .map {
+                        wordMockFactory.mockEntity(
+                            origin = it,
+                            translatedFrom = ongoingGameDTO.language,
+                            userId = userId,
+                        )
+                    }
+            )
+            .collectList()
+            .block()
 
         return Pair(ongoingGameDTO, instruction)
     }
@@ -109,64 +107,47 @@ interface GameMockerBase<
         authenticatedUser: MockedAuthenticatedUser,
         difficulty: GameDifficulty = DefaultParams.difficulty,
         language: LanguageName = DefaultParams.language
-    ): Pair<TOngoingGameDTO, TAPIResponseDTO> {
+    ): Pair<TOngoingGameDTO, TStartedGameResponseBody> {
         loadWordsFromResourceFile(
-            user = userMapper.toEntity(authenticatedUser.userInfo),
+            userId = authenticatedUser.userInfo.id,
             wordsRepository = wordRepository,
         )
 
-        val request = gameRequestFactory.startGameRequest(
-            gameType = mockingGameType,
-            language = language,
-            difficulty = difficulty,
-            authenticatedUser = authenticatedUser
-        )
-        val response = mockMvc.perform(request).andReturn().let {
-            it.response.status shouldBe HttpStatus.OK.value()
-            it.response
-        }
-
-        val apiResponseBody = ControllerTestBase.Companion.getResponseBody(
-            objectMapper,
-            response,
-            typeReference = apiResponseTypeRef
+        val response = apiClient.startGame(
+            user = authenticatedUser,
+            body = UnsafeStartGameRequestData(
+                difficulty = difficulty,
+                language = language
+            )
         )
 
-        @Suppress("UNCHECKED_CAST") val ongoingGameDTO = ongoingGameMapper.toDTO(
-            entity = ongoingGameRepository.findByIdOrNull(apiResponseBody.gameId)!!,
+        val responseBody = response.body!!
+
+        @Suppress("UNCHECKED_CAST")
+        val ongoingGameDTO = ongoingGameMapper.toDTO(
+            entity = ongoingGameRepository.findById(
+                responseBody.gameId
+            ).block()!!
         ) as TOngoingGameDTO
 
-        return Pair(
-            ongoingGameDTO,
-            apiResponseBody
-        )
+        return Pair(ongoingGameDTO, responseBody)
     }
-
-    /**
-     * Utility function to process the JSON row into an ongoing game DTO.
-     */
-    fun createOngoingGameDTO(
-        jsonData: TJSONDataModelType,
-        userDTO: UserDTO
-    ): TOngoingGameDTO
-
-    /**
-     * Utility function to extract the list of used words from the ongoing game DTO.
-     */
-    fun getListOfUsedWords(ongoingGameDTO: TOngoingGameDTO): Set<String>
 
     /**
      * Reads the JSON file, process its content and returns a list of pairs
      * of ongoing game DTOs and their instructions.
      */
     fun loadDataFromJsonFile(
-        userDTO: UserDTO
-    ): List<Pair<TOngoingGameDTO, TGameInstruction>> {
+        userId: UUID
+    ): List<Pair<OngoingGameEntity, TGameInstruction>> {
         val jsonData: List<TJSONDataModelType> = readFromJSONFile()
 
         return jsonData.map {
             Pair(
-                createOngoingGameDTO(it, userDTO),
+                createOngoingGameEntity(
+                    jsonData = it,
+                    userId = userId
+                ),
                 it.instruction
             )
         }

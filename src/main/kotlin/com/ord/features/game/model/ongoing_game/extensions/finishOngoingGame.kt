@@ -2,12 +2,12 @@ package com.ord.features.game.model.ongoing_game.extensions
 
 import com.ord.config.GamesConfig
 import com.ord.features.game.model.finished_game.FinishedGameEntity
-import com.ord.features.game.model.ongoing_game.OngoingGameEntity
+import com.ord.features.game.model.ongoing_game.OngoingGameDTO
 import com.ord.features.game.model.ongoing_game.enums.GameGrade
 import com.ord.features.game.model.ongoing_game.enums.GameResult
 import com.ord.shared.utils.data_classes.Percentage
 
-fun OngoingGameEntity.finish(
+fun OngoingGameDTO<*>.finish(
     score: Int,
     duration: String,
 ): FinishedGameEntity {
@@ -26,11 +26,11 @@ fun OngoingGameEntity.finish(
         difficulty = difficulty,
         result = GameResult.COMPLETED,
 
-        user = user
+        userId = userId,
     )
 }
 
-fun OngoingGameEntity.cancel(
+fun OngoingGameDTO<*>.cancel(
     duration: String
 ): FinishedGameEntity {
     return FinishedGameEntity(
@@ -44,6 +44,6 @@ fun OngoingGameEntity.cancel(
         language = language,
         difficulty = difficulty,
 
-        user = user
+        userId = userId,
     )
 }

@@ -12,24 +12,18 @@ class OpenAIRequestFactory(
         "Do not include anything more than this JSON and do not add markdown formatting. I want your output to be suitable for jsonObjectMapper.readValue."
 
     fun createRequest(
+        // TODO: Migrate to dedicated Prompt class here
         prompt: String,
-        context: String = defaultContext
+        context: String = defaultContext,
+        stream: Boolean = false,
     ): OpenAIRequest {
         return OpenAIRequest(
             model = openAIProperties.gptModel,
             temperature = openAIProperties.temperature,
             max_output_tokens = openAIProperties.maxTokens,
             input = prompt,
-            instructions = context
-        )
-    }
-
-    fun createRequestWithoutContext(prompt: String): OpenAIRequest {
-        return OpenAIRequest(
-            model = openAIProperties.gptModel,
-            temperature = openAIProperties.temperature,
-            max_output_tokens = openAIProperties.maxTokens,
-            input = prompt
+            instructions = context,
+            stream = stream
         )
     }
 }
