@@ -60,12 +60,6 @@ class TestOngoingConversationController @Autowired constructor(
         const val AI_MESSAGE = "That sounds lovely! What did you do there?"
     }
 
-    @AfterEach
-    fun cleanup() {
-        conversationMessageRepository.deleteAll().block()
-        conversationRepository.deleteAll().block()
-    }
-
     private fun createConversation(user: MockedAuthenticatedUser): ConversationDTO {
         val request = CreateConversationRequest(
             topic = TestData.TOPIC,

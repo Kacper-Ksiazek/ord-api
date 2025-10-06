@@ -367,11 +367,6 @@ class TestWordsTypingGameController @Autowired constructor(
                 )
             }
 
-            @AfterEach
-            fun afterEach() {
-                userRepository.deleteById(authenticatedUser.userInfo.id).block()
-            }
-
             private fun getPerfectAnswersForQuestions(
                 numberOfProperAnswers: Int? = null
             ): Set<WordUserAnswer> {
