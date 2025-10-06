@@ -26,7 +26,11 @@ jobs:
 
       - name: 🧪 Run tests with Maven
         run: |
-          mvn -Dtest=com.ord.AllTestsSuite test
+          mvn -Dtest=com.ord.AllTestsSuite \
+              -Dsurefire.parallel=none \
+              -DforkCount=1 \
+              -DreuseForks=false \
+              test
         env:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
