@@ -21,7 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
-import kotlin.collections.contains
+import reactor.core.scheduler.Schedulers
 
 @Service
 class OpenAIAPIClientServiceImpl(
@@ -231,9 +231,13 @@ class OpenAIAPIClientServiceImpl(
         val flux = emitter.asFlux()
 
         return if (isTestingEnv) {
-            // For tests: block until the full result is collected and emit as Flux
-            @Suppress("BlockingMethodInNonBlockingContext")
-            Flux.fromIterable(flux.collectList().block() ?: emptyList())
+            // For tests: collect all items on a blocking-friendly scheduler, then emit as Flux
+            Flux.defer {
+                flux.collectList()
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .map { list -> list ?: emptyList() }
+                    .flatMapMany { Flux.fromIterable(it) }
+            }
         } else {
             // For production: stream each chunk
             flux
