@@ -9,7 +9,6 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.security.UserRepository
 import com.ord.core.user.model.UserMapper
 import com.ord.core.word.repository.WordRepository
-import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.OngoingWordsTypingGameDTO
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty

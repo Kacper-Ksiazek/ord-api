@@ -5,12 +5,7 @@ import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
-import com.ord.core.word.api.requests.dto.ChangeBankForMultipleWordsRequest
-import com.ord.core.word.api.requests.dto.ChangeBankForSingleWordRequest
-import com.ord.core.word.api.requests.dto.CreateWordRequest
-import com.ord.core.word.api.requests.dto.UnsafeGetManyWordsRequest
-import com.ord.core.word.api.requests.dto.UpdateWordRequest
-import com.ord.core.word.api.requests.dto.WordBulkActionRequest
+import com.ord.core.word.api.requests.dto.*
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.responses.dto.SingleWordResponse
@@ -50,7 +45,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
-import java.util.UUID
+import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
