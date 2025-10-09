@@ -26,8 +26,8 @@ class SecurityConfiguration(
         )
 
         private val AUTHORIZED_PATHS = arrayOf(
-            "/api/v1/auth/me",
             "/api/v1/auth/logout",
+            "/api/v1/users/**",
             "/api/v1/words/**",
             "/api/v1/games/**",
             "/api/v1/conversations/**",
