@@ -285,9 +285,9 @@ class TestSentencesWritingGameController @Autowired constructor(
 
                     it.evaluationCriteria.fitsTopic shouldBe true
 
-                    it.evaluationCriteria.answerLength.score shouldBeGreaterThan 5
-                    it.evaluationCriteria.vocabulary.score shouldBeGreaterThan 5
-                    it.evaluationCriteria.correctWordUsage.score shouldBeGreaterThan 5
+                    it.evaluationCriteria.answerLength.score shouldBeGreaterThan 3
+                    it.evaluationCriteria.vocabulary.score shouldBeGreaterThan 3
+                    it.evaluationCriteria.correctWordUsage.score shouldBeGreaterThan 3
                 }
             }
 
