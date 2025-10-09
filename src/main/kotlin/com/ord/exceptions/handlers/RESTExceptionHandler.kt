@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.server.MethodNotAllowedException
+import org.springframework.web.server.ResponseStatusException
 
 
 @ControllerAdvice
@@ -135,6 +136,22 @@ class RESTExceptionHandler {
 
         Console.printRed("\n🚨 [$status] Method Not Allowed: $message")
         logger.error("Method not allowed: $message", e)
+
+        return ResponseEntity.status(status).body(errorResponse)
+    }
+
+    @ExceptionHandler(ResponseStatusException::class)
+    fun handleResponseStatusException(e: ResponseStatusException): ResponseEntity<HTTPErrorResponse> {
+        val status = e.statusCode.value()
+        val message = e.reason ?: "Resource not found"
+
+        val errorResponse = HTTPErrorResponse(
+            message = message,
+            status = status
+        )
+
+        Console.printRed("\n🚨 [$status] ${e.statusCode}: $message")
+        logger.error("Response status exception: $message", e)
 
         return ResponseEntity.status(status).body(errorResponse)
     }
