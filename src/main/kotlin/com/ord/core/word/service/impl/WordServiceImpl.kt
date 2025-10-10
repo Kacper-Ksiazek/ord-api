@@ -103,6 +103,22 @@ class WordServiceImpl(
         ).collectList().map { it.toSet() }
     }
 
+    override fun getWordsForGame(
+        userId: UUID,
+        language: LanguageName,
+        completed: Boolean,
+        banksIds: Set<UUID>?,
+        bankGroupsIds: Set<UUID>?,
+    ): Mono<Set<String>> {
+        return repository.getWordsForGame(
+            userId = userId,
+            language = language,
+            completed = completed,
+            banksIds = banksIds,
+            bankGroupsIds = bankGroupsIds,
+        )
+    }
+
     override fun findManyWords(
         completed: Boolean?,
         searchingPhrase: String?,

@@ -43,6 +43,14 @@ interface WordService : UserResourceService<WordEntity> {
         banksIds: List<UUID>
     ): Mono<Set<String>>
 
+    fun getWordsForGame(
+        userId: UUID,
+        language: LanguageName,
+        completed: Boolean,
+        banksIds: Set<UUID>? = null,
+        bankGroupsIds: Set<UUID>? = null,
+    ): Mono<Set<String>>
+
     fun findManyWords(
         completed: Boolean? = null,
         searchingPhrase: String? = null,

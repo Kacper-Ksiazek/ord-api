@@ -54,9 +54,6 @@ class WordRepositoryCustomMethodsImpl(
             .bind("wordId", wordId)
             .bind("userId", userId)
             .map { row ->
-                val hasBank: Boolean = row.get("bank_name", String::class.java) != null
-                val hasBankGroup: Boolean = hasBank && row.get("bank_group_name", String::class.java) != null
-
                 SingleWordResponse(
                     id = row.get("id", UUID::class.java)!!,
                     points = row.get("points", Int::class.java)!!,
@@ -194,6 +191,46 @@ class WordRepositoryCustomMethodsImpl(
             .all()
     }
 
+    override fun getWordsForGame(
+        userId: UUID,
+        language: LanguageName,
+        completed: Boolean,
+        banksIds: Set<UUID>?,
+        bankGroupsIds: Set<UUID>?,
+    ): Mono<Set<String>> {
+        val criterias = buildList {
+            add("words.translated_from = :language")
+            add("words.user_id = :userId")
+            add("words.is_completed = :completed")
+
+            banksIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_id = ANY(:banksIds)") }
+            bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_group_id = ANY(:bankGroupsIds)") }
+        }.joinToString(" AND ")
+
+        val valuesBindings = mutableMapOf<String, Any>(
+            "userId" to userId,
+            "language" to language.name,
+            "completed" to completed
+        ).apply {
+            banksIds?.takeIf { it.isNotEmpty() }?.let { put("banksIds", it.toTypedArray()) }
+            bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { put("bankGroupsIds", it.toTypedArray()) }
+        }
+
+        // language=SQL
+        val selectQuery = """
+            SELECT origin 
+            FROM words 
+            WHERE $criterias
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bindValues(valuesBindings)
+            .map { row -> row.get("origin", String::class.java)!! }
+            .all()
+            .collectList()
+            .map { it.toSet() }
+    }
+
 
     override fun countCreated(
         language: LanguageName,
@@ -319,7 +356,6 @@ class WordRepositoryCustomMethodsImpl(
         )
 
         val selectQuery = StringBuilder(
-            // language=SQL
             """
                 SELECT 
                     ${WordListItem.fields.joinToString(", ") { "words.$it" }},

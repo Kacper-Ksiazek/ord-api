@@ -112,18 +112,11 @@ abstract class AIGenerateGameServiceBase<
         // TODO: Generate a list of words using AI - plans for the future far far away
 
         return wordService
-            .findManyWords(
+            .getWordsForGame(
                 userId = userId,
                 language = language,
-                perPage = 500,
-                sortBy = GetAllWordsSortOptions.CREATED_AT,
-                sortDirection = SortDirection.DESC,
                 completed = false,
-
-                // TODO: Add more filters
-            ).flatMap { paginatedWords ->
-                val words = paginatedWords.data
-
+            ).flatMap { words ->
                 if (words.size < n) {
                     Mono.error(BadRequestException("Not enough words to generate a game"))
                 } else {
@@ -132,11 +125,11 @@ abstract class AIGenerateGameServiceBase<
                     val selectedWords = if (maximumWordLength != null) {
                         shuffledWords
                             .take(2 * n)
-                            .filter { it.origin.length <= maximumWordLength }
+                            .filter { it.length <= maximumWordLength }
                             .take(n)
                     } else {
                         shuffledWords.take(n)
-                    }.map { it.origin }
+                    }
 
                     Mono.just(selectedWords)
                 }
