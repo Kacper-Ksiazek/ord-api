@@ -48,18 +48,21 @@ interface WordRepositoryCustomMethods {
 
 
     fun findNOfLatestWords(
+        userId: UUID,
         language: LanguageName,
         limit: Int
     ): Flux<String>
 
 
     fun findNOfMostDifficultWords(
+        userId: UUID,
         language: LanguageName,
         limit: Int
     ): Flux<String>
 
 
     fun findAllWordsFromBanks(
+        userId: UUID,
         language: LanguageName,
         banksIds: List<UUID>
     ): Flux<String>

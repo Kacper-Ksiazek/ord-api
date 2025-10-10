@@ -1,8 +1,6 @@
 package com.ord.core.word.service.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.requests.enums.toggleProperty
@@ -22,9 +20,6 @@ import com.ord.features.user_activity_log.service.UserActivityLogService
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.domain.dto.CountingSummary
 import com.ord.shared.domain.enums.SortDirection
-import com.ord.shared.repositories.UserResourceRepository
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -74,16 +69,19 @@ class WordServiceImpl(
     }
 
     override fun getWordsForPromptGeneration(
+        userId: UUID,
         language: LanguageName,
         amountOfLatestWord: Int,
         amountOfProblematicWord: Int
     ): Mono<Set<String>> {
         val latestWords = repository.findNOfLatestWords(
+            userId = userId,
             language = language,
             limit = amountOfLatestWord
         ).collectList()
 
         val problematicWords = repository.findNOfMostDifficultWords(
+            userId = userId,
             language = language,
             limit = amountOfProblematicWord
         ).collectList()
@@ -94,10 +92,12 @@ class WordServiceImpl(
     }
 
     override fun getWordsForPromptGeneration(
+        userId: UUID,
         language: LanguageName,
         banksIds: List<UUID>
     ): Mono<Set<String>> {
         return repository.findAllWordsFromBanks(
+            userId = userId,
             language = language,
             banksIds = banksIds
         ).collectList().map { it.toSet() }

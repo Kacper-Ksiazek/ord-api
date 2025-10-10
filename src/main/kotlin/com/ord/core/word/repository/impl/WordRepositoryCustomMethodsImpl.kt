@@ -91,13 +91,16 @@ class WordRepositoryCustomMethodsImpl(
 
 
     override fun findNOfLatestWords(
+        userId: UUID,
         language: LanguageName,
         limit: Int
     ): Flux<String> {
         val selectQuery = """
             SELECT origin 
             FROM words 
-            WHERE translated_from = :language 
+            WHERE 
+                translated_from = :language 
+                AND user_id = :userId
             ORDER BY created_at DESC 
             LIMIT :limit
         """
@@ -111,13 +114,16 @@ class WordRepositoryCustomMethodsImpl(
 
 
     override fun findNOfMostDifficultWords(
+        userId: UUID,
         language: LanguageName,
         limit: Int
     ): Flux<String> {
         val selectQuery = """
             SELECT origin 
             FROM words 
-            WHERE translated_from = :language 
+            WHERE 
+                translated_from = :language 
+                AND user_id = :userId
             ORDER BY points DESC 
             LIMIT :limit
         """
@@ -131,14 +137,17 @@ class WordRepositoryCustomMethodsImpl(
 
 
     override fun findAllWordsFromBanks(
+        userId: UUID,
         language: LanguageName,
         banksIds: List<UUID>
     ): Flux<String> {
         val selectQuery = """
             SELECT origin 
             FROM words 
-            WHERE translated_from = :language 
-            AND bank_id = ANY(:banksIds)
+            WHERE 
+                translated_from = :language 
+                AND user_id = :userId
+                AND bank_id = ANY(:banksIds)
         """
 
         return databaseClient.sql(selectQuery)

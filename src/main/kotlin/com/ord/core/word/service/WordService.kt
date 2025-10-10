@@ -33,12 +33,14 @@ interface WordService : UserResourceService<WordEntity> {
     ): Mono<Int>
 
     fun getWordsForPromptGeneration(
+        userId: UUID,
         language: LanguageName,
         amountOfLatestWord: Int = 10,
         amountOfProblematicWord: Int = 10
     ): Mono<Set<String>>
 
     fun getWordsForPromptGeneration(
+        userId: UUID,
         language: LanguageName,
         banksIds: List<UUID>
     ): Mono<Set<String>>
