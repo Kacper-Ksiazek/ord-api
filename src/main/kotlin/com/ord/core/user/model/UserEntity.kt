@@ -27,6 +27,9 @@ data class UserEntity(
     @Column("native_language")
     var nativeLanguage: LanguageName,
 
+    @Column("selected_learning_language")
+    var selectedLearningLanguage: LanguageName? = null,
+
     @Column("created_at")
     var createdAt: Instant = Instant.now(),
 

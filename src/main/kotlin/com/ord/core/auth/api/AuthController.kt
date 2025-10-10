@@ -35,10 +35,4 @@ class AuthController(
     fun logout(
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<Void>> = authFacade.logout(exchange)
-
-
-    @GetMapping("/me")
-    fun me(
-        @AuthenticatedUser user: UserDTO,
-    ): Mono<ResponseEntity<UserDTO>> = authFacade.me(user)
 }

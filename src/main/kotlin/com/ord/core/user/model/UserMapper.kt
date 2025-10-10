@@ -10,6 +10,7 @@ fun UserEntity.toDTO(): UserDTO = UserDTO(
     email = email,
     password = password,
     nativeLanguage = nativeLanguage,
+    selectedLearningLanguage = selectedLearningLanguage,
 
     createdAt = createdAt,
     updatedAt = updatedAt
@@ -25,6 +26,7 @@ class UserMapper : BidirectionalEntityMapper<UserEntity, UserDTO> {
             email = dto.email,
             password = dto.password,
             nativeLanguage = dto.nativeLanguage,
+            selectedLearningLanguage = dto.selectedLearningLanguage,
 
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt

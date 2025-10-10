@@ -251,41 +251,6 @@ class TestAuthController @Autowired constructor(
         }
     }
 
-    @Nested
-    @DisplayName("[GET] /api/v1/auth/me - get information about the authenticated user")
-    inner class MeTests {
-
-        @Nested
-        @DisplayName("Positive")
-        inner class Positive {
-            @Test
-            fun `200 - me endpoint should return information about the authenticated user`() {
-                val authenticatedUser = mockAuthenticatedUser()
-
-                val response = authAPIClient.me(
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.OK
-                response.body shouldNotBe null
-                response.body!!.email shouldBe authenticatedUser.userInfo.email
-            }
-        }
-
-        @Nested
-        @DisplayName("Negative")
-        inner class Negative {
-            @Test
-            fun `401 - me endpoint should return 401 for anonymous users`() {
-                val response = authAPIClient.me()
-
-                response.status shouldBe HttpStatus.UNAUTHORIZED
-            }
-
-        }
-    }
-
-
     // ------------------------------
     // Helper methods
     // ------------------------------

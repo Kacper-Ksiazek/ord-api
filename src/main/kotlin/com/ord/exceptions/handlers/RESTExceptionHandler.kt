@@ -5,12 +5,14 @@ import com.ord.exceptions.dto.api_responses.HTTPErrorResponse
 import com.ord.shared.utils.Console
 import org.slf4j.LoggerFactory
 import org.springframework.core.codec.DecodingException
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.server.ServerWebInputException
 import org.springframework.web.server.MethodNotAllowedException
+import org.springframework.web.server.ResponseStatusException
 
 
 @ControllerAdvice
@@ -135,6 +137,45 @@ class RESTExceptionHandler {
 
         Console.printRed("\n🚨 [$status] Method Not Allowed: $message")
         logger.error("Method not allowed: $message", e)
+
+        return ResponseEntity.status(status).body(errorResponse)
+    }
+
+    @ExceptionHandler(ResponseStatusException::class)
+    fun handleResponseStatusException(e: ResponseStatusException): ResponseEntity<HTTPErrorResponse> {
+        val status = e.statusCode.value()
+        val message = e.reason ?: "Resource not found"
+
+        val errorResponse = HTTPErrorResponse(
+            message = message,
+            status = status
+        )
+
+        Console.printRed("\n🚨 [$status] ${e.statusCode}: $message")
+        logger.error("Response status exception: $message", e)
+
+        return ResponseEntity.status(status).body(errorResponse)
+    }
+
+    @ExceptionHandler(DuplicateKeyException::class)
+    fun handleDuplicateKeyException(e: DuplicateKeyException): ResponseEntity<HTTPErrorResponse> {
+        val status = HttpStatus.BAD_REQUEST.value()
+        val message = e.message?.let { msg ->
+            when {
+                msg.contains("each_user_can_have_only_one_proficiency_per_language") ->
+                    "Language proficiency already exists for this user"
+                msg.contains("duplicate key") -> "Resource already exists"
+                else -> "Duplicate resource violation"
+            }
+        } ?: "Duplicate resource violation"
+
+        val errorResponse = HTTPErrorResponse(
+            message = message,
+            status = status
+        )
+
+        Console.printRed("\n🚨 [$status] Duplicate Key: $message")
+        logger.error("Duplicate key violation: $message", e)
 
         return ResponseEntity.status(status).body(errorResponse)
     }

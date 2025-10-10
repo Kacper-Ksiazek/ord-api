@@ -1,5 +1,6 @@
 .idea/
 target/
 .env
+.env.*
 .classpath, .project, .settings/
 *.log

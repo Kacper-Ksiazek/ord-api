@@ -39,18 +39,6 @@ class AuthAPIClient(
         )
     }
 
-
-    fun me(
-        user: MockedAuthenticatedUser? = null
-    ): APIClientResponse<UserDTO?> {
-        return get(
-            url = "$baseUrl/me",
-            user = user,
-            responseBodyType = object : ParameterizedTypeReference<UserDTO>() {}
-        )
-    }
-
-
     fun logout(
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<Unit?> {

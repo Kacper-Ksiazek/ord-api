@@ -21,8 +21,4 @@ interface AuthFacade {
     fun logout(
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<Void>>
-
-    fun me(
-        user: UserDTO,
-    ): Mono<ResponseEntity<UserDTO>>
 }

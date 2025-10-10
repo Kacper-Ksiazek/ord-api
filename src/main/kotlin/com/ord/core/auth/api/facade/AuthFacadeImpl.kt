@@ -6,7 +6,6 @@ import com.ord.core.auth.services.AuthService
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.UserMapper
-import com.ord.shared.api.MonoUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -52,14 +51,6 @@ class AuthFacadeImpl(
                     .status(HttpStatus.NO_CONTENT)
                     .build()
             })
-    }
-
-    override fun me(user: UserDTO): Mono<ResponseEntity<UserDTO>> {
-        return MonoUtils.fromBlocking {
-            ResponseEntity
-                .status(HttpStatus.OK)
-                .body(user)
-        }
     }
 
     private fun UserEntity.toDTO(): UserDTO {
