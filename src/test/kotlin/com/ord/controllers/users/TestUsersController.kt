@@ -5,9 +5,7 @@ import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
-import com.ord.core.user.api.responses.MeResponse
 import com.ord.testing_utils.api.clients.UsersAPIClient
-import com.ord.testing_utils.api.dto.APIClientResponse
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.DisplayName
@@ -52,8 +50,8 @@ class TestUsersController @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
                 response.body!!.email shouldBe authenticatedUser.email
-                response.body!!.name shouldBe authenticatedUser.userInfo.name
-                response.body!!.nativeLanguage shouldBe authenticatedUser.userInfo.nativeLanguage
+                response.body.name shouldBe authenticatedUser.userInfo.name
+                response.body.nativeLanguage shouldBe authenticatedUser.userInfo.nativeLanguage
             }
 
             @Test

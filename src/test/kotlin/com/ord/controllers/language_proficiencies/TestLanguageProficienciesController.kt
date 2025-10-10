@@ -8,9 +8,7 @@ import com.ord.core.langugae_proficiency.api.requests.UpdateLanguageProficiencyR
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.testing_utils.api.clients.LanguageProficienciesAPIClient
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldContain
-import io.kotest.matchers.maps.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.DisplayName
@@ -57,8 +55,8 @@ class TestLanguageProficienciesController @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
                 response.body!!.size shouldBe 2
-                response.body!! shouldContain (LanguageName.ENGLISH to LanguageProficiencyLevel.C1)
-                response.body!! shouldContain (LanguageName.SPANISH to LanguageProficiencyLevel.B2)
+                response.body shouldContain (LanguageName.ENGLISH to LanguageProficiencyLevel.C1)
+                response.body shouldContain (LanguageName.SPANISH to LanguageProficiencyLevel.B2)
             }
 
             @Test
@@ -110,9 +108,9 @@ class TestLanguageProficienciesController @Autowired constructor(
                 response.status shouldBe HttpStatus.CREATED
                 response.body shouldNotBe null
                 response.body!!.language shouldBe LanguageName.FRENCH
-                response.body!!.level shouldBe LanguageProficiencyLevel.B1
-                response.body!!.generativeContentLanguage shouldBe LanguageName.ENGLISH
-                response.body!!.userId shouldBe authenticatedUser.userInfo.id
+                response.body.level shouldBe LanguageProficiencyLevel.B1
+                response.body.generativeContentLanguage shouldBe LanguageName.ENGLISH
+                response.body.userId shouldBe authenticatedUser.userInfo.id
 
                 // Verify it was saved in database
                 val saved = languageProficiencyRepository
@@ -206,7 +204,7 @@ class TestLanguageProficienciesController @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
                 response.body!!.language shouldBe LanguageName.SPANISH
-                response.body!!.level shouldBe LanguageProficiencyLevel.B2
+                response.body.level shouldBe LanguageProficiencyLevel.B2
 
                 // Verify in database
                 val updated = languageProficiencyRepository
@@ -264,7 +262,7 @@ class TestLanguageProficienciesController @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
                 response.body!!.level shouldBe LanguageProficiencyLevel.C1
-                response.body!!.generativeContentLanguage shouldBe LanguageName.POLISH
+                response.body.generativeContentLanguage shouldBe LanguageName.POLISH
             }
         }
 
