@@ -48,25 +48,40 @@ interface WordRepositoryCustomMethods {
 
 
     fun findNOfLatestWords(
+        userId: UUID,
         language: LanguageName,
         limit: Int
     ): Flux<String>
+
 
     fun findNOfMostDifficultWords(
+        userId: UUID,
         language: LanguageName,
         limit: Int
     ): Flux<String>
 
+
     fun findAllWordsFromBanks(
+        userId: UUID,
         language: LanguageName,
         banksIds: List<UUID>
     ): Flux<String>
+
 
     fun findAllWordByTheirOrigins(
         origins: Set<String>,
         language: LanguageName,
         userId: UUID
     ): Flux<WordEntity>
+
+
+    fun getWordsForGame(
+        userId: UUID,
+        language: LanguageName,
+        completed: Boolean,
+        banksIds: Set<UUID>?,
+        bankGroupsIds: Set<UUID>?,
+    ): Mono<Set<String>>
 
     // ------
     // AGGREGATE
@@ -76,6 +91,7 @@ interface WordRepositoryCustomMethods {
         language: LanguageName,
         userId: UUID
     ): Mono<CountingSummary>
+
 
     fun countCompleted(
         language: LanguageName,
@@ -91,6 +107,7 @@ interface WordRepositoryCustomMethods {
         bankId: UUID?,
         userId: UUID
     ): Mono<Int>
+
 
     fun changeBankForMultipleWords(
         bankId: UUID?,
