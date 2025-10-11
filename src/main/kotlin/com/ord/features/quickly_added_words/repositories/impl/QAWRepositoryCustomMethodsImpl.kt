@@ -8,6 +8,7 @@ import com.ord.shared.api.dto.responses.PaginationData
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
 import java.util.UUID
@@ -82,5 +83,29 @@ class QAWRepositoryCustomMethodsImpl(
                     )
                 )
             }
+    }
+
+    override fun approveManyByIdsAndUserId(
+        ids: Set<UUID>,
+        userId: UUID
+    ): Mono<Unit> {
+        if (ids.isEmpty()) {
+            return Mono.error(com.ord.exceptions.REST.BadRequestException("No IDs provided for approval"))
+        }
+
+        // language=SQL
+        val updateQuery = """
+            UPDATE quickly_added_words
+            SET is_approved = true
+            WHERE id = ANY(:ids) AND user_id = :userId
+        """
+
+        return databaseClient
+            .sql(updateQuery)
+            .bind("ids", ids.toTypedArray())
+            .bind("userId", userId)
+            .fetch()
+            .rowsUpdated()
+            .then(Mono.just(Unit))
     }
 }
