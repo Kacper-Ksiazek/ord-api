@@ -1,5 +1,6 @@
 package com.ord.core.user.api.facades.impl
 
+import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.security.UserRepository
 import com.ord.core.user.api.facades.UsersFacade
@@ -53,11 +54,13 @@ class UsersFacadeImpl(
             .flatMap { savedUser ->
                 Flux.fromIterable(body.languageProficiencies)
                     .flatMap { proficiency ->
-                        languageProficiencyService.create(
-                            userId = savedUser.id!!,
-                            language = proficiency.language,
-                            level = proficiency.level,
-                            generativeContentLanguage = proficiency.generativeContentLanguage
+                        languageProficiencyService.save(
+                            LanguageProficiencyEntity(
+                                userId = savedUser.id!!,
+                                language = proficiency.language,
+                                level = proficiency.level,
+                                generativeContentLanguage = proficiency.generativeContentLanguage
+                            )
                         )
                     }
                     .then(Mono.just(savedUser))

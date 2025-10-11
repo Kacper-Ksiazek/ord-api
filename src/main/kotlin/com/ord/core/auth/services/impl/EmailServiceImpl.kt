@@ -2,25 +2,30 @@ package com.ord.core.auth.services.impl
 
 import com.ord.core.auth.services.EmailService
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.mail.SimpleMailMessage
+import org.springframework.core.io.ResourceLoader
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
+import java.time.Year
 
 @Service
 class EmailServiceImpl(
     private val mailSender: JavaMailSender,
+    private val resourceLoader: ResourceLoader,
     @Value("\${otp.email.from}") private val fromEmail: String
 ) : EmailService {
 
     override fun sendOtpEmail(toEmail: String, otpCode: String): Mono<Void> {
         return Mono.fromCallable {
-            val message = SimpleMailMessage()
-            message.setFrom(fromEmail)
-            message.setTo(toEmail)
-            message.subject = "Your OTP Code"
-            message.text = buildEmailBody(otpCode)
+            val message = mailSender.createMimeMessage()
+            val helper = MimeMessageHelper(message, true, "UTF-8")
+
+            helper.setFrom(fromEmail)
+            helper.setTo(toEmail)
+            helper.setSubject("Your OTP Code - ORD")
+            helper.setText(buildEmailBody(otpCode), true)
 
             mailSender.send(message)
         }
@@ -29,17 +34,14 @@ class EmailServiceImpl(
     }
 
     private fun buildEmailBody(otpCode: String): String {
-        return """
-            Hello,
+        val template = resourceLoader
+            .getResource("classpath:templates/otp-email.html")
+            .inputStream
+            .bufferedReader()
+            .use { it.readText() }
 
-            Your OTP code is: $otpCode
-
-            This code will expire in 10 minutes.
-
-            If you did not request this code, please ignore this email.
-
-            Best regards,
-            ORD API Team
-        """.trimIndent()
+        return template
+            .replace("{{OTP_CODE}}", otpCode)
+            .replace("{{YEAR}}", Year.now().value.toString())
     }
 }

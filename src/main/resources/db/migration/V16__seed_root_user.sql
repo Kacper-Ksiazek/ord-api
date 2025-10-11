@@ -1,9 +1,10 @@
 -------------
 --- users
 -------------
-INSERT INTO public.users (id, name, email, native_language, created_at, updated_at)
+INSERT INTO public.users (id, name, email, native_language, selected_learning_language, is_account_initialized,
+                          created_at, updated_at)
 VALUES ('aab3de51-c9ed-4b53-b6ba-927f0bf567e4', 'Kacper Książek', 'kacper.b.ksiazek@gmail.com',
-        'POLISH',
+        'POLISH', 'ENGLISH', true,
         '2025-06-15 14:33:06.851385 +00:00', '2025-06-15 14:33:06.851387 +00:00');
 
 
