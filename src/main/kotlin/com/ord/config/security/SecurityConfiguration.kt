@@ -22,7 +22,8 @@ class SecurityConfiguration(
     companion object {
         private val ANONYMOUS_PATHS = arrayOf(
             "/api/v1/auth/login",
-            "/api/v1/auth/register"
+            "/api/v1/auth/register",
+            "/api/v1/public/quickly-added-words/**"
         )
 
         private val AUTHORIZED_PATHS = arrayOf(
@@ -32,6 +33,7 @@ class SecurityConfiguration(
             "/api/v1/games/**",
             "/api/v1/conversations/**",
             "/api/v1/language-proficiencies/**",
+            "/api/v1/quickly-added-words/**",
         )
     }
 

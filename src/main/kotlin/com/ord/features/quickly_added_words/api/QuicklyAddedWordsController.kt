@@ -92,7 +92,7 @@ class QuicklyAddedWordsController(
         qawId = id
     )
 
-    @DeleteMapping("/bulk-delete")
+    @PostMapping("/bulk-delete")
     fun bulkDelete(
         @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: List<UUID>
