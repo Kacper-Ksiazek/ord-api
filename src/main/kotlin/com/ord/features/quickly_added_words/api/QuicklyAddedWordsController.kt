@@ -3,6 +3,7 @@ package com.ord.features.quickly_added_words.api
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.quickly_added_words.api.facades.QAWFacade
+import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
 import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
@@ -27,7 +28,7 @@ class QuicklyAddedWordsController(
         @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: CreateQAWRequest
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>> = qawFacade.createOne(
-        user = user.id,
+        userId = user.id,
         body = body
     )
 
@@ -36,7 +37,7 @@ class QuicklyAddedWordsController(
         @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: List<CreateQAWRequest>
     ): Mono<ResponseEntity<List<QuicklyAddedWordDTO>>> = qawFacade.bulkCreate(
-        user = user.id,
+        userId = user.id,
         body = body
     )
 
@@ -50,7 +51,7 @@ class QuicklyAddedWordsController(
         @RequestParam(required = false) page: Int?,
         @RequestParam(required = false) perPage: Int?
     ): Mono<ResponseEntity<PaginatedDataResponse<QuicklyAddedWordDTO>>> = qawFacade.getManyQAWs(
-        user = user.id,
+        userId = user.id,
         page = page,
         perPage = perPage
     )
@@ -65,7 +66,7 @@ class QuicklyAddedWordsController(
         @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: UpdateQAWRequest
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>> = qawFacade.updateOne(
-        user = user.id,
+        userId = user.id,
         qawId = id,
         newWord = body.updatedWord
     )
@@ -75,8 +76,17 @@ class QuicklyAddedWordsController(
         @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: Map<UUID, String>
     ): Mono<ResponseEntity<List<QuicklyAddedWordDTO>>> = qawFacade.bulkUpdate(
-        user = user.id,
+        userId = user.id,
         body = body.map { (id, word) -> Pair(id, word) }
+    )
+
+    @PatchMapping("/approve-many")
+    fun approveMany(
+        @AuthenticatedUser user: UserDTO,
+        @Valid @RequestBody body: ApproveManyQAWRequest
+    ): Mono<ResponseEntity<Unit>> = qawFacade.approveMany(
+        userId = user.id,
+        body = body
     )
 
     // -------
@@ -88,7 +98,7 @@ class QuicklyAddedWordsController(
         @PathVariable id: UUID,
         @AuthenticatedUser user: UserDTO
     ): Mono<ResponseEntity<Unit>> = qawFacade.deleteOne(
-        user = user.id,
+        userId = user.id,
         qawId = id
     )
 
@@ -97,7 +107,7 @@ class QuicklyAddedWordsController(
         @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: List<UUID>
     ): Mono<ResponseEntity<Unit>> = qawFacade.bulkDelete(
-        user = user.id,
+        userId = user.id,
         body = body
     )
 }
