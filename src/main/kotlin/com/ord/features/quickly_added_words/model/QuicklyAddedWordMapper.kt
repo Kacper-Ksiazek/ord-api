@@ -23,7 +23,7 @@ class QuicklyAddedWordMapper(
 
     override fun toDTO(entity: QuicklyAddedWordEntity): QuicklyAddedWordDTO {
         return QuicklyAddedWordDTO(
-            id = entity.id,
+            id = entity.id ?: error("Entity id is null"),
 
             word = entity.word,
             language = entity.language,

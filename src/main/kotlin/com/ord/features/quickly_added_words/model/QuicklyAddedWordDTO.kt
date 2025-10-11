@@ -6,7 +6,7 @@ import java.time.Instant
 import java.util.*
 
 data class QuicklyAddedWordDTO(
-    val id: UUID = UUID.randomUUID(),
+    val id: UUID,
 
     var word: String,
     var language: LanguageName,
