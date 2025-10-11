@@ -29,6 +29,7 @@ class PublicQAWFacadeImpl(
                     QuicklyAddedWordEntity(
                         word = word,
                         language = body.language,
+                        isApproved = false,
                         userId = userId
                     )
                 }

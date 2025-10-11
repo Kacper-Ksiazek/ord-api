@@ -31,6 +31,7 @@ class QAWFacadeImpl(
         val entity = QuicklyAddedWordEntity(
             word = body.word,
             language = body.language,
+            isApproved = true,
             userId = user,
         )
 
@@ -48,6 +49,7 @@ class QAWFacadeImpl(
             QuicklyAddedWordEntity(
                 word = request.word,
                 language = request.language,
+                isApproved = true,
                 userId = user,
             )
         }
