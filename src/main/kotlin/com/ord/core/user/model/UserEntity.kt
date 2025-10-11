@@ -21,9 +21,6 @@ data class UserEntity(
     @Column("email")
     var email: String,
 
-    @Column("password")
-    private var password: String,
-
     @Column("native_language")
     var nativeLanguage: LanguageName,
 
@@ -51,9 +48,5 @@ data class UserEntity(
 
     override fun isEnabled(): Boolean = true
 
-    override fun getPassword(): String = password
-
-    fun setPassword(password: String) {
-        this.password = password
-    }
+    override fun getPassword(): String = ""
 }

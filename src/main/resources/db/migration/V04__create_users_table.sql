@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS users
     name
                                VARCHAR(255)  NOT NULL,
     email                      VARCHAR(255)  NOT NULL,
-    password                   VARCHAR(255)  NOT NULL,
     native_language            language_name NOT NULL,
     selected_learning_language language_name            DEFAULT NULL,
 

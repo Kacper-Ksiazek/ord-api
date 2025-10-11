@@ -1,9 +1,9 @@
 -------------
 --- users
 -------------
-INSERT INTO public.users (id, name, email, password, native_language, created_at, updated_at)
+INSERT INTO public.users (id, name, email, native_language, created_at, updated_at)
 VALUES ('aab3de51-c9ed-4b53-b6ba-927f0bf567e4', 'Kacper Książek', 'kacper.b.ksiazek@gmail.com',
-        '$2a$10$5qMhiNmCVG/J.dSL81Qq0exgOUaydblHw25igbUsRpxiFtbm2zyTm', 'POLISH',
+        'POLISH',
         '2025-06-15 14:33:06.851385 +00:00', '2025-06-15 14:33:06.851387 +00:00');
 
 

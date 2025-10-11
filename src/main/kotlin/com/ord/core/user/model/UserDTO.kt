@@ -9,7 +9,6 @@ data class UserDTO(
 
     var name: String,
     var email: String,
-    var password: String,
     var nativeLanguage: LanguageName,
     var selectedLearningLanguage: LanguageName? = null,
 
