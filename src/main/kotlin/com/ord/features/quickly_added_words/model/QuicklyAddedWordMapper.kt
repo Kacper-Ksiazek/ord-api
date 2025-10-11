@@ -14,6 +14,7 @@ class QuicklyAddedWordMapper(
 
             word = dto.word,
             language = dto.language,
+            isApproved = dto.isApproved,
 
             createdAt = dto.createdAt,
 
@@ -27,6 +28,7 @@ class QuicklyAddedWordMapper(
 
             word = entity.word,
             language = entity.language,
+            isApproved = entity.isApproved,
 
             userId = entity.userId,
 

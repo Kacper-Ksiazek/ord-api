@@ -10,6 +10,7 @@ data class QuicklyAddedWordDTO(
 
     var word: String,
     var language: LanguageName,
+    val isApproved: Boolean,
 
     val userId: UUID,
 

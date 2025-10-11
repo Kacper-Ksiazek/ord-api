@@ -15,6 +15,7 @@ data class QuicklyAddedWordEntity(
 
     var word: String,
     var language: LanguageName,
+    var isApproved: Boolean = false,
 
     var createdAt: Instant = Instant.now(),
 
