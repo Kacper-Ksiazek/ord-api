@@ -4,6 +4,7 @@ import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
 import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
@@ -341,6 +342,132 @@ class TestQuicklyAddedWordsController @Autowired constructor(
             fun `401 - should require authentication`() {
                 val response = qawAPIClient.bulkUpdate(mapOf())
                 response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[PATCH] /api/v1/quickly-added-words/approve-many - approve multiple quickly added words")
+    inner class ApproveManyTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - should approve multiple unapproved words`() {
+                val user = mockAuthenticatedUser()
+
+                // Create unapproved words via public endpoint
+                val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
+                val publicResponse = publicClient.publicBulkCreate(
+                    com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(TestData.TEST_WORD_1, TestData.TEST_WORD_2, TestData.TEST_WORD_3),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                val idsToApprove = publicResponse.body!!.map { it.id!! }
+
+                // Approve the words
+                val response = qawAPIClient.approveMany(
+                    ApproveManyQAWRequest(ids = idsToApprove),
+                    user
+                )
+
+                response.status shouldBe HttpStatus.OK
+            }
+
+            @Test
+            fun `200 - approved words should have isApproved=true in database`() {
+                val user = mockAuthenticatedUser()
+
+                // Create unapproved words via public endpoint
+                val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
+                val publicResponse = publicClient.publicBulkCreate(
+                    com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(TestData.TEST_WORD_1, TestData.TEST_WORD_2),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                val idsToApprove = publicResponse.body!!.map { it.id!! }
+
+                // Approve the words
+                qawAPIClient.approveMany(
+                    ApproveManyQAWRequest(ids = idsToApprove),
+                    user
+                )
+
+                // Verify in database
+                val wordsInDb = qawRepository.findAllById(idsToApprove).collectList().block()!!
+                wordsInDb shouldHaveSize 2
+                wordsInDb.forEach { word ->
+                    word.isApproved shouldBe true
+                }
+            }
+
+            @Test
+            fun `200 - should only approve words belonging to the user`() {
+                val user1 = mockAuthenticatedUser()
+                val user2 = mockAuthenticatedUser()
+
+                // Create unapproved words for user1
+                val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
+                val user1Response = publicClient.publicBulkCreate(
+                    com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
+                        userEmail = user1.email,
+                        words = listOf(TestData.TEST_WORD_1),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                // Create unapproved words for user2
+                val user2Response = publicClient.publicBulkCreate(
+                    com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
+                        userEmail = user2.email,
+                        words = listOf(TestData.TEST_WORD_2),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                val user1WordId = user1Response.body!![0].id!!
+                val user2WordId = user2Response.body!![0].id!!
+
+                // User1 tries to approve both words
+                qawAPIClient.approveMany(
+                    ApproveManyQAWRequest(ids = listOf(user1WordId, user2WordId)),
+                    user1
+                )
+
+                // Only user1's word should be approved
+                val user1Word = qawRepository.findById(user1WordId).block()!!
+                val user2Word = qawRepository.findById(user2WordId).block()!!
+
+                user1Word.isApproved shouldBe true
+                user2Word.isApproved shouldBe false
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `401 - should require authentication`() {
+                val response = qawAPIClient.approveMany(
+                    ApproveManyQAWRequest(ids = listOf())
+                )
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `400 - should reject empty IDs list`() {
+                val user = mockAuthenticatedUser()
+                val response = qawAPIClient.approveMany(
+                    ApproveManyQAWRequest(ids = listOf()),
+                    user
+                )
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }

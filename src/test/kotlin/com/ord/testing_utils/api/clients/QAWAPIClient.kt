@@ -1,5 +1,6 @@
 package com.ord.testing_utils.api.clients
 
+import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
 import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
@@ -79,6 +80,17 @@ class QAWAPIClient(
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<List<QuicklyAddedWordDTO>>() {}
+        )
+    }
+
+    fun approveMany(
+        body: ApproveManyQAWRequest,
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<Unit?> {
+        return patch(
+            url = "$baseUrl/approve-many",
+            body = body,
+            user = user
         )
     }
 
