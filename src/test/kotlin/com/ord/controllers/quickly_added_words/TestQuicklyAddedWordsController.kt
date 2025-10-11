@@ -100,6 +100,11 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 wordInDb shouldNotBe null
                 wordInDb!!.word shouldBe TestData.TEST_WORD_1
             }
+
+            @Test
+            fun `201 - created word should be approved by default`() {
+                response.body!!.isApproved shouldBe true
+            }
         }
 
         @Nested
@@ -141,6 +146,13 @@ class TestQuicklyAddedWordsController @Autowired constructor(
             fun `201 - all created words should be persisted in database`() {
                 val wordsInDb = qawRepository.findAll().collectList().block()!!
                 wordsInDb shouldHaveSize 3
+            }
+
+            @Test
+            fun `201 - all created words should be approved by default`() {
+                response.body!!.forEach { word ->
+                    word.isApproved shouldBe true
+                }
             }
         }
 

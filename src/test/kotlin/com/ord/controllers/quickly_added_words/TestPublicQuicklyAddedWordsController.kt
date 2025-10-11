@@ -123,6 +123,13 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
                 responseWithoutAuth.status shouldBe HttpStatus.CREATED
                 responseWithoutAuth.body shouldNotBe null
             }
+
+            @Test
+            fun `201 - words created via public endpoint should NOT be approved by default`() {
+                response.body!!.forEach { word ->
+                    word.isApproved shouldBe false
+                }
+            }
         }
 
         @Nested
