@@ -25,7 +25,10 @@ data class UserEntity(
     var nativeLanguage: LanguageName,
 
     @Column("selected_learning_language")
-    var selectedLearningLanguage: LanguageName? = null,
+    var selectedLearningLanguage: LanguageName,
+
+    @Column("is_account_initialized")
+    var isAccountInitialized: Boolean = false,
 
     @Column("created_at")
     var createdAt: Instant = Instant.now(),
