@@ -1,6 +1,7 @@
 package com.ord.features.quickly_added_words.api.facades.impl
 
 import com.ord.features.quickly_added_words.api.facades.QAWFacade
+import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordEntity
@@ -25,14 +26,14 @@ class QAWFacadeImpl(
      */
 
     override fun createOne(
-        user: UUID,
+        userId: UUID,
         body: CreateQAWRequest,
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>> {
         val entity = QuicklyAddedWordEntity(
             word = body.word,
             language = body.language,
             isApproved = true,
-            userId = user,
+            userId = userId,
         )
 
         return qawRepository
@@ -41,8 +42,9 @@ class QAWFacadeImpl(
             .map { ResponseEntity.status(HttpStatus.CREATED).body(it) }
     }
 
+
     override fun bulkCreate(
-        user: UUID,
+        userId: UUID,
         body: List<CreateQAWRequest>,
     ): Mono<ResponseEntity<List<QuicklyAddedWordDTO>>> {
         val entities = body.map { request ->
@@ -50,7 +52,7 @@ class QAWFacadeImpl(
                 word = request.word,
                 language = request.language,
                 isApproved = true,
-                userId = user,
+                userId = userId,
             )
         }
 
@@ -61,18 +63,19 @@ class QAWFacadeImpl(
             .map { ResponseEntity.status(HttpStatus.CREATED).body(it) }
     }
 
+
     /*
      * READ
      */
 
     override fun getManyQAWs(
-        user: UUID,
+        userId: UUID,
         page: Int?,
         perPage: Int?
     ): Mono<ResponseEntity<PaginatedDataResponse<QuicklyAddedWordDTO>>> {
         return qawRepository
             .findManyQAWs(
-                userId = user,
+                userId = userId,
                 page = page,
                 perPage = perPage
             )
@@ -85,17 +88,18 @@ class QAWFacadeImpl(
             .map { ResponseEntity.ok(it) }
     }
 
+
     /*
      * UPDATE
      */
 
     override fun updateOne(
-        user: UUID,
+        userId: UUID,
         qawId: UUID,
         newWord: String
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>> {
         return qawRepository
-            .findByIdAndUserId(qawId, user)
+            .findByIdAndUserId(qawId, userId)
             .switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.NOT_FOUND, "Quickly added word not found")))
             .flatMap { entity ->
                 val updatedEntity = entity!!.copy(word = newWord)
@@ -105,15 +109,16 @@ class QAWFacadeImpl(
             .map { ResponseEntity.ok(it) }
     }
 
+
     override fun bulkUpdate(
-        user: UUID,
+        userId: UUID,
         body: List<Pair<UUID, String>>
     ): Mono<ResponseEntity<List<QuicklyAddedWordDTO>>> {
         val idsToUpdate = body.map { it.first }.toSet()
         val updateMap = body.toMap()
 
         return qawRepository
-            .findAllByIdInAndUserId(idsToUpdate, user)
+            .findAllByIdInAndUserId(idsToUpdate, userId)
             .map { entity ->
                 val newWord = updateMap[entity.id]
                 if (newWord != null) {
@@ -132,34 +137,45 @@ class QAWFacadeImpl(
             .map { ResponseEntity.ok(it) }
     }
 
+
+    override fun approveMany(
+        userId: UUID,
+        body: ApproveManyQAWRequest
+    ): Mono<ResponseEntity<Unit>> {
+        return qawRepository
+            .approveManyByIdsAndUserId(body.ids.toSet(), userId)
+            .map { ResponseEntity.ok().build<Unit>() }
+    }
+
     /*
      * DELETE
      */
 
     override fun deleteOne(
-        user: UUID,
+        userId: UUID,
         qawId: UUID
     ): Mono<ResponseEntity<Unit>> {
         return qawRepository
-            .findByIdAndUserId(qawId, user)
+            .findByIdAndUserId(qawId, userId)
             .switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.NOT_FOUND, "Quickly added word not found")))
-            .flatMap { qawRepository.deleteByIdAndUserId(qawId, user) }
+            .flatMap { qawRepository.deleteByIdAndUserId(qawId, userId) }
             .then(Mono.fromCallable { ResponseEntity.ok().build<Unit>() })
     }
 
+
     override fun bulkDelete(
-        user: UUID,
+        userId: UUID,
         body: List<UUID>
     ): Mono<ResponseEntity<Unit>> {
         val idsToDelete = body.toSet()
 
         return qawRepository
-            .findAllByIdInAndUserId(idsToDelete, user)
+            .findAllByIdInAndUserId(idsToDelete, userId)
             .map { it.id!! }
             .collectList()
             .flatMap { foundIds ->
                 Flux.fromIterable(foundIds)
-                    .flatMap { id -> qawRepository.deleteByIdAndUserId(id, user) }
+                    .flatMap { id -> qawRepository.deleteByIdAndUserId(id, userId) }
                     .then(Mono.fromCallable { ResponseEntity.ok().build<Unit>() })
             }
     }

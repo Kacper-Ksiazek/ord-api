@@ -1,5 +1,6 @@
 package com.ord.features.quickly_added_words.api.facades
 
+import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
@@ -13,13 +14,13 @@ interface QAWFacade {
      */
 
     fun createOne(
-        user: UUID,
+        userId: UUID,
         body: CreateQAWRequest,
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>>
 
 
     fun bulkCreate(
-        user: UUID,
+        userId: UUID,
         body: List<CreateQAWRequest>,
     ): Mono<ResponseEntity<List<QuicklyAddedWordDTO>>>
 
@@ -28,7 +29,7 @@ interface QAWFacade {
      */
 
     fun getManyQAWs(
-        user: UUID,
+        userId: UUID,
         page: Int? = 1,
         perPage: Int? = 50
     ): Mono<ResponseEntity<PaginatedDataResponse<QuicklyAddedWordDTO>>>
@@ -39,16 +40,22 @@ interface QAWFacade {
      */
 
     fun updateOne(
-        user: UUID,
+        userId: UUID,
         qawId: UUID,
         newWord: String
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>>
 
 
     fun bulkUpdate(
-        user: UUID,
+        userId: UUID,
         body: List<Pair<UUID, String>>
     ): Mono<ResponseEntity<List<QuicklyAddedWordDTO>>>
+
+
+    fun approveMany(
+        userId: UUID,
+        body: ApproveManyQAWRequest
+    ): Mono<ResponseEntity<Unit>>
 
 
     /*
@@ -56,13 +63,13 @@ interface QAWFacade {
      */
 
     fun deleteOne(
-        user: UUID,
+        userId: UUID,
         qawId: UUID
     ): Mono<ResponseEntity<Unit>>
 
 
     fun bulkDelete(
-        user: UUID,
+        userId: UUID,
         body: List<UUID>
     ): Mono<ResponseEntity<Unit>>
 }
