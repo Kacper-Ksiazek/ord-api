@@ -14,6 +14,7 @@ class QuicklyAddedWordMapper(
 
             word = dto.word,
             language = dto.language,
+            isApproved = dto.isApproved,
 
             createdAt = dto.createdAt,
 
@@ -23,10 +24,11 @@ class QuicklyAddedWordMapper(
 
     override fun toDTO(entity: QuicklyAddedWordEntity): QuicklyAddedWordDTO {
         return QuicklyAddedWordDTO(
-            id = entity.id,
+            id = entity.id ?: error("Entity id is null"),
 
             word = entity.word,
             language = entity.language,
+            isApproved = entity.isApproved,
 
             userId = entity.userId,
 

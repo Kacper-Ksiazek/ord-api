@@ -11,10 +11,11 @@ import java.util.*
 @Table("quickly_added_words")
 data class QuicklyAddedWordEntity(
     @Id
-    override var id: UUID = UUID.randomUUID(),
+    override var id: UUID? = null,
 
     var word: String,
     var language: LanguageName,
+    var isApproved: Boolean = false,
 
     var createdAt: Instant = Instant.now(),
 
