@@ -86,7 +86,7 @@ class WordCRUDFacadeImpl(
             .flatMap { bank ->
                 val wordToSave = WordEntity(
                     origin = body.origin,
-                    translatedTo = body.translatedTo ?: user.nativeLanguage,
+                    translatedTo = body.translatedTo ?: user.nativeLanguage!!,
                     translatedFrom = body.translatedFrom,
                     type = body.type,
                     exampleSentences = Json.of(objectMapper.writeValueAsString(body.exampleSentences)),

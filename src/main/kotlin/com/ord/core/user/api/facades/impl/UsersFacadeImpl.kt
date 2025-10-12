@@ -30,6 +30,7 @@ class UsersFacadeImpl(
                     name = user.name,
                     email = user.email,
                     nativeLanguage = user.nativeLanguage,
+                    isAccountInitialized = user.isAccountInitialized,
                     selectedLearningLanguage = user.selectedLearningLanguage
                 )
             }
@@ -70,6 +71,7 @@ class UsersFacadeImpl(
                     name = user.name,
                     email = user.email,
                     nativeLanguage = user.nativeLanguage,
+                    isAccountInitialized = user.isAccountInitialized,
                     selectedLearningLanguage = user.selectedLearningLanguage
                 )
             }

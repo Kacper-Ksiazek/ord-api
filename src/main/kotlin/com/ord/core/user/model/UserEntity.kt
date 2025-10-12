@@ -22,10 +22,10 @@ data class UserEntity(
     var email: String,
 
     @Column("native_language")
-    var nativeLanguage: LanguageName,
+    var nativeLanguage: LanguageName? = null,
 
     @Column("selected_learning_language")
-    var selectedLearningLanguage: LanguageName,
+    var selectedLearningLanguage: LanguageName? = null,
 
     @Column("is_account_initialized")
     var isAccountInitialized: Boolean = false,

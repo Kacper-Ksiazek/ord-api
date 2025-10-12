@@ -5,6 +5,7 @@ import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.auth.services.OtpService
 import com.ord.exceptions.REST.UnauthorizedException
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.env.Environment
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -15,8 +16,11 @@ import kotlin.random.Random
 class OtpServiceImpl(
     private val otpCodeRepository: OtpCodeRepository,
     private val encoder: PasswordEncoder,
+    private val env: Environment,
     @Value("\${otp.expiration.minutes}") private val otpExpirationMinutes: Long
 ) : OtpService {
+
+    private val isTestingEnv: Boolean = env.activeProfiles.contains("test")
 
     override fun generateAndSaveOtp(email: String): Mono<String> {
         val otpCode = generateSixDigitOtp()
@@ -47,9 +51,11 @@ class OtpServiceImpl(
                             .delete(otpEntity)
                             .then(Mono.error(UnauthorizedException("OTP code has expired")))
                     }
+
                     !encoder.matches(code, otpEntity.code) -> {
                         Mono.error(UnauthorizedException("Invalid OTP code"))
                     }
+
                     else -> {
                         otpCodeRepository
                             .delete(otpEntity)
@@ -57,10 +63,16 @@ class OtpServiceImpl(
                     }
                 }
             }
-            .switchIfEmpty(Mono.error(UnauthorizedException("No OTP code found for this email")))
+            .switchIfEmpty(
+                Mono.error(UnauthorizedException("No OTP code found for this email"))
+            )
     }
 
     private fun generateSixDigitOtp(): String {
-        return Random.nextInt(100000, 999999).toString()
+        return if (isTestingEnv) {
+            "000000"
+        } else {
+            Random.nextInt(100000, 999999).toString()
+        }
     }
 }

@@ -10,6 +10,7 @@ import java.util.*
 @Repository
 interface OtpCodeRepository : ReactiveCrudRepository<OtpCodeEntity, UUID> {
     fun findByUserEmail(userEmail: String): Mono<OtpCodeEntity>
-    fun findAllByUserEmail(userEmail: String): Flux<OtpCodeEntity>
+
+
     fun deleteByUserEmail(userEmail: String): Mono<Void>
 }

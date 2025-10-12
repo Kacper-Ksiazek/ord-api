@@ -9,8 +9,8 @@ data class UserDTO(
 
     var name: String,
     var email: String,
-    var nativeLanguage: LanguageName,
-    var selectedLearningLanguage: LanguageName,
+    var nativeLanguage: LanguageName? = null,
+    var selectedLearningLanguage: LanguageName? = null,
     var isAccountInitialized: Boolean = false,
 
     val createdAt: Instant = Instant.now(),

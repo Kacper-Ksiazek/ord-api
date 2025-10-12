@@ -45,9 +45,26 @@ class AuthServiceImpl(
         return otpService
             .verifyAndDeleteOtp(email, code)
             .flatMap { verifiedEmail ->
-                userRepository.findByEmail(verifiedEmail)
+                userRepository
+                    .findByEmail(verifiedEmail)
+                    .flatMap { user ->
+                        // User exists, return it
+                        Mono.just(user!!)
+                    }
+                    .switchIfEmpty(
+                        // User doesn't exist, create new one
+                        userRepository.save(
+                            com.ord.core.user.model.UserEntity(
+                                name = "",
+                                email = verifiedEmail,
+                                nativeLanguage = null,
+                                selectedLearningLanguage = null,
+                                isAccountInitialized = false
+                            )
+                        )
+                    )
             }
-            .map { it!!.toDTO() }
+            .map { it.toDTO() }
             .flatMap { createUserSession(it) }
             .map { createAuthTokenCookie(it, exchange) }
     }

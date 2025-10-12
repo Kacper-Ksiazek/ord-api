@@ -10,6 +10,7 @@ fun UserEntity.toDTO(): UserDTO = UserDTO(
     email = email,
     nativeLanguage = nativeLanguage,
     selectedLearningLanguage = selectedLearningLanguage,
+    isAccountInitialized = isAccountInitialized,
 
     createdAt = createdAt,
     updatedAt = updatedAt
