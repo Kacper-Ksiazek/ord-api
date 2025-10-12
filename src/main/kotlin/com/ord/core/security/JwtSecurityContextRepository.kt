@@ -1,8 +1,6 @@
 package com.ord.core.security
 
 import com.ord.config.properties.JwtProperties
-import com.ord.exceptions.REST.UnauthorizedException
-import org.springframework.http.ResponseCookie
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextImpl
@@ -42,8 +40,8 @@ class JwtSecurityContextRepository(
             .onErrorResume { error ->
                 if (error is MissingUserSessionException) {
                     exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
-
-                    Mono.error(UnauthorizedException("Please log in again"))
+                    // Return empty to trigger 401 Unauthorized
+                    Mono.empty()
                 } else {
                     Mono.error(error)
                 }
