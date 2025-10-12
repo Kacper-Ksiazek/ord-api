@@ -2,11 +2,13 @@ package com.ord.controllers.language_proficiencies
 
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
+import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.api.requests.CreateLanguageProficiencyRequest
 import com.ord.core.langugae_proficiency.api.requests.UpdateLanguageProficiencyRequest
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
+import com.ord.core.security.UserRepository
 import com.ord.testing_utils.api.clients.LanguageProficienciesAPIClient
 import io.kotest.matchers.maps.shouldContain
 import io.kotest.matchers.shouldBe
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @DisplayName("- LanguageProficienciesController")
@@ -27,10 +30,16 @@ class TestLanguageProficienciesController @Autowired constructor(
     languageProficiencyRepository: LanguageProficiencyRepository,
     webClient: WebTestClient,
     jwtProperties: JwtProperties,
+    userRepository: UserRepository,
+    otpCodeRepository: OtpCodeRepository,
+    passwordEncoder: PasswordEncoder,
 ) : ControllerTestBase(
     webClient,
     jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository
+    languageProficiencyRepository = languageProficiencyRepository,
+    userRepository = userRepository,
+    otpCodeRepository = otpCodeRepository,
+    passwordEncoder = passwordEncoder
 ) {
     private val apiClient = LanguageProficienciesAPIClient(webClient)
 
