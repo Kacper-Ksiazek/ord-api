@@ -22,18 +22,26 @@ class JwtReactiveAuthenticationManager(
 ) : ReactiveAuthenticationManager {
     override fun authenticate(authentication: Authentication?): Mono<Authentication> {
         val token = (authentication?.credentials as? String)?.takeIf { it.isNotBlank() } ?: return Mono.empty()
+        println("[AUTH] authenticate: Starting authentication for token: ${token.take(20)}...")
 
         return Mono
             .defer {
+                println("[AUTH] authenticate: Calling parseAndValidate")
                 Mono.fromCallable { jwtService.parseAndValidate(token).body }
+            }
+            .doOnNext { claims ->
+                println("[AUTH] authenticate: Token validation successful, not expired")
             }
             .flatMap { claims: Claims ->
                 authenticateWithValidToken(token, claims)
             }
             .onErrorResume { cause ->
+                println("[AUTH] authenticate: Error during validation: ${cause.javaClass.simpleName} - ${cause.message}")
                 if (cause is ExpiredJwtException || cause.cause is ExpiredJwtException) {
+                    println("[AUTH] authenticate: Token is expired, calling handleExpiredToken")
                     handleExpiredToken(token)
                 } else {
+                    println("[AUTH] authenticate: Non-expiration error, re-throwing")
                     Mono.error(cause)
                 }
             }

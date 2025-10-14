@@ -493,11 +493,17 @@ class TestAuthController @Autowired constructor(
                 println("[TEST-2] Created user with ID: ${user.id}")
 
                 // Create an expired JWT token
+                val tokenIssuedAt = Instant.now().minusSeconds(3600)
                 val expiredToken = jwtService.createToken(
                     subject = user.email,
-                    issuedAt = Instant.now().minusSeconds(3600)
+                    issuedAt = tokenIssuedAt
                 )
+                val parsedToken = jwtService.parseAllowExpired(expiredToken)
                 println("[TEST-2] Created expired token: ${expiredToken.take(20)}...")
+                println("[TEST-2] Token issued at: $tokenIssuedAt")
+                println("[TEST-2] Token expires at: ${parsedToken.expiration.toInstant()}")
+                println("[TEST-2] Current time: ${Instant.now()}")
+                println("[TEST-2] Token is expired: ${parsedToken.expiration.toInstant().isBefore(Instant.now())}")
 
                 // Create a session with the expired token
                 userSessionRepository.save(
