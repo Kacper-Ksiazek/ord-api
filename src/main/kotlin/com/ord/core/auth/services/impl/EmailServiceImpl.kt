@@ -14,7 +14,7 @@ import java.time.Year
 class EmailServiceImpl(
     private val mailSender: JavaMailSender,
     private val resourceLoader: ResourceLoader,
-    @Value("\${otp.email.from}") private val fromEmail: String
+    @Value("\${email.from}") private val fromEmail: String
 ) : EmailService {
 
     override fun sendOtpEmail(toEmail: String, otpCode: String): Mono<Void> {
