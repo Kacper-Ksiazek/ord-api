@@ -54,31 +54,56 @@ class JwtReactiveAuthenticationManager(
     }
 
     private fun handleExpiredToken(token: String): Mono<Authentication> {
+        println("[AUTH] handleExpiredToken: Starting token refresh for expired token: ${token.take(20)}...")
         return Mono
             .fromCallable {
                 jwtService.parseAllowExpired(token)
             }
+            .doOnNext { println("[AUTH] handleExpiredToken: Successfully parsed expired token") }
             .flatMap { claims ->
+                println("[AUTH] handleExpiredToken: Looking up session by token")
                 sessionsRepository
                     .findByToken(token)
+                    .doOnNext { session ->
+                        println("[AUTH] handleExpiredToken: Found session with ID: ${session?.id}")
+                    }
                     .switchIfEmpty(
                         Mono.defer {
+                            println("[AUTH] handleExpiredToken: ERROR - No session found for expired token")
                             Mono.error(MissingUserSessionException("Expired token - no corresponding session found"))
                         }
                     )
                     .flatMap { session ->
                         val subject = claims.extractSubject()
                         val newToken = jwtService.createToken(subject = subject)
+                        println("[AUTH] handleExpiredToken: Generated new token for subject: $subject, new token: ${newToken.take(20)}...")
 
                         val updatedSession = session!!.copy(
                             token = newToken,
                         )
 
+                        println("[AUTH] handleExpiredToken: About to save updated session with ID: ${session.id}")
                         userRepository
                             .findByEmail(email = subject)
-                            .delayUntil { sessionsRepository.save(updatedSession) }
+                            .doOnNext { user ->
+                                println("[AUTH] handleExpiredToken: Found user: ${user?.email}")
+                            }
+                            .delayUntil {
+                                println("[AUTH] handleExpiredToken: Executing session save...")
+                                sessionsRepository.save(updatedSession)
+                                    .doOnSuccess { savedSession ->
+                                        println("[AUTH] handleExpiredToken: Session saved successfully! ID: ${savedSession?.id}, token: ${savedSession?.token?.take(20)}...")
+                                    }
+                                    .doOnError { error ->
+                                        println("[AUTH] handleExpiredToken: ERROR saving session: ${error.message}")
+                                    }
+                            }
                             .map { user ->
+                                println("[AUTH] handleExpiredToken: Creating authenticated token with renewed token")
                                 authenticatedToken(user!!, newToken)
+                            }
+                            .doOnSuccess {
+                                println("[AUTH] handleExpiredToken: Token refresh completed successfully")
                             }
                     }
             }

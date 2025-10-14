@@ -16,28 +16,41 @@ class JwtSecurityContextRepository(
 ) : ServerSecurityContextRepository {
     override fun load(exchange: ServerWebExchange): Mono<SecurityContext?>? {
         val token = exchange.getCookieValue(jwtProperties.authCookieName) ?: return Mono.empty()
+        println("[SECURITY] load: Starting authentication with token: ${token.take(20)}...")
 
         val preAuth = UsernamePasswordAuthenticationToken(null, token)
 
         return authManager
             .authenticate(preAuth)
-            .cache()
+            .doOnSubscribe { println("[SECURITY] load: Authentication Mono subscribed") }
             .doOnNext { auth ->
+                println("[SECURITY] load: Authentication completed, checking for renewed token")
                 val details = auth.details
 
                 if (details is Map<*, *> && details.containsKey("renewedToken")) {
                     val renewedToken = details["renewedToken"] as? String
+                    println("[SECURITY] load: Found renewed token in auth details: ${renewedToken?.take(20)}...")
 
                     if (!renewedToken.isNullOrBlank()) {
+                        println("[SECURITY] load: Setting renewed token cookie")
                         exchange.addAuthTokenCookie(
                             name = jwtProperties.authCookieName,
                             value = renewedToken
                         )
+                        println("[SECURITY] load: Renewed token cookie set successfully")
                     }
+                } else {
+                    println("[SECURITY] load: No renewed token found in auth details")
                 }
             }
-            .map<SecurityContext?> { SecurityContextImpl(it) }
+            .cache()
+            .map<SecurityContext?> {
+                println("[SECURITY] load: Creating SecurityContext")
+                SecurityContextImpl(it)
+            }
+            .doOnSuccess { println("[SECURITY] load: SecurityContext load completed successfully") }
             .onErrorResume { error ->
+                println("[SECURITY] load: ERROR during authentication: ${error.javaClass.simpleName} - ${error.message}")
                 if (error is MissingUserSessionException) {
                     exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
                     // Return empty to trigger 401 Unauthorized
