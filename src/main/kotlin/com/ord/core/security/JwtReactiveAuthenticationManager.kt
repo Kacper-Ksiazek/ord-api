@@ -74,9 +74,9 @@ class JwtReactiveAuthenticationManager(
                             token = newToken,
                         )
 
-                        sessionsRepository
-                            .save(updatedSession)
-                            .then(userRepository.findByEmail(email = subject))
+                        userRepository
+                            .findByEmail(email = subject)
+                            .delayUntil { sessionsRepository.save(updatedSession) }
                             .map { user ->
                                 authenticatedToken(user!!, newToken)
                             }
