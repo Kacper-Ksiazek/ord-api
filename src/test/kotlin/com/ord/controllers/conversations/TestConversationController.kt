@@ -1,9 +1,11 @@
 package com.ord.controllers.conversations
 
 import com.ord.controllers.bases.ControllerTestBase
+import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
+import com.ord.core.security.UserRepository
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
 import com.ord.features.conversation.models.entities.ConversationEntity
@@ -26,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
 
@@ -36,11 +39,17 @@ class TestConversationController @Autowired constructor(
     private val conversationRepository: ConversationRepository,
     webClient: WebTestClient,
     jwtProperties: JwtProperties,
-    languageProficiencyRepository: LanguageProficiencyRepository
+    languageProficiencyRepository: LanguageProficiencyRepository,
+    _userRepository: UserRepository,
+    _otpCodeRepository: OtpCodeRepository,
+    _passwordEncoder: PasswordEncoder
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository
+    languageProficiencyRepository = languageProficiencyRepository,
+    userRepository = _userRepository,
+    otpCodeRepository = _otpCodeRepository,
+    passwordEncoder = _passwordEncoder
 ) {
     private val conversationAPIClient = ConversationAPIClient(webClient)
 

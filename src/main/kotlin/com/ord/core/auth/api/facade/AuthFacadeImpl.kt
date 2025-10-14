@@ -1,11 +1,7 @@
 package com.ord.core.auth.api.facade
 
-import com.ord.core.auth.api.requests.dto.LoginRequest
-import com.ord.core.auth.api.requests.dto.RegisterRequest
 import com.ord.core.auth.services.AuthService
 import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserEntity
-import com.ord.core.user.model.UserMapper
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -14,31 +10,30 @@ import reactor.core.publisher.Mono
 
 @Service
 class AuthFacadeImpl(
-    private val userMapper: UserMapper,
     private val authService: AuthService
 ) : AuthFacade {
-    override fun register(
-        body: RegisterRequest,
+    override fun requestOtp(email: String): Mono<ResponseEntity<Void>> {
+        return authService
+            .requestOtp(email)
+            .thenReturn(
+                ResponseEntity
+                    .status(HttpStatus.OK)
+                    .build()
+            )
+    }
+
+    override fun verifyOtp(
+        email: String,
+        code: String,
         exchange: ServerWebExchange
     ): Mono<ResponseEntity<UserDTO>> {
         return authService
-            .register(body, exchange)
+            .verifyOtp(email, code, exchange)
             .map { user ->
                 ResponseEntity
-                    .status(HttpStatus.CREATED)
+                    .status(HttpStatus.OK)
                     .body(user)
             }
-    }
-
-    override fun login(
-        body: LoginRequest,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<UserDTO>> {
-        return authService.login(body, exchange).map { user ->
-            ResponseEntity
-                .status(HttpStatus.OK)
-                .body(user)
-        }
     }
 
     override fun logout(
@@ -51,9 +46,5 @@ class AuthFacadeImpl(
                     .status(HttpStatus.NO_CONTENT)
                     .build()
             })
-    }
-
-    private fun UserEntity.toDTO(): UserDTO {
-        return userMapper.toDTO(this)
     }
 }

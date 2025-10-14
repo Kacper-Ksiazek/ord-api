@@ -1,5 +1,6 @@
 package com.ord.testing_utils.api.clients
 
+import com.ord.core.user.api.requests.InitUserAccountRequest
 import com.ord.core.user.api.responses.MeResponse
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
@@ -17,6 +18,18 @@ class UsersAPIClient(
     ): APIClientResponse<MeResponse?> {
         return get(
             url = "$baseUrl/me",
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<MeResponse>() {}
+        )
+    }
+
+    fun initUserAccount(
+        body: InitUserAccountRequest,
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<MeResponse?> {
+        return post(
+            url = "$baseUrl/init-account",
+            body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<MeResponse>() {}
         )

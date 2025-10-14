@@ -3,6 +3,7 @@ package com.ord.controllers.games
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
+import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.security.UserRepository
 import com.ord.core.word.repository.WordRepository
 import com.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
@@ -25,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @DisplayName("- GameController")
@@ -33,18 +35,23 @@ import org.springframework.test.web.reactive.server.WebTestClient
 class TestGameController @Autowired constructor(
     private val userActivityLogRepository: UserActivityLogRepository,
     private val wordMockFactory: WordFactory,
-    private val userRepository: UserRepository,
     private val wordRepository: WordRepository,
     private val ongoingGameMapper: OngoingGameMapper,
     private val ongoingGameRepository: OngoingGameRepository,
     private val finishedGameRepository: FinishedGameRepository,
+    userRepository: UserRepository,
     webClient: WebTestClient,
     jwtProperties: JwtProperties,
-    languageProficiencyRepository: LanguageProficiencyRepository
+    languageProficiencyRepository: LanguageProficiencyRepository,
+    otpCodeRepository: OtpCodeRepository,
+    passwordEncoder: PasswordEncoder
 ) : ControllerTestBase(
     webClient,
     jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository
+    languageProficiencyRepository = languageProficiencyRepository,
+    userRepository = userRepository,
+    otpCodeRepository = otpCodeRepository,
+    passwordEncoder = passwordEncoder
 ) {
     private val crosswordGameAPIClient = CrosswordGameAPIClient(webClient)
 

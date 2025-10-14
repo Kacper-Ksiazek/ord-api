@@ -1,7 +1,7 @@
 package com.ord.testing_utils.api.clients
 
-import com.ord.core.auth.api.requests.dto.LoginRequest
-import com.ord.core.auth.api.requests.dto.RegisterRequest
+import com.ord.core.auth.api.requests.dto.OtpRequestDto
+import com.ord.core.auth.api.requests.dto.OtpVerifyDto
 import com.ord.core.user.model.UserDTO
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
@@ -14,25 +14,24 @@ class AuthAPIClient(
 ) : APITestClient(webClient) {
     val baseUrl = "/api/v1/auth"
 
-    fun register(
-        body: RegisterRequest,
+    fun requestOtp(
+        body: OtpRequestDto,
         user: MockedAuthenticatedUser? = null
-    ): APIClientResponse<UserDTO?> {
+    ): APIClientResponse<Unit?> {
         return post(
-            url = "$baseUrl/register",
+            url = "$baseUrl/otp-request",
             body = body,
             user = user,
-            responseBodyType = object : ParameterizedTypeReference<UserDTO>() {}
+            responseBodyType = null
         )
     }
 
-
-    fun login(
-        body: LoginRequest,
+    fun verifyOtp(
+        body: OtpVerifyDto,
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<UserDTO?> {
         return post(
-            url = "$baseUrl/login",
+            url = "$baseUrl/otp-verify",
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<UserDTO>() {}
@@ -42,9 +41,10 @@ class AuthAPIClient(
     fun logout(
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<Unit?> {
-        return delete<Unit>(
+        return delete(
             url = "$baseUrl/logout",
             user = user,
+            responseBodyType = null
         )
     }
 }

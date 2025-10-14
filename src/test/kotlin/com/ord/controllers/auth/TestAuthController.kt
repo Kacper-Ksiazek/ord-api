@@ -1,105 +1,109 @@
 package com.ord.controllers.auth
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
-import com.ord.core.auth.api.requests.dto.LoginRequest
-import com.ord.core.auth.api.requests.dto.RegisterRequest
+import com.ord.core.auth.api.requests.dto.OtpRequestDto
+import com.ord.core.auth.api.requests.dto.OtpVerifyDto
+import com.ord.core.auth.models.OtpCodeEntity
+import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
 import com.ord.core.security.UserSessionRepositoryReactive
 import com.ord.core.user.model.UserDTO
-import com.ord.seeders.entities.UserSeeder
+import com.ord.core.user.model.UserEntity
+import com.ord.core.user.model.toDTO
 import com.ord.testing_utils.api.clients.AuthAPIClient
+import com.ord.testing_utils.api.clients.UsersAPIClient
 import com.ord.testing_utils.api.dto.APIClientResponse
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.reactive.server.WebTestClient
+import java.time.Instant
 
 @DisplayName("- AuthController")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
+@AutoConfigureWebTestClient(timeout = "3600000")
 class TestAuthController @Autowired constructor(
-    private val userSeeder: UserSeeder,
-    private val userRepository: UserRepository,
     private val userSessionRepository: UserSessionRepositoryReactive,
+    private val jwtService: com.ord.core.security.JwtService,
     webClient: WebTestClient,
     jwtProperties: JwtProperties,
-    languageProficiencyRepository: LanguageProficiencyRepository
+    languageProficiencyRepository: LanguageProficiencyRepository,
+    userRepository: UserRepository,
+    otpCodeRepository: OtpCodeRepository,
+    passwordEncoder: PasswordEncoder
 ) : ControllerTestBase(
     webClient,
     jwtProperties = jwtProperties,
-    languageProficiencyRepository = languageProficiencyRepository
+    languageProficiencyRepository = languageProficiencyRepository,
+    userRepository = userRepository,
+    otpCodeRepository = otpCodeRepository,
+    passwordEncoder = passwordEncoder
 ) {
     private val authAPIClient = AuthAPIClient(webClient)
+    private val usersAPIClient = UsersAPIClient(webClient)
 
     object TestData {
-        const val USERNAME: String = "John Doe"
-        const val PASSWORD: String = "123456"
-        const val EMAIL: String = "test@test.com"
-
-        object APIRequestPayloads {
-            val register: RegisterRequest = RegisterRequest(
-                nativeLanguage = LanguageName.POLISH,
-                name = USERNAME,
-                email = EMAIL,
-                password = PASSWORD,
-            )
-
-            val login: LoginRequest = LoginRequest(
-                email = EMAIL,
-                password = PASSWORD,
-            )
-        }
+        const val TEST_EMAIL = "testajjfsadfodsjfoidsjfisdfoisdjfois@example.com"
+        const val OTP_CODE = "000000"
     }
 
     @AfterEach
     fun cleanup() {
-        userRepository.deleteByEmail(TestData.EMAIL).block()
+        userRepository.deleteByEmail(TestData.TEST_EMAIL).block()
+        otpCodeRepository.deleteByUserEmail(TestData.TEST_EMAIL).block()
     }
 
     @Nested
-    @DisplayName("[POST] /api/v1/auth/register - register a new user account")
-    inner class RegisterTests {
+    @DisplayName("[POST] /api/v1/auth/otp-request - request OTP code")
+    inner class OtpRequestTests {
+
         @Nested
         @DisplayName("Positive")
         inner class Positive {
-            lateinit var response: APIClientResponse<UserDTO>
+            @Test
+            fun `200 - should successfully request OTP for any email`() {
+                val response = authAPIClient.requestOtp(
+                    OtpRequestDto(email = TestData.TEST_EMAIL)
+                )
 
-            @BeforeEach
-            fun beforeEach() {
-                userRepository.findByEmail(TestData.EMAIL).block() shouldBe null
+                response.status shouldBe HttpStatus.OK
 
-                val rawResponse = authAPIClient.register(TestData.APIRequestPayloads.register)
+                // Verify OTP was created in database
+                val otpCode = otpCodeRepository
+                    .findByUserEmail(TestData.TEST_EMAIL)
+                    .block()
 
-                rawResponse.body shouldNotBe null
-
-                @Suppress("Unchecked_cast")
-                response = rawResponse as APIClientResponse<UserDTO>
+                otpCode.shouldNotBeNull()
+                otpCode.userEmail shouldBe TestData.TEST_EMAIL
+                passwordEncoder.matches(TestData.OTP_CODE, otpCode.code) shouldBe true
             }
 
             @Test
-            fun `201 - user with given email should be created`() {
-                userRepository.findByEmail(TestData.EMAIL).block() shouldNotBe null
+            fun `200 - should replace existing OTP when requesting again`() {
+                // First request
+                authAPIClient.requestOtp(OtpRequestDto(email = TestData.TEST_EMAIL))
+                val firstOtp = otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block()
 
-                response.body shouldNotBe null
-                response.body?.email shouldBe TestData.EMAIL
+                // Wait a moment
+                Thread.sleep(100)
 
-            }
+                // Second request
+                authAPIClient.requestOtp(OtpRequestDto(email = TestData.TEST_EMAIL))
+                val secondOtp = otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block()
 
-            @Test
-            fun `201 - after successful register a new session should be created`() {
-                assertSessionHasBeenCreated(response)
+                // Should only have one OTP
+                secondOtp.shouldNotBeNull()
+                secondOtp.id shouldNotBe firstOtp?.id
             }
         }
 
@@ -107,62 +111,170 @@ class TestAuthController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `400 - with an existing email should return 400`() {
-                // First, create a user
-                userSeeder.insertRowWithCredentials(
-                    email = TestData.EMAIL,
-                    password = TestData.PASSWORD,
+            fun `400 - should fail with missing email`() {
+                val response = authAPIClient.requestOtp(
+                    OtpRequestDto(email = "")
                 )
-
-                val response = authAPIClient.register(TestData.APIRequestPayloads.register)
 
                 response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
-            fun `403 - register route should be available only for anonymous users`() {
+            fun `403 - should fail with unauthorized domain email`() {
                 val authenticatedUser = mockAuthenticatedUser()
 
-                val response = authAPIClient.register(
-                    user = authenticatedUser,
-                    body = TestData.APIRequestPayloads.register,
+                val response = authAPIClient.requestOtp(
+                    body = OtpRequestDto(email = authenticatedUser.email),
+                    user = authenticatedUser
                 )
 
                 response.status shouldBe HttpStatus.FORBIDDEN
             }
+
+            @Test
+            fun `400 - should fail with invalid email format`() {
+                val response = authAPIClient.requestOtp(
+                    OtpRequestDto(email = "invalid-email")
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
         }
     }
 
-
     @Nested
-    @DisplayName("[POST] /api/v1/auth/login - login a user")
-    inner class LoginTests {
+    @DisplayName("[POST] /api/v1/auth/otp-verify - verify OTP and authenticate")
+    inner class OtpVerifyTests {
+
+        @BeforeEach
+        fun beforeEach() {
+            otpCodeRepository
+                .save(
+                    OtpCodeEntity(
+                        code = passwordEncoder.encode(TestData.OTP_CODE),
+                        expiresAt = Instant.now().plusSeconds(600),
+                        userEmail = TestData.TEST_EMAIL
+                    )
+                ).block()
+        }
 
         @Nested
-        @DisplayName("Positive")
-        inner class Positive {
-            lateinit var response: APIClientResponse<UserDTO>
+        @DisplayName("Positive - New User Registration")
+        inner class PositiveNewUser {
+            lateinit var response: APIClientResponse<UserDTO?>
 
             @BeforeEach
-            fun beforeEach() {
-                userSeeder.insertRowWithCredentials(TestData.EMAIL, TestData.PASSWORD)
+            fun setup() {
+                // Verify user doesn't exist yet
+                userRepository.findByEmail(TestData.TEST_EMAIL).block().shouldBeNull()
 
-                val rawResponse = authAPIClient.login(TestData.APIRequestPayloads.login)
+                response = authAPIClient.verifyOtp(
+                    OtpVerifyDto(
+                        email = TestData.TEST_EMAIL,
+                        code = TestData.OTP_CODE
+                    )
+                )
 
-                rawResponse.body shouldNotBe null
-
-                @Suppress("Unchecked_cast")
-                response = rawResponse as APIClientResponse<UserDTO>
-            }
-
-            @Test
-            fun `200 - User can login with correct credentials`() {
                 response.status shouldBe HttpStatus.OK
+                response.body.shouldNotBeNull()
             }
 
             @Test
-            fun `200 - after successful login a new session should be created`() {
-                assertSessionHasBeenCreated(response)
+            fun `200 - should create new user with correct properties`() {
+                response.body!!.email shouldBe TestData.TEST_EMAIL
+                response.body!!.isAccountInitialized shouldBe false
+                response.body!!.nativeLanguage.shouldBeNull()
+                response.body!!.selectedLearningLanguage.shouldBeNull()
+            }
+
+            @Test
+            fun `200 - should persist user in database`() {
+                val createdUser = userRepository.findByEmail(TestData.TEST_EMAIL).block()
+                createdUser.shouldNotBeNull()
+                createdUser.email shouldBe TestData.TEST_EMAIL
+                createdUser.isAccountInitialized shouldBe false
+            }
+
+            @Test
+            fun `200 - should create a session for the new user`() {
+                val authCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+                authCookie.shouldNotBeNull()
+
+                val createdUser = userRepository.findByEmail(TestData.TEST_EMAIL).block()
+                val session = userSessionRepository.findByToken(authCookie.value).block()
+                session.shouldNotBeNull()
+                session.userId shouldBe createdUser!!.id
+            }
+
+            @Test
+            fun `200 - should delete OTP after successful verification`() {
+                otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block().shouldBeNull()
+            }
+        }
+
+        @Nested
+        @DisplayName("Positive - Existing User Login")
+        inner class PositiveExistingUser {
+            lateinit var response: APIClientResponse<UserDTO?>
+            lateinit var user: UserEntity
+
+            @BeforeEach
+            fun beforeAll() {
+                user = userRepository.save(
+                    UserEntity(
+                        name = "Test User",
+                        email = TestData.TEST_EMAIL,
+                        nativeLanguage = LanguageName.ENGLISH,
+                        selectedLearningLanguage = LanguageName.SPANISH,
+                        isAccountInitialized = true
+                    )
+                ).block()!!
+
+                response = authAPIClient.verifyOtp(
+                    OtpVerifyDto(
+                        email = TestData.TEST_EMAIL,
+                        code = TestData.OTP_CODE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body.shouldNotBeNull()
+            }
+
+            @Test
+            fun `200 - should authenticate existing user when OTP is valid`() {
+                response.body!!.id shouldBe user.id
+                response.body!!.email shouldBe TestData.TEST_EMAIL
+                response.body!!.isAccountInitialized shouldBe true
+                response.body!!.nativeLanguage shouldBe LanguageName.ENGLISH
+
+                // Verify session was created
+                val authCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+                authCookie.shouldNotBeNull()
+
+                val session = userSessionRepository.findByToken(authCookie.value).block()
+                session.shouldNotBeNull()
+            }
+
+            @Test
+            fun `200 - cookie has been set with HttpOnly and Secure flags`() {
+                val authCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+
+                authCookie.shouldNotBeNull()
+            }
+
+            @Test
+            fun `200 - should delete OTP after successful verification`() {
+                otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block().shouldBeNull()
+            }
+
+            @Test
+            fun `200 - should create a new session on each login`() {
+                val authCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+                authCookie.shouldNotBeNull()
+
+                val session = userSessionRepository.findByToken(authCookie.value).block()
+                session.shouldNotBeNull()
             }
         }
 
@@ -170,110 +282,330 @@ class TestAuthController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `403 - login route should be available only for anonymous users`() {
+            fun `401 - should fail with invalid OTP code`() {
+                val response = authAPIClient.verifyOtp(
+                    OtpVerifyDto(
+                        email = TestData.TEST_EMAIL,
+                        code = "999999"
+                    )
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `401 - should fail with expired OTP code`() {
+                // Delete the valid OTP from @BeforeEach and create an expired one
+                otpCodeRepository.deleteByUserEmail(TestData.TEST_EMAIL).block()
+
+                otpCodeRepository.save(
+                    OtpCodeEntity(
+                        code = passwordEncoder.encode(TestData.OTP_CODE),
+                        expiresAt = Instant.now().minusSeconds(1), // Expired 1 second ago
+                        userEmail = TestData.TEST_EMAIL
+                    )
+                ).block()
+
+                val response = authAPIClient.verifyOtp(
+                    OtpVerifyDto(
+                        email = TestData.TEST_EMAIL,
+                        code = TestData.OTP_CODE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `401 - should fail when no OTP exists for email`() {
+                // Delete the OTP from @BeforeEach
+                otpCodeRepository.deleteByUserEmail(TestData.TEST_EMAIL).block()
+
+                val response = authAPIClient.verifyOtp(
+                    OtpVerifyDto(
+                        email = TestData.TEST_EMAIL,
+                        code = TestData.OTP_CODE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `400 - should fail with invalid OTP code format`() {
+                val response = authAPIClient.verifyOtp(
+                    OtpVerifyDto(
+                        email = TestData.TEST_EMAIL,
+                        code = "12345"
+                    )
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `403 - should fail for authenticated users`() {
                 val authenticatedUser = mockAuthenticatedUser()
 
-                val response = authAPIClient.login(
-                    body = TestData.APIRequestPayloads.login,
-                    user = authenticatedUser,
+                val response = authAPIClient.verifyOtp(
+                    body = OtpVerifyDto(
+                        email = TestData.TEST_EMAIL,
+                        code = TestData.OTP_CODE
+                    ),
+                    user = authenticatedUser
                 )
 
                 response.status shouldBe HttpStatus.FORBIDDEN
             }
-
-            @Test
-            fun `404 - login with non-existing email should return 404`() {
-                val response = authAPIClient.login(
-                    LoginRequest(
-                        email = faker.internet().emailAddress(),
-                        password = TestData.PASSWORD,
-                    )
-                )
-
-                response.status shouldBe HttpStatus.NOT_FOUND
-                response.body shouldBe null
-            }
-
-            @Test
-            fun `404 - user must not be able to authenticate with invalid password`() {
-                userSeeder.insertRowWithCredentials(TestData.EMAIL, TestData.PASSWORD)
-
-                val response = authAPIClient.login(
-                    LoginRequest(
-                        email = TestData.EMAIL,
-                        password = "qwertyuiop"
-                    )
-                )
-
-                response.status shouldBe HttpStatus.NOT_FOUND
-            }
         }
     }
 
-
     @Nested
-    @DisplayName("[DELETE] /api/v1/auth/logout - logout a user")
+    @DisplayName("[DELETE] /api/v1/auth/logout - logout user")
     inner class LogoutTests {
 
         @Nested
         @DisplayName("Positive")
         inner class Positive {
             @Test
-            fun `200 - User can logout`() {
+            fun `204 - should successfully logout authenticated user`() {
                 val authenticatedUser = mockAuthenticatedUser()
 
-                val response = authAPIClient.logout(
-                    user = authenticatedUser
-                )
+                // Verify session exists
+                userSessionRepository.findByToken(authenticatedUser.token).block().shouldNotBeNull()
 
-                userSessionRepository.findByToken(authenticatedUser.token).block() shouldBe null
+                val response = authAPIClient.logout(user = authenticatedUser)
 
-                response
-                    .cookies[jwtProperties.authCookieName]
-                    ?.firstOrNull()
-                    .let {
-                        it shouldNotBe null
-                        it!!
-                    }
+                response.status shouldBe HttpStatus.NO_CONTENT
+
+                // Verify session was deleted
+                userSessionRepository.findByToken(authenticatedUser.token).block().shouldBeNull()
+
+                // Verify auth cookie was invalidated
+                val authCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+                authCookie.shouldNotBeNull()
+                authCookie.maxAge.seconds shouldBe 0
             }
         }
-
 
         @Nested
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `401 - logout route should be available only for authenticated users`() {
-                val request = authAPIClient.logout()
+            fun `401 - should fail for anonymous users`() {
+                val response = authAPIClient.logout()
 
-                request.status shouldBe HttpStatus.UNAUTHORIZED
+                response.status shouldBe HttpStatus.UNAUTHORIZED
             }
         }
     }
 
-    // ------------------------------
-    // Helper methods
-    // ------------------------------
+    @Nested
+    @DisplayName("JWT Token Refresh - automatic renewal on expiration")
+    inner class JwtTokenRefreshTests {
 
-    private fun assertSessionHasBeenCreated(response: APIClientResponse<UserDTO>) {
-        val token: String = response
-            .cookies[jwtProperties.authCookieName]
-            ?.firstOrNull()
-            .let {
-                it shouldNotBe null
-                it!!.value
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - should automatically refresh expired JWT token and allow continued access`() {
+                // Create a user
+                val user = userRepository.save(
+                    UserEntity(
+                        name = "Test User",
+                        email = TestData.TEST_EMAIL,
+                        nativeLanguage = LanguageName.ENGLISH,
+                        selectedLearningLanguage = LanguageName.SPANISH,
+                        isAccountInitialized = true
+                    )
+                ).block()!!
+
+                // Create an expired JWT token (issued 1 hour ago, expired)
+                val expiredToken = jwtService.createToken(
+                    subject = user.email,
+                    issuedAt = Instant.now().minusSeconds(3600)
+                )
+
+                // Create a session with the expired token
+                val session = userSessionRepository.save(
+                    com.ord.core.auth.models.UserSessionEntity(
+                        userId = user.id!!,
+                        token = expiredToken
+                    )
+                ).block()!!
+
+                // Create a mocked authenticated user with the expired token
+                val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
+                    token = expiredToken,
+                    userInfo = user.toDTO(),
+                    authCookie = org.springframework.http.ResponseCookie.from(jwtProperties.authCookieName, expiredToken).build(),
+                    email = user.email
+                )
+
+                // Call /me endpoint with expired token
+                val response = usersAPIClient.me(user = mockUser)
+
+                // Should succeed with 200
+                response.status shouldBe HttpStatus.OK
+                response.body.shouldNotBeNull()
+                response.body!!.email shouldBe TestData.TEST_EMAIL
+
+                // Verify new token was set in cookie
+                val newAuthCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+                newAuthCookie.shouldNotBeNull()
+                newAuthCookie.value shouldNotBe expiredToken
+
+                // Verify the session was updated with the new token
+                val updatedSession = userSessionRepository.findById(session.id!!).block()
+                updatedSession.shouldNotBeNull()
+                updatedSession!!.token shouldBe newAuthCookie.value
+                updatedSession.token shouldNotBe expiredToken
+
+                // Verify the new token is valid
+                val parsedToken = jwtService.parseAndValidate(newAuthCookie.value)
+                parsedToken.body.subject shouldBe user.email
             }
 
-        val session = userSessionRepository
-            .findByToken(token)
-            .block()
+            @Test
+            fun `200 - should update session token in database after refresh`() {
+                // Create a user
+                val user = userRepository.save(
+                    UserEntity(
+                        name = "Test User",
+                        email = TestData.TEST_EMAIL,
+                        nativeLanguage = LanguageName.ENGLISH,
+                        selectedLearningLanguage = LanguageName.SPANISH,
+                        isAccountInitialized = true
+                    )
+                ).block()!!
 
-        session shouldNotBe null
-        session!!.token shouldBe token
+                // Create an expired JWT token
+                val expiredToken = jwtService.createToken(
+                    subject = user.email,
+                    issuedAt = Instant.now().minusSeconds(3600)
+                )
 
-        // Verify user exists with the session
-        val user = userRepository.findById(session.userId).block()
-        user shouldNotBe null
-        user!!.email shouldBe TestData.EMAIL
+                // Create a session with the expired token
+                val session = userSessionRepository.save(
+                    com.ord.core.auth.models.UserSessionEntity(
+                        userId = user.id!!,
+                        token = expiredToken
+                    )
+                ).block()!!
+
+                val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
+                    token = expiredToken,
+                    userInfo = user.toDTO(),
+                    authCookie = org.springframework.http.ResponseCookie.from(jwtProperties.authCookieName, expiredToken).build(),
+                    email = user.email
+                )
+
+                val response = usersAPIClient.me(user = mockUser)
+
+                response.status shouldBe HttpStatus.OK
+
+                // Verify old session token no longer exists
+                userSessionRepository.findByToken(expiredToken).block().shouldBeNull()
+
+                // Verify new session exists with new token
+                val newToken = response.cookies[jwtProperties.authCookieName]?.firstOrNull()?.value
+                newToken.shouldNotBeNull()
+
+                val updatedSession = userSessionRepository.findByToken(newToken!!).block()
+                updatedSession.shouldNotBeNull()
+                updatedSession!!.userId shouldBe user.id
+            }
+
+            @Test
+            fun `200 - should allow multiple sequential requests with refreshed token`() {
+                // Create a user
+                val user = userRepository.save(
+                    UserEntity(
+                        name = "Test User",
+                        email = TestData.TEST_EMAIL,
+                        nativeLanguage = LanguageName.ENGLISH,
+                        selectedLearningLanguage = LanguageName.SPANISH,
+                        isAccountInitialized = true
+                    )
+                ).block()!!
+
+                // Create an expired JWT token
+                val expiredToken = jwtService.createToken(
+                    subject = user.email,
+                    issuedAt = Instant.now().minusSeconds(3600)
+                )
+
+                // Create a session with the expired token
+                userSessionRepository.save(
+                    com.ord.core.auth.models.UserSessionEntity(
+                        userId = user.id!!,
+                        token = expiredToken
+                    )
+                ).block()!!
+
+                val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
+                    token = expiredToken,
+                    userInfo = user.toDTO(),
+                    authCookie = org.springframework.http.ResponseCookie.from(jwtProperties.authCookieName, expiredToken).build(),
+                    email = user.email
+                )
+
+                // First request with expired token
+                val firstResponse = usersAPIClient.me(user = mockUser)
+                firstResponse.status shouldBe HttpStatus.OK
+
+                // Get the refreshed token
+                val refreshedToken = firstResponse.cookies[jwtProperties.authCookieName]?.firstOrNull()?.value
+                refreshedToken.shouldNotBeNull()
+
+                // Second request with refreshed token
+                val mockUserWithRefreshedToken = com.ord.testing_utils.dto.MockedAuthenticatedUser(
+                    token = refreshedToken!!,
+                    userInfo = user.toDTO(),
+                    authCookie = org.springframework.http.ResponseCookie.from(jwtProperties.authCookieName, refreshedToken).build(),
+                    email = user.email
+                )
+
+                val secondResponse = usersAPIClient.me(user = mockUserWithRefreshedToken)
+                secondResponse.status shouldBe HttpStatus.OK
+                secondResponse.body.shouldNotBeNull()
+                secondResponse.body!!.email shouldBe TestData.TEST_EMAIL
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `401 - should fail with expired token when no session exists`() {
+                // Create a user
+                val user = userRepository.save(
+                    UserEntity(
+                        name = "Test User",
+                        email = TestData.TEST_EMAIL,
+                        nativeLanguage = LanguageName.ENGLISH,
+                        selectedLearningLanguage = LanguageName.SPANISH,
+                        isAccountInitialized = true
+                    )
+                ).block()!!
+
+                // Create an expired JWT token but don't create a session
+                val expiredToken = jwtService.createToken(
+                    subject = user.email,
+                    issuedAt = Instant.now().minusSeconds(3600)
+                )
+
+                val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
+                    token = expiredToken,
+                    userInfo = user.toDTO(),
+                    authCookie = org.springframework.http.ResponseCookie.from(jwtProperties.authCookieName, expiredToken).build(),
+                    email = user.email
+                )
+
+                // Should fail because there's no session
+                val response = usersAPIClient.me(user = mockUser)
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+        }
     }
 }

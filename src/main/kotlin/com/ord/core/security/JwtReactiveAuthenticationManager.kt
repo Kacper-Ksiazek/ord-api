@@ -61,6 +61,11 @@ class JwtReactiveAuthenticationManager(
             .flatMap { claims ->
                 sessionsRepository
                     .findByToken(token)
+                    .switchIfEmpty(
+                        Mono.defer {
+                            Mono.error(MissingUserSessionException("Expired token - no corresponding session found"))
+                        }
+                    )
                     .flatMap { session ->
                         val subject = claims.extractSubject()
                         val newToken = jwtService.createToken(subject = subject)
@@ -76,7 +81,6 @@ class JwtReactiveAuthenticationManager(
                                 authenticatedToken(user!!, newToken)
                             }
                     }
-                    .switchIfEmpty(Mono.error(MissingUserSessionException("Expired token - no corresponding session found")))
             }
     }
 

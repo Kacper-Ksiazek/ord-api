@@ -19,8 +19,8 @@ class UserFactory(
         return UserEntity(
             name = name,
             email = email,
-            password = passwordEncoder.encode(password),
             nativeLanguage = LanguageName::class.getRandomValue(),
+            selectedLearningLanguage = LanguageName::class.getRandomValue()
         )
     }
 }

@@ -1,10 +1,10 @@
 package com.ord.core.auth.services.impl
 
 import com.ord.config.properties.JwtProperties
-import com.ord.core.auth.api.requests.dto.LoginRequest
-import com.ord.core.auth.api.requests.dto.RegisterRequest
 import com.ord.core.auth.models.UserSessionEntity
 import com.ord.core.auth.services.AuthService
+import com.ord.core.auth.services.EmailService
+import com.ord.core.auth.services.OtpService
 import com.ord.core.security.JwtService
 import com.ord.core.security.UserRepository
 import com.ord.core.security.UserSessionRepositoryReactive
@@ -12,14 +12,8 @@ import com.ord.core.security.addAuthTokenCookie
 import com.ord.core.security.getCookieValue
 import com.ord.core.security.invalidateAuthTokenCookie
 import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserEntity
 import com.ord.core.user.model.toDTO
-import com.ord.exceptions.REST.BadRequestException
-import com.ord.exceptions.REST.NotFoundException
 import com.ord.exceptions.REST.UnauthorizedException
-import io.jsonwebtoken.Claims
-import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
@@ -29,48 +23,50 @@ import java.util.UUID
 class AuthServiceImpl(
     private val jwtProperties: JwtProperties,
     private val jwtService: JwtService,
-    private val encoder: PasswordEncoder,
+    private val otpService: OtpService,
+    private val emailService: EmailService,
 
     private val userRepository: UserRepository,
     private val sessionRepositoryReactive: UserSessionRepositoryReactive
 ) : AuthService {
-    override fun register(
-        body: RegisterRequest,
-        exchange: ServerWebExchange
-    ): Mono<UserDTO> {
-        return userRepository
-            .save(
-                UserEntity(
-                    name = body.name,
-                    email = body.email,
-                    password = encoder.encode(body.password),
-                    nativeLanguage = body.nativeLanguage
-                )
-            )
-            .map { it.toDTO() }
-            .flatMap { createUserSession(it) }
-            .map { createAuthTokenCookie(it, exchange) }
-            .doOnError { cause ->
-                if (cause is DataIntegrityViolationException) {
-                    throw BadRequestException("User already exists")
-                } else {
-                    throw cause
-                }
+    override fun requestOtp(email: String): Mono<Void> {
+        return otpService
+            .generateAndSaveOtp(email)
+            .flatMap { otpCode ->
+                emailService.sendOtpEmail(email, otpCode)
             }
     }
 
-    override fun login(
-        body: LoginRequest,
+    override fun verifyOtp(
+        email: String,
+        code: String,
         exchange: ServerWebExchange
     ): Mono<UserDTO> {
-        return userRepository
-            .findByEmail(body.email)
-            .filter { encoder.matches(body.password, it?.password) }
-            .map { it!!.toDTO() }
-            .switchIfEmpty(Mono.error(NotFoundException("Invalid email or password")))
+        return otpService
+            .verifyAndDeleteOtp(email, code)
+            .flatMap { verifiedEmail ->
+                userRepository
+                    .findByEmail(verifiedEmail)
+                    .flatMap { user ->
+                        // User exists, return it
+                        Mono.just(user!!)
+                    }
+                    .switchIfEmpty(
+                        // User doesn't exist, create new one
+                        userRepository.save(
+                            com.ord.core.user.model.UserEntity(
+                                name = "",
+                                email = verifiedEmail,
+                                nativeLanguage = null,
+                                selectedLearningLanguage = null,
+                                isAccountInitialized = false
+                            )
+                        )
+                    )
+            }
+            .map { it.toDTO() }
             .flatMap { createUserSession(it) }
             .map { createAuthTokenCookie(it, exchange) }
-
     }
 
     override fun logout(

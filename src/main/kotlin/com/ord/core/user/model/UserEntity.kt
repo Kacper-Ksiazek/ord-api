@@ -21,14 +21,14 @@ data class UserEntity(
     @Column("email")
     var email: String,
 
-    @Column("password")
-    private var password: String,
-
     @Column("native_language")
-    var nativeLanguage: LanguageName,
+    var nativeLanguage: LanguageName? = null,
 
     @Column("selected_learning_language")
     var selectedLearningLanguage: LanguageName? = null,
+
+    @Column("is_account_initialized")
+    var isAccountInitialized: Boolean = false,
 
     @Column("created_at")
     var createdAt: Instant = Instant.now(),
@@ -51,9 +51,5 @@ data class UserEntity(
 
     override fun isEnabled(): Boolean = true
 
-    override fun getPassword(): String = password
-
-    fun setPassword(password: String) {
-        this.password = password
-    }
+    override fun getPassword(): String = ""
 }

@@ -37,6 +37,11 @@ jobs:
           OPEN_AI_KEY: ${{ secrets.OPEN_AI_KEY }}
           SPRING_PROFILE: 'test'
           ENV_TEST_PROPERTY: '1test1'
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
 
 
       - name: 🔨 Package app

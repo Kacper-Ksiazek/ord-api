@@ -1,11 +1,9 @@
 package com.ord.core.auth.api
 
 import com.ord.core.auth.api.facade.AuthFacade
-import com.ord.core.auth.api.requests.dto.LoginRequest
-import com.ord.core.auth.api.requests.dto.RegisterRequest
-import com.ord.core.auth.annotations.AuthenticatedUser
+import com.ord.core.auth.api.requests.dto.OtpRequestDto
+import com.ord.core.auth.api.requests.dto.OtpVerifyDto
 import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserEntity
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -17,18 +15,16 @@ import reactor.core.publisher.Mono
 class AuthController(
     private val authFacade: AuthFacade,
 ) {
-    @PostMapping("/register")
-    fun register(
-        @Valid @RequestBody body: RegisterRequest,
-        exchange: ServerWebExchange
-    ): Mono<ResponseEntity<UserDTO>> = authFacade.register(body, exchange)
+    @PostMapping("/otp-request")
+    fun requestOtp(
+        @Valid @RequestBody body: OtpRequestDto
+    ): Mono<ResponseEntity<Void>> = authFacade.requestOtp(body.email)
 
-
-    @PostMapping("/login")
-    fun login(
-        @Valid @RequestBody body: LoginRequest,
+    @PostMapping("/otp-verify")
+    fun verifyOtp(
+        @Valid @RequestBody body: OtpVerifyDto,
         exchange: ServerWebExchange
-    ): Mono<ResponseEntity<UserDTO>> = authFacade.login(body, exchange)
+    ): Mono<ResponseEntity<UserDTO>> = authFacade.verifyOtp(body.email, body.code, exchange)
 
 
     @DeleteMapping("/logout")
