@@ -422,10 +422,10 @@ class TestAuthController @Autowired constructor(
                 ).block()!!
                 println("[TEST] Created user with ID: ${user.id}")
 
-                // Create an expired JWT token (issued 1 hour ago, expired)
+                // Create an expired JWT token - set issuedAt far enough in the past to ensure expiration
                 val expiredToken = jwtService.createToken(
                     subject = user.email,
-                    issuedAt = Instant.now().minusSeconds(3600)
+                    issuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
                 )
                 println("[TEST] Created expired token: ${expiredToken.take(20)}...")
 
@@ -492,8 +492,9 @@ class TestAuthController @Autowired constructor(
                 ).block()!!
                 println("[TEST-2] Created user with ID: ${user.id}")
 
-                // Create an expired JWT token
-                val tokenIssuedAt = Instant.now().minusSeconds(3600)
+                // Create an expired JWT token - set issuedAt far enough in the past to ensure expiration
+                // even with very long expirationTime settings (like in CI/CD)
+                val tokenIssuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
                 val expiredToken = jwtService.createToken(
                     subject = user.email,
                     issuedAt = tokenIssuedAt
@@ -561,10 +562,10 @@ class TestAuthController @Autowired constructor(
                 ).block()!!
                 println("[TEST-3] Created user with ID: ${user.id}")
 
-                // Create an expired JWT token
+                // Create an expired JWT token - set issuedAt far enough in the past to ensure expiration
                 val expiredToken = jwtService.createToken(
                     subject = user.email,
-                    issuedAt = Instant.now().minusSeconds(3600)
+                    issuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
                 )
                 println("[TEST-3] Created expired token: ${expiredToken.take(20)}...")
 
@@ -632,7 +633,7 @@ class TestAuthController @Autowired constructor(
                 // Create an expired JWT token but don't create a session
                 val expiredToken = jwtService.createToken(
                     subject = user.email,
-                    issuedAt = Instant.now().minusSeconds(3600)
+                    issuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
                 )
 
                 val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
