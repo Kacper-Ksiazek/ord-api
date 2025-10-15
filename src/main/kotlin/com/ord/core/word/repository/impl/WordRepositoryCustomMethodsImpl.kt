@@ -390,10 +390,6 @@ class WordRepositoryCustomMethodsImpl(
             .bindValues(valuesBindings)
             .bind("limit", perPage)
             .bind("offset", maxOf(0, (page - 1) * perPage))
-            .filter {
-                println("Executing query: $it")
-                it
-            }
             .map { row ->
                 WordListItem(
                     id = row.get("id", UUID::class.java)!!,

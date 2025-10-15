@@ -409,7 +409,6 @@ class TestAuthController @Autowired constructor(
         inner class Positive {
             @Test
             fun `200 - should automatically refresh expired JWT token and allow continued access`() {
-                println("\n[TEST] ========== Starting token refresh test ==========")
                 // Create a user
                 val user = userRepository.save(
                     UserEntity(
@@ -420,14 +419,12 @@ class TestAuthController @Autowired constructor(
                         isAccountInitialized = true
                     )
                 ).block()!!
-                println("[TEST] Created user with ID: ${user.id}")
 
                 // Create an expired JWT token - set issuedAt far enough in the past to ensure expiration
                 val expiredToken = jwtService.createToken(
                     subject = user.email,
                     issuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
                 )
-                println("[TEST] Created expired token: ${expiredToken.take(20)}...")
 
                 // Create a session with the expired token
                 val session = userSessionRepository.save(
@@ -436,7 +433,6 @@ class TestAuthController @Autowired constructor(
                         token = expiredToken
                     )
                 ).block()!!
-                println("[TEST] Created session with ID: ${session.id}")
 
                 // Create a mocked authenticated user with the expired token
                 val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
@@ -446,10 +442,8 @@ class TestAuthController @Autowired constructor(
                     email = user.email
                 )
 
-                println("[TEST] Calling /me endpoint with expired token...")
                 // Call /me endpoint with expired token
                 val response = usersAPIClient.me(user = mockUser)
-                println("[TEST] Received response with status: ${response.status}")
 
                 // Should succeed with 200
                 response.status shouldBe HttpStatus.OK
@@ -457,16 +451,12 @@ class TestAuthController @Autowired constructor(
                 response.body!!.email shouldBe TestData.TEST_EMAIL
 
                 // Verify new token was set in cookie
-                println("[TEST] Checking for new auth cookie...")
                 val newAuthCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
-                println("[TEST] New auth cookie: ${newAuthCookie?.value?.take(20)}...")
                 newAuthCookie.shouldNotBeNull()
                 newAuthCookie.value shouldNotBe expiredToken
 
-                println("[TEST] Checking if session was updated in database...")
                 // Verify the session was updated with the new token
                 val updatedSession = userSessionRepository.findById(session.id!!).block()
-                println("[TEST] Updated session: ID=${updatedSession?.id}, token=${updatedSession?.token?.take(20)}...")
                 updatedSession.shouldNotBeNull()
                 updatedSession!!.token shouldBe newAuthCookie.value
                 updatedSession.token shouldNotBe expiredToken
@@ -474,12 +464,10 @@ class TestAuthController @Autowired constructor(
                 // Verify the new token is valid
                 val parsedToken = jwtService.parseAndValidate(newAuthCookie.value)
                 parsedToken.body.subject shouldBe user.email
-                println("[TEST] ========== Test completed successfully ==========\n")
             }
 
             @Test
             fun `200 - should update session token in database after refresh`() {
-                println("\n[TEST-2] ========== Starting session update test ==========")
                 // Create a user
                 val user = userRepository.save(
                     UserEntity(
@@ -490,21 +478,13 @@ class TestAuthController @Autowired constructor(
                         isAccountInitialized = true
                     )
                 ).block()!!
-                println("[TEST-2] Created user with ID: ${user.id}")
 
                 // Create an expired JWT token - set issuedAt far enough in the past to ensure expiration
                 // even with very long expirationTime settings (like in CI/CD)
-                val tokenIssuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
                 val expiredToken = jwtService.createToken(
                     subject = user.email,
-                    issuedAt = tokenIssuedAt
+                    issuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
                 )
-                val parsedToken = jwtService.parseAllowExpired(expiredToken)
-                println("[TEST-2] Created expired token: ${expiredToken.take(20)}...")
-                println("[TEST-2] Token issued at: $tokenIssuedAt")
-                println("[TEST-2] Token expires at: ${parsedToken.expiration.toInstant()}")
-                println("[TEST-2] Current time: ${Instant.now()}")
-                println("[TEST-2] Token is expired: ${parsedToken.expiration.toInstant().isBefore(Instant.now())}")
 
                 // Create a session with the expired token
                 userSessionRepository.save(
@@ -513,7 +493,6 @@ class TestAuthController @Autowired constructor(
                         token = expiredToken
                     )
                 ).block()!!
-                println("[TEST-2] Created session with expired token")
 
                 val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
                     token = expiredToken,
@@ -522,34 +501,24 @@ class TestAuthController @Autowired constructor(
                     email = user.email
                 )
 
-                println("[TEST-2] Calling /me endpoint...")
                 val response = usersAPIClient.me(user = mockUser)
-                println("[TEST-2] Response status: ${response.status}")
 
                 response.status shouldBe HttpStatus.OK
 
-                println("[TEST-2] Checking if old session token was deleted...")
                 // Verify old session token no longer exists
-                val oldSession = userSessionRepository.findByToken(expiredToken).block()
-                println("[TEST-2] Old session lookup result: ${oldSession?.id}")
-                oldSession.shouldBeNull()
+                userSessionRepository.findByToken(expiredToken).block().shouldBeNull()
 
                 // Verify new session exists with new token
                 val newToken = response.cookies[jwtProperties.authCookieName]?.firstOrNull()?.value
-                println("[TEST-2] New token from cookie: ${newToken?.take(20)}...")
                 newToken.shouldNotBeNull()
 
-                println("[TEST-2] Looking up new session by token...")
                 val updatedSession = userSessionRepository.findByToken(newToken!!).block()
-                println("[TEST-2] New session: ID=${updatedSession?.id}, userId=${updatedSession?.userId}")
                 updatedSession.shouldNotBeNull()
                 updatedSession!!.userId shouldBe user.id
-                println("[TEST-2] ========== Test completed successfully ==========\n")
             }
 
             @Test
             fun `200 - should allow multiple sequential requests with refreshed token`() {
-                println("\n[TEST-3] ========== Starting sequential requests test ==========")
                 // Create a user
                 val user = userRepository.save(
                     UserEntity(
@@ -560,14 +529,12 @@ class TestAuthController @Autowired constructor(
                         isAccountInitialized = true
                     )
                 ).block()!!
-                println("[TEST-3] Created user with ID: ${user.id}")
 
                 // Create an expired JWT token - set issuedAt far enough in the past to ensure expiration
                 val expiredToken = jwtService.createToken(
                     subject = user.email,
                     issuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
                 )
-                println("[TEST-3] Created expired token: ${expiredToken.take(20)}...")
 
                 // Create a session with the expired token
                 userSessionRepository.save(
@@ -576,7 +543,6 @@ class TestAuthController @Autowired constructor(
                         token = expiredToken
                     )
                 ).block()!!
-                println("[TEST-3] Created session with expired token")
 
                 val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
                     token = expiredToken,
@@ -585,15 +551,12 @@ class TestAuthController @Autowired constructor(
                     email = user.email
                 )
 
-                println("[TEST-3] First request with expired token...")
                 // First request with expired token
                 val firstResponse = usersAPIClient.me(user = mockUser)
-                println("[TEST-3] First response status: ${firstResponse.status}")
                 firstResponse.status shouldBe HttpStatus.OK
 
                 // Get the refreshed token
                 val refreshedToken = firstResponse.cookies[jwtProperties.authCookieName]?.firstOrNull()?.value
-                println("[TEST-3] Refreshed token from first response: ${refreshedToken?.take(20)}...")
                 refreshedToken.shouldNotBeNull()
 
                 // Second request with refreshed token
@@ -604,13 +567,10 @@ class TestAuthController @Autowired constructor(
                     email = user.email
                 )
 
-                println("[TEST-3] Second request with refreshed token...")
                 val secondResponse = usersAPIClient.me(user = mockUserWithRefreshedToken)
-                println("[TEST-3] Second response status: ${secondResponse.status}")
                 secondResponse.status shouldBe HttpStatus.OK
                 secondResponse.body.shouldNotBeNull()
                 secondResponse.body!!.email shouldBe TestData.TEST_EMAIL
-                println("[TEST-3] ========== Test completed successfully ==========\n")
             }
         }
 
