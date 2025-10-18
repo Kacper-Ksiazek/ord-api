@@ -6,10 +6,10 @@ You are an expert foreign language tutor specializing in creating comprehensive 
 
 Generate a detailed manual entry for the following word:
 
-**TARGET WORD: "%%word%%"**
+**TARGET WORD: "**%%word%%**"**
 
-**CRITICAL**: Create the manual ONLY for the exact word **"%%word%%"** in **%%wordLanguage%%** language.
-Do NOT create a manual for example words, placeholder words, or any other word except **"%%word%%"**.
+**CRITICAL**: Create the manual ONLY for the exact word "**%%word%%**" in **%%wordLanguage%%** language.
+Do NOT create a manual for example words, placeholder words, or any other word except "**%%word%%**".
 
 ### CONTEXT:
 
@@ -20,7 +20,7 @@ Do NOT create a manual for example words, placeholder words, or any other word e
 
 ### GUIDELINES:
 
-- Focus exclusively on the most common and current usage of **"%%word%%"**
+- Focus exclusively on the most common and current usage of "**%%word%%**"
 - Avoid outdated, rare, overly academic, or regional meanings
 - Adjust depth and complexity based on **%%proficiency%%** level:
   - **A1-A2**: Basic usage, simple examples, essential collocations, fundamental grammar
@@ -31,8 +31,8 @@ Do NOT create a manual for example words, placeholder words, or any other word e
 
 ### ERROR HANDLING:
 
-- If **"%%word%%"** is misspelled in **%%wordLanguage%%**, respond with: `WORD_MISSPELLED`
-- If **"%%word%%"** does not exist in **%%wordLanguage%%**, respond with: `NON_EXISTENT_WORD`
+- If "**%%word%%**" is misspelled in **%%wordLanguage%%**, respond with: `WORD_MISSPELLED`
+- If "**%%word%%**" does not exist in **%%wordLanguage%%**, respond with: `NON_EXISTENT_WORD`
 
 ### RESPONSE FORMAT:
 
@@ -52,17 +52,11 @@ interface Response {
     /** Optional mark. Values: **%%wordExtraMarks%%** OR null */
     extraMark: WordExtraMark | null
 
-    /** Rate 1-10 how difficult "**%%word%%**" is to master for **%%proficiency%%** learner (1 = very easy, 10 = very challenging) */
-    difficultyScore: number
-
     /**
      * 2-4 situations in **%%generativeContentLanguage%%** where learners encounter this word.
      * Examples: "restaurant conversations", "business meetings", "news articles"
      */
     useCases: string[]
-
-    /** How frequently "**%%word%%**" is used in everyday **%%wordLanguage%%** language. Values: **%%wordFrequencies%%** */
-    everydayUsageFrequency: WordFrequency
 
     /** Example Sentences (at least 3, covering different contexts) of "**%%word%%**" */
     exampleSentences: {
@@ -96,7 +90,7 @@ interface Response {
         /** Syllable breakdown (e.g., "im-por-tant") */
         syllables: string | null
 
-        /** Which syllable is stressed (1-indexed) */
+        /** Which syllable is stressed (0-indexed) */
         stress: number | null
     } | null
 
@@ -116,9 +110,6 @@ interface Response {
 
         /** Any irregular forms (e.g., { "past": "went", "past participle": "gone" }) */
         irregularForms: { [key: string]: string } | null
-
-        /** Prepositions used with this word (e.g., ["on", "in"]) */
-        commonPrepositions: string[] | null
 
         /** For verbs: most common tenses for **%%proficiency%%** level */
         conjugations: {

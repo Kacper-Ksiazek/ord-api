@@ -18,8 +18,6 @@ data class WordGrammar(
 
     var irregularForms: Map<String, String>? = null,
 
-    var commonPrepositions: List<String>? = null,
-
     @field:Valid
     var conjugations: List<WordConjugation>? = null
 )
