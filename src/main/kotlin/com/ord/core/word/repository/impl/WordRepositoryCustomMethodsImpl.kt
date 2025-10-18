@@ -1,7 +1,5 @@
 package com.ord.core.word.repository.impl
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
@@ -10,7 +8,6 @@ import com.ord.core.word.api.responses.dto.WordListItem
 import com.ord.core.word.model.WordEntity
 import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
-import com.ord.core.word.model.json.ExampleSentence
 import com.ord.core.word.repository.WordRepositoryCustomMethods
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.bank.dto.BankCompact
@@ -19,7 +16,6 @@ import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.api.dto.responses.PaginationData
 import com.ord.shared.domain.enums.SortDirection
 import com.ord.shared.domain.dto.CountingSummary
-import io.r2dbc.postgresql.codec.Json
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
@@ -32,14 +28,13 @@ class WordRepositoryCustomMethodsImpl(
     template: R2dbcEntityTemplate
 ) : WordRepositoryCustomMethods {
     private val databaseClient: DatabaseClient = template.databaseClient
-    private val objectMapper = jacksonObjectMapper()
 
     override fun findOneWord(
         wordId: UUID,
         userId: UUID,
     ): Mono<SingleWordResponse> {
         val selectQuery = """
-            SELECT 
+            SELECT
                 ${SingleWordResponse.fields.joinToString(", ") { "words.$it" }},
                 ${BankCompact.fields.joinToString(", ") { "banks.$it AS bank_$it" }},
                 ${BankGroupCompact.fields.joinToString(", ") { "bank_groups.$it AS bank_group_$it" }}
@@ -56,26 +51,20 @@ class WordRepositoryCustomMethodsImpl(
             .map { row ->
                 SingleWordResponse(
                     id = row.get("id", UUID::class.java)!!,
-                    points = row.get("points", Int::class.java)!!,
+
+                    type = WordType.valueOf(row.get("type", String::class.java)!!),
                     origin = row.get("origin", String::class.java)!!,
                     translation = row.get("translation", String::class.java)!!,
                     definition = row.get("definition", String::class.java) ?: "",
-                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
-                    isCompleted = row.get("is_completed", Boolean::class.java)!!,
-
-                    type = WordType.valueOf(row.get("type", String::class.java)!!),
                     extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
-                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
-                    translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
 
-                    useCases = objectMapper.readValue(
-                        row.get("use_cases", String::class.java) ?: "[]",
-                        object : TypeReference<Set<String>>() {}
-                    ),
-                    exampleSentences = objectMapper.readValue(
-                        row.get("example_sentences", String::class.java) ?: "[]",
-                        object : TypeReference<Set<ExampleSentence>>() {}
-                    ),
+                    translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
+                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
+
+                    isCompleted = row.get("is_completed", Boolean::class.java)!!,
+                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
+
+                    points = row.get("points", Int::class.java)!!,
 
                     bank = BankCompact.construct(row),
 
@@ -164,12 +153,12 @@ class WordRepositoryCustomMethodsImpl(
         userId: UUID
     ): Flux<WordEntity> {
         val selectQuery = """
-            SELECT id, origin, translation, definition, points, is_bookmarked, is_completed,
-                   type, extra_mark, translated_to, translated_from, use_cases, example_sentences,
-                   bank_id, user_id, created_at, updated_at
-            FROM words 
-            WHERE translated_from = :language 
-            AND origin = ANY(:origins) 
+            SELECT id, type, origin, translation, definition, extra_mark,
+                   translated_from, translated_to, is_completed, is_bookmarked, points,
+                   user_id, bank_id, bank_group_id, completed_at, created_at, updated_at
+            FROM words
+            WHERE translated_from = :language
+            AND origin = ANY(:origins)
             AND user_id = :userId
         """
 
@@ -180,19 +169,26 @@ class WordRepositoryCustomMethodsImpl(
             .map { row ->
                 WordEntity(
                     id = row.get("id", UUID::class.java)!!,
+
+                    type = WordType.valueOf(row.get("type", String::class.java)!!),
                     origin = row.get("origin", String::class.java)!!,
                     translation = row.get("translation", String::class.java)!!,
                     definition = row.get("definition", String::class.java) ?: "",
-                    points = row.get("points", Int::class.java)!!,
-                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
-                    isCompleted = row.get("is_completed", Boolean::class.java)!!,
-                    type = WordType.valueOf(row.get("type", String::class.java)!!),
                     extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
-                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
+
                     translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
-                    useCases = row.get("use_cases", Json::class.java)!!,
-                    exampleSentences = row.get("example_sentences", Json::class.java)!!,
+                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
+
+                    isCompleted = row.get("is_completed", Boolean::class.java)!!,
+                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
+
+                    points = row.get("points", Int::class.java)!!,
+
                     userId = userId,
+                    bankId = row.get("bank_id", UUID::class.java),
+                    bankGroupId = row.get("bank_group_id", UUID::class.java),
+
+                    completedAt = row.get("completed_at", Instant::class.java),
                     createdAt = row.get("created_at", Instant::class.java)!!,
                     updatedAt = row.get("updated_at", Instant::class.java)!!
                 )
