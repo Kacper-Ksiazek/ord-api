@@ -1,6 +1,7 @@
 package com.ord.core.auth.services.impl
 
 import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.OtpProperties
 import com.ord.core.auth.models.UserSessionEntity
 import com.ord.core.auth.services.AuthService
 import com.ord.core.auth.services.EmailService
@@ -22,6 +23,7 @@ import java.util.UUID
 @Service
 class AuthServiceImpl(
     private val jwtProperties: JwtProperties,
+    private val otpProperties: OtpProperties,
     private val jwtService: JwtService,
     private val otpService: OtpService,
     private val emailService: EmailService,
@@ -29,11 +31,16 @@ class AuthServiceImpl(
     private val userRepository: UserRepository,
     private val sessionRepositoryReactive: UserSessionRepositoryReactive
 ) : AuthService {
+
     override fun requestOtp(email: String): Mono<Void> {
         return otpService
             .generateAndSaveOtp(email)
             .flatMap { otpCode ->
-                emailService.sendOtpEmail(email, otpCode)
+                if (otpProperties.isEmailWhitelisted(email)) {
+                    Mono.empty()
+                } else {
+                    emailService.sendOtpEmail(email, otpCode)
+                }
             }
     }
 
