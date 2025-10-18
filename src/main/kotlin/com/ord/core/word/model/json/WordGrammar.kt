@@ -7,6 +7,9 @@ import jakarta.validation.constraints.Size
 data class WordGrammar(
     var gender: WordGender? = null,
 
+    @field:Size(min = 1, max = 16, message = "Definite article must be between 1 and 16 characters")
+    var definiteArticle: String? = null,
+
     @field:Size(min = 1, max = 64, message = "Plural form must be between 1 and 64 characters")
     var pluralForm: String? = null,
 

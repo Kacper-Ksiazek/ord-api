@@ -96,8 +96,18 @@ interface Response {
 
     /** Grammar Information (null if not applicable) */
     grammar: {
-        /** For nouns in gendered languages. Values: **%%wordGenders%%** OR null */
+        /**
+         * For nouns in gendered languages.
+         * Values: **%%wordGenders%%** OR null.
+         * IMPORTANT: Only set this for languages that have grammatical gender. Do NOT guess a gender for languages without grammatical gender (e.g., English).
+         */
         gender: WordGender | null
+
+        /**
+         * Definite article for nouns in languages that use them (e.g., "der"/"die"/"das" in German, "el"/"la" in Spanish, "le"/"la" in French).
+         * Only applicable for nouns. Leave null for other word types or languages without articles.
+         */
+        definiteArticle: string | null
 
         /** Plural form if irregular or notable */
         pluralForm: string | null
