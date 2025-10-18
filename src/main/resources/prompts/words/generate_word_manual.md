@@ -136,13 +136,13 @@ interface Response {
     /** Up to 4 words with opposite meaning in **%%wordLanguage%%** (empty array if none) */
     antonyms: string[]
 
-    /** 2-3 typical errors in **%%generativeContentLanguage%%** (empty array if not applicable) */
+    /** 2-3 typical errors in **%%generativeContentLanguage%%** (empty array if not applicable). Always wrap "%%word%%" in single asterisks when referring to it. */
     commonMistakes: string[]
 
-    /** Cultural context/usage notes in **%%generativeContentLanguage%%** */
+    /** Cultural context/usage notes in **%%generativeContentLanguage%%**. Always wrap "%%word%%" in single asterisks when referring to it. */
     culturalNotes: string | null
 
-    /** Specific advice for mastering "%%word%%" in **%%generativeContentLanguage%%** */
+    /** Specific advice for mastering "%%word%%" in **%%generativeContentLanguage%%**. Always wrap "%%word%%" in single asterisks when referring to it. */
     learningTips: string | null
 }
 ```
