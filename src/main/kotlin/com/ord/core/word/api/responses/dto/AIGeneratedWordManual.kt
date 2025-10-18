@@ -1,7 +1,6 @@
 package com.ord.core.word.api.responses.dto
 
 import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordFrequency
 import com.ord.core.word.model.enums.WordType
 import com.ord.core.word.model.json.ExampleSentence
 import com.ord.core.word.model.json.WordCollocation
@@ -15,9 +14,7 @@ data class AIGeneratedWordManual(
     val definition: String,
     val type: WordType,
     val extraMark: WordExtraMark? = null,
-    val difficultyScore: Int,
     val useCases: List<String>,
-    val everydayUsageFrequency: WordFrequency,
 
     // Example Sentences
     val exampleSentences: List<ExampleSentence>,

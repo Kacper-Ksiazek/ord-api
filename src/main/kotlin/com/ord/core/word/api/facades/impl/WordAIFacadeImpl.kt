@@ -13,7 +13,6 @@ import com.ord.core.word.api.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.responses.dto.AIGeneratedWordManual
 import com.ord.core.word.model.enums.WordCollocationFrequency
 import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordFrequency
 import com.ord.core.word.model.enums.WordGender
 import com.ord.core.word.model.enums.WordType
 import com.ord.exceptions.REST.BadRequestException
@@ -53,7 +52,6 @@ class WordAIFacadeImpl(
 
                         "wordTypes" to WordType::class.joinEnumValues(separator = " | "),
                         "wordExtraMarks" to WordExtraMark::class.joinEnumValues(separator = " | "),
-                        "wordFrequencies" to WordFrequency::class.joinEnumValues(separator = " | "),
                         "wordCollocationFrequency" to WordCollocationFrequency::class.joinEnumValues(separator = " | "),
                         "wordGenders" to WordGender::class.joinEnumValues(separator = " | ")
                     )
