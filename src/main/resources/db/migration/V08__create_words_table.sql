@@ -44,7 +44,6 @@ CREATE TABLE IF NOT EXISTS word_details
     pronunciation            JSONB                    DEFAULT NULL,  -- WordPronunciation
     grammar                  JSONB                    DEFAULT NULL,  -- WordGrammar
 
-    everyday_usage_frequency word_everyday_usage_frequency NOT NULL,
     cultural_notes           TEXT                     DEFAULT NULL,  -- Additional cultural notes about the word
     learning_tips            TEXT                     DEFAULT NULL,  -- Tips to help remember or learn the word more effectively
 
