@@ -65,6 +65,12 @@ CALL create_enum_type(
         ARRAY ['OFFENSIVE', 'SLANG', 'FORMAL', 'INFORMAL', 'SCIENTIFIC', 'TECHNICAL', 'LEGAL', 'MEDICAL', 'COLLOQUIAL', 'POETIC']
      );
 
+---  WordFrequency
+CALL create_enum_type(
+        'word_everyday_usage_frequency',
+        ARRAY ['VERY_COMMON', 'COMMON', 'UNCOMMON', 'RARE']
+     );
+
 --- +-------------------+
 --- |       GAMES       |
 --- +-------------------+
