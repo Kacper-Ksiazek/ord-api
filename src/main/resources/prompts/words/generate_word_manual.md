@@ -38,115 +38,111 @@ Do NOT create a manual for example words, placeholder words, or any other word e
 
 Return a JSON object matching this TypeScript interface:
 
-```typescript
-{
-    // Core Information
+```ts
+interface Response {
+    /** Accurate translation of "%%word%%" into **%%desiredLanguage%%**. If "%%word%%" is an idiom or phrase, provide a meaning-equivalent translation, not literal */
     translation: string
-    // Accurate translation of "%%word%%" into **%%desiredLanguage%%**
-    // If "%%word%%" is an idiom or phrase, provide a meaning-equivalent translation, not literal
 
+    /** One or two clear, concise explanatory sentences in **%%generativeContentLanguage%%** */
     definition: string
-    // One or two clear, concise explanatory sentences in **%%generativeContentLanguage%%**
 
-    type: **%%wordTypes%%**
-    // Word type: one of the provided types
+    /** Word type. Values: **%%wordTypes%%** */
+    type: WordType
 
-    extraMark: **%%wordExtraMarks%%** | null
-    // Optional mark: one of the provided marks, or null
+    /** Optional mark. Values: **%%wordExtraMarks%%** OR null */
+    extraMark: WordExtraMark | null
 
+    /** Rate 1-10 how difficult "%%word%%" is to master for **%%proficiency%%** learner (1 = very easy, 10 = very challenging) */
     difficultyScore: number
-    // Rate 1-10 how difficult "%%word%%" is to master for **%%proficiency%%** learner
-    // 1 = very easy, 10 = very challenging
 
+    /**
+     * 2-4 situations in **%%generativeContentLanguage%%** where learners encounter this word.
+     * Examples: "restaurant conversations", "business meetings", "news articles"
+     */
     useCases: string[]
-    // 2-4 situations in **%%generativeContentLanguage%%** where learners encounter this word
-    // Examples: "restaurant conversations", "business meetings", "news articles"
 
-    everydayUsageFrequency: **%%wordFrequencies%%**
-    // How frequently "%%word%%" is used in everyday **%%wordLanguage%%** language
-    // One of the provided frequency values
+    /** How frequently "%%word%%" is used in everyday **%%wordLanguage%%** language. Values: **%%wordFrequencies%%** */
+    everydayUsageFrequency: WordFrequency
 
-    // Example Sentences (at least 3, covering different contexts)
+    /** Example Sentences (at least 3, covering different contexts) of "%%word%%" */
     exampleSentences: {
+        /** Sentence in **%%wordLanguage%%** with "%%word%%" surrounded by single asterisks */
         sentence: string
-        // Sentence in **%%wordLanguage%%** with "%%word%%" surrounded by single asterisks
 
+        /** Translated sentence in **%%desiredLanguage%%** with translated word in asterisks */
         translation: string
-        // Translated sentence in **%%desiredLanguage%%** with translated word in asterisks
 
+        /** Brief context: "formal business", "casual conversation", etc. */
         context: string | null
-        // Brief context: "formal business", "casual conversation", etc.
     }[]
 
-    // Common Phrases & Collocations (up to 5, or empty array if none notable)
+    /** Common Phrases & Collocations (up to 5, or empty array if none notable) */
     collocations: {
+        /** Common phrase in **%%wordLanguage%%** (e.g., "make a decision", "strong coffee") */
         phrase: string
-        // Common phrase in **%%wordLanguage%%** (e.g., "make a decision", "strong coffee")
 
+        /** Translation into **%%desiredLanguage%%** */
         translation: string
-        // Translation into **%%desiredLanguage%%**
 
-        frequency: **%%wordCollocationFrequency%%**
-        // One of the provided collocation frequency values
+        /** How often this collocation appears. Values: **%%wordCollocationFrequency%%** */
+        frequency: WordCollocationFrequency
     }[]
 
-    // Pronunciation (null for very simple beginner words)
+    /** Pronunciation (null for very simple beginner words) */
     pronunciation: {
+        /** International Phonetic Alphabet representation */
         ipa: string
-        // International Phonetic Alphabet representation
 
+        /** Syllable breakdown (e.g., "im-por-tant") */
         syllables: string | null
-        // Syllable breakdown (e.g., "im-por-tant")
 
+        /** Which syllable is stressed (1-indexed) */
         stress: number | null
-        // Which syllable is stressed (1-indexed)
     } | null
 
-    // Grammar Information (null if not applicable)
+    /** Grammar Information (null if not applicable) */
     grammar: {
-        gender: **%%wordGenders%%** | null
-        // For nouns in gendered languages: one of the provided gender values
+        /** For nouns in gendered languages. Values: **%%wordGenders%%** OR null */
+        gender: WordGender | null
 
+        /** Plural form if irregular or notable */
         pluralForm: string | null
-        // Plural form if irregular or notable
 
+        /** For adjectives (e.g., "better", "más rápido") */
         comparativeForm: string | null
-        // For adjectives (e.g., "better", "más rápido")
 
+        /** For adjectives (e.g., "best", "el más rápido") */
         superlativeForm: string | null
-        // For adjectives (e.g., "best", "el más rápido")
 
+        /** Any irregular forms (e.g., { "past": "went", "past participle": "gone" }) */
         irregularForms: { [key: string]: string } | null
-        // Any irregular forms (e.g., { "past": "went", "past participle": "gone" })
 
+        /** Prepositions used with this word (e.g., ["on", "in"]) */
         commonPrepositions: string[] | null
-        // Prepositions used with this word (e.g., ["on", "in"])
 
+        /** For verbs: most common tenses for **%%proficiency%%** level */
         conjugations: {
+            /** Tense name (e.g., "present", "past", "future") */
             tense: string
-            // e.g., "present", "past", "future"
 
+            /** Conjugation forms (e.g., { "I": "go", "he/she": "goes", "they": "go" }) */
             forms: { [key: string]: string }
-            // e.g., { "I": "go", "he/she": "goes", "they": "go" }
         }[] | null
-        // For verbs: most common tenses for **%%proficiency%%** level
     } | null
 
-    // Related Vocabulary
+    /** Up to 4 words with similar meaning in **%%wordLanguage%%** (empty array if none) */
     synonyms: string[]
-    // Up to 4 words with similar meaning in **%%wordLanguage%%** (empty array if none)
 
+    /** Up to 4 words with opposite meaning in **%%wordLanguage%%** (empty array if none) */
     antonyms: string[]
-    // Up to 4 words with opposite meaning in **%%wordLanguage%%** (empty array if none)
 
-    // Learning Aids
+    /** 2-3 typical errors in **%%generativeContentLanguage%%** (empty array if not applicable) */
     commonMistakes: string[]
-    // 2-3 typical errors in **%%generativeContentLanguage%%** (empty array if not applicable)
 
+    /** Cultural context/usage notes in **%%generativeContentLanguage%%** */
     culturalNotes: string | null
-    // Cultural context/usage notes in **%%generativeContentLanguage%%**
 
+    /** Specific advice for mastering "%%word%%" in **%%generativeContentLanguage%%** */
     learningTips: string | null
-    // Specific advice for mastering "%%word%%" in **%%generativeContentLanguage%%**
 }
 ```
