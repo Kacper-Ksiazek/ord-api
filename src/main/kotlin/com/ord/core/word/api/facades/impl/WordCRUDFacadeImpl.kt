@@ -1,6 +1,5 @@
 package com.ord.core.word.api.facades.impl
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.facades.WordCRUDFacade
 import com.ord.core.word.api.facades.internal.getBankFromRequestOrNull
@@ -17,7 +16,6 @@ import com.ord.features.bank.model.BankEntity
 import com.ord.features.bank.service.BankService
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.extensions.convertToSetExplicitly
-import io.r2dbc.postgresql.codec.Json
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -31,7 +29,6 @@ class WordCRUDFacadeImpl(
     private val wordMapper: WordMapper,
     private val wordService: WordService,
 ) : WordCRUDFacade {
-    private val objectMapper = jacksonObjectMapper()
     override fun getManyWords(
         requestBody: GetManyWordsRequest,
         userId: UUID
@@ -85,15 +82,14 @@ class WordCRUDFacadeImpl(
         )
             .flatMap { bank ->
                 val wordToSave = WordEntity(
-                    origin = body.origin,
-                    translatedTo = body.translatedTo ?: user.nativeLanguage!!,
-                    translatedFrom = body.translatedFrom,
                     type = body.type,
-                    exampleSentences = Json.of(objectMapper.writeValueAsString(body.exampleSentences)),
+                    origin = body.origin,
                     translation = body.translation,
-                    extraMark = body.extraMark,
                     definition = body.definition,
-                    useCases = Json.of(objectMapper.writeValueAsString(body.useCases)),
+                    extraMark = body.extraMark,
+
+                    translatedFrom = body.translatedFrom,
+                    translatedTo = body.translatedTo ?: user.nativeLanguage!!,
 
                     userId = user.id,
                     bankId = bank.value?.id
@@ -126,18 +122,14 @@ class WordCRUDFacadeImpl(
                     userId = userId
                 ).map { bank ->
                     currentWord.copy(
-                        origin = body.origin ?: currentWord.origin,
-                        translatedTo = body.translatedTo ?: currentWord.translatedTo,
-                        translatedFrom = body.translatedFrom ?: currentWord.translatedFrom,
                         type = body.type ?: currentWord.type,
+                        origin = body.origin ?: currentWord.origin,
                         translation = body.translation ?: currentWord.translation,
-                        extraMark = body.extraMark ?: currentWord.extraMark,
                         definition = body.definition ?: currentWord.definition,
+                        extraMark = body.extraMark ?: currentWord.extraMark,
 
-                        exampleSentences = body.exampleSentences?.let { Json.of(objectMapper.writeValueAsString(it)) }
-                            ?: currentWord.exampleSentences,
-                        useCases = body.useCases?.let { Json.of(objectMapper.writeValueAsString(it)) }
-                            ?: currentWord.useCases,
+                        translatedFrom = body.translatedFrom ?: currentWord.translatedFrom,
+                        translatedTo = body.translatedTo ?: currentWord.translatedTo,
 
                         bankId = bank.value?.id ?: currentWord.bankId
                     )
