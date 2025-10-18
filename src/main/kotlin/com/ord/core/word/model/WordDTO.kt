@@ -3,7 +3,6 @@ package com.ord.core.word.model
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.model.enums.WordExtraMark
 import com.ord.core.word.model.enums.WordType
-import com.ord.core.word.model.json.ExampleSentence
 import com.ord.features.bank.model.BankDTO
 import java.time.Instant
 import java.util.*
@@ -11,25 +10,24 @@ import java.util.*
 class WordDTO(
     val id: UUID = UUID.randomUUID(),
 
-    var origin: String,
-    var points: Int = 0,
-    var definition: String,
-    var translation: String,
-    var isCompleted: Boolean = false,
-    var isBookmarked: Boolean = false,
     var type: WordType,
-    var translatedTo: LanguageName,
-    var translatedFrom: LanguageName,
+    var origin: String,
+    var translation: String,
+    var definition: String,
     var extraMark: WordExtraMark? = null,
 
-    var useCases: Set<String> = emptySet(),
-    var exampleSentences: Set<ExampleSentence> = emptySet(),
+    var translatedFrom: LanguageName,
+    var translatedTo: LanguageName,
+
+    var isCompleted: Boolean = false,
+    var isBookmarked: Boolean = false,
+
+    var points: Int = 0,
 
     val userId: UUID,
 
     var bank: BankDTO? = null,
     var bankId: UUID? = bank?.id,
-
     var bankGroupId: UUID? = bank?.groupId,
 
     var completedAt: Instant? = null,
