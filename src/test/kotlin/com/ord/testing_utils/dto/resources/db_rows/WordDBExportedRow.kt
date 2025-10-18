@@ -15,11 +15,9 @@ data class WordDBExportedRow(
     val origin: String,
     val translation: String,
     val definition: String,
-    val useCases: Set<String>,
     val isCompleted: Boolean,
     val isBookmarked: Boolean,
     val points: Int,
-    val exampleSentences: Set<ExampleSentence>,
     val translatedFrom: LanguageName,
     val translatedTo: LanguageName
 ) {
@@ -32,11 +30,9 @@ data class WordDBExportedRow(
             origin = origin,
             translation = translation,
             definition = definition,
-            useCases = Json.of(objectMapper.writeValueAsString(useCases)),
             isCompleted = isCompleted,
             isBookmarked = isBookmarked,
             points = points,
-            exampleSentences = Json.of(objectMapper.writeValueAsString(exampleSentences)),
             translatedFrom = translatedFrom,
             translatedTo = translatedTo,
             userId = userId

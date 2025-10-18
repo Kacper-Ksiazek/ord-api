@@ -66,17 +66,17 @@ class TestWordsController @Autowired constructor(
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     webClient: WebTestClient,
-    _userRepository: UserRepository,
-    _otpCodeRepository: OtpCodeRepository,
-    _passwordEncoder: PasswordEncoder
+    userRepository: UserRepository,
+    otpCodeRepository: OtpCodeRepository,
+    passwordEncoder: PasswordEncoder
 
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
-    userRepository = _userRepository,
-    otpCodeRepository = _otpCodeRepository,
-    passwordEncoder = _passwordEncoder
+    userRepository = userRepository,
+    otpCodeRepository = otpCodeRepository,
+    passwordEncoder = passwordEncoder
 ) {
     private val wordsAPIClient = WordsAPIClient(webClient)
 
@@ -748,17 +748,6 @@ class TestWordsController @Autowired constructor(
                 extraMark = extraMark,
                 translatedTo = translatedTo,
                 translatedFrom = LanguageName.ENGLISH,
-                useCases = setOf("use case 1", "use case 2"),
-                exampleSentences = setOf(
-                    ExampleSentence(
-                        sentence = "example sentence",
-                        translation = "przykladowe zdanie"
-                    ),
-                    ExampleSentence(
-                        sentence = "another example sentence",
-                        translation = "kolejne przykladowe zdanie"
-                    )
-                ),
                 bankId = bankId,
                 bankToCreate = bankToCreate
             )
@@ -894,53 +883,6 @@ class TestWordsController @Autowired constructor(
             }
 
             @Test
-            fun `400 - Word cannot be created without example sentences`() {
-                val request = createDefaultWordRequest().copy(
-                    exampleSentences = emptySet()
-                )
-
-                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - Word cannot be created with more than 5 example sentences`() {
-                val request = createDefaultWordRequest().copy(
-                    exampleSentences = mutableSetOf<ExampleSentence>().apply {
-                        repeat(6) { index ->
-                            add(
-                                ExampleSentence(
-                                    sentence = "example sentence - $index",
-                                    translation = "przykladowe zdanie"
-                                )
-                            )
-                        }
-                    }
-                )
-
-                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - Word cannot be created with an example sentence that has more than 255 characters`() {
-                val request = createDefaultWordRequest().copy(
-                    exampleSentences = mutableSetOf(
-                        ExampleSentence(
-                            sentence = "a".repeat(256),
-                            translation = "przykladowe zdanie"
-                        )
-                    )
-                )
-
-                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
             fun `400 - Word cannot be created with bankId and bankToCreate at the same time`() {
                 val bank = bankSeeder.seedOneEntityForUser(authenticatedUser.userInfo)
 
@@ -986,64 +928,7 @@ class TestWordsController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.NOT_FOUND
             }
-
-            @Test
-            fun `400 - Word cannot be created with no use cases`() {
-                val request = createDefaultWordRequest().copy(
-                    useCases = emptySet()
-                )
-
-                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `404 - Word cannot be created with an example sentence that has empty translation`() {
-                val request = createDefaultWordRequest().copy(
-                    exampleSentences = mutableSetOf(
-                        ExampleSentence(
-                            sentence = "example sentence",
-                            translation = ""
-                        )
-                    )
-                )
-
-                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - Word cannot be created with use case of length greater than 255 characters`() {
-                val request = createDefaultWordRequest().copy(
-                    useCases = mutableSetOf(
-                        "a".repeat(256)
-                    )
-                )
-
-                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - Word cannot be created with more than 5 use cases`() {
-                val request = createDefaultWordRequest().copy(
-                    useCases = mutableSetOf<String>().apply {
-                        repeat(6) { index ->
-                            add("use case - $index")
-                        }
-                    }
-                )
-
-                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
         }
-
-
     }
 
 
@@ -1062,17 +947,6 @@ class TestWordsController @Autowired constructor(
                 extraMark = WordExtraMark.SLANG,
                 translatedTo = LanguageName.SLOVENIAN,
                 translatedFrom = LanguageName.NORWEGIAN,
-                useCases = setOf("UPDATED use case 1", "UPDATED use case 2"),
-                exampleSentences = setOf(
-                    ExampleSentence(
-                        sentence = "UPDATED example sentence",
-                        translation = "UPDATED"
-                    ),
-                    ExampleSentence(
-                        sentence = "another UPDATED example sentence",
-                        translation = "kolejne UPDATED przykladowe zdanie"
-                    )
-                ),
                 bankId = bankId,
                 bankToCreate = bankToCreate
             )
@@ -1188,111 +1062,6 @@ class TestWordsController @Autowired constructor(
                 )
 
                 response.status shouldBe HttpStatus.UNAUTHORIZED
-            }
-
-            @Test
-            fun `400 - Word cannot be updated with more than 5 example sentences`() {
-                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
-                val updateRequest = createDefaultUpdateWordRequest().copy(
-                    exampleSentences = mutableSetOf<ExampleSentence>().apply {
-                        repeat(6) { index ->
-                            add(
-                                ExampleSentence(
-                                    sentence = "example sentence - $index",
-                                    translation = "przykladowe zdanie"
-                                )
-                            )
-                        }
-                    }
-                )
-
-                val response = wordsAPIClient.updateWord(
-                    id = word.id!!,
-                    body = updateRequest,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - Word cannot be updated with an example sentence that has more than 255 characters`() {
-                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
-                val updateRequest = createDefaultUpdateWordRequest().copy(
-                    exampleSentences = mutableSetOf(
-                        ExampleSentence(
-                            sentence = "a".repeat(256),
-                            translation = "przykladowe zdanie"
-                        )
-                    )
-                )
-
-                val response = wordsAPIClient.updateWord(
-                    id = word.id!!,
-                    body = updateRequest,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - Word cannot be updated with an example sentence that has empty translation`() {
-                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
-                val updateRequest = createDefaultUpdateWordRequest().copy(
-                    exampleSentences = mutableSetOf(
-                        ExampleSentence(
-                            sentence = "example sentence",
-                            translation = ""
-                        )
-                    )
-                )
-
-                val response = wordsAPIClient.updateWord(
-                    id = word.id!!,
-                    body = updateRequest,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - Word cannot be updated with use case of length greater than 255 characters`() {
-                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
-                val updateRequest = createDefaultUpdateWordRequest().copy(
-                    useCases = mutableSetOf(
-                        "a".repeat(256)
-                    )
-                )
-
-                val response = wordsAPIClient.updateWord(
-                    id = word.id!!,
-                    body = updateRequest,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - Word cannot be updated with more than 5 use cases`() {
-                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
-                val updateRequest = createDefaultUpdateWordRequest().copy(
-                    useCases = mutableSetOf<String>().apply {
-                        repeat(6) { index ->
-                            add("use case - $index")
-                        }
-                    }
-                )
-
-                val response = wordsAPIClient.updateWord(
-                    id = word.id!!,
-                    body = updateRequest,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
             }
 
             @Test
