@@ -40,7 +40,7 @@ Return a JSON object matching this TypeScript interface:
 
 ```ts
 interface Response {
-    /** Accurate translation of "%%word%%" into **%%desiredLanguage%%**. If "%%word%%" is an idiom or phrase, provide a meaning-equivalent translation, not literal */
+    /** Accurate translation of "**%%word%%**" into **%%desiredLanguage%%**. If "**%%word%%**" is an idiom or phrase, provide a meaning-equivalent translation, not literal */
     translation: string
 
     /** One or two clear, concise explanatory sentences in **%%generativeContentLanguage%%** */
@@ -52,7 +52,7 @@ interface Response {
     /** Optional mark. Values: **%%wordExtraMarks%%** OR null */
     extraMark: WordExtraMark | null
 
-    /** Rate 1-10 how difficult "%%word%%" is to master for **%%proficiency%%** learner (1 = very easy, 10 = very challenging) */
+    /** Rate 1-10 how difficult "**%%word%%**" is to master for **%%proficiency%%** learner (1 = very easy, 10 = very challenging) */
     difficultyScore: number
 
     /**
@@ -61,12 +61,12 @@ interface Response {
      */
     useCases: string[]
 
-    /** How frequently "%%word%%" is used in everyday **%%wordLanguage%%** language. Values: **%%wordFrequencies%%** */
+    /** How frequently "**%%word%%**" is used in everyday **%%wordLanguage%%** language. Values: **%%wordFrequencies%%** */
     everydayUsageFrequency: WordFrequency
 
-    /** Example Sentences (at least 3, covering different contexts) of "%%word%%" */
+    /** Example Sentences (at least 3, covering different contexts) of "**%%word%%**" */
     exampleSentences: {
-        /** Sentence in **%%wordLanguage%%** with "%%word%%" surrounded by single asterisks */
+        /** Sentence in **%%wordLanguage%%** with "**%%word%%**" surrounded by single asterisks */
         sentence: string
 
         /** Translated sentence in **%%desiredLanguage%%** with translated word in asterisks */
