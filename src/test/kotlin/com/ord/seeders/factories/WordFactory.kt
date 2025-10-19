@@ -2,9 +2,9 @@ package com.ord.seeders.factories
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.word.model.WordEntity
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
+import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.seeders.entities.UserSeeder
 import com.ord.seeders.factories.bases.FactoryBase
 import com.ord.shared.utils.EnumUtils.getRandomValue

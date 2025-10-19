@@ -1,7 +1,7 @@
 package com.ord.testing_utils.mocks.games
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.ord.core.word.repository.WordRepository
+import com.ord.core.word.repositories.WordRepository
 import com.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper

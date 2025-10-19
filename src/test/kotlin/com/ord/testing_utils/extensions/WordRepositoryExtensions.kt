@@ -1,7 +1,7 @@
 package com.ord.testing_utils.extensions
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.word.repository.WordRepository
+import com.ord.core.word.repositories.WordRepository
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.IdentifiableReviewedWordAnswer
 import com.ord.testing_utils.dto.AlteredWordProperAnswer
 import io.kotest.matchers.collections.shouldHaveSize

@@ -1,8 +1,8 @@
 package com.ord.seeders.entities
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.word.model.WordEntity
-import com.ord.core.word.repository.WordRepository
+import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.repositories.WordRepository
 import com.ord.seeders.entities.bases.SeederInterface
 import com.ord.seeders.factories.WordFactory
 import org.springframework.stereotype.Component

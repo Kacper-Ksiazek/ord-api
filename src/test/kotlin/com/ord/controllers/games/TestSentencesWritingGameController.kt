@@ -6,8 +6,8 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
-import com.ord.core.word.model.WordEntity
-import com.ord.core.word.repository.WordRepository
+import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.repositories.WordRepository
 import com.ord.features.game.model.finished_game.FinishedGameDTO
 import com.ord.features.game.model.finished_game.FinishedGameMapper
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper

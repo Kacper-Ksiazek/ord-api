@@ -7,17 +7,21 @@ import com.ord.core.security.UserRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
-import com.ord.core.word.api.requests.dto.*
-import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
-import com.ord.core.word.api.requests.enums.WordToggleableProperty
-import com.ord.core.word.api.responses.dto.SingleWordResponse
-import com.ord.core.word.api.responses.dto.WordListItem
-import com.ord.core.word.model.WordDTO
-import com.ord.core.word.model.WordEntity
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
-import com.ord.core.word.model.json.ExampleSentence
-import com.ord.core.word.repository.WordRepository
+import com.ord.core.word.api.crud.requests.dto.ChangeBankForMultipleWordsRequest
+import com.ord.core.word.api.crud.requests.dto.ChangeBankForSingleWordRequest
+import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
+import com.ord.core.word.api.crud.requests.dto.UnsafeGetManyWordsRequest
+import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
+import com.ord.core.word.api.crud.requests.dto.WordBulkActionRequest
+import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
+import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
+import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordListItem
+import com.ord.core.word.models.word.WordDTO
+import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
+import com.ord.core.word.repositories.WordRepository
 import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.repository.BankRepository
 import com.ord.features.bank.service.BankService
@@ -34,6 +38,7 @@ import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -52,8 +57,8 @@ import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
-@DisplayName("- WordsController")
-class TestWordsController @Autowired constructor(
+@DisplayName("- WordCRUDController")
+class TestWordCRUDController @Autowired constructor(
     private val wordRepository: WordRepository,
     private val bankRepository: BankRepository,
     private val bankSeeder: BankSeeder,
@@ -85,6 +90,11 @@ class TestWordsController @Autowired constructor(
     @BeforeEach
     fun beforeEach() {
         authenticatedUser = mockAuthenticatedUser()
+    }
+
+    @AfterEach
+    fun afterEach() {
+        userRepository.deleteById(authenticatedUser.userInfo.id).block()
     }
 
     @Nested

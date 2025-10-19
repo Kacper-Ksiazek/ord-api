@@ -7,8 +7,8 @@ import com.ord.core.security.UserRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.ord.core.word.api.requests.dto.GenerateWordManualRequest
-import com.ord.core.word.api.responses.dto.AIGeneratedWordManual
+import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
+import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
 import com.ord.testing_utils.api.clients.WordAIAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import io.kotest.matchers.collections.shouldNotBeEmpty

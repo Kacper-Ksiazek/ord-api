@@ -1,10 +1,15 @@
 package com.ord.testing_utils.api.clients
 
-import com.ord.core.word.api.requests.dto.*
-import com.ord.core.word.api.requests.enums.WordToggleableProperty
-import com.ord.core.word.api.responses.dto.SingleWordResponse
-import com.ord.core.word.api.responses.dto.WordListItem
-import com.ord.core.word.model.WordDTO
+import com.ord.core.word.api.crud.requests.dto.ChangeBankForMultipleWordsRequest
+import com.ord.core.word.api.crud.requests.dto.ChangeBankForSingleWordRequest
+import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
+import com.ord.core.word.api.crud.requests.dto.UnsafeGetManyWordsRequest
+import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
+import com.ord.core.word.api.crud.requests.dto.WordBulkActionRequest
+import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
+import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordListItem
+import com.ord.core.word.models.word.WordDTO
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse

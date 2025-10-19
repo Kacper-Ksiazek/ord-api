@@ -1,9 +1,5 @@
 package com.ord.testing_utils.extensions
 
-import com.ord.core.word.api.requests.dto.UpdateWordRequest
-import com.ord.core.word.model.WordEntity
-import io.kotest.matchers.shouldBe
-
 //fun WordEntity.compareWith(anotherEntity: WordEntity) {
 //    origin shouldBe anotherEntity.origin
 //    translatedTo shouldBe anotherEntity.translatedTo

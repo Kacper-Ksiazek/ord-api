@@ -2,11 +2,9 @@ package com.ord.testing_utils.dto.resources.db_rows
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.word.model.WordEntity
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
-import com.ord.core.word.model.json.ExampleSentence
-import io.r2dbc.postgresql.codec.Json
+import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import java.util.*
 
 data class WordDBExportedRow(
