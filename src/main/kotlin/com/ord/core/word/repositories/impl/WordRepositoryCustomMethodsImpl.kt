@@ -1,14 +1,14 @@
-package com.ord.core.word.repository.impl
+package com.ord.core.word.repositories.impl
 
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
-import com.ord.core.word.api.responses.dto.SingleWordResponse
-import com.ord.core.word.api.responses.dto.WordListItem
-import com.ord.core.word.model.WordEntity
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
-import com.ord.core.word.repository.WordRepositoryCustomMethods
+import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
+import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordListItem
+import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
+import com.ord.core.word.repositories.WordRepositoryCustomMethods
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.bank.dto.BankCompact
 import com.ord.features.bank_group.dto.BankGroupCompact

@@ -1,13 +1,12 @@
-package com.ord.core.word.repository
+package com.ord.core.word.repositories
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserEntity
-import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
-import com.ord.core.word.api.responses.dto.SingleWordResponse
-import com.ord.core.word.api.responses.dto.WordListItem
-import com.ord.core.word.model.WordEntity
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
+import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
+import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordListItem
+import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.domain.dto.CountingSummary
 import com.ord.shared.domain.enums.SortDirection
