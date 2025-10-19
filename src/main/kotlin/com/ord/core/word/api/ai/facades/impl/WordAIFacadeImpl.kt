@@ -1,4 +1,4 @@
-package com.ord.core.word.api.facades.impl
+package com.ord.core.word.api.ai.facades.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -8,13 +8,13 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.user.model.UserDTO
-import com.ord.core.word.api.facades.WordAIFacade
-import com.ord.core.word.api.requests.dto.GenerateWordManualRequest
-import com.ord.core.word.api.responses.dto.AIGeneratedWordManual
-import com.ord.core.word.model.enums.WordCollocationFrequency
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordGender
-import com.ord.core.word.model.enums.WordType
+import com.ord.core.word.api.ai.facades.WordAIFacade
+import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
+import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
+import com.ord.core.word.models.word_details.enums.WordCollocationFrequency
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word_details.enums.WordGender
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
