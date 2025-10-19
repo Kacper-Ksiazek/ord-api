@@ -1,25 +1,23 @@
-package com.ord.core.word.api.facades.impl
+package com.ord.core.word.api.crud.facades.impl
 
 import com.ord.core.user.model.UserDTO
-import com.ord.core.word.api.facades.WordCRUDFacade
-import com.ord.core.word.api.facades.internal.getBankFromRequestOrNull
-import com.ord.core.word.api.requests.dto.CreateWordRequest
-import com.ord.core.word.api.requests.dto.GetManyWordsRequest
-import com.ord.core.word.api.requests.dto.UpdateWordRequest
-import com.ord.core.word.api.responses.dto.SingleWordResponse
-import com.ord.core.word.api.responses.dto.WordListItem
-import com.ord.core.word.model.WordDTO
-import com.ord.core.word.model.WordEntity
-import com.ord.core.word.model.WordMapper
-import com.ord.core.word.service.WordService
-import com.ord.features.bank.model.BankEntity
+import com.ord.core.word.api.crud.facades.WordCRUDFacade
+import com.ord.core.word.api.crud.facades.internal.getBankFromRequestOrNull
+import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
+import com.ord.core.word.api.crud.requests.dto.GetManyWordsRequest
+import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
+import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordListItem
+import com.ord.core.word.models.word.WordDTO
+import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.models.word.WordMapper
+import com.ord.core.word.services.WordService
 import com.ord.features.bank.service.BankService
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.extensions.convertToSetExplicitly
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
 import java.util.*
 

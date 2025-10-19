@@ -1,13 +1,11 @@
-package com.ord.core.word.api.facades.impl
+package com.ord.core.word.api.crud.facades.impl
 
 import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserEntity
-import com.ord.core.word.api.facades.WordBankManagementFacade
-import com.ord.core.word.api.facades.internal.getBankFromRequest
-import com.ord.core.word.api.facades.internal.getBankFromRequestOrNull
-import com.ord.core.word.api.requests.dto.ChangeBankForMultipleWordsRequest
-import com.ord.core.word.api.requests.dto.ChangeBankForSingleWordRequest
-import com.ord.core.word.service.WordService
+import com.ord.core.word.api.crud.facades.WordBankManagementFacade
+import com.ord.core.word.api.crud.facades.internal.getBankFromRequestOrNull
+import com.ord.core.word.api.crud.requests.dto.ChangeBankForMultipleWordsRequest
+import com.ord.core.word.api.crud.requests.dto.ChangeBankForSingleWordRequest
+import com.ord.core.word.services.WordService
 import com.ord.features.bank.service.BankService
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono

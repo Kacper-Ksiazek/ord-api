@@ -1,12 +1,12 @@
-package com.ord.core.word.api.facades
+package com.ord.core.word.api.crud.facades
 
 import com.ord.core.user.model.UserDTO
-import com.ord.core.word.api.requests.dto.CreateWordRequest
-import com.ord.core.word.api.requests.dto.GetManyWordsRequest
-import com.ord.core.word.api.requests.dto.UpdateWordRequest
-import com.ord.core.word.api.responses.dto.SingleWordResponse
-import com.ord.core.word.api.responses.dto.WordListItem
-import com.ord.core.word.model.WordDTO
+import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
+import com.ord.core.word.api.crud.requests.dto.GetManyWordsRequest
+import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
+import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordListItem
+import com.ord.core.word.models.word.WordDTO
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Mono

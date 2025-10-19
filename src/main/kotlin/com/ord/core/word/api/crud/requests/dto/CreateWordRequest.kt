@@ -1,9 +1,9 @@
-package com.ord.core.word.api.requests.dto
+package com.ord.core.word.api.crud.requests.dto
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.validators.annotations.ValidLanguageName
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull

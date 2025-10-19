@@ -1,11 +1,9 @@
-package com.ord.core.word.api.facades.impl
+package com.ord.core.word.api.crud.facades.impl
 
-import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserEntity
-import com.ord.core.word.api.facades.WordPropertyToggleFacade
-import com.ord.core.word.api.requests.dto.WordBulkActionRequest
-import com.ord.core.word.api.requests.enums.WordToggleableProperty
-import com.ord.core.word.service.WordService
+import com.ord.core.word.api.crud.facades.WordPropertyToggleFacade
+import com.ord.core.word.api.crud.requests.dto.WordBulkActionRequest
+import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
+import com.ord.core.word.services.WordService
 import com.ord.shared.extensions.convertToSetExplicitly
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

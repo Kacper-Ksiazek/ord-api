@@ -1,9 +1,8 @@
-package com.ord.core.word.api.facades
+package com.ord.core.word.api.crud.facades
 
 import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserEntity
-import com.ord.core.word.api.requests.dto.ChangeBankForMultipleWordsRequest
-import com.ord.core.word.api.requests.dto.ChangeBankForSingleWordRequest
+import com.ord.core.word.api.crud.requests.dto.ChangeBankForMultipleWordsRequest
+import com.ord.core.word.api.crud.requests.dto.ChangeBankForSingleWordRequest
 import reactor.core.publisher.Mono
 import java.util.*
 

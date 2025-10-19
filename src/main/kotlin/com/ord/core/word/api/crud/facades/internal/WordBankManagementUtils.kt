@@ -1,4 +1,4 @@
-package com.ord.core.word.api.facades.internal
+package com.ord.core.word.api.crud.facades.internal
 
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.bank.api.requests.dto.CreateBankRequest

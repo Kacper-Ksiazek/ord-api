@@ -1,6 +1,6 @@
-package com.ord.core.word.api.requests.enums
+package com.ord.core.word.api.crud.requests.enums
 
-import com.ord.core.word.model.WordEntity
+import com.ord.core.word.models.word.WordEntity
 
 enum class WordToggleableProperty {
     IS_BOOKMARKED,

@@ -1,8 +1,8 @@
-package com.ord.core.word.api.responses.dto
+package com.ord.core.word.api.crud.responses.dto
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.features.bank.dto.BankCompact
 import java.time.Instant
 import java.util.*
