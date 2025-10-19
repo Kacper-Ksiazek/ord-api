@@ -2,9 +2,8 @@ package com.ord.features.game.services.impl
 
 import com.ord.config.GamesConfig
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserEntity
-import com.ord.core.word.repository.WordRepository
-import com.ord.core.word.service.WordService
+import com.ord.core.word.repositories.WordRepository
+import com.ord.core.word.services.WordService
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.services.GameReviewService
 import com.ord.features.game.variants.shared.dto.api_requests.helpers.WordUserAnswer

@@ -109,7 +109,6 @@ interface Response {
          */
         definiteArticle: string | null
 
-        /** Plural form if irregular or notable */
         pluralForm: string | null
 
         /** For adjectives (e.g., "better", "más rápido") */

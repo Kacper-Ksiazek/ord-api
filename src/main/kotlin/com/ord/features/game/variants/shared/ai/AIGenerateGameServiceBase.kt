@@ -3,14 +3,12 @@ package com.ord.features.game.variants.shared.ai
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
-import com.ord.core.word.api.requests.enums.GetAllWordsSortOptions
-import com.ord.core.word.service.WordService
+import com.ord.core.word.services.WordService
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.extensions.getNumberOfQuestions
 import com.ord.features.game.variants.shared.ai.helpers.GameContext
-import com.ord.shared.domain.enums.SortDirection
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.toParamString
