@@ -1,6 +1,6 @@
-package com.ord.core.word.model.json
+package com.ord.core.word.models.word_details.jsonb
 
-import com.ord.core.word.model.enums.WordGender
+import com.ord.core.word.models.word_details.enums.WordGender
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
 

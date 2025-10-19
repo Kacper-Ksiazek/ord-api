@@ -1,6 +1,6 @@
-package com.ord.core.word.model.json
+package com.ord.core.word.models.word_details.jsonb
 
-import com.ord.core.word.model.enums.WordCollocationFrequency
+import com.ord.core.word.models.word_details.enums.WordCollocationFrequency
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size

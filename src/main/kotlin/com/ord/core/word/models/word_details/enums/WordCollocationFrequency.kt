@@ -1,4 +1,4 @@
-package com.ord.core.word.model.enums
+package com.ord.core.word.models.word_details.enums
 
 enum class WordCollocationFrequency {
     VERY_COMMON,

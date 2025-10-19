@@ -1,11 +1,8 @@
-package com.ord.core.word.model
+package com.ord.core.word.models.word
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.user.model.UserEntity
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
-import com.ord.features.bank.model.BankEntity
-import com.ord.features.bank_group.model.BankGroupEntity
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.shared.models.IdentifiableUserResource
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table

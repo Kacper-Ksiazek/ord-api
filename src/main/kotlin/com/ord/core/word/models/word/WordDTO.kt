@@ -1,8 +1,8 @@
-package com.ord.core.word.model
+package com.ord.core.word.models.word
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.features.bank.model.BankDTO
 import java.time.Instant
 import java.util.*

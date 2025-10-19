@@ -1,4 +1,4 @@
-package com.ord.core.word.model
+package com.ord.core.word.models.word
 
 import com.ord.core.user.model.UserMapper
 import com.ord.features.bank.model.BankMapper
