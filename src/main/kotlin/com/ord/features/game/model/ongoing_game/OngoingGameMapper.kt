@@ -7,6 +7,7 @@ import com.ord.features.game.model.ongoing_game.json.WordsTypingProperAnswers
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.features.game.model.ongoing_game.json.SentencesWritingProperAnswers
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.stereotype.Component
 
 fun OngoingGameEntity.toSentencesWritingDTO(ongoingGameMapper: OngoingGameMapper): OngoingSentencesWritingGameDTO {
@@ -59,14 +60,14 @@ class OngoingGameMapper(
     }
 
 
-    fun <T> serializeProperAnswers(properAnswers: T): String {
-        return jsonObjectMapper.writeValueAsString(properAnswers)
+    fun <T> serializeProperAnswers(properAnswers: T): Json {
+        return Json.of(jsonObjectMapper.writeValueAsString(properAnswers))
     }
 
     private fun <T : Any> OngoingGameEntity.convertToCertainDTO(typeReference: TypeReference<T>): OngoingGameDTO<T> {
         return OngoingGameDTO(
             id = id ?: error("OngoingGame id must not be null"),
-            properAnswers = jsonObjectMapper.readValue(properAnswers, typeReference),
+            properAnswers = jsonObjectMapper.readValue(properAnswers.asString(), typeReference),
             type = type,
             language = language,
             difficulty = difficulty,
