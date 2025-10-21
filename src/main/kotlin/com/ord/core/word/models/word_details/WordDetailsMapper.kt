@@ -7,6 +7,7 @@ import com.ord.core.word.models.word_details.jsonb.WordCollocation
 import com.ord.core.word.models.word_details.jsonb.WordGrammar
 import com.ord.core.word.models.word_details.jsonb.WordPronunciation
 import com.ord.shared.models.mappers.BidirectionalEntityMapper
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.stereotype.Component
 
 @Component
@@ -23,8 +24,8 @@ class WordDetailsMapper : BidirectionalEntityMapper<WordDetailsEntity, WordDetai
             commonMistakes = serializeStringSet(dto.commonMistakes),
             exampleSentences = serializeExampleSentences(dto.exampleSentences),
             collocations = serializeCollocations(dto.collocations),
-            pronunciation = dto.pronunciation?.let { jsonObjectMapper.writeValueAsString(it) },
-            grammar = dto.grammar?.let { jsonObjectMapper.writeValueAsString(it) },
+            pronunciation = dto.pronunciation?.let { Json.of(jsonObjectMapper.writeValueAsString(it)) },
+            grammar = dto.grammar?.let { Json.of(jsonObjectMapper.writeValueAsString(it)) },
             culturalNotes = dto.culturalNotes,
             learningTips = dto.learningTips,
             userId = dto.userId,
@@ -44,10 +45,10 @@ class WordDetailsMapper : BidirectionalEntityMapper<WordDetailsEntity, WordDetai
             exampleSentences = deserializeExampleSentences(entity.exampleSentences),
             collocations = deserializeCollocations(entity.collocations),
             pronunciation = entity.pronunciation?.let {
-                jsonObjectMapper.readValue(it, WordPronunciation::class.java)
+                jsonObjectMapper.readValue(it.asString(), WordPronunciation::class.java)
             },
             grammar = entity.grammar?.let {
-                jsonObjectMapper.readValue(it, WordGrammar::class.java)
+                jsonObjectMapper.readValue(it.asString(), WordGrammar::class.java)
             },
             culturalNotes = entity.culturalNotes,
             learningTips = entity.learningTips,
@@ -57,27 +58,27 @@ class WordDetailsMapper : BidirectionalEntityMapper<WordDetailsEntity, WordDetai
         )
     }
 
-    fun serializeStringSet(set: Set<String>): String {
-        return jsonObjectMapper.writeValueAsString(set)
+    fun serializeStringSet(set: Set<String>): Json {
+        return Json.of(jsonObjectMapper.writeValueAsString(set))
     }
 
-    fun deserializeStringSet(json: String): Set<String> {
-        return jsonObjectMapper.readValue(json, object : TypeReference<Set<String>>() {})
+    fun deserializeStringSet(json: Json): Set<String> {
+        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<String>>() {})
     }
 
-    fun serializeExampleSentences(sentences: Set<ExampleSentence>): String {
-        return jsonObjectMapper.writeValueAsString(sentences)
+    fun serializeExampleSentences(sentences: Set<ExampleSentence>): Json {
+        return Json.of(jsonObjectMapper.writeValueAsString(sentences))
     }
 
-    fun deserializeExampleSentences(json: String): Set<ExampleSentence> {
-        return jsonObjectMapper.readValue(json, object : TypeReference<Set<ExampleSentence>>() {})
+    fun deserializeExampleSentences(json: Json): Set<ExampleSentence> {
+        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<ExampleSentence>>() {})
     }
 
-    fun serializeCollocations(collocations: Set<WordCollocation>): String {
-        return jsonObjectMapper.writeValueAsString(collocations)
+    fun serializeCollocations(collocations: Set<WordCollocation>): Json {
+        return Json.of(jsonObjectMapper.writeValueAsString(collocations))
     }
 
-    fun deserializeCollocations(json: String): Set<WordCollocation> {
-        return jsonObjectMapper.readValue(json, object : TypeReference<Set<WordCollocation>>() {})
+    fun deserializeCollocations(json: Json): Set<WordCollocation> {
+        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<WordCollocation>>() {})
     }
 }
