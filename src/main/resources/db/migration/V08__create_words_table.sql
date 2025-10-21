@@ -31,24 +31,26 @@ CREATE INDEX idx_words_user_language ON words (user_id, translated_from);
 
 CREATE TABLE IF NOT EXISTS word_details
 (
-    id                       UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-    word_id                  UUID                          NOT NULL REFERENCES words (id) ON DELETE CASCADE,
+    id                UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+    word_id           UUID  NOT NULL REFERENCES words (id) ON DELETE CASCADE,
 
-    use_cases                JSONB                         NOT NULL, -- Set<String>
-    synonyms                 JSONB                         NOT NULL, -- Set<String>
-    antonyms                 JSONB                         NOT NULL, -- Set<String>
-    common_mistakes          JSONB                         NOT NULL, -- Set<String>
+    use_cases         JSONB NOT NULL,                        -- Set<String>
+    synonyms          JSONB NOT NULL,                        -- Set<String>
+    antonyms          JSONB NOT NULL,                        -- Set<String>
+    common_mistakes   JSONB NOT NULL,                        -- Set<String>
 
-    example_sentences        JSONB                         NOT NULL, -- Set<ExampleSentence>
-    collocations             JSONB                         NOT NULL, -- Set<WordCollocation>
-    pronunciation            JSONB                    DEFAULT NULL,  -- WordPronunciation
-    grammar                  JSONB                    DEFAULT NULL,  -- WordGrammar
+    example_sentences JSONB NOT NULL,                        -- Set<ExampleSentence>
+    collocations      JSONB NOT NULL,                        -- Set<WordCollocation>
+    pronunciation     JSONB                    DEFAULT NULL, -- WordPronunciation
+    grammar           JSONB                    DEFAULT NULL, -- WordGrammar
 
-    cultural_notes           TEXT                     DEFAULT NULL,  -- Additional cultural notes about the word
-    learning_tips            TEXT                     DEFAULT NULL,  -- Tips to help remember or learn the word more effectively
+    cultural_notes    TEXT                     DEFAULT NULL, -- Additional cultural notes about the word
+    learning_tips     TEXT                     DEFAULT NULL, -- Tips to help remember or learn the word more effectively
 
-    created_at               TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    user_id           UUID  NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+
+    created_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_word_details_word_id ON word_details (word_id)
