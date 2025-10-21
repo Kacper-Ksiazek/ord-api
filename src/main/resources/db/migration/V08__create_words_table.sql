@@ -50,7 +50,9 @@ CREATE TABLE IF NOT EXISTS word_details
     user_id           UUID  NOT NULL REFERENCES users (id) ON DELETE CASCADE,
 
     created_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_word_details_word_user UNIQUE (word_id, user_id)
 );
 
 CREATE INDEX idx_word_details_word_id ON word_details (word_id)
