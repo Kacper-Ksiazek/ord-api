@@ -11,6 +11,7 @@ import com.ord.features.game.variants.sentences_writing.dto.api_responses.Starte
 import com.ord.features.game.variants.shared.api.GameFacadeBase
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.ord.features.game.variants.shared.enums.WordAnswerScore
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -44,7 +45,7 @@ class SentencesWritingGameFacade(
 
                         language = body.language,
                         difficulty = body.difficulty,
-                        properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
+                        properAnswers = Json.of(jsonObjectMapper.writeValueAsString(properAnswers))
                     )
                 )
                     .map { savedGame ->

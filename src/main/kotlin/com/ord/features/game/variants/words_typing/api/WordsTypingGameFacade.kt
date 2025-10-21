@@ -12,6 +12,7 @@ import com.ord.features.game.variants.words_typing.dto.api_requests.FinishWordsT
 import com.ord.features.game.variants.words_typing.dto.api_responses.FinishedWordsTypingGameResponse
 import com.ord.features.game.variants.words_typing.dto.api_responses.StartedWordsTypingGameResponse
 import com.ord.shared.utils.data_classes.Percentage
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -43,7 +44,7 @@ class WordsTypingGameFacade(
 
                         language = body.language,
                         difficulty = body.difficulty,
-                        properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
+                        properAnswers = Json.of(jsonObjectMapper.writeValueAsString(properAnswers))
                     )
                 )
                     .map { savedGame ->
