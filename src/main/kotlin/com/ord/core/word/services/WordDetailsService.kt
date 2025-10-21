@@ -7,18 +7,6 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 interface WordDetailsService : UserResourceService<WordDetailsEntity> {
-    fun createWordDetails(
-        wordId: UUID,
-        wordDetailsDTO: WordDetailsDTO,
-        userId: UUID
-    ): Mono<WordDetailsDTO>
-
-    fun updateWordDetails(
-        wordId: UUID,
-        wordDetailsDTO: WordDetailsDTO,
-        userId: UUID
-    ): Mono<WordDetailsDTO>
-
     fun getWordDetailsByWordId(
         wordId: UUID,
         userId: UUID

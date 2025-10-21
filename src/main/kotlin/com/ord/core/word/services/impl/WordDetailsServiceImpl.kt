@@ -19,65 +19,6 @@ class WordDetailsServiceImpl(
 ) : WordDetailsService {
     override val repository: WordDetailsRepository = wordDetailsRepository
 
-    override fun createWordDetails(
-        wordId: UUID,
-        wordDetailsDTO: WordDetailsDTO,
-        userId: UUID
-    ): Mono<WordDetailsDTO> {
-        return wordDetailsRepository
-            .existsByWordIdAndUserId(
-                wordId = wordId,
-                userId = userId
-            )
-            .flatMap { exists ->
-                if (exists) {
-                    Mono.error(ConflictException("Word details already exist for word with id $wordId"))
-                } else {
-                    val entity = wordDetailsMapper.toEntity(
-                        wordDetailsDTO.copy(
-                            id = UUID.randomUUID(),
-                            wordId = wordId,
-                            userId = userId,
-                            createdAt = Instant.now(),
-                            updatedAt = Instant.now()
-                        )
-                    )
-                    wordDetailsRepository
-                        .save(entity)
-                        .map { wordDetailsMapper.toDTO(it) }
-                }
-            }
-    }
-
-    override fun updateWordDetails(
-        wordId: UUID,
-        wordDetailsDTO: WordDetailsDTO,
-        userId: UUID
-    ): Mono<WordDetailsDTO> {
-        return wordDetailsRepository
-            .findByWordIdAndUserId(
-                wordId = wordId,
-                userId = userId
-            )
-            .switchIfEmpty(
-                Mono.error(NotFoundException("Word details not found for word with id $wordId"))
-            )
-            .flatMap { existing ->
-                val updated = wordDetailsMapper.toEntity(
-                    wordDetailsDTO.copy(
-                        id = existing.id!!,
-                        wordId = wordId,
-                        userId = userId,
-                        createdAt = existing.createdAt,
-                        updatedAt = Instant.now()
-                    )
-                )
-                wordDetailsRepository
-                    .save(updated)
-                    .map { wordDetailsMapper.toDTO(it) }
-            }
-    }
-
     override fun getWordDetailsByWordId(
         wordId: UUID,
         userId: UUID
