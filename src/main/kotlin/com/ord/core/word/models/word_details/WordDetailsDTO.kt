@@ -25,6 +25,8 @@ data class WordDetailsDTO(
     val culturalNotes: String? = null,
     val learningTips: String? = null,
 
+    val userId: UUID,
+
     val createdAt: Instant = Instant.now(),
     val updatedAt: Instant = Instant.now()
 )

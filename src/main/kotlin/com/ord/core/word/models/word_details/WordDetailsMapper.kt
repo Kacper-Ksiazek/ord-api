@@ -27,6 +27,7 @@ class WordDetailsMapper : BidirectionalEntityMapper<WordDetailsEntity, WordDetai
             grammar = dto.grammar?.let { jsonObjectMapper.writeValueAsString(it) },
             culturalNotes = dto.culturalNotes,
             learningTips = dto.learningTips,
+            userId = dto.userId,
             createdAt = dto.createdAt,
             updatedAt = dto.updatedAt
         )
@@ -50,6 +51,7 @@ class WordDetailsMapper : BidirectionalEntityMapper<WordDetailsEntity, WordDetai
             },
             culturalNotes = entity.culturalNotes,
             learningTips = entity.learningTips,
+            userId = entity.userId,
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
         )

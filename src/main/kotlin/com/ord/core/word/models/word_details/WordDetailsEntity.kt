@@ -1,5 +1,6 @@
 package com.ord.core.word.models.word_details
 
+import com.ord.shared.models.IdentifiableUserResource
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
@@ -8,7 +9,7 @@ import java.util.*
 @Table("word_details")
 data class WordDetailsEntity(
     @Id
-    val id: UUID? = null,
+    override val id: UUID? = null,
 
     val wordId: UUID,
 
@@ -25,6 +26,8 @@ data class WordDetailsEntity(
     val culturalNotes: String? = null,
     val learningTips: String? = null,
 
+    override val userId: UUID,
+
     val createdAt: Instant = Instant.now(),
     val updatedAt: Instant = Instant.now()
-)
+) : IdentifiableUserResource
