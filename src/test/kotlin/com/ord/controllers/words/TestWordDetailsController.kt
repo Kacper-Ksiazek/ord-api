@@ -196,6 +196,140 @@ class TestWordDetailsController @Autowired constructor(
                 response.body.culturalNotes shouldBe null
                 response.body.learningTips shouldBe null
             }
+
+            @Test
+            fun `201 - should create word details with empty sets`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.C1)
+                )
+                val wordId = createTestWord(authenticatedUser.userInfo.id, "empty")
+
+                val request = CreateWordDetailsRequest(
+                    useCases = setOf("test"),
+                    synonyms = setOf(),
+                    antonyms = setOf(),
+                    commonMistakes = setOf(),
+                    exampleSentences = setOf(),
+                    collocations = setOf(),
+                    pronunciation = null,
+                    grammar = null,
+                    culturalNotes = null,
+                    learningTips = null
+                )
+
+                val response = apiClient.createWordDetails(
+                    wordId = wordId,
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.CREATED
+                response.body shouldNotBe null
+                response.body!!.synonyms shouldBe setOf()
+                response.body.antonyms shouldBe setOf()
+                response.body.commonMistakes shouldBe setOf()
+                response.body.exampleSentences shouldBe setOf()
+                response.body.collocations shouldBe setOf()
+            }
+
+            @Test
+            fun `201 - should create word details with multiple example sentences`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.C1)
+                )
+                val wordId = createTestWord(authenticatedUser.userInfo.id, "run")
+
+                val request = CreateWordDetailsRequest(
+                    useCases = setOf("verb", "noun"),
+                    synonyms = setOf("sprint", "jog"),
+                    antonyms = setOf("walk", "stop"),
+                    commonMistakes = setOf(),
+                    exampleSentences = setOf(
+                        ExampleSentence(
+                            context = "Exercise",
+                            sentence = "I run every morning",
+                            translation = "Corro todas las mañanas"
+                        ),
+                        ExampleSentence(
+                            context = "Sports",
+                            sentence = "She runs very fast",
+                            translation = "Ella corre muy rápido"
+                        ),
+                        ExampleSentence(
+                            context = null,
+                            sentence = "They run a business",
+                            translation = "Ellos dirigen un negocio"
+                        )
+                    ),
+                    collocations = setOf(
+                        WordCollocation(
+                            phrase = "run a marathon",
+                            translation = "correr un maratón",
+                            frequency = WordCollocationFrequency.COMMON
+                        ),
+                        WordCollocation(
+                            phrase = "run late",
+                            translation = "llegar tarde",
+                            frequency = WordCollocationFrequency.VERY_COMMON
+                        )
+                    )
+                )
+
+                val response = apiClient.createWordDetails(
+                    wordId = wordId,
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.CREATED
+                response.body shouldNotBe null
+                response.body!!.exampleSentences.size shouldBe 3
+                response.body.collocations.size shouldBe 2
+                response.body.useCases shouldBe setOf("verb", "noun")
+            }
+
+            @Test
+            fun `201 - should create word details with complete grammar information`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.C1)
+                )
+                val wordId = createTestWord(authenticatedUser.userInfo.id, "beautiful")
+
+                val request = CreateWordDetailsRequest(
+                    useCases = setOf("adjective"),
+                    synonyms = setOf("pretty", "gorgeous"),
+                    antonyms = setOf("ugly"),
+                    commonMistakes = setOf(),
+                    exampleSentences = setOf(),
+                    collocations = setOf(),
+                    grammar = WordGrammar(
+                        gender = null,
+                        comparativeForm = "more beautiful",
+                        superlativeForm = "most beautiful",
+                        pluralForm = null,
+                        definiteArticle = null
+                    ),
+                    pronunciation = WordPronunciation(
+                        ipa = "ˈbjuːtɪfl",
+                        syllables = "beau-ti-ful",
+                        stress = 1
+                    )
+                )
+
+                val response = apiClient.createWordDetails(
+                    wordId = wordId,
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.CREATED
+                response.body shouldNotBe null
+                response.body!!.grammar shouldNotBe null
+                response.body.grammar!!.comparativeForm shouldBe "more beautiful"
+                response.body.grammar!!.superlativeForm shouldBe "most beautiful"
+                response.body.pronunciation shouldNotBe null
+                response.body.pronunciation!!.ipa shouldBe "ˈbjuːtɪfl"
+            }
         }
 
         @Nested
@@ -525,6 +659,297 @@ class TestWordDetailsController @Autowired constructor(
                 response.body shouldNotBe null
                 response.body!!.culturalNotes shouldBe null
                 response.body.learningTips shouldBe null
+            }
+
+            @Test
+            fun `200 - should update only example sentences`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.C1)
+                )
+                val wordId = createTestWord(authenticatedUser.userInfo.id, "update")
+
+                // Create initial word details
+                val createRequest = CreateWordDetailsRequest(
+                    useCases = setOf("verb"),
+                    synonyms = setOf("modify"),
+                    antonyms = setOf(),
+                    commonMistakes = setOf(),
+                    exampleSentences = setOf(
+                        ExampleSentence(
+                            context = "Software",
+                            sentence = "Update the application",
+                            translation = "Actualizar la aplicación"
+                        )
+                    ),
+                    collocations = setOf()
+                )
+
+                apiClient.createWordDetails(
+                    wordId = wordId,
+                    body = createRequest,
+                    user = authenticatedUser
+                )
+
+                // Update only example sentences
+                val updateRequest = UpdateWordDetailsRequest(
+                    useCases = JsonNullable.undefined(),
+                    synonyms = JsonNullable.undefined(),
+                    antonyms = JsonNullable.undefined(),
+                    commonMistakes = JsonNullable.undefined(),
+                    exampleSentences = JsonNullable.of(
+                        setOf(
+                            ExampleSentence(
+                                context = "Software",
+                                sentence = "Update the system",
+                                translation = "Actualizar el sistema"
+                            ),
+                            ExampleSentence(
+                                context = "General",
+                                sentence = "I need to update my records",
+                                translation = "Necesito actualizar mis registros"
+                            )
+                        )
+                    ),
+                    collocations = JsonNullable.undefined(),
+                    pronunciation = JsonNullable.undefined(),
+                    grammar = JsonNullable.undefined(),
+                    culturalNotes = JsonNullable.undefined(),
+                    learningTips = JsonNullable.undefined()
+                )
+
+                val response = apiClient.updateWordDetails(
+                    wordId = wordId,
+                    body = updateRequest,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.exampleSentences.size shouldBe 2
+                response.body.synonyms shouldBe setOf("modify") // unchanged
+                response.body.useCases shouldBe setOf("verb") // unchanged
+            }
+
+            @Test
+            fun `200 - should update pronunciation and grammar separately`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.C1)
+                )
+                val wordId = createTestWord(authenticatedUser.userInfo.id, "read")
+
+                // Create initial word details without pronunciation/grammar
+                val createRequest = CreateWordDetailsRequest(
+                    useCases = setOf("verb"),
+                    synonyms = setOf(),
+                    antonyms = setOf(),
+                    commonMistakes = setOf(),
+                    exampleSentences = setOf(),
+                    collocations = setOf(),
+                    pronunciation = null,
+                    grammar = null
+                )
+
+                apiClient.createWordDetails(
+                    wordId = wordId,
+                    body = createRequest,
+                    user = authenticatedUser
+                )
+
+                // Add pronunciation
+                val updateRequest1 = UpdateWordDetailsRequest(
+                    useCases = JsonNullable.undefined(),
+                    synonyms = JsonNullable.undefined(),
+                    antonyms = JsonNullable.undefined(),
+                    commonMistakes = JsonNullable.undefined(),
+                    exampleSentences = JsonNullable.undefined(),
+                    collocations = JsonNullable.undefined(),
+                    pronunciation = JsonNullable.of(
+                        WordPronunciation(
+                            ipa = "riːd",
+                            syllables = "read",
+                            stress = 1
+                        )
+                    ),
+                    grammar = JsonNullable.undefined(),
+                    culturalNotes = JsonNullable.undefined(),
+                    learningTips = JsonNullable.undefined()
+                )
+
+                val response1 = apiClient.updateWordDetails(
+                    wordId = wordId,
+                    body = updateRequest1,
+                    user = authenticatedUser
+                )
+
+                response1.status shouldBe HttpStatus.OK
+                response1.body!!.pronunciation shouldNotBe null
+                response1.body.pronunciation!!.ipa shouldBe "riːd"
+                response1.body.grammar shouldBe null
+
+                // Add grammar
+                val updateRequest2 = UpdateWordDetailsRequest(
+                    useCases = JsonNullable.undefined(),
+                    synonyms = JsonNullable.undefined(),
+                    antonyms = JsonNullable.undefined(),
+                    commonMistakes = JsonNullable.undefined(),
+                    exampleSentences = JsonNullable.undefined(),
+                    collocations = JsonNullable.undefined(),
+                    pronunciation = JsonNullable.undefined(),
+                    grammar = JsonNullable.of(
+                        WordGrammar(
+                            gender = null,
+                            irregularPastTense = "read",
+                            irregularPastParticiple = "read"
+                        )
+                    ),
+                    culturalNotes = JsonNullable.undefined(),
+                    learningTips = JsonNullable.undefined()
+                )
+
+                val response2 = apiClient.updateWordDetails(
+                    wordId = wordId,
+                    body = updateRequest2,
+                    user = authenticatedUser
+                )
+
+                response2.status shouldBe HttpStatus.OK
+                response2.body!!.pronunciation shouldNotBe null // still there
+                response2.body.pronunciation!!.ipa shouldBe "riːd"
+                response2.body.grammar shouldNotBe null
+                response2.body.grammar!!.irregularPastTense shouldBe "read"
+            }
+
+            @Test
+            fun `200 - should replace sets completely when updated`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.C1)
+                )
+                val wordId = createTestWord(authenticatedUser.userInfo.id, "replace")
+
+                // Create with some synonyms
+                val createRequest = CreateWordDetailsRequest(
+                    useCases = setOf("verb"),
+                    synonyms = setOf("substitute", "change"),
+                    antonyms = setOf("keep", "maintain"),
+                    commonMistakes = setOf(),
+                    exampleSentences = setOf(),
+                    collocations = setOf()
+                )
+
+                apiClient.createWordDetails(
+                    wordId = wordId,
+                    body = createRequest,
+                    user = authenticatedUser
+                )
+
+                // Replace synonyms completely (not append)
+                val updateRequest = UpdateWordDetailsRequest(
+                    useCases = JsonNullable.undefined(),
+                    synonyms = JsonNullable.of(setOf("swap")),
+                    antonyms = JsonNullable.of(setOf()),
+                    commonMistakes = JsonNullable.undefined(),
+                    exampleSentences = JsonNullable.undefined(),
+                    collocations = JsonNullable.undefined(),
+                    pronunciation = JsonNullable.undefined(),
+                    grammar = JsonNullable.undefined(),
+                    culturalNotes = JsonNullable.undefined(),
+                    learningTips = JsonNullable.undefined()
+                )
+
+                val response = apiClient.updateWordDetails(
+                    wordId = wordId,
+                    body = updateRequest,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.synonyms shouldBe setOf("swap") // completely replaced
+                response.body.antonyms shouldBe setOf() // cleared
+                response.body.useCases shouldBe setOf("verb") // unchanged
+            }
+
+            @Test
+            fun `200 - should handle multiple consecutive updates`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.C1)
+                )
+                val wordId = createTestWord(authenticatedUser.userInfo.id, "evolve")
+
+                // Create initial
+                apiClient.createWordDetails(
+                    wordId = wordId,
+                    body = CreateWordDetailsRequest(
+                        useCases = setOf("verb"),
+                        synonyms = setOf(),
+                        antonyms = setOf(),
+                        commonMistakes = setOf(),
+                        exampleSentences = setOf(),
+                        collocations = setOf()
+                    ),
+                    user = authenticatedUser
+                )
+
+                // First update
+                apiClient.updateWordDetails(
+                    wordId = wordId,
+                    body = UpdateWordDetailsRequest(
+                        useCases = JsonNullable.of(setOf("verb", "develop")),
+                        synonyms = JsonNullable.of(setOf("develop")),
+                        antonyms = JsonNullable.undefined(),
+                        commonMistakes = JsonNullable.undefined(),
+                        exampleSentences = JsonNullable.undefined(),
+                        collocations = JsonNullable.undefined(),
+                        pronunciation = JsonNullable.undefined(),
+                        grammar = JsonNullable.undefined(),
+                        culturalNotes = JsonNullable.undefined(),
+                        learningTips = JsonNullable.undefined()
+                    ),
+                    user = authenticatedUser
+                )
+
+                // Second update
+                apiClient.updateWordDetails(
+                    wordId = wordId,
+                    body = UpdateWordDetailsRequest(
+                        useCases = JsonNullable.undefined(),
+                        synonyms = JsonNullable.of(setOf("progress", "advance")),
+                        antonyms = JsonNullable.undefined(),
+                        commonMistakes = JsonNullable.undefined(),
+                        exampleSentences = JsonNullable.undefined(),
+                        collocations = JsonNullable.undefined(),
+                        pronunciation = JsonNullable.undefined(),
+                        grammar = JsonNullable.undefined(),
+                        culturalNotes = JsonNullable.of("Evolution is a gradual process"),
+                        learningTips = JsonNullable.undefined()
+                    ),
+                    user = authenticatedUser
+                )
+
+                // Third update and verify
+                val response = apiClient.updateWordDetails(
+                    wordId = wordId,
+                    body = UpdateWordDetailsRequest(
+                        useCases = JsonNullable.of(setOf("biology", "general")),
+                        synonyms = JsonNullable.undefined(),
+                        antonyms = JsonNullable.undefined(),
+                        commonMistakes = JsonNullable.undefined(),
+                        exampleSentences = JsonNullable.undefined(),
+                        collocations = JsonNullable.undefined(),
+                        pronunciation = JsonNullable.undefined(),
+                        grammar = JsonNullable.undefined(),
+                        culturalNotes = JsonNullable.undefined(),
+                        learningTips = JsonNullable.of("Related to evolution")
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.useCases shouldBe setOf("biology", "general")
+                response.body.synonyms shouldBe setOf("progress", "advance")
+                response.body.culturalNotes shouldBe "Evolution is a gradual process"
+                response.body.learningTips shouldBe "Related to evolution"
             }
         }
 
