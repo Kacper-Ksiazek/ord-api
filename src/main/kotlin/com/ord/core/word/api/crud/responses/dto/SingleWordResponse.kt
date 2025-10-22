@@ -3,6 +3,7 @@ package com.ord.core.word.api.crud.responses.dto
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
+import com.ord.core.word.models.word_details.WordDetailsDTO
 import com.ord.features.bank.dto.BankCompact
 import java.time.Instant
 import java.util.*
@@ -28,6 +29,8 @@ data class SingleWordResponse(
 
     val createdAt: Instant,
     var updatedAt: Instant,
+
+    var details: WordDetailsDTO? = null,
 ) {
     companion object {
         val fields = setOf(

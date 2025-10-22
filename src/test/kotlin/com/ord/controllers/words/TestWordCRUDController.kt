@@ -7,6 +7,10 @@ import com.ord.core.security.UserRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
+import com.ord.core.word.api.details.requests.dto.CreateWordDetailsRequest
+import com.ord.core.word.models.word_details.enums.WordCollocationFrequency
+import com.ord.core.word.models.word_details.jsonb.ExampleSentence
+import com.ord.core.word.models.word_details.jsonb.WordCollocation
 import com.ord.core.word.api.crud.requests.dto.ChangeBankForMultipleWordsRequest
 import com.ord.core.word.api.crud.requests.dto.ChangeBankForSingleWordRequest
 import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
@@ -32,6 +36,7 @@ import com.ord.seeders.entities.WordSeeder
 import com.ord.seeders.factories.WordFactory
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.domain.enums.SortDirection
+import com.ord.testing_utils.api.clients.WordDetailsAPIClient
 import com.ord.testing_utils.api.clients.WordsAPIClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -84,6 +89,7 @@ class TestWordCRUDController @Autowired constructor(
     passwordEncoder = passwordEncoder
 ) {
     private val wordsAPIClient = WordsAPIClient(webClient)
+    private val wordDetailsAPIClient = WordDetailsAPIClient(webClient)
 
     lateinit var authenticatedUser: MockedAuthenticatedUser
 
@@ -685,6 +691,87 @@ class TestWordCRUDController @Autowired constructor(
                 fetchedWord.bank?.name shouldBe bank.name
                 fetchedWord.bank?.bankGroup shouldNotBe null
                 fetchedWord.bank?.bankGroup?.name shouldBe bankGroup.name
+            }
+
+            @Test
+            fun `200 - Word with details can be fetched and details are included in response`() {
+                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
+
+                // Create word details
+                val createDetailsRequest = CreateWordDetailsRequest(
+                    useCases = setOf("noun", "verb"),
+                    synonyms = setOf("happy", "joyful"),
+                    antonyms = setOf("sad", "unhappy"),
+                    commonMistakes = setOf("Don't confuse with 'glad'"),
+                    exampleSentences = setOf(
+                        ExampleSentence(
+                            sentence = "I am very happy today",
+                            translation = "Jestem bardzo szczęśliwy dzisiaj"
+                        )
+                    ),
+                    collocations = setOf(
+                        WordCollocation(
+                            phrase = "happy birthday",
+                            translation = "wszystkiego najlepszego",
+                            frequency = WordCollocationFrequency.VERY_COMMON
+                        )
+                    ),
+                    pronunciation = null,
+                    grammar = null,
+                    culturalNotes = "Used commonly in everyday conversation",
+                    learningTips = "Remember the double 'p'"
+                )
+
+                val detailsCreated = wordDetailsAPIClient.createWordDetails(
+                    wordId = word.id!!,
+                    body = createDetailsRequest,
+                    user = authenticatedUser
+                )
+                detailsCreated.status shouldBe HttpStatus.CREATED
+
+                // Fetch the word and verify details are included
+                val response = wordsAPIClient.getWord(
+                    id = word.id,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+
+                val fetchedWord = response.body!!
+                fetchedWord.id shouldBe word.id
+                fetchedWord.details shouldNotBe null
+
+                // Verify details content
+                val details = fetchedWord.details!!
+                details.wordId shouldBe word.id
+                details.useCases shouldBe setOf("noun", "verb")
+                details.synonyms shouldBe setOf("happy", "joyful")
+                details.antonyms shouldBe setOf("sad", "unhappy")
+                details.commonMistakes shouldBe setOf("Don't confuse with 'glad'")
+                details.exampleSentences.size shouldBe 1
+                details.exampleSentences.first().sentence shouldBe "I am very happy today"
+                details.collocations.size shouldBe 1
+                details.collocations.first().phrase shouldBe "happy birthday"
+                details.culturalNotes shouldBe "Used commonly in everyday conversation"
+                details.learningTips shouldBe "Remember the double 'p'"
+            }
+
+            @Test
+            fun `200 - Word without details can be fetched and details field is null`() {
+                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
+
+                val response = wordsAPIClient.getWord(
+                    id = word.id!!,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+
+                val fetchedWord = response.body!!
+                fetchedWord.id shouldBe word.id
+                fetchedWord.details shouldBe null
             }
         }
 
