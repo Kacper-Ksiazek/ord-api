@@ -798,8 +798,10 @@ class TestWordDetailsController @Autowired constructor(
                     grammar = JsonNullable.of(
                         WordGrammar(
                             gender = null,
-                            irregularPastTense = "read",
-                            irregularPastParticiple = "read"
+                            irregularForms = mapOf(
+                                "pastTense" to "read",
+                                "pastParticiple" to "read"
+                            )
                         )
                     ),
                     culturalNotes = JsonNullable.undefined(),
@@ -816,7 +818,10 @@ class TestWordDetailsController @Autowired constructor(
                 response2.body!!.pronunciation shouldNotBe null // still there
                 response2.body.pronunciation!!.ipa shouldBe "riːd"
                 response2.body.grammar shouldNotBe null
-                response2.body.grammar!!.irregularPastTense shouldBe "read"
+                response2.body.grammar!!.irregularForms shouldBe mapOf(
+                    "pastTense" to "read",
+                    "pastParticiple" to "read"
+                )
             }
 
             @Test
