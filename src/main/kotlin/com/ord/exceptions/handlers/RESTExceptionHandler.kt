@@ -24,6 +24,7 @@ class RESTExceptionHandler {
         UnauthorizedException::class,
         ForbiddenException::class,
         NotFoundException::class,
+        ConflictException::class,
         PayloadTooLargeException::class,
         InternalServerError::class
     )
@@ -186,6 +187,7 @@ class RESTExceptionHandler {
         is UnauthorizedException -> HttpStatus.UNAUTHORIZED.value() // 401
         is ForbiddenException -> HttpStatus.FORBIDDEN.value() // 403
         is NotFoundException -> HttpStatus.NOT_FOUND.value() // 404
+        is ConflictException -> HttpStatus.CONFLICT.value() // 409
         is PayloadTooLargeException -> HttpStatus.PAYLOAD_TOO_LARGE.value() // 413
         is InternalServerError -> HttpStatus.INTERNAL_SERVER_ERROR.value() // 500
         is BadGatewayException -> HttpStatus.BAD_GATEWAY.value() // 502

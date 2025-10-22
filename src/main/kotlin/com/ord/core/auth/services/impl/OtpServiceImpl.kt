@@ -1,10 +1,10 @@
 package com.ord.core.auth.services.impl
 
+import com.ord.config.properties.OtpProperties
 import com.ord.core.auth.models.OtpCodeEntity
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.auth.services.OtpService
 import com.ord.exceptions.REST.UnauthorizedException
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.env.Environment
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -16,16 +16,16 @@ import kotlin.random.Random
 class OtpServiceImpl(
     private val otpCodeRepository: OtpCodeRepository,
     private val encoder: PasswordEncoder,
-    private val env: Environment,
-    @Value("\${otp.expiration.minutes}") private val otpExpirationMinutes: Long
+    private val otpProperties: OtpProperties,
+    private val env: Environment
 ) : OtpService {
 
     private val isTestingEnv: Boolean = env.activeProfiles.contains("test")
 
     override fun generateAndSaveOtp(email: String): Mono<String> {
-        val otpCode = generateSixDigitOtp()
+        val otpCode = generateOtpCode(email)
         val hashedCode = encoder.encode(otpCode)
-        val expiresAt = Instant.now().plusSeconds(otpExpirationMinutes * 60)
+        val expiresAt = Instant.now().plusSeconds(otpProperties.expirationMinutes * 60)
 
         return otpCodeRepository
             .deleteByUserEmail(email)
@@ -68,11 +68,21 @@ class OtpServiceImpl(
             )
     }
 
-    private fun generateSixDigitOtp(): String {
-        return if (isTestingEnv) {
-            "000000"
-        } else {
-            Random.nextInt(100000, 999999).toString()
+    private fun generateOtpCode(email: String): String {
+        return when {
+            // For test environment, always return a fixed code for predictability
+            isTestingEnv -> "000000"
+
+            // For whitelisted emails, use the configured code to skip email sending during development
+            otpProperties.isEmailWhitelisted(email) && otpProperties.codeForWhitelisted.isNotBlank() -> {
+                otpProperties.codeForWhitelisted
+            }
+
+            // For all other cases, generate a random 6-digit code (including codes with leading zeros)
+            else -> Random
+                .nextInt(0, 1000000)
+                .toString()
+                .padStart(6, '0')
         }
     }
 }

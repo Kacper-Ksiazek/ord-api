@@ -7,7 +7,7 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
-import com.ord.core.word.repository.WordRepository
+import com.ord.core.word.repositories.WordRepository
 import com.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty

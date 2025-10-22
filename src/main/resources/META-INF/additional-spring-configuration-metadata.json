@@ -29,5 +29,10 @@
       "name": "jwt.issuer",
       "type": "java.lang.String",
       "description": "Description for jwt.issuer."
+    },
+    {
+      "name": "otp.expiration.minutes",
+      "type": "java.lang.String",
+      "description": "Description for otp.expiration.minutes."
     }
   ] }

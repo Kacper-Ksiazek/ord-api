@@ -2,11 +2,9 @@ package com.ord.testing_utils.dto.resources.db_rows
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.word.model.WordEntity
-import com.ord.core.word.model.enums.WordExtraMark
-import com.ord.core.word.model.enums.WordType
-import com.ord.core.word.model.json.ExampleSentence
-import io.r2dbc.postgresql.codec.Json
+import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import java.util.*
 
 data class WordDBExportedRow(
@@ -15,11 +13,9 @@ data class WordDBExportedRow(
     val origin: String,
     val translation: String,
     val definition: String,
-    val useCases: Set<String>,
     val isCompleted: Boolean,
     val isBookmarked: Boolean,
     val points: Int,
-    val exampleSentences: Set<ExampleSentence>,
     val translatedFrom: LanguageName,
     val translatedTo: LanguageName
 ) {
@@ -32,11 +28,9 @@ data class WordDBExportedRow(
             origin = origin,
             translation = translation,
             definition = definition,
-            useCases = Json.of(objectMapper.writeValueAsString(useCases)),
             isCompleted = isCompleted,
             isBookmarked = isBookmarked,
             points = points,
-            exampleSentences = Json.of(objectMapper.writeValueAsString(exampleSentences)),
             translatedFrom = translatedFrom,
             translatedTo = translatedTo,
             userId = userId

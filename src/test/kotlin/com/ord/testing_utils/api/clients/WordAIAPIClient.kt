@@ -1,7 +1,7 @@
 package com.ord.testing_utils.api.clients
 
-import com.ord.core.word.api.requests.dto.GenerateWordManualRequest
-import com.ord.core.word.api.responses.dto.AIGeneratedWordManual
+import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
+import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser

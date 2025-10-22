@@ -15,6 +15,7 @@ import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.ReviewedWordAnswer
 import com.ord.features.game.variants.shared.dto.api_responses.helpers.calculatedWeightedModuleScore
 import com.ord.features.game.variants.shared.enums.WordAnswerScore
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -49,7 +50,7 @@ class CrosswordGameFacade(
 
                             language = body.language,
                             difficulty = body.difficulty,
-                            properAnswers = jsonObjectMapper.writeValueAsString(properAnswers)
+                            properAnswers = Json.of(jsonObjectMapper.writeValueAsString(properAnswers))
                         )
                     )
                     .map { savedGame ->

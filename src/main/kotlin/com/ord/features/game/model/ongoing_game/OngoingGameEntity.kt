@@ -5,6 +5,7 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.shared.models.IdentifiableUserResource
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
 import org.springframework.data.relational.core.mapping.Column
@@ -17,7 +18,7 @@ data class OngoingGameEntity(
     @Id
     override val id: UUID? = null,
 
-    val properAnswers: String, // JSONB
+    val properAnswers: Json, // JSONB
 
     val language: LanguageName,
 
