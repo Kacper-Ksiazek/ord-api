@@ -129,9 +129,7 @@ class TestWordDetailsController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.CREATED
                 response.body shouldNotBe null
-                response.body!!.wordId shouldBe wordId
-                response.body.userId shouldBe authenticatedUser.userInfo.id
-                response.body.useCases shouldBe setOf("greeting", "informal")
+                response.body!!.useCases shouldBe setOf("greeting", "informal")
                 response.body.synonyms shouldBe setOf("hi", "hey")
                 response.body.antonyms shouldBe setOf("goodbye", "bye")
                 response.body.commonMistakes shouldBe setOf("Don't use in formal situations")
@@ -188,8 +186,7 @@ class TestWordDetailsController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.CREATED
                 response.body shouldNotBe null
-                response.body!!.wordId shouldBe wordId
-                response.body.useCases shouldBe setOf("noun")
+                response.body!!.useCases shouldBe setOf("noun")
                 response.body.synonyms shouldBe setOf()
                 response.body.pronunciation shouldBe null
                 response.body.grammar shouldBe null

@@ -3,9 +3,10 @@ package com.ord.core.word.api.details.facades.impl
 import com.ord.core.word.api.details.facades.WordDetailsFacade
 import com.ord.core.word.api.details.requests.dto.CreateWordDetailsRequest
 import com.ord.core.word.api.details.requests.dto.UpdateWordDetailsRequest
-import com.ord.core.word.models.word_details.WordDetailsDTO
+import com.ord.core.word.models.word_details.WordDetailsCompactDTO
 import com.ord.core.word.models.word_details.WordDetailsEntity
 import com.ord.core.word.models.word_details.WordDetailsMapper
+import com.ord.core.word.models.word_details.toCompact
 import com.ord.core.word.repositories.WordDetailsRepository
 import com.ord.core.word.repositories.WordRepository
 import com.ord.core.word.services.WordDetailsService
@@ -30,7 +31,7 @@ class WordDetailsFacadeImpl(
         wordId: UUID,
         request: CreateWordDetailsRequest,
         userId: UUID
-    ): Mono<ResponseEntity<WordDetailsDTO>> {
+    ): Mono<ResponseEntity<WordDetailsCompactDTO>> {
         return wordRepository
             .findByIdAndUserId(
                 id = wordId,
@@ -70,7 +71,7 @@ class WordDetailsFacadeImpl(
             .map {
                 ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(wordDetailsMapper.toDTO(it))
+                    .body(wordDetailsMapper.toDTO(it).toCompact())
             }
     }
 
@@ -78,7 +79,7 @@ class WordDetailsFacadeImpl(
         wordId: UUID,
         request: UpdateWordDetailsRequest,
         userId: UUID
-    ): Mono<ResponseEntity<WordDetailsDTO>> {
+    ): Mono<ResponseEntity<WordDetailsCompactDTO>> {
         return wordRepository
             .findByIdAndUserId(
                 id = wordId,
@@ -114,7 +115,7 @@ class WordDetailsFacadeImpl(
             .map {
                 ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(wordDetailsMapper.toDTO(it))
+                    .body(wordDetailsMapper.toDTO(it).toCompact())
             }
     }
 }

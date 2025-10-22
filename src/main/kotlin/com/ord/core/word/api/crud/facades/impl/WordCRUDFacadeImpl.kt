@@ -11,6 +11,7 @@ import com.ord.core.word.api.crud.responses.dto.WordListItem
 import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.WordMapper
+import com.ord.core.word.models.word_details.toCompact
 import com.ord.core.word.services.WordDetailsService
 import com.ord.core.word.services.WordService
 import com.ord.features.bank.service.BankService
@@ -72,7 +73,7 @@ class WordCRUDFacadeImpl(
                         wordId = id,
                         userId = userId
                     )
-                    .map { details -> word.copy(details = details) }
+                    .map { details -> word.copy(details = details.toCompact()) }
                     .onErrorResume { Mono.just(word.copy(details = null)) }
             }
             .map { ResponseEntity.status(HttpStatus.OK).body(it) }

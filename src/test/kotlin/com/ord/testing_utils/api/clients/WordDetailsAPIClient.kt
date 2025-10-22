@@ -2,7 +2,7 @@ package com.ord.testing_utils.api.clients
 
 import com.ord.core.word.api.details.requests.dto.CreateWordDetailsRequest
 import com.ord.core.word.api.details.requests.dto.UpdateWordDetailsRequest
-import com.ord.core.word.models.word_details.WordDetailsDTO
+import com.ord.core.word.models.word_details.WordDetailsCompactDTO
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -18,12 +18,12 @@ class WordDetailsAPIClient(
         wordId: UUID,
         body: CreateWordDetailsRequest,
         user: MockedAuthenticatedUser? = null
-    ): APIClientResponse<WordDetailsDTO?> {
+    ): APIClientResponse<WordDetailsCompactDTO?> {
         return post(
             url = "/api/v1/words/$wordId/details",
             body = body,
             user = user,
-            responseBodyType = object : ParameterizedTypeReference<WordDetailsDTO>() {}
+            responseBodyType = object : ParameterizedTypeReference<WordDetailsCompactDTO>() {}
         )
     }
 
@@ -31,12 +31,12 @@ class WordDetailsAPIClient(
         wordId: UUID,
         body: UpdateWordDetailsRequest,
         user: MockedAuthenticatedUser? = null
-    ): APIClientResponse<WordDetailsDTO?> {
+    ): APIClientResponse<WordDetailsCompactDTO?> {
         return patch(
             url = "/api/v1/words/$wordId/details",
             body = body,
             user = user,
-            responseBodyType = object : ParameterizedTypeReference<WordDetailsDTO>() {}
+            responseBodyType = object : ParameterizedTypeReference<WordDetailsCompactDTO>() {}
         )
     }
 }

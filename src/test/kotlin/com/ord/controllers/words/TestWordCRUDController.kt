@@ -742,9 +742,8 @@ class TestWordCRUDController @Autowired constructor(
                 fetchedWord.id shouldBe word.id
                 fetchedWord.details shouldNotBe null
 
-                // Verify details content
+                // Verify details content (compact version - no id, wordId, userId, timestamps)
                 val details = fetchedWord.details!!
-                details.wordId shouldBe word.id
                 details.useCases shouldBe setOf("noun", "verb")
                 details.synonyms shouldBe setOf("happy", "joyful")
                 details.antonyms shouldBe setOf("sad", "unhappy")
