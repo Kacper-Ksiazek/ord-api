@@ -68,7 +68,7 @@ class QuicklyAddedWordsController(
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>> = qawFacade.updateOne(
         userId = user.id,
         qawId = id,
-        newWord = body.updatedWord
+        body = body
     )
 
     @PatchMapping("/bulk-update")
