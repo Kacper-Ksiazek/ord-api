@@ -24,11 +24,14 @@ class PublicQAWFacadeImpl(
             .switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")))
             .flatMap { user ->
                 val userId = user!!.id!!
-                
-                val entities = body.words.map { word ->
+
+                val entities = body.words.map { wordItem ->
                     QuicklyAddedWordEntity(
-                        word = word,
+                        word = wordItem.word,
                         language = body.language,
+                        definition = wordItem.definition,
+                        extraMark = wordItem.extraMark,
+                        type = wordItem.type,
                         isApproved = false,
                         userId = userId
                     )
