@@ -6,7 +6,10 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest
+import com.ord.features.quickly_added_words.api.requests.PublicQAWWordItem
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordEntity
 import com.ord.features.quickly_added_words.repositories.QAWRepository
 import com.ord.testing_utils.api.clients.PublicQAWAPIClient
@@ -52,12 +55,38 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
         const val TEST_WORD_1 = "example"
         const val TEST_WORD_2 = "word"
         const val TEST_WORD_3 = "test"
+        const val TEST_DEFINITION = "A sample word for testing"
         val TEST_LANGUAGE = LanguageName.ENGLISH
+        val TEST_EXTRA_MARK = WordExtraMark.SLANG
+        val TEST_TYPE = WordType.NOUN
 
         object APIRequestPayloads {
             fun bulkCreate(email: String) = PublicQAWBulkCreateRequest(
                 userEmail = email,
-                words = listOf(TEST_WORD_1, TEST_WORD_2, TEST_WORD_3),
+                words = listOf(
+                    PublicQAWWordItem(word = TEST_WORD_1),
+                    PublicQAWWordItem(word = TEST_WORD_2),
+                    PublicQAWWordItem(word = TEST_WORD_3)
+                ),
+                language = TEST_LANGUAGE
+            )
+
+            fun bulkCreateWithAllFields(email: String) = PublicQAWBulkCreateRequest(
+                userEmail = email,
+                words = listOf(
+                    PublicQAWWordItem(
+                        word = TEST_WORD_1,
+                        definition = TEST_DEFINITION,
+                        extraMark = TEST_EXTRA_MARK,
+                        type = TEST_TYPE
+                    ),
+                    PublicQAWWordItem(
+                        word = TEST_WORD_2,
+                        definition = "Another definition",
+                        extraMark = WordExtraMark.OFFENSIVE,
+                        type = WordType.VERB
+                    )
+                ),
                 language = TEST_LANGUAGE
             )
         }
@@ -147,7 +176,7 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
                 val response = publicQAWAPIClient.publicBulkCreate(
                     PublicQAWBulkCreateRequest(
                         userEmail = "nonexistent@example.com",
-                        words = listOf(TestData.TEST_WORD_1),
+                        words = listOf(PublicQAWWordItem(word = TestData.TEST_WORD_1)),
                         language = TestData.TEST_LANGUAGE
                     )
                 )
@@ -162,13 +191,113 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
                 val response = publicQAWAPIClient.publicBulkCreate(
                     PublicQAWBulkCreateRequest(
                         userEmail = fakeEmail,
-                        words = listOf(TestData.TEST_WORD_1),
+                        words = listOf(PublicQAWWordItem(word = TestData.TEST_WORD_1)),
                         language = TestData.TEST_LANGUAGE
                     )
                 )
 
                 response.status shouldBe HttpStatus.NOT_FOUND
                 response.body shouldBe null
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/public/quickly-added-words/bulk-create - create words with all fields")
+    inner class PublicBulkCreateWithAllFieldsTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `201 - should create words with definition, extraMark, and type`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    TestData.APIRequestPayloads.bulkCreateWithAllFields(user.email)
+                )
+
+                response.status shouldBe HttpStatus.CREATED
+                response.body shouldNotBe null
+                response.body!! shouldHaveSize 2
+
+                val firstWord = response.body!![0]
+                firstWord.word shouldBe TestData.TEST_WORD_1
+                firstWord.definition shouldBe TestData.TEST_DEFINITION
+                firstWord.extraMark shouldBe TestData.TEST_EXTRA_MARK
+                firstWord.type shouldBe TestData.TEST_TYPE
+
+                val secondWord = response.body!![1]
+                secondWord.word shouldBe TestData.TEST_WORD_2
+                secondWord.definition shouldBe "Another definition"
+                secondWord.extraMark shouldBe WordExtraMark.OFFENSIVE
+                secondWord.type shouldBe WordType.VERB
+            }
+
+            @Test
+            fun `201 - words with all fields should be persisted in database`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    TestData.APIRequestPayloads.bulkCreateWithAllFields(user.email)
+                )
+
+                val wordInDb = qawRepository.findById(response.body!![0].id!!).block()
+                wordInDb shouldNotBe null
+                wordInDb!!.definition shouldBe TestData.TEST_DEFINITION
+                wordInDb.extraMark shouldBe TestData.TEST_EXTRA_MARK
+                wordInDb.type shouldBe TestData.TEST_TYPE
+            }
+
+            @Test
+            fun `201 - should support mixed words (some with fields, some without)`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(
+                            PublicQAWWordItem(
+                                word = TestData.TEST_WORD_1,
+                                definition = TestData.TEST_DEFINITION,
+                                extraMark = TestData.TEST_EXTRA_MARK,
+                                type = TestData.TEST_TYPE
+                            ),
+                            PublicQAWWordItem(word = TestData.TEST_WORD_2),  // Only word, no extras
+                            PublicQAWWordItem(
+                                word = TestData.TEST_WORD_3,
+                                definition = "Only definition"  // Only word and definition
+                            )
+                        ),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.CREATED
+                response.body!! shouldHaveSize 3
+
+                // First word has all fields
+                response.body!![0].definition shouldBe TestData.TEST_DEFINITION
+                response.body!![0].extraMark shouldBe TestData.TEST_EXTRA_MARK
+                response.body!![0].type shouldBe TestData.TEST_TYPE
+
+                // Second word has no extras
+                response.body!![1].definition shouldBe null
+                response.body!![1].extraMark shouldBe null
+                response.body!![1].type shouldBe null
+
+                // Third word has only definition
+                response.body!![2].definition shouldBe "Only definition"
+                response.body!![2].extraMark shouldBe null
+                response.body!![2].type shouldBe null
+            }
+
+            @Test
+            fun `201 - words with all fields should still be unapproved`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    TestData.APIRequestPayloads.bulkCreateWithAllFields(user.email)
+                )
+
+                response.body!!.forEach { word ->
+                    word.isApproved shouldBe false
+                }
             }
         }
     }
