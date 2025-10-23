@@ -199,6 +199,111 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
                 response.status shouldBe HttpStatus.NOT_FOUND
                 response.body shouldBe null
             }
+
+            @Test
+            fun `400 - should reject invalid email format`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = "invalid-email",
+                        words = listOf(PublicQAWWordItem(word = TestData.TEST_WORD_1)),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject empty words list`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject empty word in word item`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(PublicQAWWordItem(word = "")),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject blank word in word item`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(PublicQAWWordItem(word = "   ")),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject word exceeding 255 characters`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(PublicQAWWordItem(word = "a".repeat(256))),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject definition exceeding 2000 characters`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(
+                            PublicQAWWordItem(
+                                word = "test",
+                                definition = "a".repeat(2001)
+                            )
+                        ),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject words list exceeding 100 items`() {
+                val user = mockAuthenticatedUser()
+                val tooManyWords = (1..101).map { PublicQAWWordItem(word = "word$it") }
+
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = tooManyWords,
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
         }
     }
 
