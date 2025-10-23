@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS words
     type            word_type     NOT NULL,                 -- Describes word's kind, such as `noun` or `verb`
     origin          varchar(255)  NOT NULL,                 -- This is the word which is being translated | example: `book`
     translation     VARCHAR(255)  NOT NULL,                 -- This is the word translated into desired language | example: `książka`
-    definition      VARCHAR(255)  NOT NULL,                 -- Short and concise one or two sentences long definition of the word
+    definition      TEXT          NOT NULL,                 -- Short and concise one or two sentences long definition of the word
     extra_mark      word_extra_mark          DEFAULT NULL,  -- Describes the word's extra mark, such as `offensive` or `slang`
 
     translated_from language_name NOT NULL,                 -- Describes the original language of the word | example: `ENGLISH`
