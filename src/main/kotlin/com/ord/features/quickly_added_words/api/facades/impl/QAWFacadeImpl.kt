@@ -3,6 +3,7 @@ package com.ord.features.quickly_added_words.api.facades.impl
 import com.ord.features.quickly_added_words.api.facades.QAWFacade
 import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
+import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordEntity
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordMapper
@@ -102,7 +103,7 @@ class QAWFacadeImpl(
     override fun updateOne(
         userId: UUID,
         qawId: UUID,
-        body: com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
+        body: UpdateQAWRequest
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>> {
         return qawRepository
             .findByIdAndUserId(qawId, userId)
