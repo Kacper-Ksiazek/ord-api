@@ -146,6 +146,59 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 val response = qawAPIClient.createOne(TestData.APIRequestPayloads.createOne)
                 response.status shouldBe HttpStatus.UNAUTHORIZED
             }
+
+            @Test
+            fun `400 - should reject empty word`() {
+                val user = mockAuthenticatedUser()
+                val request = CreateQAWRequest(
+                    word = "",
+                    language = TestData.TEST_LANGUAGE
+                )
+
+                val response = qawAPIClient.createOne(request, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject blank word`() {
+                val user = mockAuthenticatedUser()
+                val request = CreateQAWRequest(
+                    word = "   ",
+                    language = TestData.TEST_LANGUAGE
+                )
+
+                val response = qawAPIClient.createOne(request, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject word exceeding 255 characters`() {
+                val user = mockAuthenticatedUser()
+                val request = CreateQAWRequest(
+                    word = "a".repeat(256),
+                    language = TestData.TEST_LANGUAGE
+                )
+
+                val response = qawAPIClient.createOne(request, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject definition exceeding 2000 characters`() {
+                val user = mockAuthenticatedUser()
+                val request = CreateQAWRequest(
+                    word = "test",
+                    language = TestData.TEST_LANGUAGE,
+                    definition = "a".repeat(2001)
+                )
+
+                val response = qawAPIClient.createOne(request, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
         }
     }
 
@@ -415,6 +468,42 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 )
 
                 response.status shouldBe HttpStatus.NOT_FOUND
+            }
+
+            @Test
+            fun `400 - should reject empty updated word`() {
+                val user = mockAuthenticatedUser()
+                val created = qawAPIClient.createOne(TestData.APIRequestPayloads.createOne, user)
+
+                val updateRequest = UpdateQAWRequest(updatedWord = "")
+
+                val response = qawAPIClient.updateOne(created.body!!.id, updateRequest, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject updated word exceeding 255 characters`() {
+                val user = mockAuthenticatedUser()
+                val created = qawAPIClient.createOne(TestData.APIRequestPayloads.createOne, user)
+
+                val updateRequest = UpdateQAWRequest(updatedWord = "a".repeat(256))
+
+                val response = qawAPIClient.updateOne(created.body!!.id, updateRequest, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject definition exceeding 2000 characters`() {
+                val user = mockAuthenticatedUser()
+                val created = qawAPIClient.createOne(TestData.APIRequestPayloads.createOne, user)
+
+                val updateRequest = UpdateQAWRequest(definition = "a".repeat(2001))
+
+                val response = qawAPIClient.updateOne(created.body!!.id, updateRequest, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }
