@@ -6,8 +6,11 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.security.UserRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
+import com.ord.features.quickly_added_words.api.requests.PublicQAWWordItem
 import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
 import com.ord.features.quickly_added_words.repositories.QAWRepository
@@ -56,12 +59,23 @@ class TestQuicklyAddedWordsController @Autowired constructor(
         const val TEST_WORD_1 = "przykład"
         const val TEST_WORD_2 = "słowo"
         const val TEST_WORD_3 = "test"
+        const val TEST_DEFINITION = "A sample word for testing"
         val TEST_LANGUAGE = LanguageName.POLISH
+        val TEST_EXTRA_MARK = WordExtraMark.SLANG
+        val TEST_TYPE = WordType.NOUN
 
         object APIRequestPayloads {
             val createOne = CreateQAWRequest(
                 word = TEST_WORD_1,
                 language = TEST_LANGUAGE
+            )
+
+            val createOneWithAllFields = CreateQAWRequest(
+                word = TEST_WORD_1,
+                language = TEST_LANGUAGE,
+                definition = TEST_DEFINITION,
+                extraMark = TEST_EXTRA_MARK,
+                type = TEST_TYPE
             )
 
             val createBulk = listOf(
@@ -72,6 +86,13 @@ class TestQuicklyAddedWordsController @Autowired constructor(
 
             val updateOne = UpdateQAWRequest(
                 updatedWord = "zaktualizowane"
+            )
+
+            val updateOneWithAllFields = UpdateQAWRequest(
+                updatedWord = "zaktualizowane",
+                definition = "Updated definition",
+                extraMark = WordExtraMark.OFFENSIVE,
+                type = WordType.VERB
             )
         }
     }
@@ -124,6 +145,93 @@ class TestQuicklyAddedWordsController @Autowired constructor(
             fun `401 - should require authentication`() {
                 val response = qawAPIClient.createOne(TestData.APIRequestPayloads.createOne)
                 response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `400 - should reject empty word`() {
+                val user = mockAuthenticatedUser()
+                val request = CreateQAWRequest(
+                    word = "",
+                    language = TestData.TEST_LANGUAGE
+                )
+
+                val response = qawAPIClient.createOne(request, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject blank word`() {
+                val user = mockAuthenticatedUser()
+                val request = CreateQAWRequest(
+                    word = "   ",
+                    language = TestData.TEST_LANGUAGE
+                )
+
+                val response = qawAPIClient.createOne(request, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject word exceeding 255 characters`() {
+                val user = mockAuthenticatedUser()
+                val request = CreateQAWRequest(
+                    word = "a".repeat(256),
+                    language = TestData.TEST_LANGUAGE
+                )
+
+                val response = qawAPIClient.createOne(request, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject definition exceeding 2000 characters`() {
+                val user = mockAuthenticatedUser()
+                val request = CreateQAWRequest(
+                    word = "test",
+                    language = TestData.TEST_LANGUAGE,
+                    definition = "a".repeat(2001)
+                )
+
+                val response = qawAPIClient.createOne(request, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/quickly-added-words/ - create one quickly added word with all fields")
+    inner class CreateOneWithAllFieldsTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `201 - should create a quickly added word with definition, extraMark, and type`() {
+                val user = mockAuthenticatedUser()
+                val response = qawAPIClient.createOne(TestData.APIRequestPayloads.createOneWithAllFields, user)
+
+                response.status shouldBe HttpStatus.CREATED
+                response.body shouldNotBe null
+                response.body!!.word shouldBe TestData.TEST_WORD_1
+                response.body!!.language shouldBe TestData.TEST_LANGUAGE
+                response.body!!.definition shouldBe TestData.TEST_DEFINITION
+                response.body!!.extraMark shouldBe TestData.TEST_EXTRA_MARK
+                response.body!!.type shouldBe TestData.TEST_TYPE
+            }
+
+            @Test
+            fun `201 - created word with all fields should be persisted in database`() {
+                val user = mockAuthenticatedUser()
+                val response = qawAPIClient.createOne(TestData.APIRequestPayloads.createOneWithAllFields, user)
+
+                val wordInDb = qawRepository.findById(response.body!!.id).block()
+                wordInDb shouldNotBe null
+                wordInDb!!.definition shouldBe TestData.TEST_DEFINITION
+                wordInDb.extraMark shouldBe TestData.TEST_EXTRA_MARK
+                wordInDb.type shouldBe TestData.TEST_TYPE
             }
         }
     }
@@ -277,6 +385,50 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 val wordInDb = qawRepository.findById(created.body!!.id).block()
                 wordInDb!!.word shouldBe "zaktualizowane"
             }
+
+            @Test
+            fun `200 - should update all fields including definition, extraMark, and type`() {
+                val user = mockAuthenticatedUser()
+                val created = qawAPIClient.createOne(TestData.APIRequestPayloads.createOneWithAllFields, user)
+
+                val response = qawAPIClient.updateOne(
+                    id = created.body!!.id,
+                    body = TestData.APIRequestPayloads.updateOneWithAllFields,
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.word shouldBe "zaktualizowane"
+                response.body!!.definition shouldBe "Updated definition"
+                response.body!!.extraMark shouldBe WordExtraMark.OFFENSIVE
+                response.body!!.type shouldBe WordType.VERB
+            }
+
+            @Test
+            fun `200 - partial update should only change specified fields`() {
+                val user = mockAuthenticatedUser()
+                val created = qawAPIClient.createOne(TestData.APIRequestPayloads.createOneWithAllFields, user)
+
+                val partialUpdate = UpdateQAWRequest(
+                    updatedWord = null,
+                    definition = "Only definition changed",
+                    extraMark = null,
+                    type = null
+                )
+
+                val response = qawAPIClient.updateOne(
+                    id = created.body!!.id,
+                    body = partialUpdate,
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body!!.word shouldBe TestData.TEST_WORD_1  // unchanged
+                response.body!!.definition shouldBe "Only definition changed"  // changed
+                response.body!!.extraMark shouldBe TestData.TEST_EXTRA_MARK  // unchanged
+                response.body!!.type shouldBe TestData.TEST_TYPE  // unchanged
+            }
         }
 
         @Nested
@@ -316,6 +468,42 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 )
 
                 response.status shouldBe HttpStatus.NOT_FOUND
+            }
+
+            @Test
+            fun `400 - should reject empty updated word`() {
+                val user = mockAuthenticatedUser()
+                val created = qawAPIClient.createOne(TestData.APIRequestPayloads.createOne, user)
+
+                val updateRequest = UpdateQAWRequest(updatedWord = "")
+
+                val response = qawAPIClient.updateOne(created.body!!.id, updateRequest, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject updated word exceeding 255 characters`() {
+                val user = mockAuthenticatedUser()
+                val created = qawAPIClient.createOne(TestData.APIRequestPayloads.createOne, user)
+
+                val updateRequest = UpdateQAWRequest(updatedWord = "a".repeat(256))
+
+                val response = qawAPIClient.updateOne(created.body!!.id, updateRequest, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - should reject definition exceeding 2000 characters`() {
+                val user = mockAuthenticatedUser()
+                val created = qawAPIClient.createOne(TestData.APIRequestPayloads.createOne, user)
+
+                val updateRequest = UpdateQAWRequest(definition = "a".repeat(2001))
+
+                val response = qawAPIClient.updateOne(created.body!!.id, updateRequest, user)
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }
@@ -370,7 +558,11 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 val publicResponse = publicClient.publicBulkCreate(
                     com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
                         userEmail = user.email,
-                        words = listOf(TestData.TEST_WORD_1, TestData.TEST_WORD_2, TestData.TEST_WORD_3),
+                        words = listOf(
+                            com.ord.features.quickly_added_words.api.requests.PublicQAWWordItem(word = TestData.TEST_WORD_1),
+                            com.ord.features.quickly_added_words.api.requests.PublicQAWWordItem(word = TestData.TEST_WORD_2),
+                            com.ord.features.quickly_added_words.api.requests.PublicQAWWordItem(word = TestData.TEST_WORD_3)
+                        ),
                         language = TestData.TEST_LANGUAGE
                     )
                 )
@@ -395,7 +587,10 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 val publicResponse = publicClient.publicBulkCreate(
                     com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
                         userEmail = user.email,
-                        words = listOf(TestData.TEST_WORD_1, TestData.TEST_WORD_2),
+                        words = listOf(
+                            com.ord.features.quickly_added_words.api.requests.PublicQAWWordItem(word = TestData.TEST_WORD_1),
+                            com.ord.features.quickly_added_words.api.requests.PublicQAWWordItem(word = TestData.TEST_WORD_2)
+                        ),
                         language = TestData.TEST_LANGUAGE
                     )
                 )
@@ -426,7 +621,9 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 val user1Response = publicClient.publicBulkCreate(
                     com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
                         userEmail = user1.email,
-                        words = listOf(TestData.TEST_WORD_1),
+                        words = listOf(
+                            PublicQAWWordItem(word = TestData.TEST_WORD_1)
+                        ),
                         language = TestData.TEST_LANGUAGE
                     )
                 )
@@ -435,7 +632,9 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 val user2Response = publicClient.publicBulkCreate(
                     com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
                         userEmail = user2.email,
-                        words = listOf(TestData.TEST_WORD_2),
+                        words = listOf(
+                            PublicQAWWordItem(word = TestData.TEST_WORD_2)
+                        ),
                         language = TestData.TEST_LANGUAGE
                     )
                 )

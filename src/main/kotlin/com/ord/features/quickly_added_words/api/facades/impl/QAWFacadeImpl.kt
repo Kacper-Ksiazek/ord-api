@@ -3,6 +3,7 @@ package com.ord.features.quickly_added_words.api.facades.impl
 import com.ord.features.quickly_added_words.api.facades.QAWFacade
 import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
+import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordEntity
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordMapper
@@ -32,6 +33,9 @@ class QAWFacadeImpl(
         val entity = QuicklyAddedWordEntity(
             word = body.word,
             language = body.language,
+            definition = body.definition,
+            extraMark = body.extraMark,
+            type = body.type,
             isApproved = true,
             userId = userId,
         )
@@ -51,6 +55,9 @@ class QAWFacadeImpl(
             QuicklyAddedWordEntity(
                 word = request.word,
                 language = request.language,
+                definition = request.definition,
+                extraMark = request.extraMark,
+                type = request.type,
                 isApproved = true,
                 userId = userId,
             )
@@ -96,13 +103,18 @@ class QAWFacadeImpl(
     override fun updateOne(
         userId: UUID,
         qawId: UUID,
-        newWord: String
+        body: UpdateQAWRequest
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>> {
         return qawRepository
             .findByIdAndUserId(qawId, userId)
             .switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.NOT_FOUND, "Quickly added word not found")))
             .flatMap { entity ->
-                val updatedEntity = entity!!.copy(word = newWord)
+                val updatedEntity = entity!!.copy(
+                    word = body.updatedWord ?: entity.word,
+                    definition = body.definition ?: entity.definition,
+                    extraMark = body.extraMark ?: entity.extraMark,
+                    type = body.type ?: entity.type
+                )
                 qawRepository.save(updatedEntity)
             }
             .map { qawMapper.toDTO(it) }

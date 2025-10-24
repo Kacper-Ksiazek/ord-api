@@ -2,6 +2,7 @@ package com.ord.features.quickly_added_words.api.facades
 
 import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
+import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import org.springframework.http.ResponseEntity
@@ -42,7 +43,7 @@ interface QAWFacade {
     fun updateOne(
         userId: UUID,
         qawId: UUID,
-        newWord: String
+        body: UpdateQAWRequest
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>>
 
 

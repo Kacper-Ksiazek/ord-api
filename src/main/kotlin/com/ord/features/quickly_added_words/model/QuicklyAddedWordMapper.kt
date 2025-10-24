@@ -14,6 +14,11 @@ class QuicklyAddedWordMapper(
 
             word = dto.word,
             language = dto.language,
+
+            definition = dto.definition,
+            extraMark = dto.extraMark,
+            type = dto.type,
+
             isApproved = dto.isApproved,
 
             createdAt = dto.createdAt,
@@ -28,6 +33,11 @@ class QuicklyAddedWordMapper(
 
             word = entity.word,
             language = entity.language,
+
+            definition = entity.definition,
+            extraMark = entity.extraMark,
+            type = entity.type,
+
             isApproved = entity.isApproved,
 
             userId = entity.userId,
