@@ -16,6 +16,13 @@ import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.api.crud.responses.dto.WordListItem
 import com.ord.core.word.models.word.WordDTO
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -33,6 +40,11 @@ import java.util.UUID
 
 @RestController
 @RequestMapping("/api/v1/words")
+@Tag(
+    name = "2. Words: CRUD",
+    description = "Create, read, update, and delete vocabulary words with advanced filtering and bulk operations"
+)
+@SecurityRequirement(name = "bearer-jwt")
 class WordCRUDController(
     private val wordCRUDFacade: WordCRUDFacade,
     private val wordPropertyToggleFacade: WordPropertyToggleFacade,
@@ -43,9 +55,24 @@ class WordCRUDController(
     // -------
 
     @PostMapping("/get-many-words")
+    @Operation(
+        summary = "Get words with advanced filtering",
+        description = "Retrieve paginated list of words with filtering by language, bank, type, and search query"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Words retrieved successfully"
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun getAllWords(
         @RequestBody @Valid requestBody: GetManyWordsRequest,
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
     ): Mono<ResponseEntity<PaginatedDataResponse<WordListItem>>> = wordCRUDFacade.getManyWords(
         requestBody = requestBody,
         userId = user.id
@@ -53,9 +80,32 @@ class WordCRUDController(
 
 
     @GetMapping("/{id}")
+    @Operation(
+        summary = "Get word by ID",
+        description = "Retrieve detailed information about a specific word"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Word retrieved successfully"
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Word not found",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun getWord(
-        @PathVariable id: UUID,
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(
+            description = "Word ID",
+            example = "650e8400-e29b-41d4-a716-446655440000"
+        ) @PathVariable id: UUID,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
     ): Mono<ResponseEntity<SingleWordResponse>> = wordCRUDFacade.getSingleWord(
         id = id,
         userId = user.id
@@ -63,17 +113,65 @@ class WordCRUDController(
 
 
     @PostMapping("/")
+    @Operation(
+        summary = "Create a new word",
+        description = "Add a new vocabulary word to the user's collection"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Word created successfully"
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Invalid request data",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun createWord(
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: CreateWordRequest
     ): Mono<ResponseEntity<WordDTO>> {
         return wordCRUDFacade.createWord(body, user)
     }
 
     @PatchMapping("/{id}")
+    @Operation(
+        summary = "Update a word",
+        description = "Update an existing word's information"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Word updated successfully"
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Word not found",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Invalid request data",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun updateWord(
-        @PathVariable id: UUID,
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(
+            description = "Word ID",
+            example = "650e8400-e29b-41d4-a716-446655440000"
+        ) @PathVariable id: UUID,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: UpdateWordRequest
     ): Mono<ResponseEntity<WordDTO>> {
         return wordCRUDFacade.updateWord(
@@ -85,9 +183,32 @@ class WordCRUDController(
 
 
     @DeleteMapping("/{id}")
+    @Operation(
+        summary = "Delete a word",
+        description = "Permanently delete a word from the user's collection"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Word deleted successfully"
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Word not found",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun deleteWord(
-        @AuthenticatedUser user: UserDTO,
-        @PathVariable id: UUID
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @Parameter(
+            description = "Word ID",
+            example = "650e8400-e29b-41d4-a716-446655440000"
+        ) @PathVariable id: UUID
     ): Mono<ResponseEntity<Unit>> = wordCRUDFacade.deleteWord(
         id = id,
         userId = user.id
@@ -99,9 +220,32 @@ class WordCRUDController(
     // -------
 
     @PostMapping("/{id}/change-bank")
+    @Operation(
+        summary = "Change word bank",
+        description = "Move a word to a different learning bank"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Word bank changed successfully"
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Word not found",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun changeWordBank(
-        @PathVariable id: UUID,
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(
+            description = "Word ID",
+            example = "650e8400-e29b-41d4-a716-446655440000"
+        ) @PathVariable id: UUID,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: ChangeBankForSingleWordRequest
     ): Mono<ResponseEntity<Unit>> {
         return wordBankManagementFacade.changeBankOfOneWord(id, body, user)
@@ -109,8 +253,23 @@ class WordCRUDController(
     }
 
     @PostMapping("/change-bank-for-multiple-words")
+    @Operation(
+        summary = "Change bank for multiple words",
+        description = "Move multiple words to a different learning bank in a single operation"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Words bank changed successfully"
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun changeBankForMultipleWords(
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: ChangeBankForMultipleWordsRequest
     ): Mono<ResponseEntity<Unit>> {
         return wordBankManagementFacade.changeBankOfMultipleWords(body, user)
@@ -122,10 +281,36 @@ class WordCRUDController(
     // -------
 
     @PostMapping("/{id}/toggle-property")
+    @Operation(
+        summary = "Toggle word property",
+        description = "Toggle a boolean property for a single word (e.g., favorite, learned)"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Property toggled successfully"
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Word not found",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun togglePropertyForOneWord(
-        @PathVariable id: UUID,
-        @AuthenticatedUser user: UserDTO,
-        @RequestParam(required = true) property: WordToggleableProperty
+        @Parameter(
+            description = "Word ID",
+            example = "650e8400-e29b-41d4-a716-446655440000"
+        ) @PathVariable id: UUID,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @Parameter(
+            description = "Property to toggle",
+            example = "FAVORITE"
+        ) @RequestParam(required = true) property: WordToggleableProperty
     ): Mono<ResponseEntity<Unit>> = wordPropertyToggleFacade.togglePropertyForOneWord(
         id = id,
         property = property,
@@ -134,9 +319,27 @@ class WordCRUDController(
 
 
     @PostMapping("/toggle-property-for-multiple-words")
+    @Operation(
+        summary = "Toggle property for multiple words",
+        description = "Toggle a boolean property for multiple words in a single operation"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Property toggled successfully for all words"
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun togglePropertyForManyWords(
-        @RequestParam(required = true) property: WordToggleableProperty,
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(
+            description = "Property to toggle",
+            example = "FAVORITE"
+        ) @RequestParam(required = true) property: WordToggleableProperty,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: WordBulkActionRequest
     ): Mono<ResponseEntity<Unit>> =
         wordPropertyToggleFacade.togglePropertyForMultipleWords(
