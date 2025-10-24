@@ -50,25 +50,24 @@ class Application(
 fun convertHerokuDatabaseUrl() {
     val databaseUrl = System.getenv("DATABASE_URL")
         ?: throw IllegalStateException("❌ Missing environment variable DATABASE_URL. Please make sure it is set!")
-
     try {
         val uri = URI(databaseUrl.replace("postgres://", "postgresql://"))
         val (username, password) = uri.userInfo.split(":")
 
-        val jdbcUrl = "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}"
-        val r2dbcUrl = "r2dbc:postgresql://${uri.host}:${uri.port}${uri.path}"
+        // JDBC URL for Flyway - Heroku requires SSL
+        val jdbcUrl = "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}?sslmode=require"
 
+        // R2DBC URL for WebFlux - Heroku requires SSL
+        val r2dbcUrl = "r2dbc:postgresql://${uri.host}:${uri.port}${uri.path}?sslmode=require"
 
         System.setProperty("DATABASE_URL_JDBC", jdbcUrl)     // For Flyway migrations
         System.setProperty("DATABASE_URL_R2DBC", r2dbcUrl)   // For Application running on WebFlux with R2DBC
         System.setProperty("DATABASE_USERNAME", username)
         System.setProperty("DATABASE_PASSWORD", password)
-
     } catch (e: Exception) {
         throw IllegalStateException("❌ Failed to parse DATABASE_URL: $databaseUrl", e)
     }
 }
-
 fun main(args: Array<String>) {
     convertHerokuDatabaseUrl()
 
