@@ -5,6 +5,7 @@ import com.ord.core.security.JwtReactiveAuthenticationManager
 import com.ord.core.security.JwtSecurityContextRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -23,7 +24,8 @@ class SecurityConfiguration(
         private val ANONYMOUS_PATHS = arrayOf(
             "/api/v1/auth/otp-request",
             "/api/v1/auth/otp-verify",
-            "/api/v1/public/quickly-added-words/**"
+            "/api/v1/public/quickly-added-words/**",
+            "/api/v1/health-check"
         )
 
         private val AUTHORIZED_PATHS = arrayOf(
@@ -43,16 +45,17 @@ class SecurityConfiguration(
     }
 
     @Bean
-    fun securityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
+    @Order(2)
+    fun apiSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http
             .csrf { it.disable() }
             .securityContextRepository(contextRepository)
             .authenticationManager(authManager)
             .authorizeExchange { ex ->
+                ex.pathMatchers(*SwaggerSecurityConfiguration.SWAGGER_PATHS).denyAll()
                 ex.pathMatchers(*ANONYMOUS_PATHS).access(anonymousOnlyAuthorizationManager)
                 ex.pathMatchers(*AUTHORIZED_PATHS).authenticated()
             }
             .build()
     }
-
 }
