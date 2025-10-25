@@ -34,18 +34,20 @@ jobs:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: 🔨 Build application
+      - name: 🔨 Build application (skip tests)
         run: mvn clean package -DskipTests
 
-      - name: 🚀 Start application in background
+      - name: 🚀 Start application with CI/CD profile
+        env:
+          SPRING_PROFILE: cicd
         run: |
           java -jar target/*.jar &
           echo "Waiting for application to start..."
-          sleep 45
+          sleep 30
 
       - name: ✅ Verify application is running
         run: |
-          curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:8080/api/v1/health-check || exit 1
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:8080/api/v1/health-check || exit 1
 
       - name: 📄 Export OpenAPI specification
         env:
