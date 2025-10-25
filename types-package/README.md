@@ -156,25 +156,56 @@ const newWord = await apiCall('post', '/api/v1/words/', {
 
 #### Enums
 
+Enums are exported as reusable types from the schemas:
+
 ```typescript
 import type { components } from '@ord-api/ord-api-types';
 
-type LanguageName = components['schemas']['LanguageName'];
-type WordType = components['schemas']['WordType'];
-type WordExtraMark = components['schemas']['WordExtraMark'];
+// Export enum types for reuse
+export type LanguageName = components['schemas']['LanguageName'];
+export type WordType = components['schemas']['WordType'];
+export type WordExtraMark = components['schemas']['WordExtraMark'];
 
-const createWord = async () => {
-  const language: LanguageName = 'ENGLISH';
-  const type: WordType = 'NOUN';
-  const extraMark: WordExtraMark = 'SLANG';
-
+// Use them throughout your app
+const createWord = async (
+  word: string,
+  language: LanguageName,
+  type?: WordType,
+  extraMark?: WordExtraMark
+) => {
   await api.post('/api/v1/words/', {
-    word: 'awesome',
+    word,
     language,
     type,
     extraMark,
   });
 };
+
+// TypeScript will enforce the correct values
+createWord('awesome', 'ENGLISH', 'NOUN', 'SLANG'); // ✅ Valid
+createWord('test', 'FRENCH'); // ✅ Valid
+createWord('invalid', 'INVALID'); // ❌ TypeScript error
+```
+
+**Best Practice:** Create a central `api-types.ts` file to export commonly used enums:
+
+```typescript
+// src/types/api-types.ts
+import type { components } from '@ord-api/ord-api-types';
+
+// Export all enums you use frequently
+export type LanguageName = components['schemas']['LanguageName'];
+export type WordType = components['schemas']['WordType'];
+export type WordExtraMark = components['schemas']['WordExtraMark'];
+export type WordToggleableProperty = components['schemas']['WordToggleableProperty'];
+
+// Export common DTOs
+export type UserDTO = components['schemas']['UserDTO'];
+export type WordDTO = components['schemas']['WordDTO'];
+export type QuicklyAddedWordDTO = components['schemas']['QuicklyAddedWordDTO'];
+
+// Then import from one place everywhere
+// import { LanguageName, WordType, UserDTO } from '@/types/api-types';
 ```
 
 ## React Example
