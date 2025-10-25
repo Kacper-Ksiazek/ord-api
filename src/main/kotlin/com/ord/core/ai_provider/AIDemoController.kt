@@ -5,6 +5,10 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,6 +17,10 @@ import reactor.core.publisher.Flux
 
 @RestController
 @RequestMapping("/api/demo")
+@Tag(
+    name = "6. Utility: AI Demo",
+    description = "Demonstration endpoints for testing AI provider streaming functionality"
+)
 class AIDemoController(
     private val openAIStreamClientService: OpenAIAPIClientService
 ) {
@@ -20,6 +28,16 @@ class AIDemoController(
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
     @GetMapping("/stream-string", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    @Operation(
+        summary = "Demo: Stream string response",
+        description = "Demonstrate AI string streaming with a sample prompt generating ice breaker questions"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Streaming response started successfully"
+        )
+    ])
     fun streamStringResponse(): Flux<String> {
         val prompt = "Generate 5 random ice breaker questions. Start each with a separate numbered point"
 
@@ -37,6 +55,16 @@ class AIDemoController(
     }
 
     @GetMapping("/stream-array", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    @Operation(
+        summary = "Demo: Stream structured array response",
+        description = "Demonstrate AI structured array streaming with JSON objects separated by delimiters"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Streaming array response started successfully"
+        )
+    ])
     fun streamArrayResponse(): Flux<String> {
         val prompt =
             """

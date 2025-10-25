@@ -8,6 +8,13 @@ import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishS
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.FinishedSentencesWritingGameResponse
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.StartedSentencesWritingGameResponse
 import com.ord.features.game.variants.shared.dto.api_requests.StartGameRequest
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -18,19 +25,69 @@ import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/v1/games/sentences-writing")
+@Tag(
+    name = "4. Games: Sentences Writing",
+    description = "Sentence writing game variant to practice vocabulary usage in context"
+)
+@SecurityRequirement(name = "bearer-jwt")
 class SentencesWritingGameController(
     private val sentencesWritingGameFacade: SentencesWritingGameFacade
 ) {
 
     @PostMapping("/start")
+    @Operation(
+        summary = "Start a sentences writing game",
+        description = "Initiate a new sentence writing game session where users create sentences using target words"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Sentences writing game started successfully"
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Invalid request data or insufficient words for game",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun startWordsTypingGame(
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: StartGameRequest
     ): Mono<ResponseEntity<StartedSentencesWritingGameResponse>> = sentencesWritingGameFacade.startGame(user.id, body)
 
     @PostMapping("/finish")
+    @Operation(
+        summary = "Finish a sentences writing game",
+        description = "Submit written sentences and complete the game session to receive AI-powered feedback and evaluation"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Sentences writing game finished successfully"
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Game not found",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Invalid request data or sentence exceeds 1024 characters",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun finishWordsTypingGame(
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: FinishSentencesWritingGameRequest
     ): Mono<ResponseEntity<FinishedSentencesWritingGameResponse>> {
         body.answers.forEach {

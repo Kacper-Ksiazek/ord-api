@@ -5,6 +5,13 @@ import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.services.OngoingGameService
 import com.ord.features.game.variants.shared.dto.api_requests.CancelGameRequest
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -13,6 +20,11 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/games")
+@Tag(
+    name = "4. Games: General",
+    description = "General game management endpoints for all game types"
+)
+@SecurityRequirement(name = "bearer-jwt")
 class GamesController(
     private val ongoingGameService: OngoingGameService,
 ) {
@@ -53,9 +65,33 @@ class GamesController(
     // 15. @GetMapping("/statistics")
 
     @PostMapping("/cancel/{gameId}")
+    @Operation(
+        summary = "Cancel an ongoing game",
+        description = "Cancel an active game session before completion"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "204",
+            description = "Game cancelled successfully",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Game not found",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
     fun cancelGame(
-        @PathVariable gameId: UUID,
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(
+            description = "Ongoing game ID",
+            example = "650e8400-e29b-41d4-a716-446655440000"
+        ) @PathVariable gameId: UUID,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: CancelGameRequest
     ): Mono<ResponseEntity<Unit>> {
         return ongoingGameService

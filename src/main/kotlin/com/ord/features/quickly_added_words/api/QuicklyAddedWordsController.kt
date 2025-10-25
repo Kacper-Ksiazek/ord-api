@@ -8,6 +8,14 @@ import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
 import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -16,6 +24,11 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/quickly-added-words")
+@Tag(
+    name = "3. QAW: Authenticated",
+    description = "Rapidly add and manage words for later processing and approval (requires authentication)"
+)
+@SecurityRequirement(name = "bearer-jwt")
 class QuicklyAddedWordsController(
     private val qawFacade: QAWFacade,
 ) {
@@ -24,8 +37,23 @@ class QuicklyAddedWordsController(
     // -------
 
     @PostMapping("/")
+    @Operation(
+        summary = "Create a quickly added word",
+        description = "Rapidly adds a new word with minimal details for later processing."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "Word created successfully",
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = QuicklyAddedWordDTO::class))]
+            ),
+            ApiResponse(responseCode = "400", description = "Invalid word data", content = [Content()]),
+            ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
+        ]
+    )
     fun createOne(
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: CreateQAWRequest
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>> = qawFacade.createOne(
         userId = user.id,
@@ -33,8 +61,23 @@ class QuicklyAddedWordsController(
     )
 
     @PostMapping("/bulk-create")
+    @Operation(
+        summary = "Bulk create quickly added words",
+        description = "Creates multiple words at once for rapid vocabulary collection."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "Words created successfully",
+                content = [Content(mediaType = "application/json")]
+            ),
+            ApiResponse(responseCode = "400", description = "Invalid word data", content = [Content()]),
+            ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
+        ]
+    )
     fun bulkCreate(
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: List<CreateQAWRequest>
     ): Mono<ResponseEntity<List<QuicklyAddedWordDTO>>> = qawFacade.bulkCreate(
         userId = user.id,
@@ -46,10 +89,24 @@ class QuicklyAddedWordsController(
     // -------
 
     @GetMapping("/")
+    @Operation(
+        summary = "Get quickly added words with pagination",
+        description = "Retrieves a paginated list of quickly added words for the authenticated user."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Words retrieved successfully",
+                content = [Content(mediaType = "application/json")]
+            ),
+            ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
+        ]
+    )
     fun getManyQAWs(
-        @AuthenticatedUser user: UserDTO,
-        @RequestParam(required = false) page: Int?,
-        @RequestParam(required = false) perPage: Int?
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @Parameter(description = "Page number (0-indexed)", example = "0") @RequestParam(required = false) page: Int?,
+        @Parameter(description = "Number of items per page", example = "20") @RequestParam(required = false) perPage: Int?
     ): Mono<ResponseEntity<PaginatedDataResponse<QuicklyAddedWordDTO>>> = qawFacade.getManyQAWs(
         userId = user.id,
         page = page,
@@ -61,9 +118,25 @@ class QuicklyAddedWordsController(
     // -------
 
     @PatchMapping("/{id}")
+    @Operation(
+        summary = "Update a quickly added word",
+        description = "Updates the content of a specific quickly added word."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Word updated successfully",
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = QuicklyAddedWordDTO::class))]
+            ),
+            ApiResponse(responseCode = "400", description = "Invalid update data", content = [Content()]),
+            ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()]),
+            ApiResponse(responseCode = "404", description = "Word not found", content = [Content()])
+        ]
+    )
     fun updateOne(
-        @PathVariable id: UUID,
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(description = "Word ID to update") @PathVariable id: UUID,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: UpdateQAWRequest
     ): Mono<ResponseEntity<QuicklyAddedWordDTO>> = qawFacade.updateOne(
         userId = user.id,
@@ -72,8 +145,23 @@ class QuicklyAddedWordsController(
     )
 
     @PatchMapping("/bulk-update")
+    @Operation(
+        summary = "Bulk update quickly added words",
+        description = "Updates multiple words at once using a map of word IDs to new word values."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Words updated successfully",
+                content = [Content(mediaType = "application/json")]
+            ),
+            ApiResponse(responseCode = "400", description = "Invalid update data", content = [Content()]),
+            ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
+        ]
+    )
     fun bulkUpdate(
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: Map<UUID, String>
     ): Mono<ResponseEntity<List<QuicklyAddedWordDTO>>> = qawFacade.bulkUpdate(
         userId = user.id,
@@ -81,8 +169,19 @@ class QuicklyAddedWordsController(
     )
 
     @PatchMapping("/approve-many")
+    @Operation(
+        summary = "Approve multiple quickly added words",
+        description = "Marks multiple words as approved, promoting them from quickly added status."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Words approved successfully"),
+            ApiResponse(responseCode = "400", description = "Invalid approval data", content = [Content()]),
+            ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
+        ]
+    )
     fun approveMany(
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: ApproveManyQAWRequest
     ): Mono<ResponseEntity<Unit>> = qawFacade.approveMany(
         userId = user.id,
@@ -94,17 +193,39 @@ class QuicklyAddedWordsController(
     // -------
 
     @DeleteMapping("/{id}")
+    @Operation(
+        summary = "Delete a quickly added word",
+        description = "Permanently removes a quickly added word from the user's collection."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "204", description = "Word deleted successfully"),
+            ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()]),
+            ApiResponse(responseCode = "404", description = "Word not found", content = [Content()])
+        ]
+    )
     fun deleteOne(
-        @PathVariable id: UUID,
-        @AuthenticatedUser user: UserDTO
+        @Parameter(description = "Word ID to delete") @PathVariable id: UUID,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO
     ): Mono<ResponseEntity<Unit>> = qawFacade.deleteOne(
         userId = user.id,
         qawId = id
     )
 
     @PostMapping("/bulk-delete")
+    @Operation(
+        summary = "Bulk delete quickly added words",
+        description = "Deletes multiple words at once using a list of word IDs."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "204", description = "Words deleted successfully"),
+            ApiResponse(responseCode = "400", description = "Invalid delete data", content = [Content()]),
+            ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
+        ]
+    )
     fun bulkDelete(
-        @AuthenticatedUser user: UserDTO,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: List<UUID>
     ): Mono<ResponseEntity<Unit>> = qawFacade.bulkDelete(
         userId = user.id,

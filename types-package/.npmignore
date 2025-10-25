@@ -1,0 +1,7 @@
+# Exclude everything by default
+*
+
+# Include only what we want to publish
+!types.ts
+!README.md
+!package.json

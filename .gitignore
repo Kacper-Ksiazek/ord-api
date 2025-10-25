@@ -4,3 +4,7 @@ target/
 .env.*
 .classpath, .project, .settings/
 *.log
+
+# Generated OpenAPI files
+openapi.json
+npm-package/
