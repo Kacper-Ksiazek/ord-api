@@ -110,63 +110,58 @@ npx @openapitools/openapi-generator-cli generate \
 
 ## CI/CD Integration
 
-### Future: Automated NPM Package Publishing
+### Automated NPM Package Publishing
 
-Here's a recommended CI/CD workflow for publishing TypeScript interfaces as an NPM package:
+The project is configured to automatically publish TypeScript types to NPM whenever Kotlin code changes on the `main` branch.
 
-```yaml
-# .github/workflows/publish-api-types.yml
-name: Publish API Types
+**NPM Package**: [`@ord-api/ord-api-types`](https://www.npmjs.com/package/@ord-api/ord-api-types)
 
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'src/main/kotlin/**/*.kt'
+#### How It Works
 
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+1. **Trigger**: Workflow runs on push to `main` when Kotlin files or `pom.xml` change
+2. **Build**: Application is built and started in background
+3. **Export**: OpenAPI spec is exported via `./export-openapi-spec.sh`
+4. **Generate**: TypeScript types are generated using `openapi-typescript`
+5. **Publish**: Package is published to NPM with auto-incrementing version `1.0.X`
+6. **Release**: GitHub release is created with installation instructions
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+#### Versioning
 
-      - name: Build and start application
-        run: |
-          mvn clean package -DskipTests
-          java -jar target/ord-api.jar &
-          sleep 30
+- Format: `1.0.X` where X is the GitHub Actions run number
+- Example versions: `1.0.1`, `1.0.2`, `1.0.3`...
+- Each push to main creates a new version automatically
 
-      - name: Export OpenAPI spec
-        run: ./export-openapi-spec.sh
+#### Installation
 
-      - name: Generate TypeScript types
-        run: |
-          npx openapi-typescript openapi.json -o types.ts
+Frontend projects can install the types package:
 
-      - name: Publish to NPM
-        run: |
-          # Create package.json for types package
-          cat > package.json << EOF
-          {
-            "name": "@your-org/ord-api-types",
-            "version": "1.0.${{ github.run_number }}",
-            "description": "TypeScript types for ORD API",
-            "main": "types.ts",
-            "types": "types.ts",
-            "files": ["types.ts"]
-          }
-          EOF
+```bash
+# npm
+npm install @ord-api/ord-api-types
 
-          npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+# pnpm
+pnpm add @ord-api/ord-api-types
+
+# yarn
+yarn add @ord-api/ord-api-types
 ```
+
+#### Setup Requirements
+
+To enable NPM publishing, the following secrets must be configured in GitHub:
+
+- `NPM_TOKEN`: NPM automation token (Settings → Secrets → Actions)
+- `GITHUB_TOKEN`: Automatically provided by GitHub Actions
+
+#### Workflow File
+
+See `.github/workflows/publish-api-types.yml` for the complete workflow configuration.
+
+#### Package Contents
+
+- `types.ts` - Generated TypeScript type definitions
+- `README.md` - Usage documentation with Axios examples
+- `package.json` - NPM package metadata
 
 ## API Structure
 
