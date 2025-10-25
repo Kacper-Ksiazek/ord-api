@@ -1,0 +1,24 @@
+{
+  "name": "@ord-api/ord-api-types",
+  "version": "1.0.0",
+  "description": "TypeScript types for ORD API - Auto-generated from OpenAPI specification",
+  "main": "types.ts",
+  "types": "types.ts",
+  "files": [
+    "types.ts",
+    "README.md"
+  ],
+  "author": "ORD API Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kacper-Ksiazek/ord-api.git"
+  },
+  "homepage": "https://github.com/Kacper-Ksiazek/ord-api#readme",
+  "bugs": {
+    "url": "https://github.com/Kacper-Ksiazek/ord-api/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
