@@ -1,5 +1,6 @@
 package com.ord.features.quickly_added_words.repositories
 
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordEntity
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import reactor.core.publisher.Flux
@@ -17,4 +18,9 @@ interface QAWRepositoryCustomMethods {
         ids: Set<UUID>,
         userId: UUID
     ): Mono<Unit>
+
+    fun findAllWordsByUserIdAndLanguage(
+        userId: UUID,
+        language: LanguageName
+    ): Flux<String>
 }

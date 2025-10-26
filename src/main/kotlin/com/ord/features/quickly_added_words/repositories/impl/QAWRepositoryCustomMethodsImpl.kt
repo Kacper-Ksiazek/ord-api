@@ -108,4 +108,23 @@ class QAWRepositoryCustomMethodsImpl(
             .rowsUpdated()
             .then(Mono.just(Unit))
     }
+
+    override fun findAllWordsByUserIdAndLanguage(
+        userId: UUID,
+        language: LanguageName
+    ): Flux<String> {
+        // language=SQL
+        val query = """
+            SELECT word
+            FROM quickly_added_words
+            WHERE user_id = :userId AND language = :language
+        """
+
+        return databaseClient
+            .sql(query)
+            .bind("userId", userId)
+            .bind("language", language.name)
+            .map { row -> row.get("word", String::class.java)!! }
+            .all()
+    }
 }

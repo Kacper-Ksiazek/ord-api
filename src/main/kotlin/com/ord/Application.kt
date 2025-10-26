@@ -62,11 +62,14 @@ fun convertHerokuDatabaseUrl() {
         val uri = URI(databaseUrl.replace("postgres://", "postgresql://"))
         val (username, password) = uri.userInfo.split(":")
 
-        // JDBC URL for Flyway - Heroku requires SSL
-        val jdbcUrl = "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}?sslmode=require"
+        // Add SSL mode only for production profile
+        val sslParam = if (activeProfiles.contains("production")) "?sslmode=require" else ""
 
-        // R2DBC URL for WebFlux - Heroku requires SSL
-        val r2dbcUrl = "r2dbc:postgresql://${uri.host}:${uri.port}${uri.path}?sslmode=require"
+        // JDBC URL for Flyway
+        val jdbcUrl = "jdbc:postgresql://${uri.host}:${uri.port}${uri.path}${sslParam}"
+
+        // R2DBC URL for WebFlux
+        val r2dbcUrl = "r2dbc:postgresql://${uri.host}:${uri.port}${uri.path}${sslParam}"
 
         System.setProperty("DATABASE_URL_JDBC", jdbcUrl)     // For Flyway migrations
         System.setProperty("DATABASE_URL_R2DBC", r2dbcUrl)   // For Application running on WebFlux with R2DBC
@@ -76,6 +79,7 @@ fun convertHerokuDatabaseUrl() {
         throw IllegalStateException("❌ Failed to parse DATABASE_URL: $databaseUrl", e)
     }
 }
+
 fun main(args: Array<String>) {
     convertHerokuDatabaseUrl()
 

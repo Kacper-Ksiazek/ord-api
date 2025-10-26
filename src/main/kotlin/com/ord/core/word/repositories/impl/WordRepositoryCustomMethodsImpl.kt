@@ -85,16 +85,17 @@ class WordRepositoryCustomMethodsImpl(
         limit: Int
     ): Flux<String> {
         val selectQuery = """
-            SELECT origin 
-            FROM words 
-            WHERE 
-                translated_from = :language 
+            SELECT origin
+            FROM words
+            WHERE
+                translated_from = :language
                 AND user_id = :userId
-            ORDER BY created_at DESC 
+            ORDER BY created_at DESC
             LIMIT :limit
         """
 
         return databaseClient.sql(selectQuery)
+            .bind("userId", userId)
             .bind("language", language.name)
             .bind("limit", limit)
             .map { row -> row.get("origin", String::class.java)!! }
@@ -108,16 +109,17 @@ class WordRepositoryCustomMethodsImpl(
         limit: Int
     ): Flux<String> {
         val selectQuery = """
-            SELECT origin 
-            FROM words 
-            WHERE 
-                translated_from = :language 
+            SELECT origin
+            FROM words
+            WHERE
+                translated_from = :language
                 AND user_id = :userId
-            ORDER BY points DESC 
+            ORDER BY points DESC
             LIMIT :limit
         """
 
         return databaseClient.sql(selectQuery)
+            .bind("userId", userId)
             .bind("language", language.name)
             .bind("limit", limit)
             .map { row -> row.get("origin", String::class.java)!! }
@@ -131,15 +133,16 @@ class WordRepositoryCustomMethodsImpl(
         banksIds: List<UUID>
     ): Flux<String> {
         val selectQuery = """
-            SELECT origin 
-            FROM words 
-            WHERE 
-                translated_from = :language 
+            SELECT origin
+            FROM words
+            WHERE
+                translated_from = :language
                 AND user_id = :userId
                 AND bank_id = ANY(:banksIds)
         """
 
         return databaseClient.sql(selectQuery)
+            .bind("userId", userId)
             .bind("language", language.name)
             .bind("banksIds", banksIds.toTypedArray())
             .map { row -> row.get("origin", String::class.java)!! }
