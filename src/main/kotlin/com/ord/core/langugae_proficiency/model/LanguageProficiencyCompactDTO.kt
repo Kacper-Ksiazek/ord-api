@@ -6,5 +6,6 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 data class LanguageProficiencyCompactDTO(
     val language: LanguageName,
     var level: LanguageProficiencyLevel,
+    var translateTo: LanguageName,
     var generativeContentLanguage: LanguageName,
 )

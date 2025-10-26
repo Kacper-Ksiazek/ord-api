@@ -37,6 +37,7 @@ class LanguageProficiencyFacadeImpl(
         val entity = LanguageProficiencyEntity(
             language = body.language,
             level = body.level,
+            translateTo = body.translateTo,
             generativeContentLanguage = body.generativeContentLanguage ?: body.language,
             userId = user.id
         )
@@ -56,6 +57,7 @@ class LanguageProficiencyFacadeImpl(
             .flatMap { currentProficiency ->
                 val updated = currentProficiency.copy(
                     level = body.level ?: currentProficiency.level,
+                    translateTo = body.translateTo ?: currentProficiency.translateTo,
                     generativeContentLanguage = body.generativeContentLanguage
                         ?: currentProficiency.generativeContentLanguage
                 )

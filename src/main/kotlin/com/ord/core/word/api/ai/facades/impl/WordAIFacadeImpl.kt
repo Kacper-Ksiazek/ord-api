@@ -44,7 +44,7 @@ class WordAIFacadeImpl(
             .switchIfEmpty(Mono.error(BadRequestException("User does not have any proficiency in the requested language.")))
             .flatMap { userProficiencyInRequestedLanguage ->
                 val translateTo: LanguageName =
-                    body.targetLanguage ?: userProficiencyInRequestedLanguage!!.generativeContentLanguage
+                    body.targetLanguage ?: userProficiencyInRequestedLanguage!!.translateTo
                 val proficiencyLevel: LanguageProficiencyLevel =
                     body.proficiencyLevel ?: userProficiencyInRequestedLanguage!!.level
 
@@ -122,7 +122,7 @@ class WordAIFacadeImpl(
                 val wordsFromWords = wordsTuple.t1
                 val wordsFromQAW = wordsTuple.t2
 
-                val translateTo: LanguageName = userProficiencyInRequestedLanguage!!.generativeContentLanguage
+                val translateTo: LanguageName = userProficiencyInRequestedLanguage!!.translateTo
                 val proficiencyLevel: LanguageProficiencyLevel = userProficiencyInRequestedLanguage.level
                 val wordCount: Int = 10
 

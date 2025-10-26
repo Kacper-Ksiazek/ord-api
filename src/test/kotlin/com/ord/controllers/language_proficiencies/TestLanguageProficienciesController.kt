@@ -106,6 +106,7 @@ class TestLanguageProficienciesController @Autowired constructor(
                 val request = CreateLanguageProficiencyRequest(
                     language = LanguageName.FRENCH,
                     level = LanguageProficiencyLevel.B1,
+                    translateTo = LanguageName.POLISH,
                     generativeContentLanguage = LanguageName.ENGLISH
                 )
 
@@ -118,6 +119,7 @@ class TestLanguageProficienciesController @Autowired constructor(
                 response.body shouldNotBe null
                 response.body!!.language shouldBe LanguageName.FRENCH
                 response.body.level shouldBe LanguageProficiencyLevel.B1
+                response.body.translateTo shouldBe LanguageName.POLISH
                 response.body.generativeContentLanguage shouldBe LanguageName.ENGLISH
                 response.body.userId shouldBe authenticatedUser.userInfo.id
 
@@ -128,6 +130,7 @@ class TestLanguageProficienciesController @Autowired constructor(
 
                 saved shouldNotBe null
                 saved!!.level shouldBe LanguageProficiencyLevel.B1
+                saved.translateTo shouldBe LanguageName.POLISH
             }
 
             @Test
@@ -137,6 +140,7 @@ class TestLanguageProficienciesController @Autowired constructor(
                 val request = CreateLanguageProficiencyRequest(
                     language = LanguageName.GERMAN,
                     level = LanguageProficiencyLevel.A2,
+                    translateTo = LanguageName.ENGLISH,
                     generativeContentLanguage = null
                 )
 
@@ -158,7 +162,8 @@ class TestLanguageProficienciesController @Autowired constructor(
             fun `401 - should return 401 for anonymous users`() {
                 val request = CreateLanguageProficiencyRequest(
                     language = LanguageName.FRENCH,
-                    level = LanguageProficiencyLevel.B1
+                    level = LanguageProficiencyLevel.B1,
+                    translateTo = LanguageName.POLISH
                 )
 
                 val response = apiClient.createLanguageProficiency(body = request)
@@ -174,7 +179,8 @@ class TestLanguageProficienciesController @Autowired constructor(
 
                 val request = CreateLanguageProficiencyRequest(
                     language = LanguageName.ITALIAN,
-                    level = LanguageProficiencyLevel.B2
+                    level = LanguageProficiencyLevel.B2,
+                    translateTo = LanguageName.POLISH
                 )
 
                 val response = apiClient.createLanguageProficiency(
@@ -252,6 +258,34 @@ class TestLanguageProficienciesController @Autowired constructor(
             }
 
             @Test
+            fun `200 - should update translateTo`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.RUSSIAN to LanguageProficiencyLevel.B1)
+                )
+
+                val request = UpdateLanguageProficiencyRequest(
+                    language = LanguageName.RUSSIAN,
+                    translateTo = LanguageName.ENGLISH
+                )
+
+                val response = apiClient.updateLanguageProficiency(
+                    user = authenticatedUser,
+                    body = request
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.translateTo shouldBe LanguageName.ENGLISH
+
+                // Verify in database
+                val updated = languageProficiencyRepository
+                    .findUserProficiencyInLanguage(authenticatedUser.userInfo.id, LanguageName.RUSSIAN.name)
+                    .block()
+
+                updated!!.translateTo shouldBe LanguageName.ENGLISH
+            }
+
+            @Test
             fun `200 - should update both level and generativeContentLanguage`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(LanguageName.ITALIAN to LanguageProficiencyLevel.A1)
@@ -272,6 +306,31 @@ class TestLanguageProficienciesController @Autowired constructor(
                 response.body shouldNotBe null
                 response.body!!.level shouldBe LanguageProficiencyLevel.C1
                 response.body.generativeContentLanguage shouldBe LanguageName.POLISH
+            }
+
+            @Test
+            fun `200 - should update level, translateTo and generativeContentLanguage`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.JAPANESE to LanguageProficiencyLevel.A1)
+                )
+
+                val request = UpdateLanguageProficiencyRequest(
+                    language = LanguageName.JAPANESE,
+                    level = LanguageProficiencyLevel.B2,
+                    translateTo = LanguageName.ENGLISH,
+                    generativeContentLanguage = LanguageName.SPANISH
+                )
+
+                val response = apiClient.updateLanguageProficiency(
+                    user = authenticatedUser,
+                    body = request
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.level shouldBe LanguageProficiencyLevel.B2
+                response.body.translateTo shouldBe LanguageName.ENGLISH
+                response.body.generativeContentLanguage shouldBe LanguageName.SPANISH
             }
         }
 

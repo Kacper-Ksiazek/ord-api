@@ -16,6 +16,7 @@ data class LanguageProficiencyEntity(
 
     val language: LanguageName,
     var level: LanguageProficiencyLevel,
+    var translateTo: LanguageName,
     var generativeContentLanguage: LanguageName,
 
     override val userId: UUID,

@@ -11,14 +11,14 @@ VALUES ('aab3de51-c9ed-4b53-b6ba-927f0bf567e4', 'Kacper Książek', 'kacper.b.ks
 -------------
 -- language_proficiencies
 -------------
-INSERT INTO public.language_proficiencies (id, language, level, user_id, generative_content_language, created_at)
-VALUES ('17963c02-5627-4c10-b0e6-55eb1c6a1c61', 'ENGLISH', 'C1', 'aab3de51-c9ed-4b53-b6ba-927f0bf567e4', 'ENGLISH',
+INSERT INTO public.language_proficiencies (id, language, level, user_id, translate_to, generative_content_language, created_at)
+VALUES ('17963c02-5627-4c10-b0e6-55eb1c6a1c61', 'ENGLISH', 'C1', 'aab3de51-c9ed-4b53-b6ba-927f0bf567e4', 'POLISH', 'ENGLISH',
         '2025-06-15 14:33:06.854763 +00:00');
-INSERT INTO public.language_proficiencies (id, language, level, user_id, generative_content_language, created_at)
-VALUES ('9a3df940-52f4-4d5e-ba36-b2fb6e4715ff', 'GERMAN', 'A2', 'aab3de51-c9ed-4b53-b6ba-927f0bf567e4', 'ENGLISH',
+INSERT INTO public.language_proficiencies (id, language, level, user_id, translate_to, generative_content_language, created_at)
+VALUES ('9a3df940-52f4-4d5e-ba36-b2fb6e4715ff', 'GERMAN', 'A2', 'aab3de51-c9ed-4b53-b6ba-927f0bf567e4', 'POLISH', 'ENGLISH',
         '2025-06-15 14:33:06.857153 +00:00');
-INSERT INTO public.language_proficiencies (id, language, level, user_id, generative_content_language, created_at)
-VALUES ('110fbc1d-f265-4905-b0e8-5cc64e9a33e8', 'SLOVENIAN', 'A1', 'aab3de51-c9ed-4b53-b6ba-927f0bf567e4', 'ENGLISH',
+INSERT INTO public.language_proficiencies (id, language, level, user_id, translate_to, generative_content_language, created_at)
+VALUES ('110fbc1d-f265-4905-b0e8-5cc64e9a33e8', 'SLOVENIAN', 'A1', 'aab3de51-c9ed-4b53-b6ba-927f0bf567e4', 'POLISH', 'ENGLISH',
         '2025-06-15 14:33:06.859346 +00:00');
 
 -------------

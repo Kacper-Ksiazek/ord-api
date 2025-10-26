@@ -28,6 +28,7 @@ class LanguageProficiencySeeder(
     fun seedOneEntity(
         user: UserEntity,
         languageName: LanguageName? = null,
+        translateTo: LanguageName? = null,
         generativeContentLanguage: LanguageName? = null,
         languageProficiency: LanguageProficiencyLevel? = null
     ): LanguageProficiencyEntity {
@@ -36,6 +37,7 @@ class LanguageProficiencySeeder(
         val data = base.copy(
             language = languageName ?: base.language,
             level = languageProficiency ?: base.level,
+            translateTo = translateTo ?: base.translateTo,
             generativeContentLanguage = generativeContentLanguage ?: base.generativeContentLanguage
         )
 
