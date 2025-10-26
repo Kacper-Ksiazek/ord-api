@@ -28,6 +28,13 @@ data class QuicklyAddedWordDTO(
     var language: LanguageName,
 
     @Schema(
+        description = "Translation of the word",
+        example = "comprensivo",
+        nullable = true
+    )
+    val translation: String?,
+
+    @Schema(
         description = "Definition or notes about the word",
         example = "Complete; including all elements",
         nullable = true

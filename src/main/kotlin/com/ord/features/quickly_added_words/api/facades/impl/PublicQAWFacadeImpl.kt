@@ -29,6 +29,7 @@ class PublicQAWFacadeImpl(
                     QuicklyAddedWordEntity(
                         word = wordItem.word,
                         language = body.language,
+                        translation = wordItem.translation,
                         definition = wordItem.definition,
                         extraMark = wordItem.extraMark,
                         type = wordItem.type,

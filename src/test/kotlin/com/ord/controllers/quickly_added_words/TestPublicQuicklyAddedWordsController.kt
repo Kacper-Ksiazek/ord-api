@@ -55,6 +55,7 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
         const val TEST_WORD_1 = "example"
         const val TEST_WORD_2 = "word"
         const val TEST_WORD_3 = "test"
+        const val TEST_TRANSLATION = "ejemplo"
         const val TEST_DEFINITION = "A sample word for testing"
         val TEST_LANGUAGE = LanguageName.ENGLISH
         val TEST_EXTRA_MARK = WordExtraMark.SLANG
@@ -76,12 +77,14 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
                 words = listOf(
                     PublicQAWWordItem(
                         word = TEST_WORD_1,
+                        translation = TEST_TRANSLATION,
                         definition = TEST_DEFINITION,
                         extraMark = TEST_EXTRA_MARK,
                         type = TEST_TYPE
                     ),
                     PublicQAWWordItem(
                         word = TEST_WORD_2,
+                        translation = "palabra",
                         definition = "Another definition",
                         extraMark = WordExtraMark.OFFENSIVE,
                         type = WordType.VERB
@@ -290,6 +293,25 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
             }
 
             @Test
+            fun `400 - should reject translation exceeding 255 characters`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(
+                            PublicQAWWordItem(
+                                word = "test",
+                                translation = "a".repeat(256)
+                            )
+                        ),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
             fun `400 - should reject words list exceeding 100 items`() {
                 val user = mockAuthenticatedUser()
                 val tooManyWords = (1..101).map { PublicQAWWordItem(word = "word$it") }
@@ -314,7 +336,7 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
         @DisplayName("Positive")
         inner class Positive {
             @Test
-            fun `201 - should create words with definition, extraMark, and type`() {
+            fun `201 - should create words with translation, definition, extraMark, and type`() {
                 val user = mockAuthenticatedUser()
                 val response = publicQAWAPIClient.publicBulkCreate(
                     TestData.APIRequestPayloads.bulkCreateWithAllFields(user.email)
@@ -326,12 +348,14 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
 
                 val firstWord = response.body!![0]
                 firstWord.word shouldBe TestData.TEST_WORD_1
+                firstWord.translation shouldBe TestData.TEST_TRANSLATION
                 firstWord.definition shouldBe TestData.TEST_DEFINITION
                 firstWord.extraMark shouldBe TestData.TEST_EXTRA_MARK
                 firstWord.type shouldBe TestData.TEST_TYPE
 
                 val secondWord = response.body!![1]
                 secondWord.word shouldBe TestData.TEST_WORD_2
+                secondWord.translation shouldBe "palabra"
                 secondWord.definition shouldBe "Another definition"
                 secondWord.extraMark shouldBe WordExtraMark.OFFENSIVE
                 secondWord.type shouldBe WordType.VERB
@@ -346,7 +370,8 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
 
                 val wordInDb = qawRepository.findById(response.body!![0].id!!).block()
                 wordInDb shouldNotBe null
-                wordInDb!!.definition shouldBe TestData.TEST_DEFINITION
+                wordInDb!!.translation shouldBe TestData.TEST_TRANSLATION
+                wordInDb.definition shouldBe TestData.TEST_DEFINITION
                 wordInDb.extraMark shouldBe TestData.TEST_EXTRA_MARK
                 wordInDb.type shouldBe TestData.TEST_TYPE
             }
@@ -360,6 +385,7 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
                         words = listOf(
                             PublicQAWWordItem(
                                 word = TestData.TEST_WORD_1,
+                                translation = TestData.TEST_TRANSLATION,
                                 definition = TestData.TEST_DEFINITION,
                                 extraMark = TestData.TEST_EXTRA_MARK,
                                 type = TestData.TEST_TYPE
@@ -378,16 +404,19 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
                 response.body!! shouldHaveSize 3
 
                 // First word has all fields
+                response.body!![0].translation shouldBe TestData.TEST_TRANSLATION
                 response.body!![0].definition shouldBe TestData.TEST_DEFINITION
                 response.body!![0].extraMark shouldBe TestData.TEST_EXTRA_MARK
                 response.body!![0].type shouldBe TestData.TEST_TYPE
 
                 // Second word has no extras
+                response.body!![1].translation shouldBe null
                 response.body!![1].definition shouldBe null
                 response.body!![1].extraMark shouldBe null
                 response.body!![1].type shouldBe null
 
                 // Third word has only definition
+                response.body!![2].translation shouldBe null
                 response.body!![2].definition shouldBe "Only definition"
                 response.body!![2].extraMark shouldBe null
                 response.body!![2].type shouldBe null
@@ -403,6 +432,75 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
                 response.body!!.forEach { word ->
                     word.isApproved shouldBe false
                 }
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/public/quickly-added-words/bulk-create - create words with only translation")
+    inner class PublicBulkCreateWithTranslationOnlyTests {
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `201 - should create words with only translation (no definition)`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(
+                            PublicQAWWordItem(
+                                word = TestData.TEST_WORD_1,
+                                translation = TestData.TEST_TRANSLATION
+                            ),
+                            PublicQAWWordItem(
+                                word = TestData.TEST_WORD_2,
+                                translation = "palabra"
+                            )
+                        ),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                response.status shouldBe HttpStatus.CREATED
+                response.body shouldNotBe null
+                response.body!! shouldHaveSize 2
+
+                val firstWord = response.body!![0]
+                firstWord.word shouldBe TestData.TEST_WORD_1
+                firstWord.translation shouldBe TestData.TEST_TRANSLATION
+                firstWord.definition shouldBe null
+                firstWord.extraMark shouldBe null
+                firstWord.type shouldBe null
+
+                val secondWord = response.body!![1]
+                secondWord.word shouldBe TestData.TEST_WORD_2
+                secondWord.translation shouldBe "palabra"
+                secondWord.definition shouldBe null
+            }
+
+            @Test
+            fun `201 - words with translation only should be persisted in database`() {
+                val user = mockAuthenticatedUser()
+                val response = publicQAWAPIClient.publicBulkCreate(
+                    PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(
+                            PublicQAWWordItem(
+                                word = TestData.TEST_WORD_1,
+                                translation = TestData.TEST_TRANSLATION
+                            )
+                        ),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                val wordInDb = qawRepository.findById(response.body!![0].id!!).block()
+                wordInDb shouldNotBe null
+                wordInDb!!.translation shouldBe TestData.TEST_TRANSLATION
+                wordInDb.definition shouldBe null
+                wordInDb.extraMark shouldBe null
+                wordInDb.type shouldBe null
             }
         }
     }

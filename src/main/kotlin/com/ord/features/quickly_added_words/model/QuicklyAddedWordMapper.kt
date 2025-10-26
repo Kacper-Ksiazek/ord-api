@@ -15,6 +15,7 @@ class QuicklyAddedWordMapper(
             word = dto.word,
             language = dto.language,
 
+            translation = dto.translation,
             definition = dto.definition,
             extraMark = dto.extraMark,
             type = dto.type,
@@ -34,6 +35,7 @@ class QuicklyAddedWordMapper(
             word = entity.word,
             language = entity.language,
 
+            translation = entity.translation,
             definition = entity.definition,
             extraMark = entity.extraMark,
             type = entity.type,
