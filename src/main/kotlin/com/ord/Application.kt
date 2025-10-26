@@ -48,10 +48,10 @@ class Application(
 }
 
 fun convertHerokuDatabaseUrl() {
-    val activeProfile = System.getenv("SPRING_PROFILE") ?: System.getProperty("spring.profiles.active")
+    val activeProfiles = System.getenv("SPRING_PROFILES_ACTIVE") ?: System.getProperty("spring.profiles.active") ?: ""
 
     // Skip Heroku URL conversion in CI/CD profile
-    if (activeProfile == "cicd") {
+    if (activeProfiles.contains("cicd")) {
         Console.printYellow("⚠️  CI/CD profile active, skipping Heroku URL conversion")
         return
     }
