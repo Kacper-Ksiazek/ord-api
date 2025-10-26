@@ -84,8 +84,8 @@ jobs:
       - name: 🎉 Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: types-v1.0.${{ github.run_number }}
-          name: API Types v1.0.${{ github.run_number }}
+          tag_name: ord-api-types-v1.0.${{ github.run_number }}
+          name: 🔷 ORD API Types v1.0.${{ github.run_number }}
           body: |
             🎉 Automatically generated TypeScript types for ORD API
 
