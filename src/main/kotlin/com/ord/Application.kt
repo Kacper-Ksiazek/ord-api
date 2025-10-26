@@ -48,6 +48,14 @@ class Application(
 }
 
 fun convertHerokuDatabaseUrl() {
+    val activeProfiles = System.getenv("SPRING_PROFILES_ACTIVE") ?: System.getProperty("spring.profiles.active") ?: ""
+
+    // Skip Heroku URL conversion in CI/CD profile
+    if (activeProfiles.contains("cicd")) {
+        Console.printYellow("⚠️  CI/CD profile active, skipping Heroku URL conversion")
+        return
+    }
+
     val databaseUrl = System.getenv("DATABASE_URL")
         ?: throw IllegalStateException("❌ Missing environment variable DATABASE_URL. Please make sure it is set!")
     try {
