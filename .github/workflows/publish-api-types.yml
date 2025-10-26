@@ -11,6 +11,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required to create releases and tags
 
     steps:
       - name: 🛎️ Checkout repository
@@ -94,12 +96,10 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: 🎉 Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: types-v1.0.${{ github.run_number }}
-          release_name: API Types v1.0.${{ github.run_number }}
+          name: API Types v1.0.${{ github.run_number }}
           body: |
             🎉 Automatically generated TypeScript types for ORD API
 
