@@ -20,9 +20,15 @@ The learner already knows the following words (DO NOT suggest any of these):
 
 **%%existingWords%%**
 
+### PREVIOUSLY SUGGESTED WORDS:
+
+The following words have been suggested in previous requests (DO NOT suggest any of these again):
+
+**%%excludedWords%%**
+
 ### GUIDELINES:
 
-- Generate **%%wordCount%%** new vocabulary suggestions that are NOT in the existing vocabulary list
+- Generate **%%wordCount%%** new vocabulary suggestions that are NOT in the existing vocabulary list or previously suggested words
 - Focus on practical, everyday words appropriate for **%%proficiency%%** level:
   - **A1-A2**: Essential daily life vocabulary, common verbs, basic nouns
   - **B1-B2**: More nuanced expressions, topic-specific vocabulary, idiomatic phrases

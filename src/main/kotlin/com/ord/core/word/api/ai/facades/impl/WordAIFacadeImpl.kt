@@ -133,6 +133,12 @@ class WordAIFacadeImpl(
                     allExistingWords.joinToString(", ")
                 }
 
+                val excludedWordsString = if (body.excludedWords.isNullOrEmpty()) {
+                    "No previously suggested words"
+                } else {
+                    body.excludedWords.joinToString(", ")
+                }
+
                 val prompt = Prompt(
                     variant = AvailablePrompts.WORDS_SUGGEST_VOCABULARY,
                     params = mapOf(
@@ -142,6 +148,7 @@ class WordAIFacadeImpl(
                         "generativeContentLanguage" to userProficiencyInRequestedLanguage.generativeContentLanguage.toString(),
                         "userContext" to (body.context ?: "Not specified"),
                         "existingWords" to existingWordsString,
+                        "excludedWords" to excludedWordsString,
                         "wordCount" to wordCount.toString(),
                         "separator" to OpenAIAPIClientService.STREAMING_CONTENT_SEPARATOR
                     )

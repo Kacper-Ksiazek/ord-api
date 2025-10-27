@@ -28,4 +28,13 @@ data class SuggestVocabularyRequest(
         maxLength = 500
     )
     val context: String? = null,
+
+    @field:Size(max = 1000, message = "Cannot exclude more than 1000 words")
+    @Schema(
+        description = "Optional list of words to exclude from suggestions (e.g., already suggested words in previous requests)",
+        example = "[\"hola\", \"adiós\", \"gracias\"]",
+        nullable = true,
+        maxLength = 1000
+    )
+    val excludedWords: List<String>? = null,
 )
