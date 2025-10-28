@@ -311,11 +311,11 @@ class TestLanguageProficienciesController @Autowired constructor(
             @Test
             fun `200 - should update level, translateTo and generativeContentLanguage`() {
                 val authenticatedUser = mockAuthenticatedUser(
-                    languages = mapOf(LanguageName.JAPANESE to LanguageProficiencyLevel.A1)
+                    languages = mapOf(LanguageName.RUSSIAN to LanguageProficiencyLevel.A1)
                 )
 
                 val request = UpdateLanguageProficiencyRequest(
-                    language = LanguageName.JAPANESE,
+                    language = LanguageName.RUSSIAN,
                     level = LanguageProficiencyLevel.B2,
                     translateTo = LanguageName.ENGLISH,
                     generativeContentLanguage = LanguageName.SPANISH

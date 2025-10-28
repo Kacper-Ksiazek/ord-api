@@ -60,6 +60,7 @@ class UsersFacadeImpl(
                                 userId = savedUser.id!!,
                                 language = proficiency.language,
                                 level = proficiency.level,
+                                translateTo = proficiency.translateTo,
                                 generativeContentLanguage = proficiency.generativeContentLanguage
                             )
                         )
