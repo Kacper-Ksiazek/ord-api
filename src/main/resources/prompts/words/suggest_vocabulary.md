@@ -22,13 +22,16 @@ The learner already knows the following words (DO NOT suggest any of these):
 
 ### PREVIOUSLY SUGGESTED WORDS:
 
-The following words have been suggested in previous requests (DO NOT suggest any of these again):
+The following words have been suggested in previous requests.
+
+**CRITICAL: You MUST NOT suggest ANY of these words again under any circumstances:**
 
 **%%excludedWords%%**
 
 ### GUIDELINES:
 
-- Generate **%%wordCount%%** new vocabulary suggestions that are NOT in the existing vocabulary list or previously suggested words
+- **CRITICAL**: Generate **%%wordCount%%** new vocabulary suggestions that are ABSOLUTELY NOT in the existing vocabulary list or previously suggested words
+- Before suggesting each word, verify it does NOT appear in either the existing words list or the excluded words list
 - Focus on practical, everyday words appropriate for **%%proficiency%%** level:
   - **A1-A2**: Essential daily life vocabulary, common verbs, basic nouns
   - **B1-B2**: More nuanced expressions, topic-specific vocabulary, idiomatic phrases
@@ -85,3 +88,4 @@ Format output exactly as follows:
 4. Do not include any additional text or explanations in the response
 5. Do not use any other formatting
 6. The separator is critical for proper parsing - use it exactly as specified
+7. **CRITICAL REMINDER**: NEVER suggest any word that appears in the excluded words list or existing vocabulary list above
