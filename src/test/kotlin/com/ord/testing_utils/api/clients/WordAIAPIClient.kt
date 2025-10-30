@@ -2,6 +2,7 @@ package com.ord.testing_utils.api.clients
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ord.core.word.api.ai.requests.dto.ExplainWordRequest
 import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
@@ -82,8 +83,56 @@ class WordAIAPIClient(
         )
     }
 
+    fun explainPhrase(
+        body: ExplainWordRequest,
+        user: MockedAuthenticatedUser? = null
+    ): ExplainPhraseStreamResponse {
+        val requestSpec = webClient
+            .post()
+            .uri("$baseUrl/explain-phrase")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .apply {
+                if (user != null) {
+                    this.cookie(user.authCookie.name, user.authCookie.value)
+                }
+            }
+            .bodyValue(body)
+
+        val result = requestSpec
+            .exchange()
+            .returnResult(String::class.java)
+
+        val status = HttpStatus.valueOf(result.status.value())
+
+        if (status != HttpStatus.OK) {
+            return ExplainPhraseStreamResponse(
+                explanation = "",
+                status = status
+            )
+        }
+
+        // Collect all streamed text chunks
+        val explanation = result.responseBody
+            .filter { it.isNotBlank() }
+            .collectList()
+            .block(Duration.ofSeconds(180))
+            ?.joinToString("")
+            ?: ""
+
+        return ExplainPhraseStreamResponse(
+            explanation = explanation,
+            status = status
+        )
+    }
+
     data class SuggestVocabularyStreamResponse(
         val suggestions: List<VocabularySuggestion>,
+        val status: HttpStatus
+    )
+
+    data class ExplainPhraseStreamResponse(
+        val explanation: String,
         val status: HttpStatus
     )
 }
