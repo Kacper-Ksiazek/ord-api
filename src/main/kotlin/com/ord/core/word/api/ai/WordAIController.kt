@@ -3,6 +3,7 @@ package com.ord.core.word.api.ai
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.ai.facades.WordAIFacade
+import com.ord.core.word.api.ai.requests.dto.ExplainWordRequest
 import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
@@ -94,4 +95,33 @@ class WordAIController(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: SuggestVocabularyRequest
     ) = wordAIFacade.suggestVocabulary(body, user)
+
+    @PostMapping("/explain-phrase", produces = [TEXT_EVENT_STREAM_VALUE])
+    @Operation(
+        summary = "Get AI explanation of a word or phrase",
+        description = "Stream a clear, educational explanation of a word or phrase in plain text, " +
+                "including translation, definition, examples, and usage notes tailored to the user's proficiency level."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Word/phrase explanation stream started successfully"
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data or user does not have proficiency in the requested language",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
+    fun explainPhrase(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @Valid @RequestBody body: ExplainWordRequest
+    ) = wordAIFacade.explainWord(body, user)
 }
