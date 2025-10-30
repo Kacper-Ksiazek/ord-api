@@ -1,0 +1,14 @@
+# Claude Code Rules for ord-api
+
+## Git Commit Policy
+
+**NEVER MAKE ANY COMMITS ON YOUR OWN. ASK THE USER EACH TIME YOU WANT TO CREATE A NEW BATCH OF COMMITS.**
+
+**ALWAYS PUSH IMMEDIATELY AFTER MAKING COMMITS.**
+
+When changes are complete and ready to commit, always:
+1. Stop and present a summary of the changes made
+2. Explicitly ask the user if they want to commit the changes
+3. Wait for user approval before running any git commands
+4. Only proceed with commits after receiving explicit permission
+5. After commits are successfully created, immediately push them to the remote repository
