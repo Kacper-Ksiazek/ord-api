@@ -1,7 +1,6 @@
 package com.ord.core.word.api.ai.facades
 
 import com.ord.core.user.model.UserDTO
-import com.ord.core.word.api.ai.requests.dto.ExplainWordRequest
 import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
@@ -16,11 +15,6 @@ interface WordAIFacade {
 
     fun suggestVocabulary(
         body: SuggestVocabularyRequest,
-        user: UserDTO,
-    ): Flux<String>
-
-    fun explainWord(
-        body: ExplainWordRequest,
         user: UserDTO,
     ): Flux<String>
 }

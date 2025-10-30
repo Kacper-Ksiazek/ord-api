@@ -7,7 +7,6 @@ import com.ord.core.security.UserRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.ord.core.word.api.ai.requests.dto.ExplainWordRequest
 import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
 import com.ord.testing_utils.api.clients.WordAIAPIClient
@@ -34,16 +33,16 @@ class TestWordAIController @Autowired constructor(
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     webClient: WebTestClient,
-    _userRepository: UserRepository,
-    _otpCodeRepository: OtpCodeRepository,
-    _passwordEncoder: PasswordEncoder
+    userRepository: UserRepository,
+    otpCodeRepository: OtpCodeRepository,
+    passwordEncoder: PasswordEncoder
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
-    userRepository = _userRepository,
-    otpCodeRepository = _otpCodeRepository,
-    passwordEncoder = _passwordEncoder
+    userRepository = userRepository,
+    otpCodeRepository = otpCodeRepository,
+    passwordEncoder = passwordEncoder
 ) {
     private val wordAIAPIClient = WordAIAPIClient(webClient)
 
@@ -390,130 +389,6 @@ class TestWordAIController @Autowired constructor(
                 )
 
                 val response = wordAIAPIClient.generateManual(
-                    body = request,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("[POST] /api/v1/words/ai/explain-phrase - explain word or phrase")
-    inner class ExplainPhrase {
-
-        @Nested
-        @DisplayName("Positive")
-        inner class Positive {
-
-            @Test
-            fun `200 - should generate explanation for a simple word`() {
-                val request = ExplainWordRequest(
-                    word = "hund",
-                    language = LanguageName.NORWEGIAN
-                )
-
-                val response = wordAIAPIClient.explainPhrase(
-                    body = request,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.OK
-                response.explanation.shouldNotBeBlank()
-                response.explanation.length shouldNotBe 0
-            }
-
-            @Test
-            fun `200 - should generate explanation for a phrase`() {
-                val request = ExplainWordRequest(
-                    word = "break the ice",
-                    language = LanguageName.ENGLISH
-                )
-
-                val response = wordAIAPIClient.explainPhrase(
-                    body = request,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.OK
-                response.explanation.shouldNotBeBlank()
-            }
-
-            @Test
-            fun `200 - should generate explanation for complex word`() {
-                val request = ExplainWordRequest(
-                    word = "hygge",
-                    language = LanguageName.NORWEGIAN
-                )
-
-                val response = wordAIAPIClient.explainPhrase(
-                    body = request,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.OK
-                response.explanation.shouldNotBeBlank()
-            }
-        }
-
-        @Nested
-        @DisplayName("Negative")
-        inner class Negative {
-
-            @Test
-            fun `401 - anonymous user cannot get explanation`() {
-                val request = ExplainWordRequest(
-                    word = "hund",
-                    language = LanguageName.NORWEGIAN
-                )
-
-                val response = wordAIAPIClient.explainPhrase(
-                    body = request,
-                    user = null
-                )
-
-                response.status shouldBe HttpStatus.UNAUTHORIZED
-            }
-
-            @Test
-            fun `400 - empty word should fail`() {
-                val request = ExplainWordRequest(
-                    word = "",
-                    language = LanguageName.NORWEGIAN
-                )
-
-                val response = wordAIAPIClient.explainPhrase(
-                    body = request,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - extremely long word should fail`() {
-                val request = ExplainWordRequest(
-                    word = "a".repeat(256),
-                    language = LanguageName.NORWEGIAN
-                )
-
-                val response = wordAIAPIClient.explainPhrase(
-                    body = request,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - user without proficiency in language should fail`() {
-                val request = ExplainWordRequest(
-                    word = "hola",
-                    language = LanguageName.SPANISH
-                )
-
-                val response = wordAIAPIClient.explainPhrase(
                     body = request,
                     user = authenticatedUser
                 )
