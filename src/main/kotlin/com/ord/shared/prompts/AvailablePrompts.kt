@@ -16,4 +16,5 @@ enum class AvailablePrompts(
 
     WORDS_GENERATE_MANUAL(resourcePath = "words/generate_word_manual.md"),
     WORDS_SUGGEST_VOCABULARY(resourcePath = "words/suggest_vocabulary.md"),
+    WORDS_EXPLAIN(resourcePath = "words/explain_word.md"),
 }
