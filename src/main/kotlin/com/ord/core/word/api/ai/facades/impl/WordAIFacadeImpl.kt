@@ -9,6 +9,7 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.ai.facades.WordAIFacade
+import com.ord.core.word.api.ai.requests.dto.ExplainWordRequest
 import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
@@ -164,6 +165,36 @@ class WordAIFacadeImpl(
                             )
                         }
                     )
+            }
+    }
+
+    override fun explainWord(
+        body: ExplainWordRequest,
+        user: UserDTO,
+    ): Flux<String> {
+        return languageProficiencyService.findUserProficiencyInLanguage(user.id, body.language)
+            .switchIfEmpty(Mono.error(BadRequestException("User does not have any proficiency in the requested language.")))
+            .flatMapMany { userProficiencyInRequestedLanguage ->
+                val translateTo: LanguageName = userProficiencyInRequestedLanguage!!.translateTo
+                val proficiencyLevel: LanguageProficiencyLevel = userProficiencyInRequestedLanguage.level
+
+                val prompt = Prompt(
+                    variant = AvailablePrompts.WORDS_EXPLAIN,
+                    params = mapOf(
+                        "word" to body.word,
+                        "wordLanguage" to body.language.toString(),
+                        "translationLanguage" to translateTo.toString(),
+                        "proficiency" to proficiencyLevel.toString(),
+                        "generativeContentLanguage" to userProficiencyInRequestedLanguage.generativeContentLanguage.toString()
+                    )
+                ).toString()
+
+                openAIAPIClientService.openSimpleStringStream(
+                    prompt = prompt,
+                    onComplete = { (_, emitter) ->
+                        emitter.tryEmitComplete()
+                    }
+                )
             }
     }
 }
