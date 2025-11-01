@@ -280,6 +280,7 @@ class TestWordAIController @Autowired constructor(
                 response.body shouldNotBe null
 
                 val manual = response.body!!
+                manual.suggestedCorrection shouldBe null // Word is spelled correctly
                 manual.translation.shouldNotBeBlank()
                 manual.definition.shouldNotBeBlank()
                 manual.type shouldNotBe null
@@ -338,6 +339,36 @@ class TestWordAIController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
+            }
+
+            @Test
+            fun `200 - should return suggestedCorrection when word is misspelled`() {
+                val request = GenerateWordManualRequest(
+                    word = "recieve", // Misspelled "receive"
+                    language = LanguageName.ENGLISH,
+                    targetLanguage = LanguageName.NORWEGIAN,
+                    proficiencyLevel = LanguageProficiencyLevel.B2
+                )
+
+                val response = wordAIAPIClient.generateManual(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+
+                val manual = response.body!!
+
+                // Should have suggested correction
+                manual.suggestedCorrection shouldNotBe null
+                manual.suggestedCorrection shouldBe "receive"
+
+                // Manual should be generated for the corrected word
+                manual.originalWord shouldBe "recieve"
+                manual.translation.shouldNotBeBlank()
+                manual.definition.shouldNotBeBlank()
+                manual.exampleSentences.shouldNotBeEmpty()
             }
         }
 
