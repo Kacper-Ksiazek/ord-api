@@ -677,7 +677,7 @@ class TestQuicklyAddedWordsController @Autowired constructor(
 
                 // Create unapproved words via public endpoint
                 val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
-                val publicResponse = publicClient.publicBulkCreate(
+                publicClient.publicBulkCreate(
                     com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
                         userEmail = user.email,
                         words = listOf(
@@ -689,7 +689,9 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                     )
                 )
 
-                val idsToApprove = publicResponse.body!!.map { it.id!! }
+                // Get the created words from database
+                val wordsInDb = qawRepository.findAll().collectList().block()!!
+                val idsToApprove = wordsInDb.map { it.id!! }
 
                 // Approve the words
                 val response = qawAPIClient.approveMany(
@@ -706,7 +708,7 @@ class TestQuicklyAddedWordsController @Autowired constructor(
 
                 // Create unapproved words via public endpoint
                 val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
-                val publicResponse = publicClient.publicBulkCreate(
+                publicClient.publicBulkCreate(
                     com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
                         userEmail = user.email,
                         words = listOf(
@@ -717,7 +719,9 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                     )
                 )
 
-                val idsToApprove = publicResponse.body!!.map { it.id!! }
+                // Get the created words from database
+                val wordsInDb = qawRepository.findAll().collectList().block()!!
+                val idsToApprove = wordsInDb.map { it.id!! }
 
                 // Approve the words
                 qawAPIClient.approveMany(
@@ -726,9 +730,9 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 )
 
                 // Verify in database
-                val wordsInDb = qawRepository.findAllById(idsToApprove).collectList().block()!!
-                wordsInDb shouldHaveSize 2
-                wordsInDb.forEach { word ->
+                val approvedWords = qawRepository.findAllById(idsToApprove).collectList().block()!!
+                approvedWords shouldHaveSize 2
+                approvedWords.forEach { word ->
                     word.isApproved shouldBe true
                 }
             }
@@ -740,7 +744,7 @@ class TestQuicklyAddedWordsController @Autowired constructor(
 
                 // Create unapproved words for user1
                 val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
-                val user1Response = publicClient.publicBulkCreate(
+                publicClient.publicBulkCreate(
                     com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
                         userEmail = user1.email,
                         words = listOf(
@@ -751,7 +755,7 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 )
 
                 // Create unapproved words for user2
-                val user2Response = publicClient.publicBulkCreate(
+                publicClient.publicBulkCreate(
                     com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
                         userEmail = user2.email,
                         words = listOf(
@@ -761,8 +765,10 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                     )
                 )
 
-                val user1WordId = user1Response.body!![0].id!!
-                val user2WordId = user2Response.body!![0].id!!
+                // Get the created words from database
+                val allWords = qawRepository.findAll().collectList().block()!!
+                val user1WordId = allWords.find { it.word == TestData.TEST_WORD_1 }!!.id!!
+                val user2WordId = allWords.find { it.word == TestData.TEST_WORD_2 }!!.id!!
 
                 // User1 tries to approve both words
                 qawAPIClient.approveMany(

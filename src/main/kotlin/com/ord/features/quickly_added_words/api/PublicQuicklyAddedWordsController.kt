@@ -29,8 +29,9 @@ class PublicQuicklyAddedWordsController(
     )
     @ApiResponses(value = [
         ApiResponse(
-            responseCode = "200",
-            description = "Words created successfully"
+            responseCode = "204",
+            description = "Words created successfully",
+            content = [Content()]
         ),
         ApiResponse(
             responseCode = "400",
@@ -40,5 +41,5 @@ class PublicQuicklyAddedWordsController(
     ])
     fun publicBulkCreate(
         @Valid @RequestBody body: PublicQAWBulkCreateRequest
-    ): Mono<ResponseEntity<List<QuicklyAddedWordEntity>>> = publicQAWFacade.publicBulkCreate(body)
+    ): Mono<ResponseEntity<Void>> = publicQAWFacade.publicBulkCreate(body)
 }
