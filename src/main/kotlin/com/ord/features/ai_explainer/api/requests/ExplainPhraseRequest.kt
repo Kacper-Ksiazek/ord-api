@@ -24,5 +24,23 @@ data class ExplainPhraseRequest(
         example = "NORWEGIAN",
         required = true
     )
-    val language: LanguageName
+    val language: LanguageName,
+
+    @field:Size(max = 2000, message = "Context must be at most 2000 characters")
+    @Schema(
+        description = "Optional context where the phrase is used (e.g., a paragraph or sentence containing the phrase)",
+        example = "I was reading a book and came across this phrase: 'break the ice'. The context was about meeting new people at a party.",
+        nullable = true,
+        maxLength = 2000
+    )
+    val context: String? = null,
+
+    @field:Size(max = 500, message = "Custom instruction must be at most 500 characters")
+    @Schema(
+        description = "Optional custom instruction in any language to guide the explanation (e.g., 'Focus on informal usage', 'Explain like I'm 5', 'Include etymology')",
+        example = "Please focus on how this is used in everyday conversation",
+        nullable = true,
+        maxLength = 500
+    )
+    val customInstruction: String? = null
 )
