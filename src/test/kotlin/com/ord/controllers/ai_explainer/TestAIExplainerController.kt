@@ -1,4 +1,4 @@
-package com.ord.controllers.features.ai_explainer
+package com.ord.controllers.ai_explainer
 
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
@@ -110,6 +110,75 @@ class TestAIExplainerController @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.explanation.shouldNotBeBlank()
             }
+
+            @Test
+            fun `200 - should generate explanation with additional context`() {
+                val request = ExplainPhraseRequest(
+                    phrase = "break the ice",
+                    language = LanguageName.ENGLISH,
+                    context = "I was reading a book about networking events. The author mentioned that at parties, people often need to 'break the ice' to start conversations with strangers."
+                )
+
+                val response = aiExplainerAPIClient.explainPhrase(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.explanation.shouldNotBeBlank()
+            }
+
+            @Test
+            fun `200 - should generate explanation with custom instruction in English`() {
+                val request = ExplainPhraseRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    customInstruction = "Please explain this word as if I'm 5 years old"
+                )
+
+                val response = aiExplainerAPIClient.explainPhrase(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.explanation.shouldNotBeBlank()
+            }
+
+            @Test
+            fun `200 - should generate explanation with custom instruction in another language`() {
+                val request = ExplainPhraseRequest(
+                    phrase = "katt",
+                    language = LanguageName.NORWEGIAN,
+                    customInstruction = "Concentrer sur l'usage familier et informel"
+                )
+
+                val response = aiExplainerAPIClient.explainPhrase(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.explanation.shouldNotBeBlank()
+            }
+
+            @Test
+            fun `200 - should generate explanation with both context and custom instruction`() {
+                val request = ExplainPhraseRequest(
+                    phrase = "over the moon",
+                    language = LanguageName.ENGLISH,
+                    context = "She was over the moon when she got the job offer.",
+                    customInstruction = "Focus on the emotional aspect and provide similar expressions"
+                )
+
+                val response = aiExplainerAPIClient.explainPhrase(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.explanation.shouldNotBeBlank()
+            }
         }
 
         @Nested
@@ -166,6 +235,38 @@ class TestAIExplainerController @Autowired constructor(
                 val request = ExplainPhraseRequest(
                     phrase = "hola",
                     language = LanguageName.SPANISH
+                )
+
+                val response = aiExplainerAPIClient.explainPhrase(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - context exceeding max length should fail`() {
+                val request = ExplainPhraseRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    context = "a".repeat(2001)
+                )
+
+                val response = aiExplainerAPIClient.explainPhrase(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - custom instruction exceeding max length should fail`() {
+                val request = ExplainPhraseRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    customInstruction = "a".repeat(501)
                 )
 
                 val response = aiExplainerAPIClient.explainPhrase(
