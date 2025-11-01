@@ -10,14 +10,13 @@ import java.util.*
 data class WordDBExportedRow(
     val type: WordType,
     val extraMark: WordExtraMark?,
-    val origin: String,
+    val sourceWord: String,
     val translation: String,
     val definition: String,
     val isCompleted: Boolean,
     val isBookmarked: Boolean,
     val points: Int,
-    val translatedFrom: LanguageName,
-    val translatedTo: LanguageName
+    val language: LanguageName
 ) {
     private val objectMapper = jacksonObjectMapper()
 
@@ -25,14 +24,13 @@ data class WordDBExportedRow(
         return WordEntity(
             type = type,
             extraMark = extraMark,
-            origin = origin,
+            sourceWord = sourceWord,
             translation = translation,
             definition = definition,
             isCompleted = isCompleted,
             isBookmarked = isBookmarked,
             points = points,
-            translatedFrom = translatedFrom,
-            translatedTo = translatedTo,
+            language = language,
             userId = userId
         )
     }

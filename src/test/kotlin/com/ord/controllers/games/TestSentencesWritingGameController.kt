@@ -304,10 +304,10 @@ class TestSentencesWritingGameController @Autowired constructor(
 
                 val wordsUsedInGame: List<String> = finishedGameResponse.reviewedAnswers.map { it.word }
                 val usedWordEntities: List<WordEntity> =
-                    words.filter { it.translatedFrom == finishedGameInDb?.language && it.origin in wordsUsedInGame }
+                    words.filter { it.language == finishedGameInDb?.language && it.sourceWord in wordsUsedInGame }
 
                 finishedGameResponse.reviewedAnswers.forEach { reviewedTopic ->
-                    val wordEntity = usedWordEntities.firstOrNull { it.origin == reviewedTopic.word }
+                    val wordEntity = usedWordEntities.firstOrNull { it.sourceWord == reviewedTopic.word }
                     wordEntity shouldNotBe null
 
                     val accuracy = reviewedTopic.score.toDouble() / reviewedTopic.maxScore.toDouble()

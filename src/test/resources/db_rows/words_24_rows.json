@@ -1,186 +1,163 @@
 [
   {
-    "origin": "fleeting",
+    "sourceWord": "fleeting",
     "translation": "ulotny",
     "definition": "Something that lasts for a very short time or is difficult to hold onto.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "depletes",
+    "sourceWord": "depletes",
     "translation": "wyczerpuje",
     "definition": "To diminish the quantity or supply of something; to exhaust resources or energy.",
     "type": "VERB",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "don't shoot them down in flames",
+    "sourceWord": "don't shoot them down in flames",
     "translation": "nie gaś ich entuzjazmu.”",
     "definition": "This idiom means to harshly criticize or dismiss someone's ideas or efforts, often in a way that can be humiliating.",
     "type": "IDIOM",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "fruit of thought",
+    "sourceWord": "fruit of thought",
     "translation": "owoce myśli",
     "definition": "The phrase 'fruit of thought' refers to the results or outcomes of contemplation, reflection, or intellectual effort.",
     "type": "IDIOM",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "down the rabbit hole",
+    "sourceWord": "down the rabbit hole",
     "translation": "w dół króliczej nory",
     "definition": "The phrase 'down the rabbit hole' refers to a situation that becomes increasingly complex or bizarre, often leading to unexpected outcomes.",
     "type": "IDIOM",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "well-to-do",
+    "sourceWord": "well-to-do",
     "translation": "zamożny",
     "definition": "A term used to describe someone who is wealthy or affluent.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "across-the-board",
+    "sourceWord": "across-the-board",
     "translation": "ogólny",
     "definition": "The term 'across-the-board' refers to something that applies universally or to all parts or members without exception.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "run-of-the-mill",
+    "sourceWord": "run-of-the-mill",
     "translation": "przeciętny",
     "definition": "The term describes something that is ordinary or of average quality, lacking any special features or characteristics.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "state-of-the-art",
+    "sourceWord": "state-of-the-art",
     "translation": "najnowocześniejszy",
     "definition": "The term refers to the most advanced or sophisticated technology, methods, or design currently available.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "off-the-cuff",
+    "sourceWord": "off-the-cuff",
     "translation": "z marszu",
     "definition": "The term 'off-the-cuff' refers to something said or done spontaneously, without preparation.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "larger-than-life",
+    "sourceWord": "larger-than-life",
     "translation": "osobowość większa niż życie",
     "definition": "This phrase describes someone or something that is notably impressive or larger than the ordinary, often in a charismatic or dramatic way.",
     "type": "IDIOM",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "middle-of-the-road",
+    "sourceWord": "middle-of-the-road",
     "translation": "umiarkowany",
     "definition": "The term 'middle-of-the-road' describes something that is moderate or not extreme.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "paid-for",
+    "sourceWord": "paid-for",
     "translation": "płatny",
     "definition": "The term 'paid-for' refers to something that has been purchased or is compensated by payment.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "take-it-or-leave-it",
+    "sourceWord": "take-it-or-leave-it",
     "translation": "bierz albo zostaw",
     "definition": "A phrase indicating that a person must accept the terms offered or forgo the opportunity altogether.",
     "type": "PHRASE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "business-as-usual",
+    "sourceWord": "business-as-usual",
     "translation": "normalne funkcjonowanie",
     "definition": "The term 'business-as-usual' refers to the usual or expected activities and processes in an organization, especially during unusual circumstances.",
     "type": "PHRASE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "all-you-can-eat",
+    "sourceWord": "all-you-can-eat",
     "translation": "wszystko, co możesz zjeść",
     "definition": "An offer at a restaurant where customers can eat as much food as they want for a set price.",
     "type": "PHRASE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "meagre",
+    "sourceWord": "meagre",
     "translation": "fuzja",
     "definition": "To *merge* means to combine two or more entities into one.",
     "type": "VERB",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "firm",
+    "sourceWord": "firm",
     "translation": "firma",
     "definition": "A firm is a business or company, often used to refer specifically to one providing professional services.",
     "type": "NOUN",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "doting",
+    "sourceWord": "doting",
     "translation": "roztkliwiony",
     "definition": "Doting refers to showing excessive love or fondness, often in a way that can be considered overly indulgent.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "bluntly",
+    "sourceWord": "bluntly",
     "translation": "szczery",
     "definition": "To speak in a straightforward and honest manner, often without regard for others' feelings.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "to add insult to injury",
+    "sourceWord": "to add insult to injury",
     "translation": "przykładać sól do rany",
     "definition": "To add insult to injury means to make a bad situation even worse by saying or doing something that is hurtful.",
     "type": "IDIOM",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "to cap it all",
+    "sourceWord": "to cap it all",
     "translation": "a na dodatek",
     "definition": "This phrase is used to emphasize an additional, often negative, fact that culminates a series of events or situations.",
     "type": "IDIOM",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   },
   {
-    "origin": "flustered",
+    "sourceWord": "flustered",
     "translation": "roztrzęsiony",
     "definition": "To be flustered means to be in a state of agitated confusion or nervous excitement.",
     "type": "ADJECTIVE",
-    "translatedFrom": "ENGLISH",
-    "translatedTo": "POLISH"
+    "language": "ENGLISH"
   }
 ]

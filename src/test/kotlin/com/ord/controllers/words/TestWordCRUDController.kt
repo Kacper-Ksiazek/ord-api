@@ -207,9 +207,9 @@ class TestWordCRUDController @Autowired constructor(
             @Test
             fun `200 - Words can be fetched with sorting - DESC`() {
                 val descSorted =
-                    makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN, sortDirection = SortDirection.DESC)
+                    makeManyWordsRequest(sortBy = GetAllWordsSortOptions.SOURCE_WORD, sortDirection = SortDirection.DESC)
 
-                descSorted.data.map { it.origin }.zipWithNext { previous, current ->
+                descSorted.data.map { it.sourceWord }.zipWithNext { previous, current ->
                     // Check if the previous value is greater than the current one
                     current.compareTo(previous) shouldBeLessThan 0
                 }
@@ -218,9 +218,9 @@ class TestWordCRUDController @Autowired constructor(
             @Test
             fun `200 - Words can be fetched with sorting - ASC`() {
                 val descSorted =
-                    makeManyWordsRequest(sortBy = GetAllWordsSortOptions.ORIGIN, sortDirection = SortDirection.ASC)
+                    makeManyWordsRequest(sortBy = GetAllWordsSortOptions.SOURCE_WORD, sortDirection = SortDirection.ASC)
 
-                descSorted.data.map { it.origin }.zipWithNext { previous, current ->
+                descSorted.data.map { it.sourceWord }.zipWithNext { previous, current ->
                     // Check if the previous value is greater than the current one
                     previous.compareTo(current) shouldBeLessThan 0
                 }
@@ -245,54 +245,54 @@ class TestWordCRUDController @Autowired constructor(
                 wordRepository.save(
                     wordMockFactory.mockEntity(
                         userId = authenticatedUser.userInfo.id,
-                        origin = "kacper1",
+                        sourceWord = "kacper1",
                         translation = expectedWordMark,
-                        translatedFrom = learningLanguage
+                        language = learningLanguage
                     )
                 ).block()
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
                         userId = authenticatedUser.userInfo.id,
-                        origin = "KACPER2",
+                        sourceWord = "KACPER2",
                         translation = expectedWordMark,
-                        translatedFrom = learningLanguage
+                        language = learningLanguage
                     )
                 ).block()
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
                         userId = authenticatedUser.userInfo.id,
-                        origin = "per3",
+                        sourceWord = "per3",
                         translation = expectedWordMark,
-                        translatedFrom = learningLanguage
+                        language = learningLanguage
                     )
                 ).block()
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
                         userId = authenticatedUser.userInfo.id,
-                        origin = expectedWordMark + "1",
+                        sourceWord = expectedWordMark + "1",
                         translation = "kacper",
-                        translatedFrom = learningLanguage
+                        language = learningLanguage
                     )
                 ).block()
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
                         userId = authenticatedUser.userInfo.id,
-                        origin = expectedWordMark + "2",
+                        sourceWord = expectedWordMark + "2",
                         translation = "KACPER",
-                        translatedFrom = learningLanguage
+                        language = learningLanguage
                     )
                 ).block()
 
                 wordRepository.save(
                     wordMockFactory.mockEntity(
                         userId = authenticatedUser.userInfo.id,
-                        origin = expectedWordMark + "3",
+                        sourceWord = expectedWordMark + "3",
                         translation = "PER",
-                        translatedFrom = learningLanguage
+                        language = learningLanguage
                     )
                 ).block()
 
@@ -302,7 +302,7 @@ class TestWordCRUDController @Autowired constructor(
                 )
 
                 body.data.forEach { t ->
-                    assert(t.origin.contains(expectedWordMark) || t.translation.contains(expectedWordMark))
+                    assert(t.sourceWord.contains(expectedWordMark) || t.translation.contains(expectedWordMark))
                 }
             }
 
@@ -833,17 +833,15 @@ class TestWordCRUDController @Autowired constructor(
         private fun createDefaultWordRequest(
             bankId: UUID? = null,
             bankToCreate: CreateBankRequest? = null,
-            extraMark: WordExtraMark? = WordExtraMark.SLANG,
-            translatedTo: LanguageName? = LanguageName.POLISH
+            extraMark: WordExtraMark? = WordExtraMark.SLANG
         ): CreateWordRequest {
             return CreateWordRequest(
-                origin = "word in english",
+                sourceWord = "word in english",
                 translation = "slowo po polsku",
                 definition = "definition",
                 type = WordType.NOUN,
                 extraMark = extraMark,
-                translatedTo = translatedTo,
-                translatedFrom = LanguageName.ENGLISH,
+                language = LanguageName.ENGLISH,
                 bankId = bankId,
                 bankToCreate = bankToCreate
             )
@@ -866,7 +864,7 @@ class TestWordCRUDController @Autowired constructor(
             ).block()
 
             wordEntity shouldNotBe null
-            wordEntity!!.origin shouldBe "word in english"
+            wordEntity!!.sourceWord shouldBe "word in english"
             wordEntity.translation shouldBe "slowo po polsku"
             wordEntity.definition shouldBe "definition"
 
@@ -931,14 +929,14 @@ class TestWordCRUDController @Autowired constructor(
             }
 
             @Test
-            fun `201 - Word can be created with no translated to language specified defaulting to the user's native language`() {
-                val request = createDefaultWordRequest(translatedTo = null)
+            fun `201 - Word is created with the language from the request`() {
+                val request = createDefaultWordRequest()
 
                 val response = wordsAPIClient.createWord(request, user = authenticatedUser)
 
                 response.status shouldBe HttpStatus.CREATED
                 response.body shouldNotBe null
-                response.body!!.translatedTo shouldBe authenticatedUser.userInfo.nativeLanguage
+                response.body!!.language shouldBe LanguageName.ENGLISH
             }
 
             @Test
@@ -1036,13 +1034,12 @@ class TestWordCRUDController @Autowired constructor(
             bankToCreate: CreateBankRequest? = null
         ): UpdateWordRequest {
             return UpdateWordRequest(
-                origin = "UPDATED word in foreign language",
+                sourceWord = "UPDATED word in foreign language",
                 translation = "UPDATED word in native language",
                 definition = "UPDATED definition",
                 type = WordType.VERB,
                 extraMark = WordExtraMark.SLANG,
-                translatedTo = LanguageName.SLOVENIAN,
-                translatedFrom = LanguageName.NORWEGIAN,
+                language = LanguageName.SLOVENIAN,
                 bankId = bankId,
                 bankToCreate = bankToCreate
             )
@@ -1069,13 +1066,13 @@ class TestWordCRUDController @Autowired constructor(
             wordEntity shouldNotBe null
 
             // Check the updated fields
-            wordEntity!!.origin shouldBe (updateRequest.origin ?: originalWord.origin)
+            wordEntity!!.sourceWord shouldBe (updateRequest.sourceWord ?: originalWord.sourceWord)
             wordEntity.translation shouldBe (updateRequest.translation ?: originalWord.translation)
             wordEntity.definition shouldBe (updateRequest.definition ?: originalWord.definition)
             wordEntity.type shouldBe (updateRequest.type ?: originalWord.type)
             wordEntity.extraMark shouldBe (updateRequest.extraMark ?: originalWord.extraMark)
-            wordEntity.translatedTo shouldBe (updateRequest.translatedTo ?: originalWord.translatedTo)
-            wordEntity.translatedFrom shouldBe (updateRequest.translatedFrom ?: originalWord.translatedFrom)
+            wordEntity.language shouldBe (updateRequest.language ?: originalWord.language)
+            wordEntity.language shouldBe (updateRequest.language ?: originalWord.language)
 
             return wordEntity
         }
@@ -1131,7 +1128,7 @@ class TestWordCRUDController @Autowired constructor(
             @Test
             fun `200 - Word can be updated with only one field being specified`() {
                 val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
-                val updateRequest = UpdateWordRequest(origin = "new origin")
+                val updateRequest = UpdateWordRequest(sourceWord = "new origin")
 
                 val response = wordsAPIClient.updateWord(
                     id = word.id!!,

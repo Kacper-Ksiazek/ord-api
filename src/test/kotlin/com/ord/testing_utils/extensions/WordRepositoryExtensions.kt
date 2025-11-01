@@ -25,7 +25,7 @@ fun WordRepository.assertDBPointsWereUpdatedProperly(
 
     properAnswers.forEach {
         val correspondingWordEntity =
-            wordsUsedInGame.find { word -> word.origin.lowercase() == it.expectedAnswer.lowercase() }
+            wordsUsedInGame.find { word -> word.sourceWord.lowercase() == it.expectedAnswer.lowercase() }
         val correspondingAlteredAnswer: AlteredWordProperAnswer? = alteredAnswers.find { alteredAnswer ->
             alteredAnswer.questionId == it.id
         }

@@ -20,7 +20,7 @@ BEGIN
             CAST(SUM(CASE WHEN date_trunc('week', %I) = date_trunc('week', current_date) THEN 1 ELSE 0 END) AS integer) AS week,
             CAST(SUM(CASE WHEN date_trunc('month', %I) = date_trunc('month', current_date) THEN 1 ELSE 0 END) AS integer) AS month
         FROM words
-        WHERE translated_from = $1 AND user_id = $2
+        WHERE language = $1 AND user_id = $2
     $f$, p_field_name, p_field_name, p_field_name);
 
     RETURN QUERY EXECUTE sql USING p_language, p_user_id;

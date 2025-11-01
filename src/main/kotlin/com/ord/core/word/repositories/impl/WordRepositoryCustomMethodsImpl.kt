@@ -53,13 +53,12 @@ class WordRepositoryCustomMethodsImpl(
                     id = row.get("id", UUID::class.java)!!,
 
                     type = WordType.valueOf(row.get("type", String::class.java)!!),
-                    origin = row.get("origin", String::class.java)!!,
+                    sourceWord = row.get("source_word", String::class.java)!!,
                     translation = row.get("translation", String::class.java)!!,
                     definition = row.get("definition", String::class.java) ?: "",
                     extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
 
-                    translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
-                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
+                    language = LanguageName.valueOf(row.get("language", String::class.java)!!),
 
                     isCompleted = row.get("is_completed", Boolean::class.java)!!,
                     isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
@@ -85,10 +84,10 @@ class WordRepositoryCustomMethodsImpl(
         limit: Int
     ): Flux<String> {
         val selectQuery = """
-            SELECT origin
+            SELECT source_word
             FROM words
             WHERE
-                translated_from = :language
+                language = :language
                 AND user_id = :userId
             ORDER BY created_at DESC
             LIMIT :limit
@@ -98,7 +97,7 @@ class WordRepositoryCustomMethodsImpl(
             .bind("userId", userId)
             .bind("language", language.name)
             .bind("limit", limit)
-            .map { row -> row.get("origin", String::class.java)!! }
+            .map { row -> row.get("source_word", String::class.java)!! }
             .all()
     }
 
@@ -109,10 +108,10 @@ class WordRepositoryCustomMethodsImpl(
         limit: Int
     ): Flux<String> {
         val selectQuery = """
-            SELECT origin
+            SELECT source_word
             FROM words
             WHERE
-                translated_from = :language
+                language = :language
                 AND user_id = :userId
             ORDER BY points DESC
             LIMIT :limit
@@ -122,7 +121,7 @@ class WordRepositoryCustomMethodsImpl(
             .bind("userId", userId)
             .bind("language", language.name)
             .bind("limit", limit)
-            .map { row -> row.get("origin", String::class.java)!! }
+            .map { row -> row.get("source_word", String::class.java)!! }
             .all()
     }
 
@@ -133,10 +132,10 @@ class WordRepositoryCustomMethodsImpl(
         banksIds: List<UUID>
     ): Flux<String> {
         val selectQuery = """
-            SELECT origin
+            SELECT source_word
             FROM words
             WHERE
-                translated_from = :language
+                language = :language
                 AND user_id = :userId
                 AND bank_id = ANY(:banksIds)
         """
@@ -145,7 +144,7 @@ class WordRepositoryCustomMethodsImpl(
             .bind("userId", userId)
             .bind("language", language.name)
             .bind("banksIds", banksIds.toTypedArray())
-            .map { row -> row.get("origin", String::class.java)!! }
+            .map { row -> row.get("source_word", String::class.java)!! }
             .all()
     }
 
@@ -156,12 +155,12 @@ class WordRepositoryCustomMethodsImpl(
         userId: UUID
     ): Flux<WordEntity> {
         val selectQuery = """
-            SELECT id, type, origin, translation, definition, extra_mark,
-                   translated_from, translated_to, is_completed, is_bookmarked, points,
+            SELECT id, type, source_word, translation, definition, extra_mark,
+                   language, is_completed, is_bookmarked, points,
                    user_id, bank_id, bank_group_id, completed_at, created_at, updated_at
             FROM words
-            WHERE translated_from = :language
-            AND origin = ANY(:origins)
+            WHERE language = :language
+            AND source_word = ANY(:origins)
             AND user_id = :userId
         """
 
@@ -174,13 +173,12 @@ class WordRepositoryCustomMethodsImpl(
                     id = row.get("id", UUID::class.java)!!,
 
                     type = WordType.valueOf(row.get("type", String::class.java)!!),
-                    origin = row.get("origin", String::class.java)!!,
+                    sourceWord = row.get("source_word", String::class.java)!!,
                     translation = row.get("translation", String::class.java)!!,
                     definition = row.get("definition", String::class.java) ?: "",
                     extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
 
-                    translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
-                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
+                    language = LanguageName.valueOf(row.get("language", String::class.java)!!),
 
                     isCompleted = row.get("is_completed", Boolean::class.java)!!,
                     isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
@@ -207,7 +205,7 @@ class WordRepositoryCustomMethodsImpl(
         bankGroupsIds: Set<UUID>?,
     ): Mono<Set<String>> {
         val criterias = buildList {
-            add("words.translated_from = :language")
+            add("words.language = :language")
             add("words.user_id = :userId")
             add("words.is_completed = :completed")
 
@@ -226,14 +224,14 @@ class WordRepositoryCustomMethodsImpl(
 
         // language=SQL
         val selectQuery = """
-            SELECT origin 
-            FROM words 
+            SELECT source_word
+            FROM words
             WHERE $criterias
         """
 
         return databaseClient.sql(selectQuery)
             .bindValues(valuesBindings)
-            .map { row -> row.get("origin", String::class.java)!! }
+            .map { row -> row.get("source_word", String::class.java)!! }
             .all()
             .collectList()
             .map { it.toSet() }
@@ -394,15 +392,14 @@ class WordRepositoryCustomMethodsImpl(
                     id = row.get("id", UUID::class.java)!!,
 
                     points = row.get("points", Int::class.java)!!,
-                    origin = row.get("origin", String::class.java)!!,
+                    sourceWord = row.get("source_word", String::class.java)!!,
                     translation = row.get("translation", String::class.java)!!,
                     isCompleted = row.get("is_completed", Boolean::class.java)!!,
                     isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
 
                     type = WordType.valueOf(row.get("type", String::class.java)!!),
                     extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
-                    translatedTo = LanguageName.valueOf(row.get("translated_to", String::class.java)!!),
-                    translatedFrom = LanguageName.valueOf(row.get("translated_from", String::class.java)!!),
+                    language = LanguageName.valueOf(row.get("language", String::class.java)!!),
 
                     bank = BankCompact.construct(row),
                 )
@@ -482,11 +479,11 @@ class WordRepositoryCustomMethodsImpl(
         wordExtraMark: WordExtraMark?
     ): String {
         val conditions = buildList {
-            add("words.translated_from = :language")
+            add("words.language = :language")
             add("words.user_id = :userId")
 
             completed?.let { add("words.is_completed = :completed") }
-            searchingPhrase?.let { add("words.origin ILIKE :searchingPhrase") }
+            searchingPhrase?.let { add("words.source_word ILIKE :searchingPhrase") }
             bookmarked?.let { add("words.is_bookmarked = :bookmarked") }
             banksIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_id = ANY(:banksIds)") }
             bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_group_id = ANY(:bankGroupsIds)") }

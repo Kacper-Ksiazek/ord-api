@@ -12,13 +12,12 @@ data class SingleWordResponse(
     val id: UUID,
 
     var type: WordType,
-    var origin: String,
+    var sourceWord: String,
     var translation: String,
     var definition: String,
     var extraMark: WordExtraMark?,
 
-    var translatedFrom: LanguageName,
-    var translatedTo: LanguageName,
+    var language: LanguageName,
 
     var isCompleted: Boolean,
     var isBookmarked: Boolean,
@@ -36,12 +35,11 @@ data class SingleWordResponse(
         val fields = setOf(
             "id",
             "type",
-            "origin",
+            "source_word",
             "translation",
             "definition",
             "extra_mark",
-            "translated_from",
-            "translated_to",
+            "language",
             "is_completed",
             "is_bookmarked",
             "points",

@@ -19,15 +19,14 @@ class WordFactory(
     private val objectMapper = jacksonObjectMapper()
 
     fun mockEntity(
-        origin: String = UUID.randomUUID().toString(),
+        sourceWord: String = UUID.randomUUID().toString(),
         translation: String = faker.name().title(),
         definition: String = faker.name().title(),
         isBookmarked: Boolean = faker.bool().bool(),
         points: Int = 0,
         type: WordType = WordType::class.getRandomValue(),
         extraMark: WordExtraMark? = WordExtraMark::class.getRandomValueOrNull(changesForNull = 75),
-        translatedFrom: LanguageName = LanguageName::class.getRandomValue(),
-        translatedTo: LanguageName = LanguageName::class.getRandomValue(),
+        language: LanguageName = LanguageName::class.getRandomValue(),
         userId: UUID? = null,
         bankId: UUID? = null,
         bankGroupId: UUID? = null,
@@ -35,15 +34,14 @@ class WordFactory(
         val userIdToUse = userId ?: userSeeder.seedOneEntity().id!!
 
         return WordEntity(
-            origin = origin,
+            sourceWord = sourceWord,
             translation = translation,
             definition = definition,
             isBookmarked = isBookmarked,
             points = points,
             type = type,
             extraMark = extraMark,
-            translatedFrom = translatedFrom,
-            translatedTo = translatedTo,
+            language = language,
             userId = userIdToUse,
             bankId = bankId,
             bankGroupId = bankGroupId,

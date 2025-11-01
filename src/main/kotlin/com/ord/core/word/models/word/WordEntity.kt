@@ -15,13 +15,12 @@ data class WordEntity(
     override val id: UUID? = null,
 
     var type: WordType,
-    var origin: String,
+    var sourceWord: String,
     var translation: String,
     var definition: String,
     var extraMark: WordExtraMark? = null,
 
-    var translatedFrom: LanguageName,
-    var translatedTo: LanguageName,
+    var language: LanguageName,
 
     var isCompleted: Boolean = false,
     var isBookmarked: Boolean = false,

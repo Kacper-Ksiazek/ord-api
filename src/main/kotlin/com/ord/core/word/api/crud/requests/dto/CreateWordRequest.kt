@@ -14,9 +14,9 @@ data class CreateWordRequest(
     @field:NotNull(message = "Type cannot be blank")
     val type: WordType,
 
-    @field:NotBlank(message = "Origin word cannot be blank")
-    @field:Size(min = 1, max = 255, message = "Origin word must be between 1 and 255 characters")
-    val origin: String,
+    @field:NotBlank(message = "Source word cannot be blank")
+    @field:Size(min = 1, max = 255, message = "Source word must be between 1 and 255 characters")
+    val sourceWord: String,
 
     @field:NotBlank(message = "Translation word cannot be blank")
     @field:Size(min = 1, max = 255, message = "Translation word must be between 1 and 255 characters")
@@ -28,12 +28,9 @@ data class CreateWordRequest(
 
     val extraMark: WordExtraMark? = null,
 
-    @field:NotNull(message = "Translated from cannot be blank")
+    @field:NotNull(message = "Language cannot be blank")
     @field:ValidLanguageName
-    val translatedFrom: LanguageName,
-
-    @field:ValidLanguageName
-    val translatedTo: LanguageName? = null,
+    val language: LanguageName,
 
     val bankId: UUID? = null,
     val bankToCreate: CreateBankRequest? = null

@@ -2,13 +2,12 @@ CREATE TABLE IF NOT EXISTS words
 (
     id              UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     type            word_type     NOT NULL,                 -- Describes word's kind, such as `noun` or `verb`
-    origin          varchar(255)  NOT NULL,                 -- This is the word which is being translated | example: `book`
+    source_word     varchar(255)  NOT NULL,                 -- The word being learned in the source language | example: `book`
     translation     VARCHAR(255)  NOT NULL,                 -- This is the word translated into desired language | example: `książka`
     definition      TEXT          NOT NULL,                 -- Short and concise one or two sentences long definition of the word
     extra_mark      word_extra_mark          DEFAULT NULL,  -- Describes the word's extra mark, such as `offensive` or `slang`
 
-    translated_from language_name NOT NULL,                 -- Describes the original language of the word | example: `ENGLISH`
-    translated_to   language_name NOT NULL,                 -- Describes the language to which the word has been translated to | `example: POLISH`
+    language        language_name NOT NULL,                 -- The language of the source word being learned | example: `ENGLISH`
 
     is_completed    BOOLEAN       NOT NULL   DEFAULT FALSE, -- If set to true, the word is not used in games, exercises, etc.
     is_bookmarked   BOOLEAN       NOT NULL   DEFAULT FALSE, -- If set to true, the word is marked as bookmarked and therefore can be access more easily
@@ -23,11 +22,11 @@ CREATE TABLE IF NOT EXISTS words
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT unique_origin_per_user_language_and_type UNIQUE (user_id, translated_from, origin, type)
+    CONSTRAINT unique_source_word_per_user_language_and_type UNIQUE (user_id, language, source_word, type)
 );
 
 CREATE INDEX idx_words_id_user_id ON words (id, user_id);
-CREATE INDEX idx_words_user_language ON words (user_id, translated_from);
+CREATE INDEX idx_words_user_language ON words (user_id, language);
 
 CREATE TABLE IF NOT EXISTS word_details
 (

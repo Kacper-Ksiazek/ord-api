@@ -31,7 +31,7 @@ class WordSeeder(
         language: LanguageName = LanguageName.ENGLISH
     ): WordEntity {
         val mockEntity: WordEntity = wordMockFactory.mockEntity(userId = userId)
-        mockEntity.translatedFrom = language
+        mockEntity.language = language
 
         bankId?.let { mockEntity.bankId = it }
 
@@ -51,7 +51,7 @@ class WordSeeder(
                 wordMockFactory.mockEntity(
                     userId = userId,
                     bankId = bankId,
-                    translatedFrom = language
+                    language = language
                 )
             )
         }

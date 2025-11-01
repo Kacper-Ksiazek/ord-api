@@ -757,7 +757,7 @@ class TestCrosswordGameController @Autowired constructor(
                     .findAllByUserId(authenticatedUser.userInfo.id)
                     .collectList()
                     .block()!!
-                    .filter { it.origin in wordsUsedInGame }
+                    .filter { it.sourceWord in wordsUsedInGame }
                     .forEach {
                         it.points shouldBeGreaterThanOrEqual GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
                         it.isCompleted shouldBe true
