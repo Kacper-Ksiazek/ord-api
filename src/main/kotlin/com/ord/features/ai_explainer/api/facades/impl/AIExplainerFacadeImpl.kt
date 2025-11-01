@@ -37,7 +37,9 @@ class AIExplainerFacadeImpl(
                         "wordLanguage" to body.language.toString(),
                         "translationLanguage" to translateTo.toString(),
                         "proficiency" to proficiencyLevel.toString(),
-                        "generativeContentLanguage" to userProficiencyInRequestedLanguage.generativeContentLanguage.toString()
+                        "generativeContentLanguage" to userProficiencyInRequestedLanguage.generativeContentLanguage.toString(),
+                        "additionalContext" to (body.context ?: "Not provided"),
+                        "customInstruction" to (body.customInstruction ?: "Not provided")
                     )
                 ).toString()
 
