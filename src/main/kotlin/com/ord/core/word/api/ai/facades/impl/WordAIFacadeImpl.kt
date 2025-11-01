@@ -70,14 +70,10 @@ class WordAIFacadeImpl(
                     saveLog = {},
                     validateResponseBody = { responseBody ->
                         responseBody != null &&
-                                !responseBody.toString().contains("WORD_MISSPELLED") &&
                                 !responseBody.toString().contains("NON_EXISTENT_WORD")
                     },
                     parseResponseBody = { responseBody ->
                         when {
-                            responseBody.toString().contains("WORD_MISSPELLED") ->
-                                throw BadRequestException("The word ${body.word} in the language ${body.language} is misspelled.")
-
                             responseBody.toString().contains("NON_EXISTENT_WORD") ->
                                 throw BadRequestException("The word ${body.word} does not exist in the language ${body.language}.")
 
