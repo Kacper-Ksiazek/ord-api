@@ -17,6 +17,7 @@ data class QuicklyAddedWordEntity(
     var word: String,
     var language: LanguageName,
 
+    var translation: String? = null,
     var definition: String? = null,
     var extraMark: WordExtraMark? = null,
     var type: WordType? = null,

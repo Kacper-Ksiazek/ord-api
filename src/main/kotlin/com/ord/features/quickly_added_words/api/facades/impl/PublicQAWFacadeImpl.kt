@@ -18,7 +18,7 @@ class PublicQAWFacadeImpl(
 ) : PublicQAWFacade {
     override fun publicBulkCreate(
         body: PublicQAWBulkCreateRequest
-    ): Mono<ResponseEntity<List<QuicklyAddedWordEntity>>> {
+    ): Mono<ResponseEntity<Void>> {
         return userRepository
             .findByEmail(body.userEmail)
             .switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")))
@@ -29,6 +29,7 @@ class PublicQAWFacadeImpl(
                     QuicklyAddedWordEntity(
                         word = wordItem.word,
                         language = body.language,
+                        translation = wordItem.translation,
                         definition = wordItem.definition,
                         extraMark = wordItem.extraMark,
                         type = wordItem.type,
@@ -40,7 +41,7 @@ class PublicQAWFacadeImpl(
                 qawRepository
                     .saveAll(entities)
                     .collectList()
-                    .map { ResponseEntity.status(HttpStatus.CREATED).body(it) }
+                    .map { ResponseEntity.noContent().build<Void>() }
             }
     }
 }

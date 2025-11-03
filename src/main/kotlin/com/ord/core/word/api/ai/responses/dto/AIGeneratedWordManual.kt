@@ -10,6 +10,7 @@ import com.ord.core.word.models.word_details.jsonb.WordPronunciation
 data class AIGeneratedWordManual(
     // Core Information
     var originalWord: String = "",
+    val suggestedCorrection: String? = null,
     val translation: String,
     val definition: String,
     val type: WordType,

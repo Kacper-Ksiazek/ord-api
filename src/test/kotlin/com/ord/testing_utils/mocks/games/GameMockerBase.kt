@@ -77,8 +77,8 @@ abstract class GameMockerBase<
             .findAllByUserId(userId)
             .collectList()
             .block()!!
-            .filter { it.translatedFrom == ongoingGameDTO.language }
-            .map { it.origin }
+            .filter { it.language == ongoingGameDTO.language }
+            .map { it.sourceWord }
 
         wordRepository
             .saveAll(
@@ -86,8 +86,8 @@ abstract class GameMockerBase<
                     .filter { it !in currentWords }
                     .map {
                         wordMockFactory.mockEntity(
-                            origin = it,
-                            translatedFrom = ongoingGameDTO.language,
+                            sourceWord = it,
+                            language = ongoingGameDTO.language,
                             userId = userId,
                         )
                     }

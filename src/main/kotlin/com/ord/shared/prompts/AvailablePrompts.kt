@@ -15,4 +15,6 @@ enum class AvailablePrompts(
     GAMES_REVIEW_SENTENCES_WRITING(resourcePath = "games/review_sentences_writing_game.md"),
 
     WORDS_GENERATE_MANUAL(resourcePath = "words/generate_word_manual.md"),
+    WORDS_SUGGEST_VOCABULARY(resourcePath = "words/suggest_vocabulary.md"),
+    WORDS_EXPLAIN(resourcePath = "words/explain_word.md"),
 }

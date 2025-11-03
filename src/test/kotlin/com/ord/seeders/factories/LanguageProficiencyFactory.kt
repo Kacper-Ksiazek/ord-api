@@ -24,6 +24,7 @@ class LanguageProficiencyFactory(
         return LanguageProficiencyEntity(
             language = LanguageName::class.getRandomValue(),
             level = LanguageProficiencyLevel::class.getRandomValue(),
+            translateTo = LanguageName::class.getRandomValue(),
             userId = user.id!!,
             generativeContentLanguage = LanguageName::class.getRandomValue()
         )

@@ -15,13 +15,12 @@ class WordMapper(
             id = dto.id,
 
             type = dto.type,
-            origin = dto.origin,
+            sourceWord = dto.sourceWord,
             translation = dto.translation,
             definition = dto.definition,
             extraMark = dto.extraMark,
 
-            translatedFrom = dto.translatedFrom,
-            translatedTo = dto.translatedTo,
+            language = dto.language,
 
             isCompleted = dto.isCompleted,
             isBookmarked = dto.isBookmarked,
@@ -43,13 +42,12 @@ class WordMapper(
             id = entity.id ?: error("Word ID must not be null"),
 
             type = entity.type,
-            origin = entity.origin,
+            sourceWord = entity.sourceWord,
             translation = entity.translation,
             definition = entity.definition,
             extraMark = entity.extraMark,
 
-            translatedFrom = entity.translatedFrom,
-            translatedTo = entity.translatedTo,
+            language = entity.language,
 
             isCompleted = entity.isCompleted,
             isBookmarked = entity.isBookmarked,

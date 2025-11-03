@@ -13,6 +13,9 @@ data class PublicQAWWordItem(
     @field:SafeString(fieldName = "Word", min = 1, max = 255)
     val word: String,
 
+    @field:Size(max = 255, message = "Translation must not exceed 255 characters")
+    val translation: String? = null,
+
     @field:Size(max = 2000, message = "Definition must not exceed 2000 characters")
     val definition: String? = null,
 

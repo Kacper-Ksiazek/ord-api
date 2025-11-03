@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS quickly_added_words
     word        VARCHAR(255)  NOT NULL,
     language    language_name NOT NULL,
 
+    translation VARCHAR(255)             DEFAULT NULL,
     definition  TEXT                     DEFAULT NULL,
     extra_mark  word_extra_mark          DEFAULT NULL,
     type        word_type                DEFAULT NULL,

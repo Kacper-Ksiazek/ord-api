@@ -204,7 +204,7 @@ class WordServiceImpl(
         word: WordEntity,
         userId: UUID,
     ): Mono<WordDTO> {
-        val language = word.translatedFrom
+        val language = word.language
 
         return repository.save(word)
             .flatMap { savedEntity ->

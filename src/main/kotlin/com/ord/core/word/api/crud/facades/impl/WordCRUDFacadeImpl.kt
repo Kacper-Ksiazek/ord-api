@@ -92,13 +92,12 @@ class WordCRUDFacadeImpl(
             .flatMap { bank ->
                 val wordToSave = WordEntity(
                     type = body.type,
-                    origin = body.origin,
+                    sourceWord = body.sourceWord,
                     translation = body.translation,
                     definition = body.definition,
                     extraMark = body.extraMark,
 
-                    translatedFrom = body.translatedFrom,
-                    translatedTo = body.translatedTo ?: user.nativeLanguage!!,
+                    language = body.language,
 
                     userId = user.id,
                     bankId = bank.value?.id
@@ -132,13 +131,12 @@ class WordCRUDFacadeImpl(
                 ).map { bank ->
                     currentWord.copy(
                         type = body.type ?: currentWord.type,
-                        origin = body.origin ?: currentWord.origin,
+                        sourceWord = body.sourceWord ?: currentWord.sourceWord,
                         translation = body.translation ?: currentWord.translation,
                         definition = body.definition ?: currentWord.definition,
                         extraMark = body.extraMark ?: currentWord.extraMark,
 
-                        translatedFrom = body.translatedFrom ?: currentWord.translatedFrom,
-                        translatedTo = body.translatedTo ?: currentWord.translatedTo,
+                        language = body.language ?: currentWord.language,
 
                         bankId = bank.value?.id ?: currentWord.bankId
                     )

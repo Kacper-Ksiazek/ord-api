@@ -26,6 +26,15 @@ data class CreateQAWRequest(
     )
     val language: LanguageName,
 
+    @field:Size(max = 255, message = "Translation must not exceed 255 characters")
+    @Schema(
+        description = "Optional translation of the word",
+        example = "comprensivo",
+        nullable = true,
+        maxLength = 255
+    )
+    val translation: String? = null,
+
     @field:Size(max = 2000, message = "Definition must not exceed 2000 characters")
     @Schema(
         description = "Optional definition or notes about the word",

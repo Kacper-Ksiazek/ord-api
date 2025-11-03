@@ -133,6 +133,7 @@ class TestUsersController @Autowired constructor(
                         LanguageProficiencyCompactDTO(
                             language = LanguageName.ENGLISH,
                             level = LanguageProficiencyLevel.B2,
+                            translateTo = LanguageName.POLISH,
                             generativeContentLanguage = LanguageName.POLISH
                         )
                     )
@@ -205,11 +206,13 @@ class TestUsersController @Autowired constructor(
                         LanguageProficiencyCompactDTO(
                             language = LanguageName.ENGLISH,
                             level = LanguageProficiencyLevel.C1,
+                            translateTo = LanguageName.POLISH,
                             generativeContentLanguage = LanguageName.POLISH
                         ),
                         LanguageProficiencyCompactDTO(
                             language = LanguageName.GERMAN,
                             level = LanguageProficiencyLevel.B1,
+                            translateTo = LanguageName.POLISH,
                             generativeContentLanguage = LanguageName.POLISH
                         )
                     )
@@ -264,6 +267,7 @@ class TestUsersController @Autowired constructor(
                         LanguageProficiencyCompactDTO(
                             language = LanguageName.ENGLISH,
                             level = LanguageProficiencyLevel.A2,
+                            translateTo = LanguageName.POLISH,
                             generativeContentLanguage = LanguageName.POLISH
                         )
                     )

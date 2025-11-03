@@ -58,15 +58,14 @@ class TestWordDetailsController @Autowired constructor(
 ) {
     private val apiClient = WordDetailsAPIClient(webClient)
 
-    private fun createTestWord(userId: UUID, origin: String = "test"): UUID {
+    private fun createTestWord(userId: UUID, sourceWord: String = "test"): UUID {
         val word = wordRepository.save(
             WordEntity(
                 type = WordType.NOUN,
-                origin = origin,
+                sourceWord = sourceWord,
                 translation = "translation",
                 definition = "definition",
-                translatedFrom = LanguageName.ENGLISH,
-                translatedTo = LanguageName.SPANISH,
+                language = LanguageName.ENGLISH,
                 userId = userId
             )
         ).block()!!

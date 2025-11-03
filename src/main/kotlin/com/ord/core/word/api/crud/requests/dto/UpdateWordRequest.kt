@@ -12,8 +12,8 @@ import java.util.*
 data class UpdateWordRequest(
     val type: WordType? = null,
 
-    @field:Size(min = 1, max = 255, message = "Origin word must be between 1 and 255 characters")
-    val origin: String? = null,
+    @field:Size(min = 1, max = 255, message = "Source word must be between 1 and 255 characters")
+    val sourceWord: String? = null,
 
     @field:Size(min = 1, max = 255, message = "Translation word must be between 1 and 255 characters")
     val translation: String? = null,
@@ -24,10 +24,7 @@ data class UpdateWordRequest(
     val extraMark: WordExtraMark? = null,
 
     @field:ValidLanguageName
-    val translatedFrom: LanguageName? = null,
-
-    @field:ValidLanguageName
-    val translatedTo: LanguageName? = null,
+    val language: LanguageName? = null,
 
     val bankId: UUID? = null,
 

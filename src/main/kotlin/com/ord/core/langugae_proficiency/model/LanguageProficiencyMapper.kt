@@ -14,6 +14,7 @@ class LanguageProficiencyMapper(
 
             language = dto.language,
             level = dto.level,
+            translateTo = dto.translateTo,
             generativeContentLanguage = dto.generativeContentLanguage,
 
             userId = dto.userId,
@@ -28,6 +29,7 @@ class LanguageProficiencyMapper(
 
             language = entity.language,
             level = entity.level,
+            translateTo = entity.translateTo,
             generativeContentLanguage = entity.generativeContentLanguage,
 
             userId = entity.userId,

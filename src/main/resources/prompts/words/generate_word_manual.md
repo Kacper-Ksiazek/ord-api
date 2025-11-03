@@ -31,8 +31,8 @@ Do NOT create a manual for example words, placeholder words, or any other word e
 
 ### ERROR HANDLING:
 
-- If "**%%word%%**" is misspelled in **%%wordLanguage%%**, respond with: `WORD_MISSPELLED`
-- If "**%%word%%**" does not exist in **%%wordLanguage%%**, respond with: `NON_EXISTENT_WORD`
+- If "**%%word%%**" does not exist in **%%wordLanguage%%** and you cannot identify a likely correct spelling, respond with: `NON_EXISTENT_WORD`
+- If "**%%word%%**" appears to be misspelled but you can identify the likely correct word, generate the manual for the corrected word and populate the `suggestedCorrection` field
 
 ### RESPONSE FORMAT:
 
@@ -40,6 +40,13 @@ Return a JSON object matching this TypeScript interface:
 
 ```ts
 interface Response {
+    /**
+     * If "**%%word%%**" appears to be misspelled, this field contains the correctly spelled word.
+     * When populated, the rest of the response should describe the corrected word, not the misspelled input.
+     * Leave null if "**%%word%%**" is spelled correctly.
+     */
+    suggestedCorrection: string | null
+
     /** Accurate translation of "**%%word%%**" into **%%desiredLanguage%%**. If "**%%word%%**" is an idiom or phrase, provide a meaning-equivalent translation, not literal */
     translation: string
 

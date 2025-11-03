@@ -86,6 +86,7 @@ abstract class ControllerTestBase(
                         userId = userId,
                         language = language,
                         level = level,
+                        translateTo = LanguageName.ENGLISH,
                         generativeContentLanguage = language,
                     )
                 }

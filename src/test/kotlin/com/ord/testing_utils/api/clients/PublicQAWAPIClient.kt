@@ -1,7 +1,6 @@
 package com.ord.testing_utils.api.clients
 
 import com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest
-import com.ord.features.quickly_added_words.model.QuicklyAddedWordEntity
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -16,12 +15,12 @@ class PublicQAWAPIClient(
     fun publicBulkCreate(
         body: PublicQAWBulkCreateRequest,
         user: MockedAuthenticatedUser? = null
-    ): APIClientResponse<List<QuicklyAddedWordEntity>?> {
+    ): APIClientResponse<Void?> {
         return post(
             url = "$baseUrl/bulk-create",
             body = body,
             user = user,
-            responseBodyType = object : ParameterizedTypeReference<List<QuicklyAddedWordEntity>>() {}
+            responseBodyType = object : ParameterizedTypeReference<Void>() {}
         )
     }
 }

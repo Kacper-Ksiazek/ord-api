@@ -13,15 +13,14 @@ data class WordListItem(
     val id: UUID,
 
     var points: Int,
-    var origin: String,
+    var sourceWord: String,
     var translation: String,
     var isCompleted: Boolean,
     var isBookmarked: Boolean,
 
     var type: WordType,
     var extraMark: WordExtraMark?,
-    var translatedFrom: LanguageName,
-    var translatedTo: LanguageName,
+    var language: LanguageName,
 
     val bank: BankCompact?,
 ) {
@@ -29,14 +28,13 @@ data class WordListItem(
         val fields = setOf(
             "id",
             "points",
-            "origin",
+            "source_word",
             "translation",
             "is_completed",
             "is_bookmarked",
             "type",
             "extra_mark",
-            "translated_to",
-            "translated_from",
+            "language",
             "created_at",
         )
     }

@@ -33,16 +33,16 @@ class TestWordAIController @Autowired constructor(
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     webClient: WebTestClient,
-    _userRepository: UserRepository,
-    _otpCodeRepository: OtpCodeRepository,
-    _passwordEncoder: PasswordEncoder
+    userRepository: UserRepository,
+    otpCodeRepository: OtpCodeRepository,
+    passwordEncoder: PasswordEncoder
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
-    userRepository = _userRepository,
-    otpCodeRepository = _otpCodeRepository,
-    passwordEncoder = _passwordEncoder
+    userRepository = userRepository,
+    otpCodeRepository = otpCodeRepository,
+    passwordEncoder = passwordEncoder
 ) {
     private val wordAIAPIClient = WordAIAPIClient(webClient)
 
@@ -56,6 +56,202 @@ class TestWordAIController @Autowired constructor(
                 LanguageName.ENGLISH to LanguageProficiencyLevel.C2
             )
         )
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/words/ai/suggest-vocabulary - suggest vocabulary")
+    inner class SuggestVocabulary {
+
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+
+            @Test
+            fun `200 - should generate vocabulary suggestions without context`() {
+                val request = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                    language = LanguageName.NORWEGIAN,
+                    context = null,
+                    excludedWords = null
+                )
+
+                val response = wordAIAPIClient.suggestVocabulary(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.suggestions.shouldNotBeEmpty()
+                response.suggestions.size shouldBe 10
+
+                response.suggestions.forEach { suggestion ->
+                    suggestion.word.shouldNotBeBlank()
+                    suggestion.translation.shouldNotBeBlank()
+                    suggestion.definition.shouldNotBeBlank()
+                }
+            }
+
+            @Test
+            fun `200 - should generate vocabulary suggestions with context`() {
+                val request = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                    language = LanguageName.NORWEGIAN,
+                    context = "for business meetings and professional emails",
+                    excludedWords = null
+                )
+
+                val response = wordAIAPIClient.suggestVocabulary(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.suggestions.shouldNotBeEmpty()
+                response.suggestions.size shouldBe 10
+            }
+
+            @Test
+            fun `200 - should exclude specified words from suggestions`() {
+                val excludedWords = listOf("hund", "katt", "hus", "bil", "mat")
+
+                val request = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                    language = LanguageName.NORWEGIAN,
+                    context = null,
+                    excludedWords = excludedWords
+                )
+
+                val response = wordAIAPIClient.suggestVocabulary(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.suggestions.shouldNotBeEmpty()
+
+                // Verify none of the excluded words appear in suggestions
+                val suggestedWords = response.suggestions.map { it.word.lowercase() }
+                excludedWords.forEach { excludedWord ->
+                    assert(!suggestedWords.contains(excludedWord.lowercase())) {
+                        "Excluded word '$excludedWord' should not appear in suggestions"
+                    }
+                }
+            }
+
+            @Test
+            fun `200 - should handle empty excludedWords list`() {
+                val request = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                    language = LanguageName.NORWEGIAN,
+                    context = null,
+                    excludedWords = emptyList()
+                )
+
+                val response = wordAIAPIClient.suggestVocabulary(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.suggestions.shouldNotBeEmpty()
+                response.suggestions.size shouldBe 10
+            }
+
+            @Test
+            fun `200 - should generate different suggestions with excludedWords across multiple requests`() {
+                // First request without exclusions
+                val firstRequest = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                    language = LanguageName.NORWEGIAN,
+                    context = "daily conversation",
+                    excludedWords = null
+                )
+
+                val firstResponse = wordAIAPIClient.suggestVocabulary(
+                    body = firstRequest,
+                    user = authenticatedUser
+                )
+
+                firstResponse.status shouldBe HttpStatus.OK
+                firstResponse.suggestions.shouldNotBeEmpty()
+
+                // Collect words from first response to exclude in second request
+                val wordsToExclude = firstResponse.suggestions.map { it.word }
+
+                // Second request excluding words from first response
+                val secondRequest = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                    language = LanguageName.NORWEGIAN,
+                    context = "daily conversation",
+                    excludedWords = wordsToExclude
+                )
+
+                val secondResponse = wordAIAPIClient.suggestVocabulary(
+                    body = secondRequest,
+                    user = authenticatedUser
+                )
+
+                secondResponse.status shouldBe HttpStatus.OK
+                secondResponse.suggestions.shouldNotBeEmpty()
+
+                // Verify second response doesn't contain any words from first response
+                val secondSuggestedWords = secondResponse.suggestions.map { it.word.lowercase() }
+                wordsToExclude.forEach { excludedWord ->
+                    assert(!secondSuggestedWords.contains(excludedWord.lowercase())) {
+                        "Word '$excludedWord' from first request should not appear in second response"
+                    }
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+
+            @Test
+            fun `401 - anonymous user cannot get vocabulary suggestions`() {
+                val request = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                    language = LanguageName.NORWEGIAN,
+                    context = null,
+                    excludedWords = null
+                )
+
+                val response = wordAIAPIClient.suggestVocabulary(
+                    body = request,
+                    user = null
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `400 - context exceeding max length should fail`() {
+                val request = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                    language = LanguageName.NORWEGIAN,
+                    context = "a".repeat(501),
+                    excludedWords = null
+                )
+
+                val response = wordAIAPIClient.suggestVocabulary(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - excludedWords exceeding max size should fail`() {
+                val tooManyWords = (1..1001).map { "word$it" }
+
+                val request = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                    language = LanguageName.NORWEGIAN,
+                    context = null,
+                    excludedWords = tooManyWords
+                )
+
+                val response = wordAIAPIClient.suggestVocabulary(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+        }
     }
 
     @Nested
@@ -84,6 +280,7 @@ class TestWordAIController @Autowired constructor(
                 response.body shouldNotBe null
 
                 val manual = response.body!!
+                manual.suggestedCorrection shouldBe null // Word is spelled correctly
                 manual.translation.shouldNotBeBlank()
                 manual.definition.shouldNotBeBlank()
                 manual.type shouldNotBe null
@@ -142,6 +339,36 @@ class TestWordAIController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
+            }
+
+            @Test
+            fun `200 - should return suggestedCorrection when word is misspelled`() {
+                val request = GenerateWordManualRequest(
+                    word = "recieve", // Misspelled "receive"
+                    language = LanguageName.ENGLISH,
+                    targetLanguage = LanguageName.NORWEGIAN,
+                    proficiencyLevel = LanguageProficiencyLevel.B2
+                )
+
+                val response = wordAIAPIClient.generateManual(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+
+                val manual = response.body!!
+
+                // Should have suggested correction
+                manual.suggestedCorrection shouldNotBe null
+                manual.suggestedCorrection shouldBe "receive"
+
+                // Manual should be generated for the corrected word
+                manual.originalWord shouldBe "recieve"
+                manual.translation.shouldNotBeBlank()
+                manual.definition.shouldNotBeBlank()
+                manual.exampleSentences.shouldNotBeEmpty()
             }
         }
 

@@ -11,6 +11,7 @@ data class LanguageProficiencyDTO(
 
     val language: LanguageName,
     var level: LanguageProficiencyLevel,
+    var translateTo: LanguageName,
     var generativeContentLanguage: LanguageName,
 
     val userId: UUID,

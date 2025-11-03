@@ -33,6 +33,7 @@ class QAWFacadeImpl(
         val entity = QuicklyAddedWordEntity(
             word = body.word,
             language = body.language,
+            translation = body.translation,
             definition = body.definition,
             extraMark = body.extraMark,
             type = body.type,
@@ -55,6 +56,7 @@ class QAWFacadeImpl(
             QuicklyAddedWordEntity(
                 word = request.word,
                 language = request.language,
+                translation = request.translation,
                 definition = request.definition,
                 extraMark = request.extraMark,
                 type = request.type,
@@ -111,6 +113,7 @@ class QAWFacadeImpl(
             .flatMap { entity ->
                 val updatedEntity = entity!!.copy(
                     word = body.updatedWord ?: entity.word,
+                    translation = body.translation ?: entity.translation,
                     definition = body.definition ?: entity.definition,
                     extraMark = body.extraMark ?: entity.extraMark,
                     type = body.type ?: entity.type

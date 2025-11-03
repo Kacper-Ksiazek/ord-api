@@ -62,7 +62,7 @@ class GameReviewServiceImpl(
             userId = userId
         )
             .map { word ->
-                val points: WordAnswerScore = ratedWords[word.origin] ?: WordAnswerScore.INCORRECT
+                val points: WordAnswerScore = ratedWords[word.sourceWord] ?: WordAnswerScore.INCORRECT
 
                 val isWordCompletedBefore: Boolean = word.isCompleted
 

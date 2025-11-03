@@ -118,6 +118,22 @@ class OpenAIAPIClientServiceImpl(
             prompt = prompt,
             onError = onError,
             onComplete = { (payload, emitter) ->
+                // Parse any remaining content in the buffer (handles the last item without trailing separator)
+                if (parsingItemBuffer.isNotBlank()) {
+                    try {
+                        val parsedItem = parseStreamedItem(parsingItemBuffer, separator, streamedItemType)
+
+                        if (parsedItem != null) {
+                            onItemReceived(parsedItem)
+                            resultItems.add(parsedItem)
+                            emitter.tryEmitNext(objectMapper.writeValueAsString(parsedItem))
+                        }
+                    } catch (e: Exception) {
+                        // Log or ignore parsing errors for incomplete buffer
+                        Console.printRed("\n⚠️ [STREAMING PARSER] Failed to parse remaining buffer: ${e.message}")
+                    }
+                }
+
                 val result = StreamCompletedPayload<List<TStreamedItem>>(
                     finalContent = resultItems,
                     inputTokens = payload.inputTokens,
@@ -130,14 +146,7 @@ class OpenAIAPIClientServiceImpl(
                 parsingItemBuffer += delta
 
                 if (separatorRegex.containsMatchIn(parsingItemBuffer)) {
-                    val parsedItem = objectMapper.readValue(
-                        parsingItemBuffer
-                            .replace(separator, "")
-                            .replace("\n", "")
-                            .trim(),
-                        streamedItemType
-                    )
-
+                    val parsedItem = parseStreamedItem(parsingItemBuffer, separator, streamedItemType)
 
                     if (parsedItem != null) {
                         onItemReceived(parsedItem)
@@ -155,6 +164,20 @@ class OpenAIAPIClientServiceImpl(
     // ----
     // Utils
     // ----
+
+    private fun <TStreamedItem> parseStreamedItem(
+        buffer: String,
+        separator: String,
+        streamedItemType: TypeReference<TStreamedItem>
+    ): TStreamedItem? {
+        return objectMapper.readValue(
+            buffer
+                .replace(separator, "")
+                .replace("\n", "")
+                .trim(),
+            streamedItemType
+        )
+    }
 
     private fun <TStreamedChunk> makeStreamedRequest(
         prompt: String,
