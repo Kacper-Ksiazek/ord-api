@@ -1,6 +1,6 @@
-package com.ord.features.conversation.models.dto
+package com.ord.features.conversation.models.conversation_user_message_feedback
 
-import java.util.*
+import java.util.UUID
 
 data class ConversationUserMessageFeedbackDTO(
     val id: UUID,

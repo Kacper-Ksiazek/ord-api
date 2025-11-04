@@ -1,15 +1,16 @@
-package com.ord.features.conversation.models.entities
+package com.ord.features.conversation.models.conversation
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.ord.features.conversation.models.enums.ConversationType
-import com.ord.features.conversation.models.enums.ConversationTone
+import com.ord.features.conversation.models.conversation_message.ConversationMessageEntity
+import com.ord.features.conversation.models.conversation.enums.ConversationTone
+import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.shared.models.IdentifiableUserResource
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 @Table("conversations")
 data class ConversationEntity(

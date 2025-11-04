@@ -1,6 +1,6 @@
 package com.ord.features.conversation.repositories
 
-import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
+import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackEntity
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import java.util.*
 

@@ -1,4 +1,4 @@
-package com.ord.features.conversation.models.enums
+package com.ord.features.conversation.models.conversation.enums
 
 import com.ord.core.user.model.enums.Gender
 

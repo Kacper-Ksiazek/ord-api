@@ -4,7 +4,7 @@ import com.ord.features.conversation.api.facades.helpers.ai_responses.GeneratedA
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
-import com.ord.features.conversation.models.dto.ConversationDTO
+import com.ord.features.conversation.models.conversation.ConversationDTO
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser

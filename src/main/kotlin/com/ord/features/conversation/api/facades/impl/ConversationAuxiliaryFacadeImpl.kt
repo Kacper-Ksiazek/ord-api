@@ -11,7 +11,7 @@ import com.ord.features.conversation.api.facades.ConversationAuxiliaryFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.GeneratedAIInterlocutorData
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
-import com.ord.features.conversation.models.enums.ConversationAIBotAvatar
+import com.ord.features.conversation.models.conversation.enums.ConversationAIBotAvatar
 import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt

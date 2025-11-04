@@ -10,10 +10,10 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
-import com.ord.features.conversation.models.dto.ConversationDTO
-import com.ord.features.conversation.models.enums.ConversationMessageSender
-import com.ord.features.conversation.models.enums.ConversationTone
-import com.ord.features.conversation.models.enums.ConversationType
+import com.ord.features.conversation.models.conversation.ConversationDTO
+import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
+import com.ord.features.conversation.models.conversation.enums.ConversationTone
+import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.repositories.ConversationMessageRepository
 import com.ord.features.conversation.repositories.ConversationRepository
 import com.ord.testing_utils.api.clients.ConversationAPIClient

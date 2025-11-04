@@ -3,9 +3,9 @@ package com.ord.features.conversation.api.facades.impl
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.features.conversation.api.facades.ConversationCRUDFacade
 import com.ord.features.conversation.api.requests.CreateConversationRequest
-import com.ord.features.conversation.models.dto.ConversationDTO
-import com.ord.features.conversation.models.entities.ConversationEntity
-import com.ord.features.conversation.models.mappers.ConversationMapper
+import com.ord.features.conversation.models.conversation.ConversationDTO
+import com.ord.features.conversation.models.conversation.ConversationEntity
+import com.ord.features.conversation.models.conversation.ConversationMapper
 import com.ord.features.conversation.services.ConversationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

@@ -8,9 +8,9 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.security.UserRepository
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
-import com.ord.features.conversation.models.entities.ConversationEntity
-import com.ord.features.conversation.models.enums.ConversationTone
-import com.ord.features.conversation.models.enums.ConversationType
+import com.ord.features.conversation.models.conversation.ConversationEntity
+import com.ord.features.conversation.models.conversation.enums.ConversationTone
+import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.repositories.ConversationRepository
 import com.ord.config.properties.JwtProperties
 import com.ord.testing_utils.api.clients.ConversationAPIClient

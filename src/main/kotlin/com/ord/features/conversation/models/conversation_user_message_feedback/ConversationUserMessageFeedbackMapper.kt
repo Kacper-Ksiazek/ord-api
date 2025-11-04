@@ -1,10 +1,6 @@
-package com.ord.features.conversation.models.mappers
+package com.ord.features.conversation.models.conversation_user_message_feedback
 
-import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
-import com.ord.features.conversation.models.entities.ConversationMessageEntity
-import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
 import com.ord.shared.models.mappers.BidirectionalEntityMapper
-import com.ord.shared.models.mappers.UnidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
 @Component

@@ -1,4 +1,4 @@
-package com.ord.features.conversation.models.enums
+package com.ord.features.conversation.models.conversation.enums
 
 enum class ConversationType(
     val contextForAI: String,
@@ -49,4 +49,3 @@ enum class ConversationType(
         )
     )
 }
-

@@ -1,6 +1,6 @@
-package com.ord.features.conversation.models.extensions
+package com.ord.features.conversation.models.conversation.extensions
 
-import com.ord.features.conversation.models.dto.ConversationDTO
+import com.ord.features.conversation.models.conversation.ConversationDTO
 
 fun ConversationDTO.convertToPromptParams(): Map<String, String> {
     return mapOf(

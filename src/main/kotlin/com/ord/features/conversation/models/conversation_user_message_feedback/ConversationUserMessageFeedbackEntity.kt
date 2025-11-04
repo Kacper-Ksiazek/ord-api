@@ -1,10 +1,9 @@
-package com.ord.features.conversation.models.entities
+package com.ord.features.conversation.models.conversation_user_message_feedback
 
 import org.springframework.data.annotation.Id
-import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 @Table("conversation_user_message_feedback")
 data class ConversationUserMessageFeedbackEntity(
@@ -22,4 +21,3 @@ data class ConversationUserMessageFeedbackEntity(
 
     val createdAt: Instant = Instant.now(),
 )
-

@@ -1,7 +1,7 @@
 package com.ord.features.conversation.api.facades
 
 import com.ord.features.conversation.api.requests.CreateConversationRequest
-import com.ord.features.conversation.models.dto.ConversationDTO
+import com.ord.features.conversation.models.conversation.ConversationDTO
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Mono
 import java.util.UUID

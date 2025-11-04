@@ -1,8 +1,7 @@
-package com.ord.features.conversation.models.mappers
+package com.ord.features.conversation.models.conversation
 
 import com.ord.core.user.model.UserMapper
-import com.ord.features.conversation.models.dto.ConversationDTO
-import com.ord.features.conversation.models.entities.ConversationEntity
+import com.ord.features.conversation.models.conversation_message.ConversationMessageMapper
 import com.ord.shared.models.mappers.UnidirectionalEntityMapper
 import org.springframework.stereotype.Component
 
