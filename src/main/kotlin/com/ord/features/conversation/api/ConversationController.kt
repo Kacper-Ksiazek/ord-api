@@ -7,7 +7,7 @@ import com.ord.features.conversation.api.facades.ConversationAuxiliaryFacade
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
-import com.ord.features.conversation.models.dto.ConversationDTO
+import com.ord.features.conversation.models.conversation.ConversationDTO
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content

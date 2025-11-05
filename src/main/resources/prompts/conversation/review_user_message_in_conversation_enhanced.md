@@ -16,29 +16,6 @@ Your task is to review the user message in the conversation and provide detailed
 
 ### TASK INSTRUCTIONS:
 
-**STEP 1: CHECK FOR SABOTAGE FIRST**
-
-Before evaluating the message quality, you MUST check if the user is sabotaging the conversation. If ANY of these conditions are true, set `sabotage` field with the reason and rate ALL scores as 0:
-
-1. **Wrong language**: User wrote in a different language than **%%language%%**
-2. **Extremely short/lazy answers**: Single words like "ok", "yes", "no", "sure", "fine" without elaboration
-3. **Completely off-topic**: Answer has nothing to do with the AI's previous message or conversation context
-4. **Extremely offensive content**: Profanity, hate speech, or highly inappropriate content
-
-**Examples of sabotage:**
-- AI asks "What did you do there?" → User answers "ok" (too short, doesn't answer)
-- AI asks "Tell me about your hobbies" → User answers "yes" (nonsensical)
-- Conversation is in Spanish → User writes in English
-
-If sabotage is detected, you MUST:
-- Set `sabotage` field with clear reason (e.g., "Extremely short answer that doesn't engage with the question")
-- Set ALL ratings to 0 (grammar: 0, vocabulary: 0, answerLength: 0, naturalness: 0, coherenceWithContext: 0)
-- Set `registerAppropriate: false`
-- Set all arrays to empty: `mistakes: []`, `strengthsIdentified: []`, etc.
-- SKIP all further evaluation steps
-
-**STEP 2: IF NO SABOTAGE, PROCEED WITH DETAILED FEEDBACK**
-
 Review the user message and provide detailed, constructive feedback.
 
 **Feedback Philosophy:**
@@ -46,7 +23,7 @@ Review the user message and provide detailed, constructive feedback.
 - Provide specific, actionable corrections rather than general advice
 - Celebrate what the user did well (positive reinforcement improves learning)
 - Prioritize mistakes by severity to help user focus on what matters most
-- Tailor feedback complexity to the user's level (**%%level%%**)
+- Tailor feedback complexity to the user's level (%%level%%)
 
 **Mistake Identification:**
 
@@ -80,14 +57,22 @@ Review the user message and provide detailed, constructive feedback.
 - Intermediate (B1-B2): Balance corrections with enrichment suggestions
 - Advanced (C1-C2): Focus on naturalness, idiomatic usage, and subtle nuances
 
-**CRITICAL: Your response MUST be valid JSON only - no explanatory text before or after.**
-
 Your response should be a JSON object matching the following TypeScript interface:
 
 ```ts
 type Rating = number; // 0-10 inclusive
 
-type ErrorType = **%%errorTypes%%**;
+type ErrorType =
+    | "GRAMMAR_TENSE"
+    | "GRAMMAR_AGREEMENT"
+    | "GRAMMAR_WORD_ORDER"
+    | "VOCABULARY_WRONG_WORD"
+    | "VOCABULARY_UNNATURAL_COLLOCATION"
+    | "SPELLING"
+    | "PUNCTUATION"
+    | "MISSING_WORD"
+    | "UNNECESSARY_WORD"
+    | "REGISTER_MISMATCH";
 
 type Severity = 1 | 2 | 3;
 
@@ -138,38 +123,10 @@ type ExpectedResult = {
 };
 ```
 
-### CRITICAL GUIDELINES FOR ERROR CATEGORIZATION:
-
-**IMPORTANT - Use the correct ErrorType values ONLY:**
-You MUST use one of the exact values from **%%errorTypes%%** (case-sensitive).
-
-**When to use COHERENCE_ISSUE (vs sabotage):**
-
-Use COHERENCE_ISSUE for mistakes when the user is genuinely trying but made an error:
-- Answer doesn't fully address the question (but shows effort)
-- Answer changes topic without smooth transition
-- Answer lacks some necessary detail for natural flow
-- Response is somewhat brief but contains multiple words/sentences
-
-Use SABOTAGE (not COHERENCE_ISSUE) for:
-- Single-word lazy answers: "ok", "yes", "no", "sure", "fine"
-- Extremely short responses showing no effort to engage
-
-**Example of COHERENCE_ISSUE (not sabotage):**
-- AI asks: "What did you do at the beach?"
-- User answers: "I like beaches because they are beautiful." (3+ words, shows effort but doesn't answer the question)
-- This gets COHERENCE_ISSUE mistake + low coherenceWithContext rating
-
-**Example of SABOTAGE (not COHERENCE_ISSUE):**
-- AI asks: "What did you do at the beach?"
-- User answers: "ok"
-- This gets sabotage flag + all ratings set to 0
-
 ### IMPORTANT REMINDERS:
 
-- Always return valid JSON matching the ExpectedResult interface exactly
-- **CRITICAL**: Only use ErrorType values listed above - never invent new ones like "ANSWER_LENGTH" or "ANSWER_TOO_SHORT"
-- Explanations in target language (**%%language%%**) unless user is absolute beginner
+- Always return valid JSON matching the ExpectedResult interface
+- Explanations in target language (%%language%%) unless user is absolute beginner
 - Use empty arrays (not null) for: mistakes, strengthsIdentified, vocabularyEnrichment, alternativeExpressions
 - Order mistakes by severity (critical first)
 - If sabotage: set sabotage field, rate everything as 0, empty arrays for mistakes/strengths

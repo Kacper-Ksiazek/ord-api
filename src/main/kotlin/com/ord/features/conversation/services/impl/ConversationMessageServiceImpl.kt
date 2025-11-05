@@ -1,10 +1,10 @@
 package com.ord.features.conversation.services.impl
 
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
-import com.ord.features.conversation.models.entities.ConversationMessageEntity
-import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
-import com.ord.features.conversation.models.enums.ConversationMessageSender
-import com.ord.features.conversation.models.mappers.ConversationUserMessageFeedbackMapper
+import com.ord.features.conversation.models.conversation_message.ConversationMessageEntity
+import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackEntity
+import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
+import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackMapper
 import com.ord.features.conversation.repositories.ConversationMessageRepository
 import com.ord.features.conversation.repositories.ConversationUserMessageFeedbackRepository
 import com.ord.features.conversation.services.ConversationMessageService
@@ -16,6 +16,7 @@ import java.util.*
 class ConversationMessageServiceImpl(
     private val conversationMessageRepository: ConversationMessageRepository,
     private val conversationUserMessageFeedbackRepository: ConversationUserMessageFeedbackRepository,
+    private val feedbackMapper: ConversationUserMessageFeedbackMapper,
 ) : ConversationMessageService {
     override fun createMessage(
         conversationId: UUID,
@@ -55,8 +56,14 @@ class ConversationMessageServiceImpl(
                             grammar = aiFeedback.grammar,
                             vocabulary = aiFeedback.vocabulary,
                             answerLength = aiFeedback.answerLength,
-                            comment = aiFeedback.comment,
-                            suggestedAnswer = aiFeedback.suggestedAnswer,
+                            naturalness = aiFeedback.naturalness,
+                            coherenceWithContext = aiFeedback.coherenceWithContext,
+                            registerAppropriate = aiFeedback.registerAppropriate,
+                            mistakes = feedbackMapper.serializeMistakes(aiFeedback.mistakes),
+                            strengthsIdentified = feedbackMapper.serializeStringSet(aiFeedback.strengthsIdentified),
+                            vocabularyEnrichment = feedbackMapper.serializeVocabularyEnrichment(aiFeedback.vocabularyEnrichment),
+                            alternativeExpressions = feedbackMapper.serializeAlternativeExpressions(aiFeedback.alternativeExpressions),
+                            culturalNote = aiFeedback.culturalNote,
                             messageId = message.id!!,
                         )
                     )

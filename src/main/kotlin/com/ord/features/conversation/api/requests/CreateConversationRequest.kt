@@ -1,8 +1,8 @@
 package com.ord.features.conversation.api.requests
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.features.conversation.models.enums.ConversationType
-import com.ord.features.conversation.models.enums.ConversationTone
+import com.ord.features.conversation.models.conversation.enums.ConversationType
+import com.ord.features.conversation.models.conversation.enums.ConversationTone
 import com.ord.features.conversation.validators.annotations.ValidConversationAIBotAvatarId
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size

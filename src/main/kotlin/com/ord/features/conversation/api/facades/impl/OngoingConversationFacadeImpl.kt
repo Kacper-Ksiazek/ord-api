@@ -2,22 +2,18 @@ package com.ord.features.conversation.api.facades.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.core.user.model.UserEntity
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
-import com.ord.features.conversation.models.dto.ConversationDTO
-import com.ord.features.conversation.models.dto.ConversationMessageDTO
-import com.ord.features.conversation.models.dto.ConversationUserMessageFeedbackDTO
-import com.ord.features.conversation.models.entities.ConversationEntity
-import com.ord.features.conversation.models.entities.ConversationMessageEntity
-import com.ord.features.conversation.models.entities.ConversationUserMessageFeedbackEntity
-import com.ord.features.conversation.models.enums.ConversationMessageSender
-import com.ord.features.conversation.models.extensions.convertToPromptParams
-import com.ord.features.conversation.models.mappers.ConversationMapper
+import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
+import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
+import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
+import com.ord.features.conversation.models.conversation.ConversationMapper
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ErrorType
 import com.ord.features.conversation.services.ConversationMessageService
+import com.ord.shared.utils.EnumUtils.joinEnumValues
 import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
@@ -134,6 +130,7 @@ class OngoingConversationFacadeImpl(
                         "userMessage" to body.message,
                         "latestAIMessage" to (body.latestAIMessage
                             ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
+                        "errorTypes" to ErrorType::class.joinEnumValues(separator = " | ").split(" | ").joinToString(" | ") { "\"$it\"" },
                     )
                 )
 

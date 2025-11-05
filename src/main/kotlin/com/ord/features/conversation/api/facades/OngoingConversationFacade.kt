@@ -5,7 +5,7 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
-import com.ord.features.conversation.models.dto.ConversationDTO
+import com.ord.features.conversation.models.conversation.ConversationDTO
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono

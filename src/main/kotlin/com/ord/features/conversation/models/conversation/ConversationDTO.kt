@@ -1,11 +1,12 @@
-package com.ord.features.conversation.models.dto
+package com.ord.features.conversation.models.conversation
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
-import com.ord.features.conversation.models.enums.ConversationType
-import com.ord.features.conversation.models.enums.ConversationTone
+import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
+import com.ord.features.conversation.models.conversation.enums.ConversationTone
+import com.ord.features.conversation.models.conversation.enums.ConversationType
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 data class ConversationDTO(
     val id: UUID,

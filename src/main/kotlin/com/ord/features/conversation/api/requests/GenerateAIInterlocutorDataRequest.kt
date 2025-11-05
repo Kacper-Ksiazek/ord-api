@@ -2,7 +2,7 @@ package com.ord.features.conversation.api.requests
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.validators.annotations.ValidLanguageName
-import com.ord.features.conversation.models.enums.ConversationType
+import com.ord.features.conversation.models.conversation.enums.ConversationType
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
