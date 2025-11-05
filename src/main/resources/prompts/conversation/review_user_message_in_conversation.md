@@ -72,7 +72,8 @@ type ErrorType =
     | "PUNCTUATION"
     | "MISSING_WORD"
     | "UNNECESSARY_WORD"
-    | "REGISTER_MISMATCH";
+    | "REGISTER_MISMATCH"
+    | "COHERENCE_ISSUE";  // Answer doesn't properly respond to question or advance conversation
 
 type Severity = 1 | 2 | 3;
 
@@ -123,9 +124,38 @@ type ExpectedResult = {
 };
 ```
 
+### CRITICAL GUIDELINES FOR ERROR CATEGORIZATION:
+
+**IMPORTANT - Use the correct ErrorType values ONLY:**
+You MUST use one of these exact values (case-sensitive):
+- GRAMMAR_TENSE, GRAMMAR_AGREEMENT, GRAMMAR_WORD_ORDER
+- VOCABULARY_WRONG_WORD, VOCABULARY_UNNATURAL_COLLOCATION
+- SPELLING, PUNCTUATION
+- MISSING_WORD, UNNECESSARY_WORD
+- REGISTER_MISMATCH
+- COHERENCE_ISSUE
+
+**When to use COHERENCE_ISSUE:**
+- Answer is too short/brief for the question asked
+- Answer doesn't address the question
+- Answer changes topic without reason
+- Answer lacks necessary detail for natural conversation flow
+
+**Ratings vs Mistakes - Important Distinction:**
+- **answerLength rating**: Overall judgment of response length appropriateness
+- **COHERENCE_ISSUE mistake**: Specific phrase or sentence that's problematic due to brevity/irrelevance
+- If answer is generally too short, lower the answerLength rating AND optionally add a COHERENCE_ISSUE mistake for the specific problematic phrase
+
+**Example:**
+- User answers "I like sports." to "What did you do there?"
+- answerLength: 3 (very short)
+- coherenceWithContext: 4 (doesn't answer the question)
+- mistakes: [{ phrase: "I like sports.", errorType: "COHERENCE_ISSUE", ... }]
+
 ### IMPORTANT REMINDERS:
 
-- Always return valid JSON matching the ExpectedResult interface
+- Always return valid JSON matching the ExpectedResult interface exactly
+- **CRITICAL**: Only use ErrorType values listed above - never invent new ones like "ANSWER_LENGTH" or "ANSWER_TOO_SHORT"
 - Explanations in target language (%%language%%) unless user is absolute beginner
 - Use empty arrays (not null) for: mistakes, strengthsIdentified, vocabularyEnrichment, alternativeExpressions
 - Order mistakes by severity (critical first)

@@ -10,5 +10,6 @@ enum class ErrorType {
     PUNCTUATION,
     MISSING_WORD,
     UNNECESSARY_WORD,
-    REGISTER_MISMATCH
+    REGISTER_MISMATCH,
+    COHERENCE_ISSUE  // Answer doesn't properly respond to the question or advance the conversation
 }
