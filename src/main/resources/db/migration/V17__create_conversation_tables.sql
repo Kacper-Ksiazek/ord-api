@@ -28,9 +28,16 @@ CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
     grammar          INT  NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
     vocabulary       INT  NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),
     answer_length    INT  NOT NULL CHECK (answer_length >= 0 AND answer_length <= 10),
+    naturalness      INT  NOT NULL CHECK (naturalness >= 0 AND naturalness <= 10),
+    coherence_with_context INT NOT NULL CHECK (coherence_with_context >= 0 AND coherence_with_context <= 10),
+    register_appropriate BOOLEAN NOT NULL,
 
-    comment          TEXT                     DEFAULT NULL,
-    suggested_answer TEXT                     DEFAULT NULL,
+    mistakes         JSONB NOT NULL,
+    strengths_identified JSONB NOT NULL,
+    vocabulary_enrichment JSONB NOT NULL,
+    alternative_expressions JSONB NOT NULL,
+    
+    cultural_note    TEXT,
 
     message_id       UUID NOT NULL,
 

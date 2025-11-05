@@ -55,8 +55,14 @@ class ConversationMessageServiceImpl(
                             grammar = aiFeedback.grammar,
                             vocabulary = aiFeedback.vocabulary,
                             answerLength = aiFeedback.answerLength,
-                            comment = aiFeedback.comment,
-                            suggestedAnswer = aiFeedback.suggestedAnswer,
+                            naturalness = aiFeedback.naturalness,
+                            coherenceWithContext = aiFeedback.coherenceWithContext,
+                            registerAppropriate = aiFeedback.registerAppropriate,
+                            mistakes = aiFeedback.mistakes,
+                            strengthsIdentified = aiFeedback.strengthsIdentified,
+                            vocabularyEnrichment = aiFeedback.vocabularyEnrichment,
+                            alternativeExpressions = aiFeedback.alternativeExpressions,
+                            culturalNote = aiFeedback.culturalNote,
                             messageId = message.id!!,
                         )
                     )

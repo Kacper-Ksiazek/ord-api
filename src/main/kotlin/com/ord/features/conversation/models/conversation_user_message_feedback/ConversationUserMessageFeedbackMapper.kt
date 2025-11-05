@@ -12,8 +12,14 @@ class ConversationUserMessageFeedbackMapper(
             grammar = entity.grammar,
             vocabulary = entity.vocabulary,
             answerLength = entity.answerLength,
-            suggestedAnswer = entity.suggestedAnswer,
-            comment = entity.comment,
+            naturalness = entity.naturalness,
+            coherenceWithContext = entity.coherenceWithContext,
+            registerAppropriate = entity.registerAppropriate,
+            mistakes = entity.mistakes,
+            strengthsIdentified = entity.strengthsIdentified,
+            vocabularyEnrichment = entity.vocabularyEnrichment,
+            alternativeExpressions = entity.alternativeExpressions,
+            culturalNote = entity.culturalNote,
             messageId = entity.messageId,
         )
     }
@@ -24,9 +30,14 @@ class ConversationUserMessageFeedbackMapper(
             grammar = dto.grammar,
             vocabulary = dto.vocabulary,
             answerLength = dto.answerLength,
-
-            suggestedAnswer = dto.suggestedAnswer,
-            comment = dto.comment,
+            naturalness = dto.naturalness,
+            coherenceWithContext = dto.coherenceWithContext,
+            registerAppropriate = dto.registerAppropriate,
+            mistakes = dto.mistakes,
+            strengthsIdentified = dto.strengthsIdentified,
+            vocabularyEnrichment = dto.vocabularyEnrichment,
+            alternativeExpressions = dto.alternativeExpressions,
+            culturalNote = dto.culturalNote,
             messageId = dto.messageId,
         )
     }

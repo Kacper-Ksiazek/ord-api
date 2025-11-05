@@ -443,6 +443,11 @@ class TestOngoingConversationController @Autowired constructor(
                 feedback.grammar shouldBeGreaterThan 0
                 feedback.vocabulary shouldBeGreaterThan 0
                 feedback.answerLength shouldBeGreaterThan 0
+                feedback.naturalness shouldBeInRange 0..10
+                feedback.coherenceWithContext shouldBeInRange 0..10
+                feedback.registerAppropriate shouldNotBe null
+                feedback.mistakes shouldNotBe null
+                feedback.strengthsIdentified shouldNotBe null
             }
 
             @Test
