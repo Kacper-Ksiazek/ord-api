@@ -1,8 +1,6 @@
 package com.ord.features.conversation.models.conversation_user_message_feedback
 
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.AlternativeExpression
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Mistake
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.VocabularyEnrichment
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
@@ -20,10 +18,10 @@ data class ConversationUserMessageFeedbackEntity(
     val coherenceWithContext: Int,
     val registerAppropriate: Boolean,
 
-    val mistakes: Set<Mistake>,
-    val strengthsIdentified: Set<String>,
-    val vocabularyEnrichment: Set<VocabularyEnrichment>,
-    val alternativeExpressions: Set<AlternativeExpression>,
+    val mistakes: Json, // JSONB - Set<Mistake>
+    val strengthsIdentified: Json, // JSONB - Set<String>
+    val vocabularyEnrichment: Json, // JSONB - Set<VocabularyEnrichment>
+    val alternativeExpressions: Json, // JSONB - Set<AlternativeExpression>
     val culturalNote: String? = null,
 
     val messageId: UUID,

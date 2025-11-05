@@ -9,7 +9,9 @@ import com.ord.features.conversation.models.conversation_user_message_feedback.C
 import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import com.ord.features.conversation.models.conversation.enums.ConversationTone
+import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackMapper
 import com.ord.features.conversation.repositories.ConversationRepositoryCustomMethods
+import io.r2dbc.postgresql.codec.Json
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
@@ -19,7 +21,8 @@ import java.util.*
 
 @Repository
 class ConversationRepositoryCustomMethodsImpl(
-    private val template: R2dbcEntityTemplate
+    private val template: R2dbcEntityTemplate,
+    private val feedbackMapper: ConversationUserMessageFeedbackMapper
 ) : ConversationRepositoryCustomMethods {
     override fun findRecentTopics(
         userId: UUID,
@@ -65,8 +68,14 @@ class ConversationRepositoryCustomMethodsImpl(
                 f.grammar as feedback_grammar,
                 f.vocabulary as feedback_vocabulary,
                 f.answer_length as feedback_answer_length,
-                f.suggested_answer as feedback_suggested_answer,
-                f.comment as feedback_comment
+                f.naturalness as feedback_naturalness,
+                f.coherence_with_context as feedback_coherence_with_context,
+                f.register_appropriate as feedback_register_appropriate,
+                f.mistakes as feedback_mistakes,
+                f.strengths_identified as feedback_strengths_identified,
+                f.vocabulary_enrichment as feedback_vocabulary_enrichment,
+                f.alternative_expressions as feedback_alternative_expressions,
+                f.cultural_note as feedback_cultural_note
             FROM conversations c
             LEFT JOIN conversation_messages m ON c.id = m.conversation_id
             LEFT JOIN conversation_user_message_feedback f ON m.id = f.message_id
@@ -98,8 +107,14 @@ class ConversationRepositoryCustomMethodsImpl(
                                     grammar = row["feedback_grammar"] as Int,
                                     vocabulary = row["feedback_vocabulary"] as Int,
                                     answerLength = row["feedback_answer_length"] as Int,
-                                    comment = row["feedback_comment"] as String?,
-                                    suggestedAnswer = row["feedback_suggested_answer"] as String?,
+                                    naturalness = row["feedback_naturalness"] as Int,
+                                    coherenceWithContext = row["feedback_coherence_with_context"] as Int,
+                                    registerAppropriate = row["feedback_register_appropriate"] as Boolean,
+                                    mistakes = feedbackMapper.deserializeMistakes(row["feedback_mistakes"] as Json),
+                                    strengthsIdentified = feedbackMapper.deserializeStringSet(row["feedback_strengths_identified"] as Json),
+                                    vocabularyEnrichment = feedbackMapper.deserializeVocabularyEnrichment(row["feedback_vocabulary_enrichment"] as Json),
+                                    alternativeExpressions = feedbackMapper.deserializeAlternativeExpressions(row["feedback_alternative_expressions"] as Json),
+                                    culturalNote = row["feedback_cultural_note"] as String?,
                                     messageId = row["message_id"] as UUID
                                 )
                             } else null
