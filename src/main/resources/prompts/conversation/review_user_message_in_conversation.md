@@ -57,6 +57,8 @@ Review the user message and provide detailed, constructive feedback.
 - Intermediate (B1-B2): Balance corrections with enrichment suggestions
 - Advanced (C1-C2): Focus on naturalness, idiomatic usage, and subtle nuances
 
+**CRITICAL: Your response MUST be valid JSON only - no explanatory text before or after.**
+
 Your response should be a JSON object matching the following TypeScript interface:
 
 ```ts
