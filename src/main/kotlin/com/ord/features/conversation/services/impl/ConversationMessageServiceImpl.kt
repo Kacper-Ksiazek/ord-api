@@ -16,6 +16,7 @@ import java.util.*
 class ConversationMessageServiceImpl(
     private val conversationMessageRepository: ConversationMessageRepository,
     private val conversationUserMessageFeedbackRepository: ConversationUserMessageFeedbackRepository,
+    private val feedbackMapper: ConversationUserMessageFeedbackMapper,
 ) : ConversationMessageService {
     override fun createMessage(
         conversationId: UUID,
@@ -58,10 +59,10 @@ class ConversationMessageServiceImpl(
                             naturalness = aiFeedback.naturalness,
                             coherenceWithContext = aiFeedback.coherenceWithContext,
                             registerAppropriate = aiFeedback.registerAppropriate,
-                            mistakes = aiFeedback.mistakes,
-                            strengthsIdentified = aiFeedback.strengthsIdentified,
-                            vocabularyEnrichment = aiFeedback.vocabularyEnrichment,
-                            alternativeExpressions = aiFeedback.alternativeExpressions,
+                            mistakes = feedbackMapper.serializeMistakes(aiFeedback.mistakes),
+                            strengthsIdentified = feedbackMapper.serializeStringSet(aiFeedback.strengthsIdentified),
+                            vocabularyEnrichment = feedbackMapper.serializeVocabularyEnrichment(aiFeedback.vocabularyEnrichment),
+                            alternativeExpressions = feedbackMapper.serializeAlternativeExpressions(aiFeedback.alternativeExpressions),
                             culturalNote = aiFeedback.culturalNote,
                             messageId = message.id!!,
                         )
