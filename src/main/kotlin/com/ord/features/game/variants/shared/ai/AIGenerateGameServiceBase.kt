@@ -90,6 +90,8 @@ abstract class AIGenerateGameServiceBase<
             }
             .flatMap { (context, prompt) ->
                 makeGameAIRequest(
+                    userId = userId,
+                    operationType = "GAME_GENERATE_${gameType.name}",
                     prompt = prompt.toString(),
                     aiResponseTypeReference = aiResponseTypeReference,
                     validateResponseBody = { validateAIResponse(it, context) },

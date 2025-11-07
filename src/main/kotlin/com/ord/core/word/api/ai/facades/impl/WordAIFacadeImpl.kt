@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.ai.facades.WordAIFacade
+import org.slf4j.LoggerFactory
 import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
@@ -33,7 +35,9 @@ class WordAIFacadeImpl(
     private val languageProficiencyService: LanguageProficiencyService,
     private val wordService: WordService,
     private val qawRepository: QAWRepository,
+    private val gptTokensUsageService: GptTokensUsageService,
 ) : WordAIFacade {
+    private val logger = LoggerFactory.getLogger(WordAIFacadeImpl::class.java)
     private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
 
     override fun generateWordManual(
@@ -67,7 +71,18 @@ class WordAIFacadeImpl(
                 openAIAPIClientService.makeRequest(
                     aiResponseType = object : TypeReference<AIGeneratedWordManual>() {},
                     prompt = prompt,
-                    saveLog = {},
+                    saveLog = { openAIResponse ->
+                        gptTokensUsageService.saveTokensUsage(
+                            userId = user.id,
+                            operationType = "WORDS_GENERATE_MANUAL",
+                            model = "gpt-4.1-mini",
+                            inputTokens = openAIResponse.usage.input_tokens,
+                            outputTokens = openAIResponse.usage.output_tokens
+                        ).subscribe(
+                            { /* success */ },
+                            { error -> logger.error("Failed to log token usage for word manual generation", error) }
+                        )
+                    },
                     validateResponseBody = { responseBody ->
                         responseBody != null &&
                                 !responseBody.toString().contains("NON_EXISTENT_WORD")
@@ -155,6 +170,17 @@ class WordAIFacadeImpl(
                         prompt = prompt,
                         streamedItemType = object : TypeReference<VocabularySuggestion>() {},
                         onComplete = { (payload, emitter) ->
+                            gptTokensUsageService.saveTokensUsage(
+                                userId = user.id,
+                                operationType = "WORDS_SUGGEST_VOCABULARY",
+                                model = "gpt-4.1-mini",
+                                inputTokens = payload.inputTokens,
+                                outputTokens = payload.outputTokens
+                            ).subscribe(
+                                { /* success */ },
+                                { error -> logger.error("Failed to log token usage for vocabulary suggestions", error) }
+                            )
+
                             emitter.tryEmitNext(
                                 jsonObjectMapper.writeValueAsString(payload.finalContent)
                             )

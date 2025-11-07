@@ -43,6 +43,8 @@ class SentencesWritingAIReviewService(
                 )
 
                 makeGameAIRequest(
+                    userId = userId,
+                    operationType = "GAME_REVIEW_SENTENCES_WRITING",
                     aiResponseTypeReference = object : TypeReference<AIReviewedSentencesWritingGame>() {},
                     prompt = prompt.toString(),
                     validateResponseBody = { parsedResponse ->

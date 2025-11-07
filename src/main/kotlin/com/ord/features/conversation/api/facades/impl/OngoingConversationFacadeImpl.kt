@@ -2,7 +2,9 @@ package com.ord.features.conversation.api.facades.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.exceptions.REST.BadRequestException
+import org.slf4j.LoggerFactory
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
@@ -30,7 +32,9 @@ class OngoingConversationFacadeImpl(
     private val conversationService: ConversationService,
     private val conversationMessageService: ConversationMessageService,
     private val conversationMapper: ConversationMapper,
+    private val gptTokensUsageService: GptTokensUsageService,
 ) : OngoingConversationFacade {
+    private val logger = LoggerFactory.getLogger(OngoingConversationFacadeImpl::class.java)
     override fun initializeConversationByAI(
         conversationId: UUID,
         userId: UUID,
@@ -56,7 +60,16 @@ class OngoingConversationFacadeImpl(
                     .openSimpleStringStream(
                         prompt = prompt.toString(),
                         onComplete = { (payload) ->
-                            // TODO: Save logs here
+                            gptTokensUsageService.saveTokensUsage(
+                                userId = userId,
+                                operationType = "CONVERSATION_INITIALIZE",
+                                model = "gpt-4.1-mini",
+                                inputTokens = payload.inputTokens,
+                                outputTokens = payload.outputTokens
+                            ).subscribe(
+                                { /* success */ },
+                                { error -> logger.error("Failed to log token usage for conversation initialization", error) }
+                            )
 
                             conversationMessageService.createMessage(
                                 conversationId = conversation.id,
@@ -102,7 +115,16 @@ class OngoingConversationFacadeImpl(
                     .openSimpleStringStream(
                         prompt = prompt.toString(),
                         onComplete = { (payload, emitter) ->
-                            // TODO: Save logs here
+                            gptTokensUsageService.saveTokensUsage(
+                                userId = userId,
+                                operationType = "CONVERSATION_AI_RESPONSE",
+                                model = "gpt-4.1-mini",
+                                inputTokens = payload.inputTokens,
+                                outputTokens = payload.outputTokens
+                            ).subscribe(
+                                { /* success */ },
+                                { error -> logger.error("Failed to log token usage for conversation AI response", error) }
+                            )
 
                             conversationMessageService.createMessage(
                                 conversationId = conversation.id,
@@ -138,7 +160,16 @@ class OngoingConversationFacadeImpl(
                     prompt = prompt.toString(),
                     aiResponseType = object : TypeReference<ReviewedUserConversationMessage>() {},
                     saveLog = { openAIResponse ->
-                        // TODO
+                        gptTokensUsageService.saveTokensUsage(
+                            userId = userId,
+                            operationType = "CONVERSATION_REVIEW_USER_MESSAGE",
+                            model = "gpt-4.1-mini",
+                            inputTokens = openAIResponse.usage.input_tokens,
+                            outputTokens = openAIResponse.usage.output_tokens
+                        ).subscribe(
+                            { /* success */ },
+                            { error -> logger.error("Failed to log token usage for conversation user message review", error) }
+                        )
                     }
                 )
                     .flatMap { aiFeedback ->

@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.ai_provider.dto.helpers.StreamSimpleItem
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
+import org.slf4j.LoggerFactory
 import com.ord.features.conversation.api.facades.ConversationAuxiliaryFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.GeneratedAIInterlocutorData
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
@@ -25,8 +27,10 @@ import java.util.*
 class ConversationAuxiliaryFacadeImpl(
     private val conversationService: ConversationService,
     private val openAIStreamClientService: OpenAIAPIClientService,
-    private val languageProficiencyService: LanguageProficiencyService
+    private val languageProficiencyService: LanguageProficiencyService,
+    private val gptTokensUsageService: GptTokensUsageService,
 ) : ConversationAuxiliaryFacade {
+    private val logger = LoggerFactory.getLogger(ConversationAuxiliaryFacadeImpl::class.java)
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
@@ -66,6 +70,17 @@ class ConversationAuxiliaryFacadeImpl(
                         prompt = prompt.toString(),
                         streamedItemType = object : TypeReference<StreamSimpleItem>() {},
                         onComplete = { (payload, emitter) ->
+                            gptTokensUsageService.saveTokensUsage(
+                                userId = userId,
+                                operationType = "CONVERSATION_SUGGEST_TOPICS",
+                                model = "gpt-4.1-mini",
+                                inputTokens = payload.inputTokens,
+                                outputTokens = payload.outputTokens
+                            ).subscribe(
+                                { /* success */ },
+                                { error -> logger.error("Failed to log token usage for conversation topic suggestions", error) }
+                            )
+
                             emitter.tryEmitNext(
                                 objectMapper.writeValueAsString(
                                     payload.finalContent
@@ -99,7 +114,19 @@ class ConversationAuxiliaryFacadeImpl(
                 openAIStreamClientService
                     .makeRequest(
                         prompt = prompt.toString(),
-                        aiResponseType = object : TypeReference<GeneratedAIInterlocutorData>() {}
+                        aiResponseType = object : TypeReference<GeneratedAIInterlocutorData>() {},
+                        saveLog = { openAIResponse ->
+                            gptTokensUsageService.saveTokensUsage(
+                                userId = userId,
+                                operationType = "CONVERSATION_GENERATE_INTERLOCUTOR",
+                                model = "gpt-4.1-mini",
+                                inputTokens = openAIResponse.usage.input_tokens,
+                                outputTokens = openAIResponse.usage.output_tokens
+                            ).subscribe(
+                                { /* success */ },
+                                { error -> logger.error("Failed to log token usage for generating AI interlocutor", error) }
+                            )
+                        }
                     )
             }
     }
