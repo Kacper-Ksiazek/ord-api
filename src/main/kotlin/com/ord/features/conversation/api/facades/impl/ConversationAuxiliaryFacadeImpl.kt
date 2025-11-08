@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.ai_provider.dto.helpers.StreamSimpleItem
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import org.slf4j.LoggerFactory
@@ -72,7 +73,7 @@ class ConversationAuxiliaryFacadeImpl(
                         onComplete = { (payload, emitter) ->
                             gptTokensUsageService.saveTokensUsage(
                                 userId = userId,
-                                operationType = "CONVERSATION_SUGGEST_TOPICS",
+                                operationType = GptTokensUsageOperationType.Conversation.SUGGEST_TOPICS,
                                 model = "gpt-4.1-mini",
                                 inputTokens = payload.inputTokens,
                                 outputTokens = payload.outputTokens
@@ -118,7 +119,7 @@ class ConversationAuxiliaryFacadeImpl(
                         saveLog = { openAIResponse ->
                             gptTokensUsageService.saveTokensUsage(
                                 userId = userId,
-                                operationType = "CONVERSATION_GENERATE_INTERLOCUTOR",
+                                operationType = GptTokensUsageOperationType.Conversation.GENERATE_INTERLOCUTOR,
                                 model = "gpt-4.1-mini",
                                 inputTokens = openAIResponse.usage.input_tokens,
                                 outputTokens = openAIResponse.usage.output_tokens

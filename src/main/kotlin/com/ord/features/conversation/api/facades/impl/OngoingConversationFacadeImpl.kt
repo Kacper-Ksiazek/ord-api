@@ -2,6 +2,7 @@ package com.ord.features.conversation.api.facades.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.exceptions.REST.BadRequestException
 import org.slf4j.LoggerFactory
@@ -62,7 +63,7 @@ class OngoingConversationFacadeImpl(
                         onComplete = { (payload) ->
                             gptTokensUsageService.saveTokensUsage(
                                 userId = userId,
-                                operationType = "CONVERSATION_INITIALIZE",
+                                operationType = GptTokensUsageOperationType.Conversation.INITIALIZE,
                                 model = "gpt-4.1-mini",
                                 inputTokens = payload.inputTokens,
                                 outputTokens = payload.outputTokens
@@ -117,7 +118,7 @@ class OngoingConversationFacadeImpl(
                         onComplete = { (payload, emitter) ->
                             gptTokensUsageService.saveTokensUsage(
                                 userId = userId,
-                                operationType = "CONVERSATION_AI_RESPONSE",
+                                operationType = GptTokensUsageOperationType.Conversation.AI_RESPONSE,
                                 model = "gpt-4.1-mini",
                                 inputTokens = payload.inputTokens,
                                 outputTokens = payload.outputTokens
@@ -162,7 +163,7 @@ class OngoingConversationFacadeImpl(
                     saveLog = { openAIResponse ->
                         gptTokensUsageService.saveTokensUsage(
                             userId = userId,
-                            operationType = "CONVERSATION_REVIEW_USER_MESSAGE",
+                            operationType = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
                             model = "gpt-4.1-mini",
                             inputTokens = openAIResponse.usage.input_tokens,
                             outputTokens = openAIResponse.usage.output_tokens

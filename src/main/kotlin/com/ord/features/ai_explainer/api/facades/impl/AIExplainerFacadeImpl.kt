@@ -1,6 +1,7 @@
 package com.ord.features.ai_explainer.api.facades.impl
 
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -52,7 +53,7 @@ class AIExplainerFacadeImpl(
                     onComplete = { (payload, emitter) ->
                         gptTokensUsageService.saveTokensUsage(
                             userId = user.id,
-                            operationType = "AI_EXPLAINER_EXPLAIN_PHRASE",
+                            operationType = GptTokensUsageOperationType.AIExplainer.EXPLAIN_PHRASE,
                             model = "gpt-4.1-mini",
                             inputTokens = payload.inputTokens,
                             outputTokens = payload.outputTokens

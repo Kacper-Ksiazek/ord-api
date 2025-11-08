@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -74,7 +75,7 @@ class WordAIFacadeImpl(
                     saveLog = { openAIResponse ->
                         gptTokensUsageService.saveTokensUsage(
                             userId = user.id,
-                            operationType = "WORDS_GENERATE_MANUAL",
+                            operationType = GptTokensUsageOperationType.Words.GENERATE_MANUAL,
                             model = "gpt-4.1-mini",
                             inputTokens = openAIResponse.usage.input_tokens,
                             outputTokens = openAIResponse.usage.output_tokens
@@ -172,7 +173,7 @@ class WordAIFacadeImpl(
                         onComplete = { (payload, emitter) ->
                             gptTokensUsageService.saveTokensUsage(
                                 userId = user.id,
-                                operationType = "WORDS_SUGGEST_VOCABULARY",
+                                operationType = GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY,
                                 model = "gpt-4.1-mini",
                                 inputTokens = payload.inputTokens,
                                 outputTokens = payload.outputTokens

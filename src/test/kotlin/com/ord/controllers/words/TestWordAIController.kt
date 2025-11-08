@@ -2,6 +2,7 @@ package com.ord.controllers.words
 
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
+import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.security.UserRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
@@ -12,6 +13,7 @@ import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
 import com.ord.testing_utils.api.clients.WordAIAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldNotBeBlank
@@ -35,7 +37,8 @@ class TestWordAIController @Autowired constructor(
     webClient: WebTestClient,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
-    passwordEncoder: PasswordEncoder
+    passwordEncoder: PasswordEncoder,
+    private val gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
