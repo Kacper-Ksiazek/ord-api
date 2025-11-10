@@ -431,4 +431,155 @@ class TestWordAIController @Autowired constructor(
             }
         }
     }
+
+    @Nested
+    @DisplayName("GPT Token Usage Logging")
+    inner class TokenUsageLogging {
+
+        @Test
+        fun `should log GPT token usage when generating word manual`() {
+            val request = GenerateWordManualRequest(
+                word = "hund",
+                language = LanguageName.NORWEGIAN,
+                targetLanguage = LanguageName.ENGLISH,
+                proficiencyLevel = LanguageProficiencyLevel.B2
+            )
+
+            val response = wordAIAPIClient.generateManual(
+                body = request,
+                user = authenticatedUser
+            )
+
+            response.status shouldBe HttpStatus.OK
+
+            val tokenUsage = gptTokensUsageRepository
+                .findAllByUserId(authenticatedUser.userInfo.id)
+                .collectList()
+                .block()!!
+
+            tokenUsage.shouldNotBeEmpty()
+            val manualLog = tokenUsage.find { it.operationType == "WORDS_GENERATE_MANUAL" }
+            manualLog shouldNotBe null
+            manualLog!!.apply {
+                userId shouldBe authenticatedUser.userInfo.id
+                model shouldBe "gpt-4.1-mini"
+                inputTokens shouldBeGreaterThan 0
+                outputTokens shouldBeGreaterThan 0
+            }
+        }
+
+        @Test
+        fun `should log GPT token usage when suggesting vocabulary`() {
+            val request = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                language = LanguageName.NORWEGIAN,
+                context = "daily conversation",
+                excludedWords = null
+            )
+
+            val response = wordAIAPIClient.suggestVocabulary(
+                body = request,
+                user = authenticatedUser
+            )
+
+            response.status shouldBe HttpStatus.OK
+
+            val tokenUsage = gptTokensUsageRepository
+                .findAllByUserId(authenticatedUser.userInfo.id)
+                .collectList()
+                .block()!!
+
+            tokenUsage.shouldNotBeEmpty()
+            val vocabularyLog = tokenUsage.find { it.operationType == "WORDS_SUGGEST_VOCABULARY" }
+            vocabularyLog shouldNotBe null
+            vocabularyLog!!.apply {
+                userId shouldBe authenticatedUser.userInfo.id
+                model shouldBe "gpt-4.1-mini"
+                inputTokens shouldBeGreaterThan 0
+                outputTokens shouldBeGreaterThan 0
+            }
+        }
+
+        @Test
+        fun `should track separate token logs for multiple operations`() {
+            // Generate word manual
+            val manualRequest = GenerateWordManualRequest(
+                word = "katt",
+                language = LanguageName.NORWEGIAN,
+                targetLanguage = LanguageName.ENGLISH,
+                proficiencyLevel = LanguageProficiencyLevel.B2
+            )
+            wordAIAPIClient.generateManual(body = manualRequest, user = authenticatedUser)
+
+            // Suggest vocabulary
+            val vocabularyRequest = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                language = LanguageName.NORWEGIAN,
+                context = null,
+                excludedWords = null
+            )
+            wordAIAPIClient.suggestVocabulary(body = vocabularyRequest, user = authenticatedUser)
+
+            // Verify both logs exist
+            val tokenUsage = gptTokensUsageRepository
+                .findAllByUserId(authenticatedUser.userInfo.id)
+                .collectList()
+                .block()!!
+
+            val manualLogs = tokenUsage.filter { it.operationType == "WORDS_GENERATE_MANUAL" }
+            val vocabularyLogs = tokenUsage.filter { it.operationType == "WORDS_SUGGEST_VOCABULARY" }
+
+            manualLogs.size shouldBeGreaterThan 0
+            vocabularyLogs.size shouldBeGreaterThan 0
+        }
+
+        @Test
+        fun `should record accurate token counts for word manual generation`() {
+            val request = GenerateWordManualRequest(
+                word = "test",
+                language = LanguageName.ENGLISH,
+                targetLanguage = LanguageName.NORWEGIAN,
+                proficiencyLevel = LanguageProficiencyLevel.C1
+            )
+
+            wordAIAPIClient.generateManual(body = request, user = authenticatedUser)
+
+            val tokenUsage = gptTokensUsageRepository
+                .findAllByUserId(authenticatedUser.userInfo.id)
+                .collectList()
+                .block()!!
+                .find { it.operationType == "WORDS_GENERATE_MANUAL" }
+
+            tokenUsage shouldNotBe null
+            tokenUsage!!.apply {
+                inputTokens shouldBeGreaterThan 0
+                outputTokens shouldBeGreaterThan 0
+                // Both should be different (not the same)
+                inputTokens shouldNotBe outputTokens
+            }
+        }
+
+        @Test
+        fun `should log tokens when vocabulary suggestion includes context`() {
+            val request = com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest(
+                language = LanguageName.NORWEGIAN,
+                context = "business meetings and professional emails",
+                excludedWords = null
+            )
+
+            wordAIAPIClient.suggestVocabulary(body = request, user = authenticatedUser)
+
+            val tokenUsage = gptTokensUsageRepository
+                .findAllByUserId(authenticatedUser.userInfo.id)
+                .collectList()
+                .block()!!
+                .find { it.operationType == "WORDS_SUGGEST_VOCABULARY" }
+
+            tokenUsage shouldNotBe null
+            tokenUsage!!.apply {
+                model shouldBe "gpt-4.1-mini"
+                userId shouldBe authenticatedUser.userInfo.id
+                inputTokens shouldBeGreaterThan 0
+                outputTokens shouldBeGreaterThan 0
+            }
+        }
+    }
 }

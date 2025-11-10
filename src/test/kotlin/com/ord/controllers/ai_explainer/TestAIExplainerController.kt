@@ -3,6 +3,7 @@ package com.ord.controllers.ai_explainer
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
+import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -10,7 +11,10 @@ import com.ord.core.security.UserRepository
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
 import com.ord.testing_utils.api.clients.AIExplainerAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
+import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldNotBeBlank
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -32,7 +36,8 @@ class TestAIExplainerController @Autowired constructor(
     webClient: WebTestClient,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
-    passwordEncoder: PasswordEncoder
+    passwordEncoder: PasswordEncoder,
+    private val gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
@@ -276,6 +281,103 @@ class TestAIExplainerController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.BAD_REQUEST
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("GPT Token Usage Logging")
+    inner class TokenUsageLogging {
+
+        @Test
+        fun `should log GPT token usage when explaining phrase`() {
+            val request = ExplainPhraseRequest(
+                phrase = "hund",
+                language = LanguageName.NORWEGIAN
+            )
+
+            val response = aiExplainerAPIClient.explainPhrase(
+                body = request,
+                user = authenticatedUser
+            )
+
+            response.status shouldBe HttpStatus.OK
+
+            val tokenUsage = gptTokensUsageRepository
+                .findAllByUserId(authenticatedUser.userInfo.id)
+                .collectList()
+                .block()!!
+
+            tokenUsage.shouldNotBeEmpty()
+            val explainerLog = tokenUsage.find { it.operationType == "AI_EXPLAINER_EXPLAIN_PHRASE" }
+            explainerLog shouldNotBe null
+            explainerLog!!.apply {
+                userId shouldBe authenticatedUser.userInfo.id
+                model shouldBe "gpt-4.1-mini"
+                inputTokens shouldBeGreaterThan 0
+                outputTokens shouldBeGreaterThan 0
+            }
+        }
+
+        @Test
+        fun `should log tokens when explanation includes context`() {
+            val request = ExplainPhraseRequest(
+                phrase = "break the ice",
+                language = LanguageName.ENGLISH,
+                context = "At parties, people often need to 'break the ice' to start conversations."
+            )
+
+            aiExplainerAPIClient.explainPhrase(body = request, user = authenticatedUser)
+
+            val tokenUsage = gptTokensUsageRepository
+                .findAllByUserId(authenticatedUser.userInfo.id)
+                .collectList()
+                .block()!!
+                .find { it.operationType == "AI_EXPLAINER_EXPLAIN_PHRASE" }
+
+            tokenUsage shouldNotBe null
+            tokenUsage!!.apply {
+                model shouldBe "gpt-4.1-mini"
+                inputTokens shouldBeGreaterThan 0
+                outputTokens shouldBeGreaterThan 0
+            }
+        }
+
+        @Test
+        fun `should log tokens when using custom instruction`() {
+            val request = ExplainPhraseRequest(
+                phrase = "hund",
+                language = LanguageName.NORWEGIAN,
+                customInstruction = "Please explain this word as if I'm 5 years old"
+            )
+
+            aiExplainerAPIClient.explainPhrase(body = request, user = authenticatedUser)
+
+            val tokenUsage = gptTokensUsageRepository
+                .findAllByUserId(authenticatedUser.userInfo.id)
+                .collectList()
+                .block()!!
+                .find { it.operationType == "AI_EXPLAINER_EXPLAIN_PHRASE" }
+
+            tokenUsage shouldNotBe null
+            tokenUsage!!.inputTokens shouldBeGreaterThan 0
+        }
+
+        @Test
+        fun `should record correct operation type for all explanations`() {
+            val request = ExplainPhraseRequest(
+                phrase = "hygge",
+                language = LanguageName.NORWEGIAN
+            )
+
+            aiExplainerAPIClient.explainPhrase(body = request, user = authenticatedUser)
+
+            val tokenUsage = gptTokensUsageRepository
+                .findAllByUserId(authenticatedUser.userInfo.id)
+                .collectList()
+                .block()!!
+
+            tokenUsage.shouldNotBeEmpty()
+            tokenUsage.all { it.operationType == "AI_EXPLAINER_EXPLAIN_PHRASE" } shouldBe true
         }
     }
 }
