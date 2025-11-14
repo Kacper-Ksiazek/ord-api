@@ -28,4 +28,8 @@ data class GptTokensUsageEntity(
 
     @Column("created_at")
     val createdAt: Instant = Instant.now(),
-) : IdentifiableUserResource
+) : IdentifiableUserResource {
+    companion object {
+        const val DEFAULT_MODEL = "gpt-4.1-mini"
+    }
+}

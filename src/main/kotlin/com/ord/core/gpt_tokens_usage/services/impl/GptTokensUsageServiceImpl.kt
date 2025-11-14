@@ -12,6 +12,20 @@ import java.util.*
 class GptTokensUsageServiceImpl(
     private val gptTokensUsageRepository: GptTokensUsageRepository
 ) : GptTokensUsageService {
+    override fun saveTokensUsage(
+        userId: UUID,
+        operationType: String,
+        inputTokens: Int,
+        outputTokens: Int
+    ): Mono<GptTokensUsageEntity> {
+        return saveTokensUsage(
+            userId = userId,
+            operationType = operationType,
+            model = GptTokensUsageEntity.DEFAULT_MODEL,
+            inputTokens = inputTokens,
+            outputTokens = outputTokens,
+        )
+    }
 
     override fun saveTokensUsage(
         userId: UUID,
