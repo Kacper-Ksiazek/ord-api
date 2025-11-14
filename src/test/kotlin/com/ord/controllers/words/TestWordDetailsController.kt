@@ -3,6 +3,7 @@ package com.ord.controllers.words
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
+import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -48,13 +49,15 @@ class TestWordDetailsController @Autowired constructor(
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
+    gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
-    passwordEncoder = passwordEncoder
+    passwordEncoder = passwordEncoder,
+    gptTokensUsageRepository = gptTokensUsageRepository
 ) {
     private val apiClient = WordDetailsAPIClient(webClient)
 

@@ -2,6 +2,7 @@ package com.ord.controllers.conversations
 
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
+import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -42,14 +43,16 @@ class TestConversationController @Autowired constructor(
     languageProficiencyRepository: LanguageProficiencyRepository,
     _userRepository: UserRepository,
     _otpCodeRepository: OtpCodeRepository,
-    _passwordEncoder: PasswordEncoder
+    _passwordEncoder: PasswordEncoder,
+    _gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = _userRepository,
     otpCodeRepository = _otpCodeRepository,
-    passwordEncoder = _passwordEncoder
+    passwordEncoder = _passwordEncoder,
+    gptTokensUsageRepository = _gptTokensUsageRepository
 ) {
     private val conversationAPIClient = ConversationAPIClient(webClient)
 
@@ -123,6 +126,8 @@ class TestConversationController @Autowired constructor(
                 response.body shouldNotBe null
                 response.body!!.name.shouldNotBeBlank()
                 response.body.avatarId shouldNotBe null
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
             }
 
             @Test
@@ -147,6 +152,8 @@ class TestConversationController @Autowired constructor(
                 response.body shouldNotBe null
                 response.body!!.name.shouldNotBeBlank()
                 response.body.avatarId shouldNotBe null
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
             }
         }
 
@@ -769,7 +776,7 @@ class TestConversationController @Autowired constructor(
 
                 deleteResponse.status shouldBe HttpStatus.NO_CONTENT
 
-                conversationRepository.findById(created.id!!).block() shouldBe null
+                conversationRepository.findById(created.id).block() shouldBe null
             }
 
             @Test
@@ -837,7 +844,7 @@ class TestConversationController @Autowired constructor(
                 response.status shouldBe HttpStatus.NOT_FOUND
 
                 val verifyStillExists = conversationAPIClient.getConversationById(
-                    conversationId = created.id!!,
+                    conversationId = created.id,
                     user = owner
                 )
 

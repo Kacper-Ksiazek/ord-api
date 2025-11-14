@@ -37,14 +37,15 @@ class TestAIExplainerController @Autowired constructor(
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
-    private val gptTokensUsageRepository: GptTokensUsageRepository
+    gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
-    passwordEncoder = passwordEncoder
+    passwordEncoder = passwordEncoder,
+    gptTokensUsageRepository = gptTokensUsageRepository
 ) {
     private val aiExplainerAPIClient = AIExplainerAPIClient(webClient)
 
@@ -82,6 +83,8 @@ class TestAIExplainerController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.explanation.shouldNotBeBlank()
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "AI_EXPLAINER_EXPLAIN_PHRASE")
             }
 
             @Test
@@ -131,6 +134,8 @@ class TestAIExplainerController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.explanation.shouldNotBeBlank()
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "AI_EXPLAINER_EXPLAIN_PHRASE")
             }
 
             @Test
@@ -148,6 +153,8 @@ class TestAIExplainerController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.explanation.shouldNotBeBlank()
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "AI_EXPLAINER_EXPLAIN_PHRASE")
             }
 
             @Test
@@ -281,103 +288,6 @@ class TestAIExplainerController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.BAD_REQUEST
             }
-        }
-    }
-
-    @Nested
-    @DisplayName("GPT Token Usage Logging")
-    inner class TokenUsageLogging {
-
-        @Test
-        fun `should log GPT token usage when explaining phrase`() {
-            val request = ExplainPhraseRequest(
-                phrase = "hund",
-                language = LanguageName.NORWEGIAN
-            )
-
-            val response = aiExplainerAPIClient.explainPhrase(
-                body = request,
-                user = authenticatedUser
-            )
-
-            response.status shouldBe HttpStatus.OK
-
-            val tokenUsage = gptTokensUsageRepository
-                .findAllByUserId(authenticatedUser.userInfo.id)
-                .collectList()
-                .block()!!
-
-            tokenUsage.shouldNotBeEmpty()
-            val explainerLog = tokenUsage.find { it.operationType == "AI_EXPLAINER_EXPLAIN_PHRASE" }
-            explainerLog shouldNotBe null
-            explainerLog!!.apply {
-                userId shouldBe authenticatedUser.userInfo.id
-                model shouldBe "gpt-4.1-mini"
-                inputTokens shouldBeGreaterThan 0
-                outputTokens shouldBeGreaterThan 0
-            }
-        }
-
-        @Test
-        fun `should log tokens when explanation includes context`() {
-            val request = ExplainPhraseRequest(
-                phrase = "break the ice",
-                language = LanguageName.ENGLISH,
-                context = "At parties, people often need to 'break the ice' to start conversations."
-            )
-
-            aiExplainerAPIClient.explainPhrase(body = request, user = authenticatedUser)
-
-            val tokenUsage = gptTokensUsageRepository
-                .findAllByUserId(authenticatedUser.userInfo.id)
-                .collectList()
-                .block()!!
-                .find { it.operationType == "AI_EXPLAINER_EXPLAIN_PHRASE" }
-
-            tokenUsage shouldNotBe null
-            tokenUsage!!.apply {
-                model shouldBe "gpt-4.1-mini"
-                inputTokens shouldBeGreaterThan 0
-                outputTokens shouldBeGreaterThan 0
-            }
-        }
-
-        @Test
-        fun `should log tokens when using custom instruction`() {
-            val request = ExplainPhraseRequest(
-                phrase = "hund",
-                language = LanguageName.NORWEGIAN,
-                customInstruction = "Please explain this word as if I'm 5 years old"
-            )
-
-            aiExplainerAPIClient.explainPhrase(body = request, user = authenticatedUser)
-
-            val tokenUsage = gptTokensUsageRepository
-                .findAllByUserId(authenticatedUser.userInfo.id)
-                .collectList()
-                .block()!!
-                .find { it.operationType == "AI_EXPLAINER_EXPLAIN_PHRASE" }
-
-            tokenUsage shouldNotBe null
-            tokenUsage!!.inputTokens shouldBeGreaterThan 0
-        }
-
-        @Test
-        fun `should record correct operation type for all explanations`() {
-            val request = ExplainPhraseRequest(
-                phrase = "hygge",
-                language = LanguageName.NORWEGIAN
-            )
-
-            aiExplainerAPIClient.explainPhrase(body = request, user = authenticatedUser)
-
-            val tokenUsage = gptTokensUsageRepository
-                .findAllByUserId(authenticatedUser.userInfo.id)
-                .collectList()
-                .block()!!
-
-            tokenUsage.shouldNotBeEmpty()
-            tokenUsage.all { it.operationType == "AI_EXPLAINER_EXPLAIN_PHRASE" } shouldBe true
         }
     }
 }
