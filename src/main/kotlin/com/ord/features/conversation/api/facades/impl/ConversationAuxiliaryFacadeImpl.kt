@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.ai_provider.dto.helpers.StreamSimpleItem
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
+import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
+import org.slf4j.LoggerFactory
 import com.ord.features.conversation.api.facades.ConversationAuxiliaryFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.GeneratedAIInterlocutorData
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
@@ -25,8 +28,10 @@ import java.util.*
 class ConversationAuxiliaryFacadeImpl(
     private val conversationService: ConversationService,
     private val openAIStreamClientService: OpenAIAPIClientService,
-    private val languageProficiencyService: LanguageProficiencyService
+    private val languageProficiencyService: LanguageProficiencyService,
+    private val gptTokensUsageService: GptTokensUsageService,
 ) : ConversationAuxiliaryFacade {
+    private val logger = LoggerFactory.getLogger(ConversationAuxiliaryFacadeImpl::class.java)
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
 
@@ -65,6 +70,8 @@ class ConversationAuxiliaryFacadeImpl(
                     .openStructuredArrayStream(
                         prompt = prompt.toString(),
                         streamedItemType = object : TypeReference<StreamSimpleItem>() {},
+                        userId = userId,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.SUGGEST_TOPICS,
                         onComplete = { (payload, emitter) ->
                             emitter.tryEmitNext(
                                 objectMapper.writeValueAsString(
@@ -99,7 +106,9 @@ class ConversationAuxiliaryFacadeImpl(
                 openAIStreamClientService
                     .makeRequest(
                         prompt = prompt.toString(),
-                        aiResponseType = object : TypeReference<GeneratedAIInterlocutorData>() {}
+                        aiResponseType = object : TypeReference<GeneratedAIInterlocutorData>() {},
+                        userId = userId,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.GENERATE_INTERLOCUTOR
                     )
             }
     }

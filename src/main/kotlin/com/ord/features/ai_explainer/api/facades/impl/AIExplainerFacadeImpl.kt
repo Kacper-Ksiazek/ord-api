@@ -1,6 +1,8 @@
 package com.ord.features.ai_explainer.api.facades.impl
 
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
+import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
@@ -10,6 +12,7 @@ import com.ord.features.ai_explainer.api.facades.AIExplainerFacade
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -18,7 +21,9 @@ import reactor.core.publisher.Mono
 class AIExplainerFacadeImpl(
     private val openAIAPIClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService,
+    private val gptTokensUsageService: GptTokensUsageService,
 ) : AIExplainerFacade {
+    private val logger = LoggerFactory.getLogger(AIExplainerFacadeImpl::class.java)
 
     override fun explainPhrase(
         body: ExplainPhraseRequest,
@@ -45,7 +50,9 @@ class AIExplainerFacadeImpl(
 
                 openAIAPIClientService.openSimpleStringStream(
                     prompt = prompt,
-                    onComplete = { (_, emitter) ->
+                    userId = user.id,
+                    gptTokensUsageLogKey = GptTokensUsageOperationType.AIExplainer.EXPLAIN_PHRASE,
+                    onComplete = { (payload, emitter) ->
                         emitter.tryEmitComplete()
                     }
                 )

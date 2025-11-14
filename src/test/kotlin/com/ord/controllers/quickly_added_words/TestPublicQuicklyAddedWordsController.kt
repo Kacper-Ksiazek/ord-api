@@ -2,15 +2,15 @@ package com.ord.controllers.quickly_added_words
 
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
-import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
+import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
+import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
 import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest
 import com.ord.features.quickly_added_words.api.requests.PublicQAWWordItem
-import com.ord.features.quickly_added_words.model.QuicklyAddedWordEntity
 import com.ord.features.quickly_added_words.repositories.QAWRepository
 import com.ord.testing_utils.api.clients.PublicQAWAPIClient
 import com.ord.testing_utils.api.dto.APIClientResponse
@@ -18,11 +18,7 @@ import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
@@ -40,14 +36,16 @@ class TestPublicQuicklyAddedWordsController @Autowired constructor(
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     otpCodeRepository: OtpCodeRepository,
-    passwordEncoder: PasswordEncoder
+    passwordEncoder: PasswordEncoder,
+    gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
-    passwordEncoder = passwordEncoder
+    passwordEncoder = passwordEncoder,
+    gptTokensUsageRepository = gptTokensUsageRepository
 ) {
     private val publicQAWAPIClient = PublicQAWAPIClient(webClient)
 

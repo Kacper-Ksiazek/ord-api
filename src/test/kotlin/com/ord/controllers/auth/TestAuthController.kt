@@ -6,6 +6,7 @@ import com.ord.core.auth.api.requests.dto.OtpRequestDto
 import com.ord.core.auth.api.requests.dto.OtpVerifyDto
 import com.ord.core.auth.models.OtpCodeEntity
 import com.ord.core.auth.repositories.OtpCodeRepository
+import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
@@ -40,14 +41,16 @@ class TestAuthController @Autowired constructor(
     languageProficiencyRepository: LanguageProficiencyRepository,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
-    passwordEncoder: PasswordEncoder
+    passwordEncoder: PasswordEncoder,
+    gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
-    passwordEncoder = passwordEncoder
+    passwordEncoder = passwordEncoder,
+    gptTokensUsageRepository = gptTokensUsageRepository
 ) {
     private val authAPIClient = AuthAPIClient(webClient)
     private val usersAPIClient = UsersAPIClient(webClient)
@@ -448,7 +451,7 @@ class TestAuthController @Autowired constructor(
                 // Should succeed with 200
                 response.status shouldBe HttpStatus.OK
                 response.body.shouldNotBeNull()
-                response.body!!.email shouldBe TestData.TEST_EMAIL
+                response.body.email shouldBe TestData.TEST_EMAIL
 
                 // Verify new token was set in cookie
                 val newAuthCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
@@ -458,7 +461,7 @@ class TestAuthController @Autowired constructor(
                 // Verify the session was updated with the new token
                 val updatedSession = userSessionRepository.findById(session.id!!).block()
                 updatedSession.shouldNotBeNull()
-                updatedSession!!.token shouldBe newAuthCookie.value
+                updatedSession.token shouldBe newAuthCookie.value
                 updatedSession.token shouldNotBe expiredToken
 
                 // Verify the new token is valid
@@ -512,9 +515,9 @@ class TestAuthController @Autowired constructor(
                 val newToken = response.cookies[jwtProperties.authCookieName]?.firstOrNull()?.value
                 newToken.shouldNotBeNull()
 
-                val updatedSession = userSessionRepository.findByToken(newToken!!).block()
+                val updatedSession = userSessionRepository.findByToken(newToken).block()
                 updatedSession.shouldNotBeNull()
-                updatedSession!!.userId shouldBe user.id
+                updatedSession.userId shouldBe user.id
             }
 
             @Test
@@ -570,7 +573,7 @@ class TestAuthController @Autowired constructor(
                 val secondResponse = usersAPIClient.me(user = mockUserWithRefreshedToken)
                 secondResponse.status shouldBe HttpStatus.OK
                 secondResponse.body.shouldNotBeNull()
-                secondResponse.body!!.email shouldBe TestData.TEST_EMAIL
+                secondResponse.body.email shouldBe TestData.TEST_EMAIL
             }
         }
 

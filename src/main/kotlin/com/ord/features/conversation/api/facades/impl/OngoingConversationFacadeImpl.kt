@@ -2,7 +2,10 @@ package com.ord.features.conversation.api.facades.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
+import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.exceptions.REST.BadRequestException
+import org.slf4j.LoggerFactory
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
@@ -30,7 +33,9 @@ class OngoingConversationFacadeImpl(
     private val conversationService: ConversationService,
     private val conversationMessageService: ConversationMessageService,
     private val conversationMapper: ConversationMapper,
+    private val gptTokensUsageService: GptTokensUsageService,
 ) : OngoingConversationFacade {
+    private val logger = LoggerFactory.getLogger(OngoingConversationFacadeImpl::class.java)
     override fun initializeConversationByAI(
         conversationId: UUID,
         userId: UUID,
@@ -55,9 +60,9 @@ class OngoingConversationFacadeImpl(
                 openAIAPIClientService
                     .openSimpleStringStream(
                         prompt = prompt.toString(),
+                        userId = userId,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.INITIALIZE,
                         onComplete = { (payload) ->
-                            // TODO: Save logs here
-
                             conversationMessageService.createMessage(
                                 conversationId = conversation.id,
                                 sender = ConversationMessageSender.AI,
@@ -101,9 +106,9 @@ class OngoingConversationFacadeImpl(
                 openAIAPIClientService
                     .openSimpleStringStream(
                         prompt = prompt.toString(),
+                        userId = userId,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.AI_RESPONSE,
                         onComplete = { (payload, emitter) ->
-                            // TODO: Save logs here
-
                             conversationMessageService.createMessage(
                                 conversationId = conversation.id,
                                 sender = ConversationMessageSender.AI,
@@ -137,9 +142,8 @@ class OngoingConversationFacadeImpl(
                 openAIAPIClientService.makeRequest(
                     prompt = prompt.toString(),
                     aiResponseType = object : TypeReference<ReviewedUserConversationMessage>() {},
-                    saveLog = { openAIResponse ->
-                        // TODO
-                    }
+                    userId = userId,
+                    gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE
                 )
                     .flatMap { aiFeedback ->
                         conversationMessageService.createMessageWithFeedback(

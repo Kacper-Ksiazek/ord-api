@@ -1,6 +1,7 @@
 package com.ord.features.game.variants.shared.ai
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.word.services.WordService
@@ -90,6 +91,8 @@ abstract class AIGenerateGameServiceBase<
             }
             .flatMap { (context, prompt) ->
                 makeGameAIRequest(
+                    userId = userId,
+                    operationType = GptTokensUsageOperationType.Game.Generate.createKey(gameType.name),
                     prompt = prompt.toString(),
                     aiResponseTypeReference = aiResponseTypeReference,
                     validateResponseBody = { validateAIResponse(it, context) },

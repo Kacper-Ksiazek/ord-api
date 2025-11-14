@@ -3,6 +3,7 @@ package com.ord.controllers.ai_explainer
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
+import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -10,7 +11,10 @@ import com.ord.core.security.UserRepository
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
 import com.ord.testing_utils.api.clients.AIExplainerAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
+import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldNotBeBlank
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -32,14 +36,16 @@ class TestAIExplainerController @Autowired constructor(
     webClient: WebTestClient,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
-    passwordEncoder: PasswordEncoder
+    passwordEncoder: PasswordEncoder,
+    gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
-    passwordEncoder = passwordEncoder
+    passwordEncoder = passwordEncoder,
+    gptTokensUsageRepository = gptTokensUsageRepository
 ) {
     private val aiExplainerAPIClient = AIExplainerAPIClient(webClient)
 
@@ -77,6 +83,8 @@ class TestAIExplainerController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.explanation.shouldNotBeBlank()
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "AI_EXPLAINER_EXPLAIN_PHRASE")
             }
 
             @Test
@@ -126,6 +134,8 @@ class TestAIExplainerController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.explanation.shouldNotBeBlank()
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "AI_EXPLAINER_EXPLAIN_PHRASE")
             }
 
             @Test
@@ -143,6 +153,8 @@ class TestAIExplainerController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.explanation.shouldNotBeBlank()
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "AI_EXPLAINER_EXPLAIN_PHRASE")
             }
 
             @Test

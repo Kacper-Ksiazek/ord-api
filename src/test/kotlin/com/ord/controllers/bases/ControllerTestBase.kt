@@ -5,6 +5,8 @@ import com.ord.config.properties.JwtProperties
 import com.ord.core.auth.api.requests.dto.OtpVerifyDto
 import com.ord.core.auth.models.OtpCodeEntity
 import com.ord.core.auth.repositories.OtpCodeRepository
+import com.ord.core.gpt_tokens_usage.models.GptTokensUsageEntity
+import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
@@ -14,11 +16,15 @@ import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.shared.utils.EnumUtils.getRandomValue
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
+import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseCookie
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.time.Instant
+import java.util.*
 
 abstract class ControllerTestBase(
     val webClient: WebTestClient,
@@ -27,6 +33,7 @@ abstract class ControllerTestBase(
     val userRepository: UserRepository,
     val otpCodeRepository: OtpCodeRepository,
     val passwordEncoder: PasswordEncoder,
+    val gptTokensUsageRepository: GptTokensUsageRepository,
 ) : TestcontainersConfig() {
     val faker = Faker()
 
@@ -150,5 +157,20 @@ abstract class ControllerTestBase(
             authCookie = authCookie,
             email = email
         )
+    }
+
+    fun assertGptTokensLogCreated(userId: UUID, operationType: String) {
+        val tokenUsage = gptTokensUsageRepository
+            .findAllByUserId(userId)
+            .collectList()
+            .block()!!
+            .find { it.operationType == operationType }
+
+        tokenUsage shouldNotBe null
+        tokenUsage!!.apply {
+            inputTokens shouldBeGreaterThan 0
+            outputTokens shouldBeGreaterThan 0
+            model shouldBe GptTokensUsageEntity.DEFAULT_MODEL
+        }
     }
 }

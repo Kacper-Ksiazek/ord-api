@@ -6,6 +6,7 @@ import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
+import java.util.UUID
 
 typealias Emitter = Sinks.Many<String>
 
@@ -19,6 +20,9 @@ interface OpenAIAPIClientService {
 
         prompt: String,
 
+        userId: UUID,
+        gptTokensUsageLogKey: String,
+
         saveLog: (openAIResponse: OpenAIResponse) -> Unit = {},
         validateResponseBody: (parsedResponseBody: T?) -> Boolean = { it != null },
         parseResponseBody: (responseBody: T) -> T = { it }
@@ -26,6 +30,10 @@ interface OpenAIAPIClientService {
 
     fun openSimpleStringStream(
         prompt: String,
+
+        userId: UUID,
+        gptTokensUsageLogKey: String,
+
         onChunkReceived: (String) -> Unit = {},
         onError: (Throwable) -> Unit = { throw it },
         onComplete: (Pair<StreamCompletedPayload<String>, Emitter>) -> Unit,
@@ -34,6 +42,10 @@ interface OpenAIAPIClientService {
     fun <TStreamedItem> openStructuredArrayStream(
         prompt: String,
         streamedItemType: TypeReference<TStreamedItem>,
+
+        userId: UUID,
+        gptTokensUsageLogKey: String,
+
         onItemReceived: (TStreamedItem) -> Unit = {},
         onError: (Throwable) -> Unit = { throw it },
         onComplete: (Pair<StreamCompletedPayload<List<TStreamedItem>>, Emitter>) -> Unit,

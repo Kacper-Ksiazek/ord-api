@@ -11,6 +11,7 @@ import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
 import com.ord.core.ai_provider.enums.StreamedOpenAIResponseType
 import com.ord.core.ai_provider.services.Emitter
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
+import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.exceptions.REST.BadGatewayException
 import com.ord.shared.utils.Console
 import org.springframework.core.env.Environment
@@ -22,13 +23,15 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 import reactor.core.scheduler.Schedulers
+import java.util.UUID
 
 @Service
 class OpenAIAPIClientServiceImpl(
     private val openAIRequestFactory: OpenAIRequestFactory,
     private val openAIProperties: OpenAIProperties,
     private val webClient: WebClient,
-    private val env: Environment
+    private val env: Environment,
+    private val gptTokensUsageService: GptTokensUsageService
 ) : OpenAIAPIClientService {
     private val objectMapper: ObjectMapper = jacksonObjectMapper()
         .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
@@ -40,13 +43,27 @@ class OpenAIAPIClientServiceImpl(
 
         prompt: String,
 
+        userId: UUID,
+        gptTokensUsageLogKey: String,
+
         saveLog: (openAIResponse: OpenAIResponse) -> Unit,
         validateResponseBody: (parsedResponseBody: T?) -> Boolean,
         parseResponseBody: (responseBody: T) -> T
     ): Mono<T> {
         val openAIRequest = openAIRequestFactory.createRequest(prompt)
 
-        return attemptRequest(openAIRequest, aiResponseType, saveLog, validateResponseBody, parseResponseBody, 0)
+        val enhancedSaveLog: (OpenAIResponse) -> Unit = { openAIResponse ->
+            saveLog(openAIResponse)
+
+            gptTokensUsageService.saveTokensUsage(
+                userId = userId,
+                operationType = gptTokensUsageLogKey,
+                inputTokens = openAIResponse.usage.input_tokens,
+                outputTokens = openAIResponse.usage.output_tokens
+            ).subscribe()
+        }
+
+        return attemptRequest(openAIRequest, aiResponseType, enhancedSaveLog, validateResponseBody, parseResponseBody, 0)
     }
 
     private fun <T> attemptRequest(
@@ -86,6 +103,10 @@ class OpenAIAPIClientServiceImpl(
 
     override fun openSimpleStringStream(
         prompt: String,
+
+        userId: UUID,
+        gptTokensUsageLogKey: String,
+
         onChunkReceived: (String) -> Unit,
         onError: (Throwable) -> Unit,
         onComplete: (Pair<StreamCompletedPayload<String>, Emitter>) -> Unit,
@@ -93,7 +114,16 @@ class OpenAIAPIClientServiceImpl(
         return makeStreamedRequest<String>(
             prompt = prompt,
             onError = onError,
-            onComplete = onComplete,
+            onComplete = { (payload, emitter) ->
+                onComplete(Pair(payload, emitter))
+
+                gptTokensUsageService.saveTokensUsage(
+                    userId = userId,
+                    operationType = gptTokensUsageLogKey,
+                    inputTokens = payload.inputTokens,
+                    outputTokens = payload.outputTokens
+                ).subscribe()
+            },
             onDeltaReceived = { (delta, emitter) ->
                 emitter.tryEmitNext(delta)
             }
@@ -103,6 +133,10 @@ class OpenAIAPIClientServiceImpl(
     override fun <TStreamedItem> openStructuredArrayStream(
         prompt: String,
         streamedItemType: TypeReference<TStreamedItem>,
+
+        userId: UUID,
+        gptTokensUsageLogKey: String,
+
         onItemReceived: (TStreamedItem) -> Unit,
         onError: (Throwable) -> Unit,
         onComplete: (Pair<StreamCompletedPayload<List<TStreamedItem>>, Emitter>) -> Unit,
@@ -141,6 +175,13 @@ class OpenAIAPIClientServiceImpl(
                 )
 
                 onComplete(Pair(result, emitter))
+
+                gptTokensUsageService.saveTokensUsage(
+                    userId = userId,
+                    operationType = gptTokensUsageLogKey,
+                    inputTokens = payload.inputTokens,
+                    outputTokens = payload.outputTokens
+                ).subscribe()
             },
             onDeltaReceived = { (delta, emitter) ->
                 parsingItemBuffer += delta
