@@ -50,18 +50,9 @@ class AIExplainerFacadeImpl(
 
                 openAIAPIClientService.openSimpleStringStream(
                     prompt = prompt,
+                    userId = user.id,
+                    gptTokensUsageLogKey = GptTokensUsageOperationType.AIExplainer.EXPLAIN_PHRASE,
                     onComplete = { (payload, emitter) ->
-                        gptTokensUsageService.saveTokensUsage(
-                            userId = user.id,
-                            operationType = GptTokensUsageOperationType.AIExplainer.EXPLAIN_PHRASE,
-                            model = "gpt-4.1-mini",
-                            inputTokens = payload.inputTokens,
-                            outputTokens = payload.outputTokens
-                        ).subscribe(
-                            { /* success */ },
-                            { error -> logger.error("Failed to log token usage for AI explainer", error) }
-                        )
-
                         emitter.tryEmitComplete()
                     }
                 )

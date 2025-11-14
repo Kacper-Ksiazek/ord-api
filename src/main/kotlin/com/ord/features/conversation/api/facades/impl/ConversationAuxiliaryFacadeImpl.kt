@@ -70,18 +70,9 @@ class ConversationAuxiliaryFacadeImpl(
                     .openStructuredArrayStream(
                         prompt = prompt.toString(),
                         streamedItemType = object : TypeReference<StreamSimpleItem>() {},
+                        userId = userId,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.SUGGEST_TOPICS,
                         onComplete = { (payload, emitter) ->
-                            gptTokensUsageService.saveTokensUsage(
-                                userId = userId,
-                                operationType = GptTokensUsageOperationType.Conversation.SUGGEST_TOPICS,
-                                model = "gpt-4.1-mini",
-                                inputTokens = payload.inputTokens,
-                                outputTokens = payload.outputTokens
-                            ).subscribe(
-                                { /* success */ },
-                                { error -> logger.error("Failed to log token usage for conversation topic suggestions", error) }
-                            )
-
                             emitter.tryEmitNext(
                                 objectMapper.writeValueAsString(
                                     payload.finalContent
@@ -116,18 +107,8 @@ class ConversationAuxiliaryFacadeImpl(
                     .makeRequest(
                         prompt = prompt.toString(),
                         aiResponseType = object : TypeReference<GeneratedAIInterlocutorData>() {},
-                        saveLog = { openAIResponse ->
-                            gptTokensUsageService.saveTokensUsage(
-                                userId = userId,
-                                operationType = GptTokensUsageOperationType.Conversation.GENERATE_INTERLOCUTOR,
-                                model = "gpt-4.1-mini",
-                                inputTokens = openAIResponse.usage.input_tokens,
-                                outputTokens = openAIResponse.usage.output_tokens
-                            ).subscribe(
-                                { /* success */ },
-                                { error -> logger.error("Failed to log token usage for generating AI interlocutor", error) }
-                            )
-                        }
+                        userId = userId,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.GENERATE_INTERLOCUTOR
                     )
             }
     }

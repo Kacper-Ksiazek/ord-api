@@ -72,18 +72,8 @@ class WordAIFacadeImpl(
                 openAIAPIClientService.makeRequest(
                     aiResponseType = object : TypeReference<AIGeneratedWordManual>() {},
                     prompt = prompt,
-                    saveLog = { openAIResponse ->
-                        gptTokensUsageService.saveTokensUsage(
-                            userId = user.id,
-                            operationType = GptTokensUsageOperationType.Words.GENERATE_MANUAL,
-                            model = "gpt-4.1-mini",
-                            inputTokens = openAIResponse.usage.input_tokens,
-                            outputTokens = openAIResponse.usage.output_tokens
-                        ).subscribe(
-                            { /* success */ },
-                            { error -> logger.error("Failed to log token usage for word manual generation", error) }
-                        )
-                    },
+                    userId = user.id,
+                    gptTokensUsageLogKey = GptTokensUsageOperationType.Words.GENERATE_MANUAL,
                     validateResponseBody = { responseBody ->
                         responseBody != null &&
                                 !responseBody.toString().contains("NON_EXISTENT_WORD")
@@ -170,18 +160,9 @@ class WordAIFacadeImpl(
                     .openStructuredArrayStream(
                         prompt = prompt,
                         streamedItemType = object : TypeReference<VocabularySuggestion>() {},
+                        userId = user.id,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY,
                         onComplete = { (payload, emitter) ->
-                            gptTokensUsageService.saveTokensUsage(
-                                userId = user.id,
-                                operationType = GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY,
-                                model = "gpt-4.1-mini",
-                                inputTokens = payload.inputTokens,
-                                outputTokens = payload.outputTokens
-                            ).subscribe(
-                                { /* success */ },
-                                { error -> logger.error("Failed to log token usage for vocabulary suggestions", error) }
-                            )
-
                             emitter.tryEmitNext(
                                 jsonObjectMapper.writeValueAsString(payload.finalContent)
                             )

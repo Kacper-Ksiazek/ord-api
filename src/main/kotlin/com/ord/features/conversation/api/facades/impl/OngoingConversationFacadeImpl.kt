@@ -60,18 +60,9 @@ class OngoingConversationFacadeImpl(
                 openAIAPIClientService
                     .openSimpleStringStream(
                         prompt = prompt.toString(),
+                        userId = userId,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.INITIALIZE,
                         onComplete = { (payload) ->
-                            gptTokensUsageService.saveTokensUsage(
-                                userId = userId,
-                                operationType = GptTokensUsageOperationType.Conversation.INITIALIZE,
-                                model = "gpt-4.1-mini",
-                                inputTokens = payload.inputTokens,
-                                outputTokens = payload.outputTokens
-                            ).subscribe(
-                                { /* success */ },
-                                { error -> logger.error("Failed to log token usage for conversation initialization", error) }
-                            )
-
                             conversationMessageService.createMessage(
                                 conversationId = conversation.id,
                                 sender = ConversationMessageSender.AI,
@@ -115,18 +106,9 @@ class OngoingConversationFacadeImpl(
                 openAIAPIClientService
                     .openSimpleStringStream(
                         prompt = prompt.toString(),
+                        userId = userId,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.AI_RESPONSE,
                         onComplete = { (payload, emitter) ->
-                            gptTokensUsageService.saveTokensUsage(
-                                userId = userId,
-                                operationType = GptTokensUsageOperationType.Conversation.AI_RESPONSE,
-                                model = "gpt-4.1-mini",
-                                inputTokens = payload.inputTokens,
-                                outputTokens = payload.outputTokens
-                            ).subscribe(
-                                { /* success */ },
-                                { error -> logger.error("Failed to log token usage for conversation AI response", error) }
-                            )
-
                             conversationMessageService.createMessage(
                                 conversationId = conversation.id,
                                 sender = ConversationMessageSender.AI,
@@ -160,18 +142,8 @@ class OngoingConversationFacadeImpl(
                 openAIAPIClientService.makeRequest(
                     prompt = prompt.toString(),
                     aiResponseType = object : TypeReference<ReviewedUserConversationMessage>() {},
-                    saveLog = { openAIResponse ->
-                        gptTokensUsageService.saveTokensUsage(
-                            userId = userId,
-                            operationType = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
-                            model = "gpt-4.1-mini",
-                            inputTokens = openAIResponse.usage.input_tokens,
-                            outputTokens = openAIResponse.usage.output_tokens
-                        ).subscribe(
-                            { /* success */ },
-                            { error -> logger.error("Failed to log token usage for conversation user message review", error) }
-                        )
-                    }
+                    userId = userId,
+                    gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE
                 )
                     .flatMap { aiFeedback ->
                         conversationMessageService.createMessageWithFeedback(

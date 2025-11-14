@@ -31,21 +31,11 @@ abstract class AIGameServiceBase {
     ): Mono<T> {
         return openAIAPIClientService.makeRequest(
             prompt = prompt,
+            userId = userId,
+            gptTokensUsageLogKey = operationType,
             validateResponseBody = validateResponseBody,
             parseResponseBody = parseResponseBody,
-            aiResponseType = aiResponseTypeReference,
-            saveLog = { openAIResponse ->
-                gptTokensUsageService.saveTokensUsage(
-                    userId = userId,
-                    operationType = operationType,
-                    model = "gpt-4.1-mini",
-                    inputTokens = openAIResponse.usage.input_tokens,
-                    outputTokens = openAIResponse.usage.output_tokens
-                ).subscribe(
-                    { /* success */ },
-                    { error -> logger.error("Failed to log token usage for game operation: $operationType", error) }
-                )
-            },
+            aiResponseType = aiResponseTypeReference
         )
     }
 }
