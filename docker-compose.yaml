@@ -1,38 +1,35 @@
 services:
-#  app:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - "${PORT}:8080"
-#    environment:
-#      # Spring
-#      - SERVER_PORT=${PORT}
-#      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILE}
-#
-#      # Database TODO: Fix this
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-#      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
-#      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-#
-#      # JWT
-#      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-#      - JWT_EXPIRATION_TIME=${JWT_EXPIRATION_TIME}
-#
-#      # OpenAI
-#      - OPEN_AI_KEY=${OPEN_AI_KEY}
-#
-#      # Health Check prop
-#      - ENV_TEST_PROPERTY=${ENV_TEST_PROPERTY}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      PORT: ${PORT:-8080}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-local}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      DATABASE_URL: postgres://${DOCKER_DB_USER}:${DOCKER_DB_PASSWORD}@db:5432/${DOCKER_DB_NAME}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-secret-key-change-in-production}
+      OPEN_AI_KEY: ${OPEN_AI_KEY}
+      EMAIL_FROM: ${EMAIL_FROM}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      OTP_WHITELISTED_EMAILS: ${OTP_WHITELISTED_EMAILS}
+      ENV_TEST_PROPERTY: ${ENV_TEST_PROPERTY:-1test1}
+    depends_on:
+      - db
 
   db:
     image: postgres:16.3
     ports:
-      - "${DB_PORT}:5432"
+      - "5433:5432"
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DOCKER_DB_NAME}
+      POSTGRES_USER: ${DOCKER_DB_USER}
+      POSTGRES_PASSWORD: ${DOCKER_DB_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
 
