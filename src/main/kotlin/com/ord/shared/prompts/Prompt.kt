@@ -1,6 +1,5 @@
 package com.ord.shared.prompts
 
-import java.io.File
 import java.io.FileNotFoundException
 
 fun List<String>.toParamString(tabulated: Boolean = false): String {
@@ -11,19 +10,40 @@ fun List<String>.toParamString(tabulated: Boolean = false): String {
     return this.joinToString(separator = ", ", prefix = "[", postfix = "]")
 }
 
+object PromptCache {
+    private val cache: Map<AvailablePrompts, String> = loadAllPrompts()
+
+    private fun loadAllPrompts(): Map<AvailablePrompts, String> {
+        return AvailablePrompts.entries.associateWith { promptVariant ->
+            val resourcePath = "prompts/${promptVariant.resourcePath}"
+            try {
+                val resourceStream = PromptCache::class.java.classLoader.getResourceAsStream(resourcePath)
+                    ?: throw FileNotFoundException("Resource not found: $resourcePath")
+
+                resourceStream.bufferedReader().use { it.readText() }
+            } catch (e: FileNotFoundException) {
+                throw Exception("Failed to load prompt file: $resourcePath", e)
+            } catch (e: Exception) {
+                throw Exception("An error occurred while loading prompt file: $resourcePath", e)
+            }
+        }
+    }
+
+    fun getPromptContent(variant: AvailablePrompts): String {
+        return cache[variant] ?: throw IllegalStateException("Prompt not found in cache: $variant")
+    }
+}
+
 class Prompt(
     variant: AvailablePrompts,
     params: Map<String, String> = mapOf()
 ) {
-    private val promptFilePath = "./src/main/resources/prompts/${variant.resourcePath}";
-
-    private val finalPromptContent: String;
+    private val finalPromptContent: String
     override fun toString(): String = finalPromptContent
 
     init {
         try {
-            val file = File(promptFilePath)
-            var content: String = file.readText()
+            var content: String = PromptCache.getPromptContent(variant)
 
             params.entries.forEach { (key, value) ->
                 val param = "**%%$key%%**"
@@ -40,10 +60,8 @@ class Prompt(
             }
 
             finalPromptContent = content
-        } catch (e: FileNotFoundException) {
-            throw Exception("The prompt file was not found: $promptFilePath", e)
         } catch (e: Exception) {
-            throw Exception(e.message ?: "An error occurred while reading the prompt file: $promptFilePath", e)
+            throw Exception(e.message ?: "An error occurred while processing the prompt", e)
         }
     }
 }
