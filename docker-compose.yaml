@@ -25,7 +25,7 @@ services:
   db:
     image: postgres:16.3
     ports:
-      - "5433:5432"
+      - "5432:5432"
     environment:
       POSTGRES_DB: ${DOCKER_DB_NAME}
       POSTGRES_USER: ${DOCKER_DB_USER}
