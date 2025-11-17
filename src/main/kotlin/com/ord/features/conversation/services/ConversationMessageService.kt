@@ -22,4 +22,16 @@ interface ConversationMessageService {
         content: String,
         aiFeedback: ReviewedUserConversationMessage
     ): Mono<ConversationMessageEntity>
+
+    fun saveUserMessageWithId(
+        messageId: UUID,
+        conversationId: UUID,
+        content: String,
+        messageOrder: Int
+    ): Mono<ConversationMessageEntity>
+
+    fun saveFeedbackForExistingMessage(
+        messageId: UUID,
+        aiFeedback: ReviewedUserConversationMessage
+    ): Mono<ConversationMessageEntity>
 }
