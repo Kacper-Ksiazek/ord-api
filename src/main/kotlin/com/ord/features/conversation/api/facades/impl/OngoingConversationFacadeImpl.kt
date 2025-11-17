@@ -81,6 +81,15 @@ class OngoingConversationFacadeImpl(
     ): Flux<String> {
         return conversationService
             .findByIdOrFailWithMessages(body.conversationId, userId)
+            .flatMap { conversation ->
+                // Save user message first (without feedback)
+                conversationMessageService.saveUserMessageWithId(
+                    messageId = body.latestMessageId,
+                    conversationId = conversation.id,
+                    content = body.latestUserMessage,
+                    messageOrder = body.messageOrder - 1  // User message order is one less than AI message order
+                ).thenReturn(conversation)
+            }
             .flatMapMany { conversation ->
                 val serializedConversationHistory: List<String> =
                     conversation.messages
@@ -121,7 +130,7 @@ class OngoingConversationFacadeImpl(
     }
 
 
-    override fun saveUserMessageAndGetFeedback(
+    override fun generateFeedbackForMessage(
         userId: UUID,
         body: ReviewUserConversationMessageRequest
     ): Mono<ResponseEntity<ReviewedUserConversationMessage>> {
@@ -146,10 +155,8 @@ class OngoingConversationFacadeImpl(
                     gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE
                 )
                     .flatMap { aiFeedback ->
-                        conversationMessageService.createMessageWithFeedback(
-                            conversationId = conversation.id,
-                            content = body.message,
-                            messageOrder = body.messageOrder,
+                        conversationMessageService.saveFeedbackForExistingMessage(
+                            messageId = body.messageId,
                             aiFeedback = aiFeedback
                         )
                             .then(Mono.fromCallable {

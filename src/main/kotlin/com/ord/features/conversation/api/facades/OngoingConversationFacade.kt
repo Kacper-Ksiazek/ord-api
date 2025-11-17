@@ -29,10 +29,9 @@ interface OngoingConversationFacade {
     ): Flux<String>
 
     /**
-     * Performs a grammar and style review of a single user message, independently
-     * of the current conversation context.
+     * Generates feedback for an existing user message in a conversation.
      */
-    fun saveUserMessageAndGetFeedback(
+    fun generateFeedbackForMessage(
         userId: UUID,
         body: ReviewUserConversationMessageRequest
     ): Mono<ResponseEntity<ReviewedUserConversationMessage>>
