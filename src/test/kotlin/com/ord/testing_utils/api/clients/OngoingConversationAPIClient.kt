@@ -39,12 +39,12 @@ class OngoingConversationAPIClient(
         )
     }
 
-    fun handleUserMessage(
+    fun generateFeedback(
         body: ReviewUserConversationMessageRequest,
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<ReviewedUserConversationMessage?> {
         return post(
-            url = "$baseUrl/handle-user-message",
+            url = "$baseUrl/generate-feedback",
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<ReviewedUserConversationMessage>() {}
