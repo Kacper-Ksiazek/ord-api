@@ -43,21 +43,22 @@ import java.util.*
 class TestOngoingConversationController @Autowired constructor(
     private val conversationRepository: ConversationRepository,
     private val conversationMessageRepository: ConversationMessageRepository,
+    private val databaseClient: org.springframework.r2dbc.core.DatabaseClient,
     webClient: WebTestClient,
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
-    _userRepository: UserRepository,
-    _otpCodeRepository: OtpCodeRepository,
-    _passwordEncoder: PasswordEncoder,
-    _gptTokensUsageRepository: GptTokensUsageRepository
+    userRepository: UserRepository,
+    otpCodeRepository: OtpCodeRepository,
+    passwordEncoder: PasswordEncoder,
+    gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
-    userRepository = _userRepository,
-    otpCodeRepository = _otpCodeRepository,
-    passwordEncoder = _passwordEncoder,
-    gptTokensUsageRepository = _gptTokensUsageRepository
+    userRepository = userRepository,
+    otpCodeRepository = otpCodeRepository,
+    passwordEncoder = passwordEncoder,
+    gptTokensUsageRepository = gptTokensUsageRepository
 ) {
     private val ongoingConversationAPIClient = OngoingConversationAPIClient(webClient)
     private val conversationAPIClient = ConversationAPIClient(webClient)
@@ -84,6 +85,32 @@ class TestOngoingConversationController @Autowired constructor(
             body = request,
             user = user
         ).body!!
+    }
+
+    private fun saveUserMessage(
+        conversationId: UUID,
+        content: String,
+        messageOrder: Int
+    ): UUID {
+        val messageId = UUID.randomUUID()
+
+        databaseClient.sql(
+            """
+            INSERT INTO conversation_messages (id, content, message_order, sender, conversation_id, created_at)
+            VALUES (:id, :content, :messageOrder, :sender, :conversationId, :createdAt)
+        """
+        )
+            .bind("id", messageId)
+            .bind("content", content)
+            .bind("messageOrder", messageOrder)
+            .bind("sender", ConversationMessageSender.USER.name)
+            .bind("conversationId", conversationId)
+            .bind("createdAt", java.time.Instant.now())
+            .fetch()
+            .rowsUpdated()
+            .block()
+
+        return messageId
     }
 
     @Nested
@@ -260,7 +287,8 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val request = CreateAIConversationMessageRequest(
                     conversationId = conversation.id,
-                    messageOrder = 1,
+                    latestMessageId = UUID.randomUUID(),
+                    messageOrder = 2,
                     latestUserMessage = TestData.USER_MESSAGE
                 )
 
@@ -277,7 +305,7 @@ class TestOngoingConversationController @Autowired constructor(
             }
 
             @Test
-            fun `200 - AI message should be persisted`() {
+            fun `200 - both user and AI messages should be persisted`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.C1)
                 )
@@ -291,7 +319,8 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val request = CreateAIConversationMessageRequest(
                     conversationId = conversation.id,
-                    messageOrder = 1,
+                    latestMessageId = UUID.randomUUID(),
+                    messageOrder = 2,
                     latestUserMessage = TestData.USER_MESSAGE
                 )
 
@@ -305,10 +334,15 @@ class TestOngoingConversationController @Autowired constructor(
                     user = authenticatedUser
                 ).body!!
 
-                updatedConversation.messages shouldHaveSize 2
-                updatedConversation.messages[1].sender shouldBe ConversationMessageSender.AI
+                updatedConversation.messages shouldHaveSize 3
+                // User message should be saved
+                updatedConversation.messages[1].sender shouldBe ConversationMessageSender.USER
                 updatedConversation.messages[1].messageOrder shouldBe 1
-                updatedConversation.messages[1].content.shouldNotBeBlank()
+                updatedConversation.messages[1].content shouldBe TestData.USER_MESSAGE
+                // AI message should be saved
+                updatedConversation.messages[2].sender shouldBe ConversationMessageSender.AI
+                updatedConversation.messages[2].messageOrder shouldBe 2
+                updatedConversation.messages[2].content.shouldNotBeBlank()
             }
         }
 
@@ -319,7 +353,8 @@ class TestOngoingConversationController @Autowired constructor(
             fun `401 - anonymous user cannot request AI message`() {
                 val request = CreateAIConversationMessageRequest(
                     conversationId = UUID.randomUUID(),
-                    messageOrder = 1,
+                    latestMessageId = UUID.randomUUID(),
+                    messageOrder = 2,
                     latestUserMessage = TestData.USER_MESSAGE
                 )
 
@@ -337,7 +372,8 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val request = CreateAIConversationMessageRequest(
                     conversationId = UUID.randomUUID(),
-                    messageOrder = 1,
+                    latestMessageId = UUID.randomUUID(),
+                    messageOrder = 2,
                     latestUserMessage = TestData.USER_MESSAGE
                 )
 
@@ -365,7 +401,8 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val request = CreateAIConversationMessageRequest(
                     conversationId = conversation.id,
-                    messageOrder = 1,
+                    latestMessageId = UUID.randomUUID(),
+                    messageOrder = 2,
                     latestUserMessage = TestData.USER_MESSAGE
                 )
 
@@ -380,14 +417,14 @@ class TestOngoingConversationController @Autowired constructor(
     }
 
     @Nested
-    @DisplayName("[POST] /api/v1/conversations/ongoing/handle-user-message - handle and review user message")
-    inner class HandleUserMessageTests {
+    @DisplayName("[POST] /api/v1/conversations/ongoing/generate-feedback - generate feedback for user message")
+    inner class GenerateFeedbackTests {
 
         @Nested
         @DisplayName("Positive")
         inner class Positive {
             @Test
-            fun `200 - should review and save user message`() {
+            fun `200 - should generate feedback for user message`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
                 )
@@ -399,16 +436,22 @@ class TestOngoingConversationController @Autowired constructor(
                     user = authenticatedUser
                 )
 
-                val request = ReviewUserConversationMessageRequest(
-                    conversationId = conversation.id,
-                    message = TestData.USER_MESSAGE,
-                    messageOrder = 1,
-                    latestAIMessage = aiInitResponse.body
-                )
+                val messageId =
+                    saveUserMessage(
+                        conversationId = conversation.id,
+                        content = TestData.USER_MESSAGE,
+                        messageOrder = 1
+                    )
 
-                val response = ongoingConversationAPIClient.handleUserMessage(
-                    body = request,
-                    user = authenticatedUser
+                val response = ongoingConversationAPIClient.generateFeedback(
+                    user = authenticatedUser,
+                    body = ReviewUserConversationMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = messageId,
+                        message = TestData.USER_MESSAGE,
+                        messageOrder = 1,
+                        latestAIMessage = aiInitResponse.body
+                    )
                 )
 
                 response.status shouldBe HttpStatus.OK
@@ -433,14 +476,22 @@ class TestOngoingConversationController @Autowired constructor(
                     user = authenticatedUser
                 )
 
+                val userMessage = "I went shopping yesterday and bought some clothes."
+                val messageId = saveUserMessage(
+                    conversationId = conversation.id,
+                    content = userMessage,
+                    messageOrder = 1
+                )
+
                 val request = ReviewUserConversationMessageRequest(
                     conversationId = conversation.id,
-                    message = "I went shopping yesterday and bought some clothes.",
+                    messageId = messageId,
+                    message = userMessage,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                val response = ongoingConversationAPIClient.handleUserMessage(
+                val response = ongoingConversationAPIClient.generateFeedback(
                     body = request,
                     user = authenticatedUser
                 )
@@ -460,7 +511,7 @@ class TestOngoingConversationController @Autowired constructor(
             }
 
             @Test
-            fun `200 - user message should be persisted with feedback`() {
+            fun `200 - feedback should be persisted and linked to user message`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.C1)
                 )
@@ -472,14 +523,21 @@ class TestOngoingConversationController @Autowired constructor(
                     user = authenticatedUser
                 )
 
+                val messageId = saveUserMessage(
+                    conversationId = conversation.id,
+                    content = TestData.USER_MESSAGE,
+                    messageOrder = 1
+                )
+
                 val request = ReviewUserConversationMessageRequest(
                     conversationId = conversation.id,
+                    messageId = messageId,
                     message = TestData.USER_MESSAGE,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                ongoingConversationAPIClient.handleUserMessage(
+                ongoingConversationAPIClient.generateFeedback(
                     body = request,
                     user = authenticatedUser
                 )
@@ -510,14 +568,21 @@ class TestOngoingConversationController @Autowired constructor(
                     user = authenticatedUser
                 )
 
+                val messageId = saveUserMessage(
+                    conversationId = conversation.id,
+                    content = TestData.USER_MESSAGE,
+                    messageOrder = 1
+                )
+
                 val request = ReviewUserConversationMessageRequest(
                     conversationId = conversation.id,
+                    messageId = messageId,
                     message = TestData.USER_MESSAGE,
                     messageOrder = 1,
                     latestAIMessage = null
                 )
 
-                val response = ongoingConversationAPIClient.handleUserMessage(
+                val response = ongoingConversationAPIClient.generateFeedback(
                     body = request,
                     user = authenticatedUser
                 )
@@ -539,26 +604,42 @@ class TestOngoingConversationController @Autowired constructor(
                     user = authenticatedUser
                 )
 
+                val message1 = "I like sports."
+                val messageId1 = saveUserMessage(
+                    conversationId = conversation.id,
+                    content = message1,
+                    messageOrder = 1
+                )
+
+                val message2 = "My favorite is tennis."
+                val messageId2 = saveUserMessage(
+                    conversationId = conversation.id,
+                    content = message2,
+                    messageOrder = 3
+                )
+
                 val request1 = ReviewUserConversationMessageRequest(
                     conversationId = conversation.id,
-                    message = "I like sports.",
+                    messageId = messageId1,
+                    message = message1,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
                 val request2 = ReviewUserConversationMessageRequest(
                     conversationId = conversation.id,
-                    message = "My favorite is tennis.",
+                    messageId = messageId2,
+                    message = message2,
                     messageOrder = 3,
                     latestAIMessage = "What kind of sports do you enjoy?"
                 )
 
-                val response1 = ongoingConversationAPIClient.handleUserMessage(
+                val response1 = ongoingConversationAPIClient.generateFeedback(
                     body = request1,
                     user = authenticatedUser
                 )
 
-                val response2 = ongoingConversationAPIClient.handleUserMessage(
+                val response2 = ongoingConversationAPIClient.generateFeedback(
                     body = request2,
                     user = authenticatedUser
                 )
@@ -579,15 +660,16 @@ class TestOngoingConversationController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `401 - anonymous user cannot handle user message`() {
+            fun `401 - anonymous user cannot generate feedback`() {
                 val request = ReviewUserConversationMessageRequest(
                     conversationId = UUID.randomUUID(),
+                    messageId = UUID.randomUUID(),
                     message = TestData.USER_MESSAGE,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                val response = ongoingConversationAPIClient.handleUserMessage(
+                val response = ongoingConversationAPIClient.generateFeedback(
                     body = request,
                     user = null
                 )
@@ -596,17 +678,18 @@ class TestOngoingConversationController @Autowired constructor(
             }
 
             @Test
-            fun `404 - cannot handle message for non-existent conversation`() {
+            fun `404 - cannot generate feedback for non-existent conversation`() {
                 val authenticatedUser = mockAuthenticatedUser()
 
                 val request = ReviewUserConversationMessageRequest(
                     conversationId = UUID.randomUUID(),
+                    messageId = UUID.randomUUID(),
                     message = TestData.USER_MESSAGE,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                val response = ongoingConversationAPIClient.handleUserMessage(
+                val response = ongoingConversationAPIClient.generateFeedback(
                     body = request,
                     user = authenticatedUser
                 )
@@ -615,7 +698,7 @@ class TestOngoingConversationController @Autowired constructor(
             }
 
             @Test
-            fun `404 - user cannot handle message for another user's conversation`() {
+            fun `404 - user cannot generate feedback for another user's conversation`() {
                 val owner = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
                 )
@@ -630,12 +713,13 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val request = ReviewUserConversationMessageRequest(
                     conversationId = conversation.id,
+                    messageId = UUID.randomUUID(),
                     message = TestData.USER_MESSAGE,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                val response = ongoingConversationAPIClient.handleUserMessage(
+                val response = ongoingConversationAPIClient.generateFeedback(
                     body = request,
                     user = otherUser
                 )
@@ -656,14 +740,22 @@ class TestOngoingConversationController @Autowired constructor(
                     user = authenticatedUser
                 )
 
+                val shortMessage = "ok"
+                val messageId = saveUserMessage(
+                    conversationId = conversation.id,
+                    content = shortMessage,
+                    messageOrder = 1
+                )
+
                 val request = ReviewUserConversationMessageRequest(
                     conversationId = conversation.id,
-                    message = "ok",
+                    messageId = messageId,
+                    message = shortMessage,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                val response = ongoingConversationAPIClient.handleUserMessage(
+                val response = ongoingConversationAPIClient.generateFeedback(
                     body = request,
                     user = authenticatedUser
                 )
@@ -693,48 +785,69 @@ class TestOngoingConversationController @Autowired constructor(
             )
             aiInit.status shouldBe HttpStatus.OK
 
-            val userMessage1 = ongoingConversationAPIClient.handleUserMessage(
+            // First user message - save via requestAIMessage and get feedback
+            val userMessageId1 = UUID.randomUUID()
+            val userMessageContent1 = "I went to the beach last weekend."
+            val aiMessage1 = ongoingConversationAPIClient.requestAIMessage(
+                body = CreateAIConversationMessageRequest(
+                    conversationId = conversation.id,
+                    latestMessageId = userMessageId1,
+                    messageOrder = 2,  // AI message order
+                    latestUserMessage = userMessageContent1
+                ),
+                user = authenticatedUser
+            )
+            aiMessage1.status shouldBe HttpStatus.OK
+
+            val userFeedback1 = ongoingConversationAPIClient.generateFeedback(
                 body = ReviewUserConversationMessageRequest(
                     conversationId = conversation.id,
-                    message = "I went to the beach last weekend.",
+                    messageId = userMessageId1,
+                    message = userMessageContent1,
                     messageOrder = 1,
                     latestAIMessage = aiInit.body
                 ),
                 user = authenticatedUser
             )
-            userMessage1.status shouldBe HttpStatus.OK
+            userFeedback1.status shouldBe HttpStatus.OK
 
+            // Second user message - save via requestAIMessage and get feedback
+            val userMessageId2 = UUID.randomUUID()
+            val userMessageContent2 = "Yes, it was very relaxing and sunny."
             val aiMessage2 = ongoingConversationAPIClient.requestAIMessage(
                 body = CreateAIConversationMessageRequest(
                     conversationId = conversation.id,
-                    messageOrder = 2,
-                    latestUserMessage = "I went to the beach last weekend."
+                    latestMessageId = userMessageId2,
+                    messageOrder = 4,  // AI message order
+                    latestUserMessage = userMessageContent2
                 ),
                 user = authenticatedUser
             )
             aiMessage2.status shouldBe HttpStatus.OK
 
-            val userMessage2 = ongoingConversationAPIClient.handleUserMessage(
+            val userFeedback2 = ongoingConversationAPIClient.generateFeedback(
                 body = ReviewUserConversationMessageRequest(
                     conversationId = conversation.id,
-                    message = "Yes, it was very relaxing and sunny.",
+                    messageId = userMessageId2,
+                    message = userMessageContent2,
                     messageOrder = 3,
-                    latestAIMessage = aiMessage2.body
+                    latestAIMessage = aiMessage1.body
                 ),
                 user = authenticatedUser
             )
-            userMessage2.status shouldBe HttpStatus.OK
+            userFeedback2.status shouldBe HttpStatus.OK
 
             val finalConversation = conversationAPIClient.getConversationById(
                 conversationId = conversation.id,
                 user = authenticatedUser
             ).body!!
 
-            finalConversation.messages shouldHaveSize 4
+            finalConversation.messages shouldHaveSize 5
             finalConversation.messages[0].sender shouldBe ConversationMessageSender.AI
             finalConversation.messages[1].sender shouldBe ConversationMessageSender.USER
             finalConversation.messages[2].sender shouldBe ConversationMessageSender.AI
             finalConversation.messages[3].sender shouldBe ConversationMessageSender.USER
+            finalConversation.messages[4].sender shouldBe ConversationMessageSender.AI
 
             finalConversation.messages[1].feedback shouldNotBe null
             finalConversation.messages[3].feedback shouldNotBe null
@@ -753,27 +866,42 @@ class TestOngoingConversationController @Autowired constructor(
                 user = authenticatedUser
             )
 
-            ongoingConversationAPIClient.handleUserMessage(
-                body = ReviewUserConversationMessageRequest(
-                    conversationId = conversation.id,
-                    message = "First message",
-                    messageOrder = 1
-                ),
-                user = authenticatedUser
-            )
-
+            val userMessageId1 = UUID.randomUUID()
             ongoingConversationAPIClient.requestAIMessage(
                 body = CreateAIConversationMessageRequest(
                     conversationId = conversation.id,
+                    latestMessageId = userMessageId1,
                     messageOrder = 2,
                     latestUserMessage = "First message"
                 ),
                 user = authenticatedUser
             )
 
-            ongoingConversationAPIClient.handleUserMessage(
+            ongoingConversationAPIClient.generateFeedback(
                 body = ReviewUserConversationMessageRequest(
                     conversationId = conversation.id,
+                    messageId = userMessageId1,
+                    message = "First message",
+                    messageOrder = 1
+                ),
+                user = authenticatedUser
+            )
+
+            val userMessageId2 = UUID.randomUUID()
+            ongoingConversationAPIClient.requestAIMessage(
+                body = CreateAIConversationMessageRequest(
+                    conversationId = conversation.id,
+                    latestMessageId = userMessageId2,
+                    messageOrder = 4,
+                    latestUserMessage = "Second message"
+                ),
+                user = authenticatedUser
+            )
+
+            ongoingConversationAPIClient.generateFeedback(
+                body = ReviewUserConversationMessageRequest(
+                    conversationId = conversation.id,
+                    messageId = userMessageId2,
                     message = "Second message",
                     messageOrder = 3
                 ),
@@ -789,6 +917,7 @@ class TestOngoingConversationController @Autowired constructor(
             finalConversation.messages[1].messageOrder shouldBe 1
             finalConversation.messages[2].messageOrder shouldBe 2
             finalConversation.messages[3].messageOrder shouldBe 3
+            finalConversation.messages[4].messageOrder shouldBe 4
         }
     }
 }
