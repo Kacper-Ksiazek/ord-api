@@ -22,7 +22,4 @@ data class ConversationMessageEntity(
     var feedbackId: UUID? = null,
 
     val createdAt: Instant = Instant.now(),
-
-    @Transient var feedback: ConversationUserMessageFeedbackEntity? = null,
-    @Transient var conversation: ConversationEntity? = null
 )
