@@ -95,19 +95,19 @@ class OngoingConversationController(
     ) = ongoingConversationFacade.requestAIMessage(user.id, body)
 
 
-    @PostMapping("/handle-user-message")
+    @PostMapping("/generate-feedback")
     @Operation(
-        summary = "Submit user message",
-        description = "Submit a user message and receive AI-powered grammar and language feedback"
+        summary = "Generate feedback for user message",
+        description = "Generate AI-powered grammar and language feedback for an existing user message"
     )
     @ApiResponses(value = [
         ApiResponse(
             responseCode = "200",
-            description = "User message processed and feedback generated"
+            description = "Feedback generated successfully"
         ),
         ApiResponse(
             responseCode = "404",
-            description = "Conversation not found",
+            description = "Conversation or message not found",
             content = [Content()]
         ),
         ApiResponse(
@@ -121,9 +121,9 @@ class OngoingConversationController(
             content = [Content()]
         )
     ])
-    fun handleUserMessage(
+    fun generateFeedback(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: ReviewUserConversationMessageRequest
     ): Mono<ResponseEntity<ReviewedUserConversationMessage>> =
-        ongoingConversationFacade.saveUserMessageAndGetFeedback(user.id, body)
+        ongoingConversationFacade.generateFeedbackForMessage(user.id, body)
 }
