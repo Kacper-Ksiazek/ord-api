@@ -5,7 +5,6 @@ import java.util.UUID
 data class ReviewUserConversationMessageRequest(
     val conversationId: UUID,
     val messageId: UUID,
-    val message: String,
     val messageOrder: Int,
     val latestAIMessage: String? = null,
 )

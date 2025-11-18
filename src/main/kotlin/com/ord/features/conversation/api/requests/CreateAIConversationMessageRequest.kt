@@ -4,7 +4,6 @@ import java.util.UUID
 
 data class CreateAIConversationMessageRequest(
     val conversationId: UUID,
-    val latestMessageId: UUID,
     val messageOrder: Int,
     val latestUserMessage: String
 )
