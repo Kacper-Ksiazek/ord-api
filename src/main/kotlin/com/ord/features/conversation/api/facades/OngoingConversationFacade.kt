@@ -1,11 +1,10 @@
 package com.ord.features.conversation.api.facades
 
-import com.ord.core.user.model.UserDTO
-import com.ord.core.user.model.UserEntity
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
-import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
-import com.ord.features.conversation.models.conversation.ConversationDTO
+import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
+import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -29,10 +28,18 @@ interface OngoingConversationFacade {
     ): Flux<String>
 
     /**
+     * Saves a user message to a conversation.
+     */
+    fun saveUserMessage(
+        userId: UUID,
+        body: SaveUserConversationMessageRequest
+    ): Mono<ResponseEntity<ConversationMessageDTO>>
+
+    /**
      * Generates feedback for an existing user message in a conversation.
      */
     fun generateFeedbackForMessage(
         userId: UUID,
-        body: ReviewUserConversationMessageRequest
+        body: GetFeedbackOnUserConversationMessageRequest
     ): Mono<ResponseEntity<ReviewedUserConversationMessage>>
 }
