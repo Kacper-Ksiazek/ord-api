@@ -2,9 +2,9 @@ package com.ord.features.conversation.api.requests
 
 import java.util.UUID
 
-data class ReviewUserConversationMessageRequest(
+data class GetFeedbackOnUserConversationMessageRequest(
     val conversationId: UUID,
-    val message: String,
+    val messageId: UUID,
     val messageOrder: Int,
     val latestAIMessage: String? = null,
 )

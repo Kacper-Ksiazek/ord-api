@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
-import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
+import com.ord.features.conversation.models.conversation_message.ConversationMessageMapper
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
@@ -32,7 +34,9 @@ class OngoingConversationFacadeImpl(
     private val openAIAPIClientService: OpenAIAPIClientService,
     private val conversationService: ConversationService,
     private val conversationMessageService: ConversationMessageService,
+    private val conversationMessageRepository: com.ord.features.conversation.repositories.ConversationMessageRepository,
     private val conversationMapper: ConversationMapper,
+    private val conversationMessageMapper: ConversationMessageMapper,
     private val gptTokensUsageService: GptTokensUsageService,
 ) : OngoingConversationFacade {
     private val logger = LoggerFactory.getLogger(OngoingConversationFacadeImpl::class.java)
@@ -120,22 +124,48 @@ class OngoingConversationFacadeImpl(
             }
     }
 
-
-    override fun saveUserMessageAndGetFeedback(
+    override fun saveUserMessage(
         userId: UUID,
-        body: ReviewUserConversationMessageRequest
+        body: SaveUserConversationMessageRequest
+    ): Mono<ResponseEntity<ConversationMessageDTO>> {
+        return conversationService
+            .findByIdOrFail(body.conversationId, userId)
+            .flatMap {
+                conversationMessageService.saveUserMessageWithId(
+                    messageId = body.messageId,
+                    conversationId = body.conversationId,
+                    content = body.content,
+                    messageOrder = body.messageOrder
+                )
+            }
+            .map { entity -> conversationMessageMapper.toDTO(entity) }
+            .map { dto -> ResponseEntity.ok(dto) }
+    }
+
+    override fun generateFeedbackForMessage(
+        userId: UUID,
+        body: GetFeedbackOnUserConversationMessageRequest
     ): Mono<ResponseEntity<ReviewedUserConversationMessage>> {
         return conversationService
             .findByIdOrFail(body.conversationId, userId)
             .map { conversationMapper.toDTO(it) }
-            .flatMap { conversation ->
+            .zipWith(
+                conversationMessageRepository.findById(body.messageId)
+            )
+            .flatMap { t ->
+                val conversation = t.t1
+                val userMessage = t.t2
+
                 val prompt = Prompt(
                     variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
                     params = conversation.convertToPromptParams() + mapOf(
-                        "userMessage" to body.message,
+                        "userMessage" to userMessage.content,
                         "latestAIMessage" to (body.latestAIMessage
                             ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
-                        "errorTypes" to ErrorType::class.joinEnumValues(separator = " | ").split(" | ").joinToString(" | ") { "\"$it\"" },
+                        "errorTypes" to ErrorType::class
+                            .joinEnumValues(separator = " | ")
+                            .split(" | ")
+                            .joinToString(" | ") { "\"$it\"" },
                     )
                 )
 
@@ -146,10 +176,8 @@ class OngoingConversationFacadeImpl(
                     gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE
                 )
                     .flatMap { aiFeedback ->
-                        conversationMessageService.createMessageWithFeedback(
-                            conversationId = conversation.id,
-                            content = body.message,
-                            messageOrder = body.messageOrder,
+                        conversationMessageService.saveFeedbackForExistingMessage(
+                            messageId = body.messageId,
                             aiFeedback = aiFeedback
                         )
                             .then(Mono.fromCallable {
@@ -158,10 +186,6 @@ class OngoingConversationFacadeImpl(
                     }
             }
     }
-
-    //
-    // Utility functions
-    //
 
     private fun ConversationMessageDTO.serialize(index: Int): String {
         return serializeMessage(index, sender, content)

@@ -8,8 +8,10 @@ import com.ord.features.conversation.models.conversation_user_message_feedback.C
 import com.ord.features.conversation.repositories.ConversationMessageRepository
 import com.ord.features.conversation.repositories.ConversationUserMessageFeedbackRepository
 import com.ord.features.conversation.services.ConversationMessageService
+import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.time.Instant
 import java.util.*
 
 @Service
@@ -17,6 +19,7 @@ class ConversationMessageServiceImpl(
     private val conversationMessageRepository: ConversationMessageRepository,
     private val conversationUserMessageFeedbackRepository: ConversationUserMessageFeedbackRepository,
     private val feedbackMapper: ConversationUserMessageFeedbackMapper,
+    private val databaseClient: DatabaseClient,
 ) : ConversationMessageService {
     override fun createMessage(
         conversationId: UUID,
@@ -68,6 +71,73 @@ class ConversationMessageServiceImpl(
                         )
                     )
                     .map { _ -> message }
+            }
+    }
+
+    override fun saveUserMessageWithId(
+        messageId: UUID,
+        conversationId: UUID,
+        content: String,
+        messageOrder: Int
+    ): Mono<ConversationMessageEntity> {
+        val createdAt = Instant.now()
+        return databaseClient.sql(
+            """
+            INSERT INTO conversation_messages (id, content, message_order, sender, conversation_id, created_at)
+            VALUES (:id, :content, :messageOrder, :sender, :conversationId, :createdAt)
+        """
+        )
+            .bind("id", messageId)
+            .bind("content", content)
+            .bind("messageOrder", messageOrder)
+            .bind("sender", ConversationMessageSender.USER.name)
+            .bind("conversationId", conversationId)
+            .bind("createdAt", createdAt)
+            .fetch()
+            .rowsUpdated()
+            .thenReturn(
+                ConversationMessageEntity(
+                    id = messageId,
+                    content = content,
+                    messageOrder = messageOrder,
+                    sender = ConversationMessageSender.USER,
+                    conversationId = conversationId,
+                    createdAt = createdAt
+                )
+            )
+    }
+
+    override fun saveFeedbackForExistingMessage(
+        messageId: UUID,
+        aiFeedback: ReviewedUserConversationMessage
+    ): Mono<ConversationMessageEntity> {
+        return conversationUserMessageFeedbackRepository
+            .save(
+                ConversationUserMessageFeedbackEntity(
+                    grammar = aiFeedback.grammar,
+                    vocabulary = aiFeedback.vocabulary,
+                    answerLength = aiFeedback.answerLength,
+                    naturalness = aiFeedback.naturalness,
+                    coherenceWithContext = aiFeedback.coherenceWithContext,
+                    registerAppropriate = aiFeedback.registerAppropriate,
+                    mistakes = feedbackMapper.serializeMistakes(aiFeedback.mistakes),
+                    strengthsIdentified = feedbackMapper.serializeStringSet(aiFeedback.strengthsIdentified),
+                    vocabularyEnrichment = feedbackMapper.serializeVocabularyEnrichment(aiFeedback.vocabularyEnrichment),
+                    alternativeExpressions = feedbackMapper.serializeAlternativeExpressions(aiFeedback.alternativeExpressions),
+                    culturalNote = aiFeedback.culturalNote,
+                    messageId = messageId,
+                )
+            )
+            .flatMap { feedback ->
+                conversationMessageRepository
+                    .findById(messageId)
+                    .flatMap { message ->
+                        conversationMessageRepository.save(
+                            message.copy(
+                                feedbackId = feedback.id
+                            )
+                        )
+                    }
             }
     }
 }

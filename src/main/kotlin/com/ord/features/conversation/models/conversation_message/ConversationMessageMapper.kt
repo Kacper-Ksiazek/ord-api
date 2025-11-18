@@ -15,7 +15,6 @@ class ConversationMessageMapper(
             messageOrder = entity.messageOrder,
             sender = entity.sender,
             content = entity.content,
-            feedback = entity.feedback?.let { conversationUserMessageFeedbackMapper.toDTO(it) },
             createdAt = entity.createdAt,
         )
     }

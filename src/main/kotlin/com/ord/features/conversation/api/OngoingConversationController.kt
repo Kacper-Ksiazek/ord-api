@@ -5,7 +5,9 @@ import com.ord.core.user.model.UserDTO
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
-import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
+import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -28,9 +30,9 @@ import java.util.*
 )
 @SecurityRequirement(name = "bearer-jwt")
 class OngoingConversationController(
-    val ongoingConversationFacade: OngoingConversationFacade
+    private val ongoingConversationFacade: OngoingConversationFacade
 ) {
-    @PostMapping("/initialize-by-ai", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    @PostMapping("/ai/initialize", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     @Operation(
         summary = "Initialize conversation with AI",
         description = "Start a conversation with an AI-generated opening message (streaming response)"
@@ -62,8 +64,7 @@ class OngoingConversationController(
         userId = user.id
     )
 
-
-    @PostMapping("/request-ai-message", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    @PostMapping("/ai/request-message", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     @Operation(
         summary = "Request AI response",
         description = "Request an AI-generated response in an ongoing conversation (streaming response)"
@@ -94,16 +95,15 @@ class OngoingConversationController(
         @Valid @RequestBody body: CreateAIConversationMessageRequest
     ) = ongoingConversationFacade.requestAIMessage(user.id, body)
 
-
-    @PostMapping("/handle-user-message")
+    @PostMapping("/user/save-message")
     @Operation(
-        summary = "Submit user message",
-        description = "Submit a user message and receive AI-powered grammar and language feedback"
+        summary = "Save user message",
+        description = "Save a user message to a conversation"
     )
     @ApiResponses(value = [
         ApiResponse(
             responseCode = "200",
-            description = "User message processed and feedback generated"
+            description = "User message saved successfully"
         ),
         ApiResponse(
             responseCode = "404",
@@ -121,9 +121,41 @@ class OngoingConversationController(
             content = [Content()]
         )
     ])
-    fun handleUserMessage(
+    fun saveUserMessage(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
-        @Valid @RequestBody body: ReviewUserConversationMessageRequest
+        @Valid @RequestBody body: SaveUserConversationMessageRequest
+    ): Mono<ResponseEntity<ConversationMessageDTO>> =
+        ongoingConversationFacade.saveUserMessage(user.id, body)
+
+    @PostMapping("/user/generate-feedback")
+    @Operation(
+        summary = "Generate feedback for user message",
+        description = "Generate AI-powered grammar and language feedback for an existing user message"
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Feedback generated successfully"
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "Conversation or message not found",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Invalid request data",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
+    fun generateFeedback(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @Valid @RequestBody body: GetFeedbackOnUserConversationMessageRequest
     ): Mono<ResponseEntity<ReviewedUserConversationMessage>> =
-        ongoingConversationFacade.saveUserMessageAndGetFeedback(user.id, body)
+        ongoingConversationFacade.generateFeedbackForMessage(user.id, body)
 }

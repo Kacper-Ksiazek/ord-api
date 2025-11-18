@@ -2,10 +2,9 @@ package com.ord.features.conversation.services
 
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.models.conversation_message.ConversationMessageEntity
-import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackEntity
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import reactor.core.publisher.Mono
-import java.util.UUID
+import java.util.*
 
 interface ConversationMessageService {
     fun createMessage(
@@ -20,6 +19,18 @@ interface ConversationMessageService {
         conversationId: UUID,
         messageOrder: Int,
         content: String,
+        aiFeedback: ReviewedUserConversationMessage
+    ): Mono<ConversationMessageEntity>
+
+    fun saveUserMessageWithId(
+        messageId: UUID,
+        conversationId: UUID,
+        content: String,
+        messageOrder: Int
+    ): Mono<ConversationMessageEntity>
+
+    fun saveFeedbackForExistingMessage(
+        messageId: UUID,
         aiFeedback: ReviewedUserConversationMessage
     ): Mono<ConversationMessageEntity>
 }
