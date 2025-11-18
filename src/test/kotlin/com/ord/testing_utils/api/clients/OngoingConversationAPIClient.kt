@@ -2,7 +2,9 @@ package com.ord.testing_utils.api.clients
 
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
-import com.ord.features.conversation.api.requests.ReviewUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
+import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -20,7 +22,7 @@ class OngoingConversationAPIClient(
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<String?> {
         return post(
-            url = "$baseUrl/initialize-by-ai?conversationId=$conversationId",
+            url = "$baseUrl/ai/initialize?conversationId=$conversationId",
             body = null,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<String>() {}
@@ -32,19 +34,31 @@ class OngoingConversationAPIClient(
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<String?> {
         return post(
-            url = "$baseUrl/request-ai-message",
+            url = "$baseUrl/ai/request-message",
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<String>() {}
         )
     }
 
+    fun saveUserMessage(
+        body: SaveUserConversationMessageRequest,
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<ConversationMessageDTO?> {
+        return post(
+            url = "$baseUrl/user/save-message",
+            body = body,
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<ConversationMessageDTO>() {}
+        )
+    }
+
     fun generateFeedback(
-        body: ReviewUserConversationMessageRequest,
+        body: GetFeedbackOnUserConversationMessageRequest,
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<ReviewedUserConversationMessage?> {
         return post(
-            url = "$baseUrl/generate-feedback",
+            url = "$baseUrl/user/generate-feedback",
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<ReviewedUserConversationMessage>() {}
