@@ -1,5 +1,8 @@
 package com.ord.features.conversation.models.conversation.enums
 
+import com.ord.shared.annotations.ExportToOpenAPI
+
+@ExportToOpenAPI
 enum class ConversationType(
     val contextForAI: String,
     val examplesForAI: List<String>

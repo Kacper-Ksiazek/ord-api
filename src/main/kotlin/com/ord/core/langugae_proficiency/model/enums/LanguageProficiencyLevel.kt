@@ -1,5 +1,8 @@
 package com.ord.core.langugae_proficiency.model.enums
 
+import com.ord.shared.annotations.ExportToOpenAPI
+
+@ExportToOpenAPI
 enum class LanguageProficiencyLevel {
     A1,
     A2,

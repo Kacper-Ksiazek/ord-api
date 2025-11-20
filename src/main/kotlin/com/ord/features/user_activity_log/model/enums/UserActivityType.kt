@@ -1,5 +1,8 @@
 package com.ord.features.user_activity_log.model.enums
 
+import com.ord.shared.annotations.ExportToOpenAPI
+
+@ExportToOpenAPI
 enum class UserActivityType(
     val points: Int,
     val frequency: UserActivityFrequency = UserActivityFrequency.NON_PERIODIC
