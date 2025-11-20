@@ -3,6 +3,7 @@ package com.ord.features.game.variants.shared.enums
 import com.ord.config.GamesConfig
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.extensions.getNumberOfAllowedMistakes
+import com.ord.shared.annotations.ExportToOpenAPI
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 
@@ -10,6 +11,7 @@ import jakarta.validation.constraints.Min
  * The points that can be assigned to an answer in a game.
  * These points are further used to compute the score of a game in percentage, therefore they cannot be negative.
  */
+@ExportToOpenAPI
 enum class WordAnswerScore(
     val wage: Double,
     val dbPoints: Int

@@ -1,5 +1,8 @@
 package com.ord.features.game.variants.crossword.dto.helpers.board
 
+import com.ord.shared.annotations.ExportToOpenAPI
+
+@ExportToOpenAPI
 enum class CrosswordWordDirection {
     HORIZONTAL,
     VERTICAL;

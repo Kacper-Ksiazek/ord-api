@@ -1,7 +1,9 @@
 package com.ord.features.game.model.ongoing_game.enums
 
+import com.ord.shared.annotations.ExportToOpenAPI
 import com.ord.shared.utils.data_classes.Percentage
 
+@ExportToOpenAPI
 enum class GameGrade(val threshold: Double) {
     /** Excellent, flawless performance. */
     S(threshold = 100.0),
