@@ -1,7 +1,9 @@
 package com.ord.features.conversation.models.conversation.enums
 
 import com.ord.core.user.model.enums.Gender
+import com.ord.shared.annotations.ExportToOpenAPI
 
+@ExportToOpenAPI
 enum class ConversationAIBotAvatar(
     val id: String,
     val gender: Gender,
