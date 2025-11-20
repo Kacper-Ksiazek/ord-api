@@ -1,15 +1,22 @@
 package com.ord.config
 
+import com.ord.shared.annotations.ExportToOpenAPI
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Contact
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.info.License
+import io.swagger.v3.oas.models.media.StringSchema
 import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.servers.Server
 import io.swagger.v3.oas.models.tags.Tag
+import org.springdoc.core.customizers.OpenApiCustomizer
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.type.filter.AnnotationTypeFilter
+import org.springframework.core.type.filter.AssignableTypeFilter
 
 @Configuration
 class OpenApiConfig {
@@ -148,5 +155,106 @@ class OpenApiConfig {
                         .description("Application health and status monitoring")
                 )
             )
+    }
+
+    /**
+     * Automatically scans and registers enum classes marked with @ExportToOpenAPI as reusable OpenAPI schemas.
+     *
+     * This uses an OPT-IN approach for security reasons:
+     * - Only enums explicitly annotated with @ExportToOpenAPI will be exported
+     * - Prevents accidental exposure of internal/sensitive enums
+     * - Ensures that enums are exported as separate union types when generating TypeScript types
+     *   using tools like openapi-typescript, instead of being inlined in DTOs
+     *
+     * @see ExportToOpenAPI
+     */
+    @Bean
+    fun enumSchemaCustomizer(): OpenApiCustomizer {
+        return OpenApiCustomizer { openApi ->
+            try {
+                // Scan for enum classes annotated with @ExportToOpenAPI
+                val enumClasses = scanForExportableEnumClasses("com.ord")
+
+                // Ensure components and schemas are initialized
+                if (openApi.components == null) {
+                    openApi.components = Components()
+                }
+                if (openApi.components.schemas == null) {
+                    openApi.components.schemas = mutableMapOf()
+                }
+
+                // Register each enum as a schema
+                enumClasses.forEach { enumClass ->
+                    registerEnumSchema(openApi, enumClass)
+                }
+
+                println("✅ Successfully registered ${enumClasses.size} enum schemas in OpenAPI specification (opt-in via @ExportToOpenAPI)")
+            } catch (e: Exception) {
+                println("⚠️  Warning: Failed to register enum schemas: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
+     * Scans the classpath for enum classes marked with @ExportToOpenAPI annotation.
+     * This implements an opt-in security model where only explicitly marked enums are exported.
+     */
+    private fun scanForExportableEnumClasses(basePackage: String): List<Class<out Enum<*>>> {
+        val scanner = ClassPathScanningCandidateComponentProvider(false)
+
+        // Only include enums that have the @ExportToOpenAPI annotation
+        scanner.addIncludeFilter(AnnotationTypeFilter(ExportToOpenAPI::class.java))
+
+        // Additionally filter for Enum types to ensure type safety
+        scanner.addIncludeFilter(AssignableTypeFilter(Enum::class.java))
+
+        val enumClasses = mutableListOf<Class<out Enum<*>>>()
+
+        scanner.findCandidateComponents(basePackage).forEach { beanDefinition ->
+            try {
+                @Suppress("UNCHECKED_CAST")
+                val clazz = Class.forName(beanDefinition.beanClassName) as Class<out Enum<*>>
+
+                // Double-check that the class has the annotation (defense in depth)
+                if (clazz.isAnnotationPresent(ExportToOpenAPI::class.java)) {
+                    enumClasses.add(clazz)
+                }
+            } catch (e: Exception) {
+                println("⚠️  Warning: Could not load enum class ${beanDefinition.beanClassName}: ${e.message}")
+            }
+        }
+
+        return enumClasses
+    }
+
+    /**
+     * Registers a single enum class as a schema in the OpenAPI specification.
+     */
+    private fun registerEnumSchema(openApi: OpenAPI, enumClass: Class<out Enum<*>>) {
+        val schemaName = enumClass.simpleName
+
+        // Skip if already registered to avoid duplicates
+        if (openApi.components.schemas?.containsKey(schemaName) == true) {
+            return
+        }
+
+        // Extract enum values
+        val enumConstants = enumClass.enumConstants
+        val enumValues = enumConstants.map { it.name }
+
+        // Extract description from @Schema annotation if present
+        val description = enumClass.getAnnotation(Schema::class.java)?.description
+
+        // Create the schema
+        val schema = StringSchema().apply {
+            enum = enumValues
+            if (description != null && description.isNotBlank()) {
+                this.description = description
+            }
+        }
+
+        // Register the schema
+        openApi.components.addSchemas(schemaName, schema)
     }
 }
