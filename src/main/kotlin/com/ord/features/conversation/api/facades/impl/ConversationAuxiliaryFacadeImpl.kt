@@ -71,14 +71,7 @@ class ConversationAuxiliaryFacadeImpl(
                         prompt = prompt.toString(),
                         streamedItemType = object : TypeReference<StreamSimpleItem>() {},
                         userId = userId,
-                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.SUGGEST_TOPICS,
-                        onComplete = { (payload, emitter) ->
-                            emitter.tryEmitNext(
-                                objectMapper.writeValueAsString(
-                                    payload.finalContent
-                                )
-                            )
-                        }
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.SUGGEST_TOPICS
                     )
             }
     }

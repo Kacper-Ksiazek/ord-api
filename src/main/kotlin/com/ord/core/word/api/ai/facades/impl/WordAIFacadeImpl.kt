@@ -161,12 +161,7 @@ class WordAIFacadeImpl(
                         prompt = prompt,
                         streamedItemType = object : TypeReference<VocabularySuggestion>() {},
                         userId = user.id,
-                        gptTokensUsageLogKey = GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY,
-                        onComplete = { (payload, emitter) ->
-                            emitter.tryEmitNext(
-                                jsonObjectMapper.writeValueAsString(payload.finalContent)
-                            )
-                        }
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY
                     )
             }
     }
