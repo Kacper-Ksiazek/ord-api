@@ -48,6 +48,6 @@ interface OpenAIAPIClientService {
 
         onItemReceived: (TStreamedItem) -> Unit = {},
         onError: (Throwable) -> Unit = { throw it },
-        onComplete: (Pair<StreamCompletedPayload<List<TStreamedItem>>, Emitter>) -> Unit,
+        onComplete: (() -> Unit)? = null
     ): Flux<String>
 }

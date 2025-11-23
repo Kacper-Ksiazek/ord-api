@@ -9,6 +9,11 @@ enum class ConversationAIBotAvatar(
     val gender: Gender,
     val description: String,
 ) {
+    AVATAR_DEFAULT(
+        "AVATAR_DEFAULT",
+        Gender.MALE,
+        "Friendly humanoid robot with a sleek metallic design, glowing blue LED eyes, and a welcoming digital smile display on its faceplate."
+    ),
     AVATAR_ALPHA(
         "AVATAR_ALPHA",
         Gender.FEMALE,
@@ -32,7 +37,7 @@ enum class ConversationAIBotAvatar(
     AVATAR_EPSILON(
         "AVATAR_EPSILON",
         Gender.FEMALE,
-        "Young woman with curly red hair, freckles, and casual wear, with a playful smile and lively, curious eyes."
+        "Attractive blonde woman in early 20s with wavy golden hair, stylish  sunglasses resting on her head, confident pose, wearing trendy casual  clothing, with a captivating smile and expressive, alluring eyes."
     ),
     AVATAR_ZETA(
         "AVATAR_ZETA",

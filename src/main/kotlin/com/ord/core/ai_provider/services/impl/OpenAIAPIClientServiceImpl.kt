@@ -139,11 +139,9 @@ class OpenAIAPIClientServiceImpl(
 
         onItemReceived: (TStreamedItem) -> Unit,
         onError: (Throwable) -> Unit,
-        onComplete: (Pair<StreamCompletedPayload<List<TStreamedItem>>, Emitter>) -> Unit,
+        onComplete: (() -> Unit)?
     ): Flux<String> {
         var parsingItemBuffer: String = "";
-
-        val resultItems: MutableList<TStreamedItem> = mutableListOf()
 
         val separator = OpenAIAPIClientService.STREAMING_CONTENT_SEPARATOR
         val separatorRegex = Regex(Regex.escape(separator))
@@ -159,7 +157,6 @@ class OpenAIAPIClientServiceImpl(
 
                         if (parsedItem != null) {
                             onItemReceived(parsedItem)
-                            resultItems.add(parsedItem)
                             emitter.tryEmitNext(objectMapper.writeValueAsString(parsedItem))
                         }
                     } catch (e: Exception) {
@@ -168,20 +165,16 @@ class OpenAIAPIClientServiceImpl(
                     }
                 }
 
-                val result = StreamCompletedPayload<List<TStreamedItem>>(
-                    finalContent = resultItems,
-                    inputTokens = payload.inputTokens,
-                    outputTokens = payload.outputTokens
-                )
-
-                onComplete(Pair(result, emitter))
-
+                // Save token usage but don't emit final content to client
                 gptTokensUsageService.saveTokensUsage(
                     userId = userId,
                     operationType = gptTokensUsageLogKey,
                     inputTokens = payload.inputTokens,
                     outputTokens = payload.outputTokens
                 ).subscribe()
+
+                // Allow custom onComplete logic if provided
+                onComplete?.invoke()
             },
             onDeltaReceived = { (delta, emitter) ->
                 parsingItemBuffer += delta
@@ -191,7 +184,6 @@ class OpenAIAPIClientServiceImpl(
 
                     if (parsedItem != null) {
                         onItemReceived(parsedItem)
-                        resultItems.add(parsedItem)
 
                         emitter.tryEmitNext(objectMapper.writeValueAsString(parsedItem))
                     }
