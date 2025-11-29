@@ -14,6 +14,18 @@ Your task is to create a realistic interlocutor identity that fits the conversat
 
 **%%availableAvatars%%**
 
+**IMPORTANT**: All avatars in the list above have an equal chance of being selected. There is no preference, priority, or bias toward any particular avatar. Choose the avatar that best fits the conversation context and topic.
+
+### RECENT INTERLOCUTORS (to avoid repetition):
+
+**%%recentInterlocutors%%**
+
+**CRITICAL**: The list above shows the most recently used interlocutors, ordered from most recent to oldest. To ensure variety and prevent user fatigue:
+- **DO NOT use any avatar ID that appears in the recent interlocutors list**
+- **DO NOT use any name (or similar variation) that appears in the recent interlocutors list**
+- The more recent an interlocutor is in the list, the more important it is to avoid it
+- Generate a completely fresh and unique combination that has NOT been used recently
+
 ### TASK INSTRUCTIONS:
 
 1. Generate a fitting AI interlocutor identity with:
@@ -25,6 +37,7 @@ Your task is to create a realistic interlocutor identity that fits the conversat
    - For professional scenarios (job interviews, medical visits), choose appropriate titles and formal names
    - For casual conversations, use friendly, approachable names without titles
    - Ensure the name feels natural for someone who would engage in this type of conversation
+   - **MANDATORY: The name MUST be different from ALL entries in the recent interlocutors list** - this is critical for user experience
 
 3. Format your response as a single JSON object:
    ```json
