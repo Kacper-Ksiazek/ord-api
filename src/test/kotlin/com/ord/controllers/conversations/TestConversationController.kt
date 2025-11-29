@@ -9,6 +9,8 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.security.UserRepository
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
+import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
+import com.ord.features.conversation.api.requests.dto.RecentInterlocutorInfo
 import com.ord.features.conversation.models.conversation.ConversationEntity
 import com.ord.features.conversation.models.conversation.enums.ConversationTone
 import com.ord.features.conversation.models.conversation.enums.ConversationType
@@ -18,6 +20,7 @@ import com.ord.testing_utils.api.clients.ConversationAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldNotBeBlank
@@ -41,18 +44,18 @@ class TestConversationController @Autowired constructor(
     webClient: WebTestClient,
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
-    _userRepository: UserRepository,
-    _otpCodeRepository: OtpCodeRepository,
-    _passwordEncoder: PasswordEncoder,
-    _gptTokensUsageRepository: GptTokensUsageRepository
+    userRepository: UserRepository,
+    otpCodeRepository: OtpCodeRepository,
+    passwordEncoder: PasswordEncoder,
+    gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
     languageProficiencyRepository = languageProficiencyRepository,
-    userRepository = _userRepository,
-    otpCodeRepository = _otpCodeRepository,
-    passwordEncoder = _passwordEncoder,
-    gptTokensUsageRepository = _gptTokensUsageRepository
+    userRepository = userRepository,
+    otpCodeRepository = otpCodeRepository,
+    passwordEncoder = passwordEncoder,
+    gptTokensUsageRepository = gptTokensUsageRepository
 ) {
     private val conversationAPIClient = ConversationAPIClient(webClient)
 
@@ -141,6 +144,107 @@ class TestConversationController @Autowired constructor(
                     additionalContext = null,
                     conversationType = ConversationType.SCENARIO_ROLEPLAY,
                     language = TestData.LANGUAGE
+                )
+
+                val response = conversationAPIClient.generateAIInterlocutor(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.name.shouldNotBeBlank()
+                response.body.avatarId shouldNotBe null
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
+            }
+
+            @Test
+            fun `200 - should generate AI interlocutor with empty recent interlocutors list`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val request = GenerateAIInterlocutorDataRequest(
+                    topic = TestData.TOPIC,
+                    additionalContext = null,
+                    conversationType = TestData.TYPE,
+                    language = TestData.LANGUAGE,
+                    recentInterlocutors = emptyList()
+                )
+
+                val response = conversationAPIClient.generateAIInterlocutor(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.name.shouldNotBeBlank()
+                response.body.avatarId shouldNotBe null
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
+            }
+
+            @Test
+            fun `200 - should generate AI interlocutor with recent interlocutors provided`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val recentInterlocutors = listOf(
+                    RecentInterlocutorInfo(avatarId = "AVATAR_ALPHA", name = "Dr. Sarah Johnson"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_BETA", name = "John Smith"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_GAMMA", name = "Prof. Emily Chen")
+                )
+
+                val request = GenerateAIInterlocutorDataRequest(
+                    topic = TestData.TOPIC,
+                    additionalContext = TestData.ADDITIONAL_CONTEXT,
+                    conversationType = TestData.TYPE,
+                    language = TestData.LANGUAGE,
+                    recentInterlocutors = recentInterlocutors
+                )
+
+                val response = conversationAPIClient.generateAIInterlocutor(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.name.shouldNotBeBlank()
+                response.body.avatarId shouldNotBe null
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
+            }
+
+            @Test
+            fun `200 - should generate AI interlocutor with 10 recent interlocutors (max limit)`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                // Use different avatars to avoid blocking all options (9 avatars total, use one twice to get 10)
+                val recentInterlocutors = listOf(
+                    RecentInterlocutorInfo(avatarId = "AVATAR_ALPHA", name = "Sarah Johnson"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_BETA", name = "John Smith"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_GAMMA", name = "Emily Chen"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_DELTA", name = "Michael Brown"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_EPSILON", name = "Jessica Williams"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_ZETA", name = "Robert Davis"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_ETA", name = "Amanda Martinez"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_THETA", name = "David Wilson"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_DEFAULT", name = "Lisa Anderson"),
+                    RecentInterlocutorInfo(avatarId = "AVATAR_ALPHA", name = "Dr. James Taylor")
+                )
+
+                val request = GenerateAIInterlocutorDataRequest(
+                    topic = TestData.TOPIC,
+                    additionalContext = null,
+                    conversationType = TestData.TYPE,
+                    language = TestData.LANGUAGE,
+                    recentInterlocutors = recentInterlocutors
                 )
 
                 val response = conversationAPIClient.generateAIInterlocutor(
@@ -251,6 +355,110 @@ class TestConversationController @Autowired constructor(
                     additionalContext = null,
                     conversationType = TestData.TYPE,
                     language = LanguageName.FRENCH
+                )
+
+                val response = conversationAPIClient.generateAIInterlocutor(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - too many recent interlocutors (more than 10)`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val recentInterlocutors = (1..11).map { i ->
+                    RecentInterlocutorInfo(avatarId = "AVATAR_ALPHA", name = "Person $i")
+                }
+
+                val request = GenerateAIInterlocutorDataRequest(
+                    topic = TestData.TOPIC,
+                    additionalContext = null,
+                    conversationType = TestData.TYPE,
+                    language = TestData.LANGUAGE,
+                    recentInterlocutors = recentInterlocutors
+                )
+
+                val response = conversationAPIClient.generateAIInterlocutor(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - recent interlocutor with blank name`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val recentInterlocutors = listOf(
+                    RecentInterlocutorInfo(avatarId = "AVATAR_ALPHA", name = "")
+                )
+
+                val request = GenerateAIInterlocutorDataRequest(
+                    topic = TestData.TOPIC,
+                    additionalContext = null,
+                    conversationType = TestData.TYPE,
+                    language = TestData.LANGUAGE,
+                    recentInterlocutors = recentInterlocutors
+                )
+
+                val response = conversationAPIClient.generateAIInterlocutor(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - recent interlocutor with blank avatar ID`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val recentInterlocutors = listOf(
+                    RecentInterlocutorInfo(avatarId = "", name = "John Doe")
+                )
+
+                val request = GenerateAIInterlocutorDataRequest(
+                    topic = TestData.TOPIC,
+                    additionalContext = null,
+                    conversationType = TestData.TYPE,
+                    language = TestData.LANGUAGE,
+                    recentInterlocutors = recentInterlocutors
+                )
+
+                val response = conversationAPIClient.generateAIInterlocutor(
+                    body = request,
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - recent interlocutor name exceeds max length`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val recentInterlocutors = listOf(
+                    RecentInterlocutorInfo(avatarId = "AVATAR_ALPHA", name = "x".repeat(201))
+                )
+
+                val request = GenerateAIInterlocutorDataRequest(
+                    topic = TestData.TOPIC,
+                    additionalContext = null,
+                    conversationType = TestData.TYPE,
+                    language = TestData.LANGUAGE,
+                    recentInterlocutors = recentInterlocutors
                 )
 
                 val response = conversationAPIClient.generateAIInterlocutor(
@@ -849,6 +1057,389 @@ class TestConversationController @Autowired constructor(
                 )
 
                 verifyStillExists.status shouldBe HttpStatus.OK
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/conversations/suggest-topics - Suggest conversation topics")
+    inner class SuggestTopicsTests {
+
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - should successfully suggest topics with user clue`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B2)
+                )
+
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "Weather and seasons",
+                    type = ConversationType.SMALL_TALK,
+                    language = LanguageName.ENGLISH
+                )
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "Weekend plans",
+                    type = ConversationType.SMALL_TALK,
+                    language = LanguageName.ENGLISH
+                )
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        clueFromUser = "I want to discuss hobbies",
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.ENGLISH
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body.shouldNotBeNull()
+                response.body.shouldNotBeBlank()
+
+                assertGptTokensLogCreated(user.userInfo.id, "CONVERSATION_SUGGEST_TOPICS")
+            }
+
+            @Test
+            fun `200 - should successfully suggest topics without clue`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B1)
+                )
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        clueFromUser = null,
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.ENGLISH
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body.shouldNotBeNull()
+
+                assertGptTokensLogCreated(user.userInfo.id, "CONVERSATION_SUGGEST_TOPICS")
+            }
+
+            @Test
+            fun `200 - should suggest topics for different conversation types`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.C1)
+                )
+
+                ConversationType.entries.forEach { type ->
+                    val response = conversationAPIClient.suggestTopics(
+                        body = SuggestConversationTopicRequest(
+                            clueFromUser = "Technology ethics",
+                            conversationType = type,
+                            language = LanguageName.ENGLISH
+                        ),
+                        user = user
+                    )
+
+                    response.status shouldBe HttpStatus.OK
+                    response.body.shouldNotBeNull()
+                }
+            }
+
+            @Test
+            fun `200 - should automatically filter recent topics by type`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B2)
+                )
+
+                // Create OXFORD_DEBATE conversations
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "Climate change impacts",
+                    type = ConversationType.OXFORD_DEBATE,
+                    language = LanguageName.ENGLISH
+                )
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "AI regulation",
+                    type = ConversationType.OXFORD_DEBATE,
+                    language = LanguageName.ENGLISH
+                )
+
+                // Create SMALL_TALK conversation (should NOT be included)
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "Weekend plans",
+                    type = ConversationType.SMALL_TALK,
+                    language = LanguageName.ENGLISH
+                )
+
+                // Request OXFORD_DEBATE topics
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        clueFromUser = "Environmental issues",
+                        conversationType = ConversationType.OXFORD_DEBATE,
+                        language = LanguageName.ENGLISH
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.OK
+            }
+
+            @Test
+            fun `200 - should automatically filter recent topics by language`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(
+                        LanguageName.ENGLISH to LanguageProficiencyLevel.B2,
+                        LanguageName.SPANISH to LanguageProficiencyLevel.B1
+                    )
+                )
+
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "English conversation",
+                    language = LanguageName.ENGLISH,
+                    type = ConversationType.SMALL_TALK
+                )
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "Conversación en español",
+                    language = LanguageName.SPANISH,
+                    type = ConversationType.SMALL_TALK,
+                    proficiencyLevel = LanguageProficiencyLevel.B1
+                )
+
+                // Request Spanish topics - should only include Spanish recent topics
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        clueFromUser = null,
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.SPANISH
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.OK
+            }
+
+            @Test
+            fun `200 - should work with no recent conversations`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.FRENCH to LanguageProficiencyLevel.A2)
+                )
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        clueFromUser = "Travel and tourism",
+                        conversationType = ConversationType.TOPIC_EXPLORATION,
+                        language = LanguageName.FRENCH
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.OK
+            }
+
+            @Test
+            fun `200 - should exclude frontend-provided topics`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B2)
+                )
+
+                val excludedTopics = listOf(
+                    "Weather patterns",
+                    "Climate change discussion",
+                    "Seasonal activities"
+                )
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        clueFromUser = "Weather and climate",
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.ENGLISH,
+                        excludeTopics = excludedTopics
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.OK
+            }
+
+            @Test
+            fun `200 - should combine DB recent topics with excluded topics`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B2)
+                )
+
+                // Create recent conversation in DB
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "Weekend plans",
+                    type = ConversationType.SMALL_TALK,
+                    language = LanguageName.ENGLISH
+                )
+
+                // Frontend also wants to exclude these
+                val excludedTopics = listOf("Hobbies and interests", "Daily routines")
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        clueFromUser = null,
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.ENGLISH,
+                        excludeTopics = excludedTopics
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.OK
+                // Prompt will include both "Weekend plans" (from DB) and the 2 excluded topics
+            }
+
+            @Test
+            fun `200 - should deduplicate when excludeTopics overlap with DB topics`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B2)
+                )
+
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "Travel experiences",
+                    type = ConversationType.SMALL_TALK,
+                    language = LanguageName.ENGLISH
+                )
+
+                // Frontend provides same topic - should deduplicate
+                val excludedTopics = listOf("Travel experiences", "Food and cooking")
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.ENGLISH,
+                        excludeTopics = excludedTopics
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.OK
+                // Should only include "Travel experiences" once in the prompt
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `401 - anonymous user cannot suggest topics`() {
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.ENGLISH
+                    ),
+                    user = null
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `400 - clue exceeds max length`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B2)
+                )
+
+                val longClue = "a".repeat(256)
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        clueFromUser = longClue,
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.ENGLISH
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - user lacks language proficiency`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B2)
+                )
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.FRENCH
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - excludeTopics exceeds max limit`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B2)
+                )
+
+                val tooManyTopics = (1..21).map { "Topic $it" }
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.ENGLISH,
+                        excludeTopics = tooManyTopics
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - excludeTopics contains topic that is too long`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B2)
+                )
+
+                val topicsWithOneTooLong = listOf(
+                    "Normal topic",
+                    "a".repeat(501)  // Exceeds 500 char limit
+                )
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.ENGLISH,
+                        excludeTopics = topicsWithOneTooLong
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - excludeTopics contains empty string`() {
+                val user = mockAuthenticatedUser(
+                    languages = mapOf(LanguageName.ENGLISH to LanguageProficiencyLevel.B2)
+                )
+
+                val topicsWithEmpty = listOf("Valid topic", "")
+
+                val response = conversationAPIClient.suggestTopics(
+                    body = SuggestConversationTopicRequest(
+                        conversationType = ConversationType.SMALL_TALK,
+                        language = LanguageName.ENGLISH,
+                        excludeTopics = topicsWithEmpty
+                    ),
+                    user = user
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }
