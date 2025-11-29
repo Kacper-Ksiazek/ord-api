@@ -4,6 +4,7 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.conversation.models.conversation.ConversationDTO
 import com.ord.features.conversation.models.conversation.enums.ConversationType
+import com.ord.features.conversation.models.dto.RecentConversationInfo
 import com.ord.features.conversation.repositories.ConversationRepository
 import com.ord.features.conversation.services.ConversationService
 import org.springframework.stereotype.Service
@@ -31,6 +32,19 @@ class ConversationServiceImpl(
         )
     }
 
+    override fun findRecentConversationsInfo(
+        userId: UUID,
+        type: ConversationType,
+        language: LanguageName,
+        limit: Int
+    ): Flux<RecentConversationInfo> {
+        return conversationRepository.findRecentConversationsInfo(
+            userId = userId,
+            type = type,
+            language = language,
+            limit = limit
+        )
+    }
 
     override fun findByIdOrFailWithMessages(
         id: UUID,
