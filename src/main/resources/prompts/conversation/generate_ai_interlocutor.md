@@ -8,13 +8,13 @@ Your task is to create a realistic interlocutor identity that fits the conversat
 1. Language: **%%language%%** at the level of **%%level%%**.
 2. Conversation topic: **%%topic%%**.
 3. Conversation type: **%%type%%** - **%%typeExplanation%%**.
-4. Additional context: **%%additionalContext%%**.
+4. Additional context ( provided by the user ): **%%additionalContext%%**.
 
 ### AVAILABLE AVATARS:
 
-**%%availableAvatars%%**
-
 **IMPORTANT**: All avatars in the list above have an equal chance of being selected. There is no preference, priority, or bias toward any particular avatar. Choose the avatar that best fits the conversation context and topic.
+
+**%%availableAvatars%%**
 
 ### RECENT INTERLOCUTORS (to avoid repetition):
 
