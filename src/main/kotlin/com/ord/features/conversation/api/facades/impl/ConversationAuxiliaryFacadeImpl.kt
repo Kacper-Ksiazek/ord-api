@@ -51,7 +51,14 @@ class ConversationAuxiliaryFacadeImpl(
             )
             .flatMapMany { tuple ->
                 val languageProficiency = tuple.t1
-                val recentTopics = tuple.t2
+                val recentTopicsFromDB = tuple.t2
+
+                // Combine DB topics with frontend-provided excluded topics
+                val allTopicsToExclude = buildSet {
+                    addAll(recentTopicsFromDB)
+                    body.excludeTopics?.let { addAll(it) }
+                }.toList()
+
                 val prompt = Prompt(
                     variant = AvailablePrompts.CONVERSATION_SUGGEST_TOPIC,
                     params = mapOf(
@@ -61,7 +68,7 @@ class ConversationAuxiliaryFacadeImpl(
                         "type" to body.conversationType.toString(),
                         "typeExplanation" to body.conversationType.contextForAI,
                         "examples" to body.conversationType.examplesForAI.toParamString(tabulated = true),
-                        "recentConversations" to recentTopics.toParamString(tabulated = true),
+                        "recentConversations" to allTopicsToExclude.toParamString(tabulated = true),
                         "separator" to OpenAIAPIClientService.STREAMING_CONTENT_SEPARATOR
                     )
                 )
@@ -83,6 +90,14 @@ class ConversationAuxiliaryFacadeImpl(
         return languageProficiencyService
             .findUserProficiencyInLanguageOrThrow(userId, body.language)
             .flatMap { languageProficiency ->
+                val formattedRecentInterlocutors = if (body.recentInterlocutors.isNullOrEmpty()) {
+                    "NONE"
+                } else {
+                    body.recentInterlocutors.joinToString(separator = "\n") { interlocutor ->
+                        "- ${interlocutor.name} (Avatar: ${interlocutor.avatarId})"
+                    }
+                }
+
                 val prompt = Prompt(
                     variant = AvailablePrompts.CONVERSATION_GENERATE_AI_INTERLOCUTOR,
                     params = mapOf(
@@ -92,7 +107,8 @@ class ConversationAuxiliaryFacadeImpl(
                         "type" to body.conversationType.toString(),
                         "typeExplanation" to body.conversationType.contextForAI,
                         "additionalContext" to (body.additionalContext ?: "NONE"),
-                        "availableAvatars" to ConversationAIBotAvatar.toPromptList()
+                        "availableAvatars" to ConversationAIBotAvatar.toPromptList(),
+                        "recentInterlocutors" to formattedRecentInterlocutors
                     )
                 )
 
