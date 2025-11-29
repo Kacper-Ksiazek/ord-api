@@ -113,6 +113,7 @@ abstract class GameMockerBase<
             wordsRepository = wordRepository,
         )
 
+        val startTime = System.currentTimeMillis()
         val response = apiClient.startGame(
             user = authenticatedUser,
             body = UnsafeStartGameRequestData(
@@ -120,8 +121,15 @@ abstract class GameMockerBase<
                 language = language
             )
         )
+        val elapsedTime = System.currentTimeMillis() - startTime
 
-        val responseBody = response.body!!
+        val responseBody = response.body
+            ?: throw AssertionError(
+                "Game creation failed - response body is null. " +
+                "Status: ${response.status}, Elapsed time: ${elapsedTime}ms"
+            )
+
+        println("Game generation completed in ${elapsedTime}ms (status: ${response.status})")
 
         @Suppress("UNCHECKED_CAST")
         val ongoingGameDTO = ongoingGameMapper.toDTO(
