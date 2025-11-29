@@ -10,6 +10,7 @@ import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import com.ord.features.conversation.models.conversation.enums.ConversationTone
 import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackMapper
+import com.ord.features.conversation.models.dto.RecentConversationInfo
 import com.ord.features.conversation.repositories.ConversationRepositoryCustomMethods
 import io.r2dbc.postgresql.codec.Json
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
@@ -47,6 +48,40 @@ class ConversationRepositoryCustomMethodsImpl(
             .bind("language", language.name)
             .bind("limit", limit)
             .map { row -> row.get("topic", String::class.java)!! }
+            .all()
+    }
+
+    override fun findRecentConversationsInfo(
+        userId: UUID,
+        type: ConversationType,
+        language: LanguageName,
+        limit: Int
+    ): Flux<RecentConversationInfo> {
+        val query = """
+            SELECT c.ai_interlocutor_avatar_id, c.ai_interlocutor_name, c.topic
+            FROM conversations c
+            WHERE c.user_id = :userId
+                AND c.type = :type
+                AND c.language = :language
+                AND c.ai_interlocutor_avatar_id IS NOT NULL
+                AND c.ai_interlocutor_name IS NOT NULL
+            ORDER BY c.created_at DESC
+            LIMIT :limit
+        """
+
+        return template.databaseClient
+            .sql(query)
+            .bind("userId", userId)
+            .bind("type", type.name)
+            .bind("language", language.name)
+            .bind("limit", limit)
+            .map { row ->
+                RecentConversationInfo(
+                    avatarId = row.get("ai_interlocutor_avatar_id", String::class.java)!!,
+                    name = row.get("ai_interlocutor_name", String::class.java)!!,
+                    topic = row.get("topic", String::class.java)!!
+                )
+            }
             .all()
     }
 

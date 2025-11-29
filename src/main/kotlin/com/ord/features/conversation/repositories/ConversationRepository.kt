@@ -17,6 +17,12 @@ interface ConversationRepositoryCustomMethods {
         limit: Int
     ): Flux<String>
 
+    fun findRecentConversationsInfo(
+        userId: UUID,
+        type: ConversationType,
+        language: LanguageName,
+        limit: Int
+    ): Flux<com.ord.features.conversation.models.dto.RecentConversationInfo>
 
     fun findByIdOrFailWithMessages(
         id: UUID,
