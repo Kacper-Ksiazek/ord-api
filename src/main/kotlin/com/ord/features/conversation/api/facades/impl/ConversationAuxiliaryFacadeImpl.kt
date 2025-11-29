@@ -68,7 +68,7 @@ class ConversationAuxiliaryFacadeImpl(
                         "type" to body.conversationType.toString(),
                         "typeExplanation" to body.conversationType.contextForAI,
                         "examples" to body.conversationType.examplesForAI.toParamString(tabulated = true),
-                        "recentConversations" to allTopicsToExclude.toParamString(tabulated = true),
+                        "topicsToExclude" to allTopicsToExclude.toParamString(tabulated = true),
                         "separator" to OpenAIAPIClientService.STREAMING_CONTENT_SEPARATOR
                     )
                 )
@@ -89,13 +89,33 @@ class ConversationAuxiliaryFacadeImpl(
     ): Mono<GeneratedAIInterlocutorData> {
         return languageProficiencyService
             .findUserProficiencyInLanguageOrThrow(userId, body.language)
-            .flatMap { languageProficiency ->
-                val formattedRecentInterlocutors = if (body.recentInterlocutors.isNullOrEmpty()) {
+            .zipWith(
+                conversationService.findRecentConversationsInfo(
+                    userId = userId,
+                    language = body.language,
+                    limit = 10,
+                    type = body.conversationType
+                ).collectList()
+            )
+            .flatMap { tuple ->
+                val languageProficiency = tuple.t1
+                val recentConversationsFromDB = tuple.t2
+
+                val allRecentInterlocutors: List<String> = buildList {
+                    body.recentInterlocutors?.forEach { interlocutor ->
+                        add(Pair(interlocutor.name, interlocutor.avatarId))
+                    }
+                    recentConversationsFromDB.forEach { conv ->
+                        add(Pair(conv.name, conv.avatarId))
+                    }
+                }.map {
+                    "- ${it.first} (Avatar: ${it.second})"
+                }
+
+                val formattedRecentInterlocutors = if (allRecentInterlocutors.isEmpty()) {
                     "NONE"
                 } else {
-                    body.recentInterlocutors.joinToString(separator = "\n") { interlocutor ->
-                        "- ${interlocutor.name} (Avatar: ${interlocutor.avatarId})"
-                    }
+                    allRecentInterlocutors.joinToString(separator = "\n")
                 }
 
                 val prompt = Prompt(
