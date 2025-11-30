@@ -57,7 +57,9 @@ enum class ConversationAIBotAvatar(
 
     companion object {
         fun toPromptList(): String {
-            return entries.joinToString(separator = "\n") { "- ${it.name} (${it.gender}) - (${it.description})" }
+            return entries
+                .filter { it.id != AVATAR_DEFAULT.id }
+                .joinToString(separator = "\n") { "- ${it.name} (${it.gender}) - (${it.description})" }
         }
     }
 }

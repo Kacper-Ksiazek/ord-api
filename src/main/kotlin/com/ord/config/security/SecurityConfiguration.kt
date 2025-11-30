@@ -50,6 +50,8 @@ class SecurityConfiguration(
     fun apiSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http
             .csrf { it.disable() }
+            .httpBasic { it.disable() }
+            .formLogin { it.disable() }
             .securityContextRepository(contextRepository)
             .authenticationManager(authManager)
             .authorizeExchange { ex ->
