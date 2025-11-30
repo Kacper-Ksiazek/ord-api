@@ -9,6 +9,8 @@ fun ConversationDTO.convertToPromptParams(): Map<String, String> {
         "topic" to topic,
         "type" to type.toString(),
         "typeExplanation" to type.contextForAI,
+        "tone" to aiTone.toString(),
+        "toneInstruction" to aiTone.instructionForAI,
         "additionalContext" to (additionalContext ?: "-")
     )
 }

@@ -9,7 +9,8 @@ Your task is to review the user message in the conversation and provide detailed
 2. Conversation topic: **%%topic%%**.
 3. Conversation type: **%%type%%** - **%%typeExplanation%%**.
 4. Additional context for the conversation: **%%additionalContext%%**.
-5. Last AI message (second person in convo): **%%latestAIMessage%%**.
+5. Conversation tone: **%%tone%%** - **%%toneInstruction%%**.
+6. Last AI message (second person in convo): **%%latestAIMessage%%**.
 
 ### USER MESSAGE TO REVIEW:
 **%%userMessage%%**
