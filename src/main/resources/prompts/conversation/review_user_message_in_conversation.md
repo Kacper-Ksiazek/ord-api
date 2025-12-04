@@ -83,7 +83,21 @@ Review the user message and provide detailed, constructive feedback.
 
 **CRITICAL: Your response MUST be valid JSON only - no explanatory text before or after.**
 
+### OUTPUT FORMAT:
+Return ONLY the raw JSON object. Do not escape the opening or closing quotes of keys or values.
+
+Example of valid output structure:
+{
+   "mistakes": [
+      {
+         "phrase": "I goes to work",
+         "correctForm": "I go to work"
+      }
+   ]
+}
+
 Your response should be a JSON object matching the following TypeScript interface:
+
 
 ```ts
 type Rating = number; // 0-10 inclusive

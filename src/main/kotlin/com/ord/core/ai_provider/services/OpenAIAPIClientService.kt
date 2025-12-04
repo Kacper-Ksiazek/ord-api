@@ -1,6 +1,7 @@
 package com.ord.core.ai_provider.services
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.ord.core.ai_provider.dto.JsonSchemaDefinition
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
 import reactor.core.publisher.Flux
@@ -22,6 +23,7 @@ interface OpenAIAPIClientService {
 
         userId: UUID,
         gptTokensUsageLogKey: String,
+        structuredOutput: JsonSchemaDefinition? = null,
 
         saveLog: (openAIResponse: OpenAIResponse) -> Unit = {},
         validateResponseBody: (parsedResponseBody: T?) -> Boolean = { it != null },

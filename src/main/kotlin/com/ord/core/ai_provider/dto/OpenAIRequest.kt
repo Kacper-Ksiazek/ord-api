@@ -10,4 +10,6 @@ data class OpenAIRequest(
 //        "effort" to "low"
 //    ),
     val max_output_tokens: Int,
+
+    val text: Map<String, Any>? = null,
 )

@@ -7,7 +7,9 @@ import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.exceptions.REST.BadRequestException
 import org.slf4j.LoggerFactory
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
+import com.ord.features.conversation.api.facades.helpers.ai_responses.OpenAIReviewedMessage
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.api.facades.helpers.schemas.ConversationReviewSchema
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
@@ -171,10 +173,12 @@ class OngoingConversationFacadeImpl(
 
                 openAIAPIClientService.makeRequest(
                     prompt = prompt.toString(),
-                    aiResponseType = object : TypeReference<ReviewedUserConversationMessage>() {},
+                    aiResponseType = object : TypeReference<OpenAIReviewedMessage>() {},
                     userId = userId,
-                    gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE
+                    gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
+                    structuredOutput = ConversationReviewSchema
                 )
+                    .map { openAIResponse -> openAIResponse.toDomain() }
                     .flatMap { aiFeedback ->
                         conversationMessageService.saveFeedbackForExistingMessage(
                             messageId = body.messageId,

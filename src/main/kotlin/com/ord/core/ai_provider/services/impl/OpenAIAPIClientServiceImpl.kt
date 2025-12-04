@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.config.properties.OpenAIProperties
+import com.ord.core.ai_provider.dto.JsonSchemaDefinition
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
@@ -45,12 +46,13 @@ class OpenAIAPIClientServiceImpl(
 
         userId: UUID,
         gptTokensUsageLogKey: String,
+        structuredOutput: JsonSchemaDefinition?,
 
         saveLog: (openAIResponse: OpenAIResponse) -> Unit,
         validateResponseBody: (parsedResponseBody: T?) -> Boolean,
         parseResponseBody: (responseBody: T) -> T
     ): Mono<T> {
-        val openAIRequest = openAIRequestFactory.createRequest(prompt)
+        val openAIRequest = openAIRequestFactory.createRequest(prompt, structuredOutput = structuredOutput)
 
         val enhancedSaveLog: (OpenAIResponse) -> Unit = { openAIResponse ->
             saveLog(openAIResponse)
@@ -63,7 +65,14 @@ class OpenAIAPIClientServiceImpl(
             ).subscribe()
         }
 
-        return attemptRequest(openAIRequest, aiResponseType, enhancedSaveLog, validateResponseBody, parseResponseBody, 0)
+        return attemptRequest(
+            openAIRequest,
+            aiResponseType,
+            enhancedSaveLog,
+            validateResponseBody,
+            parseResponseBody,
+            0
+        )
     }
 
     private fun <T> attemptRequest(
@@ -96,7 +105,14 @@ class OpenAIAPIClientServiceImpl(
                 if (parsedResponseBody != null && validateResponseBody(parsedResponseBody)) {
                     Mono.just(parsedResponseBody)
                 } else {
-                    attemptRequest(openAIRequest, aiResponseType, saveLog, validateResponseBody, parseResponseBody, attemptNumber + 1)
+                    attemptRequest(
+                        openAIRequest,
+                        aiResponseType,
+                        saveLog,
+                        validateResponseBody,
+                        parseResponseBody,
+                        attemptNumber + 1
+                    )
                 }
             }
     }
