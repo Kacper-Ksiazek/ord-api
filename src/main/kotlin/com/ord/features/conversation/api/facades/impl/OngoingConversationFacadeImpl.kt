@@ -18,9 +18,7 @@ import com.ord.features.conversation.models.conversation_message.ConversationMes
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
 import com.ord.features.conversation.models.conversation.ConversationMapper
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ErrorType
 import com.ord.features.conversation.services.ConversationMessageService
-import com.ord.shared.utils.EnumUtils.joinEnumValues
 import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
@@ -163,11 +161,7 @@ class OngoingConversationFacadeImpl(
                     params = conversation.convertToPromptParams() + mapOf(
                         "userMessage" to userMessage.content,
                         "latestAIMessage" to (body.latestAIMessage
-                            ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
-                        "errorTypes" to ErrorType::class
-                            .joinEnumValues(separator = " | ")
-                            .split(" | ")
-                            .joinToString(" | ") { "\"$it\"" },
+                            ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation.")
                     )
                 )
 

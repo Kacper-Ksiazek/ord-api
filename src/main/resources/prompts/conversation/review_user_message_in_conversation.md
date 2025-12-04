@@ -33,9 +33,9 @@ Before evaluating the message quality, you MUST check if the user is sabotaging 
 
 If sabotage is detected, you MUST:
 - Set `sabotage` field with clear reason (e.g., "Extremely short answer that doesn't engage with the question")
-- Set ALL ratings to 0 (grammar: 0, vocabulary: 0, answerLength: 0, naturalness: 0, coherenceWithContext: 0)
+- Set ALL ratings to 0
 - Set `registerAppropriate: false`
-- Set all arrays to empty: `mistakes: []`, `strengthsIdentified: []`, etc.
+- Set all arrays to empty
 - SKIP all further evaluation steps
 
 **STEP 2: IF NO SABOTAGE, PROCEED WITH DETAILED FEEDBACK**
@@ -56,9 +56,8 @@ Review the user message and provide detailed, constructive feedback.
    - **3 (Critical)**: Impedes communication or would confuse a native speaker
    - **2 (Moderate)**: Noticeable error that reduces fluency or sounds unnatural
    - **1 (Minor)**: Technically incorrect but meaning is clear, or unnatural but acceptable
-3. **Categorize by error type**: Enables pattern tracking
-4. **Explain in target language**: This is a learning opportunity
-5. **Provide correct form**: Show the proper way to say/write it
+3. **Explain in target language**: This is a learning opportunity
+4. **Provide correct form**: Show the proper way to say/write it
 
 **Positive Feedback:**
 
@@ -66,59 +65,13 @@ Review the user message and provide detailed, constructive feedback.
 - Be specific: "Used past perfect correctly" not just "good grammar"
 - Acknowledge progress markers: "Advanced vocabulary for your level"
 
-**Rating Guidelines:**
-
-- **grammar** (0-10): Accuracy of grammatical structures
-- **vocabulary** (0-10): Appropriateness, accuracy, and range of word choice
-- **answerLength** (0-10): Adequacy relative to question asked and conversation type
-- **naturalness** (0-10): How native-like the expression is (10 = native speaker, 0 = very unnatural)
-- **coherenceWithContext** (0-10): How well the message responds to the AI's previous message
-- **registerAppropriate** (boolean): Does the formality level match the conversation type?
-
 **Level Considerations:**
 
 - Beginner (A1-A2): Focus on critical mistakes only, be extra encouraging
 - Intermediate (B1-B2): Balance corrections with enrichment suggestions
 - Advanced (C1-C2): Focus on naturalness, idiomatic usage, and subtle nuances
 
-### FIELD SPECIFICATIONS:
-
-**sabotage** (string or empty): If user is sabotaging (wrong language, extremely short lazy answers like "ok"/"yes", completely off-topic, or offensive content), provide clear reason. Otherwise use empty string.
-
-**grammar** (integer 0-10): Accuracy of grammatical structures
-
-**vocabulary** (integer 0-10): Appropriateness, accuracy, and range of word choice
-
-**answerLength** (integer 0-10): Adequacy relative to question asked and conversation type
-
-**naturalness** (integer 0-10): How native-like the expression is (10 = native speaker, 0 = very unnatural)
-
-**coherenceWithContext** (integer 0-10): How well the message responds to the AI's previous message
-
-**registerAppropriate** (boolean): Does the formality level match the conversation type?
-
-**mistakes** (array): List of identified errors, ordered by severity (critical first). Empty if perfect. Each mistake must include:
-- **phrase**: Exact quote from user message
-- **severity**: 1 (Minor), 2 (Moderate), or 3 (Critical)
-- **errorType**: One of: **%%errorTypes%%** (case-sensitive, never invent new types)
-- **explanation**: Why it's wrong (in target language)
-- **correctForm**: The correct version
-
-**strengthsIdentified** (array of strings): 2-3 specific positive points. Empty if sabotage detected.
-
-**vocabularyEnrichment** (array): For B1+ levels. Suggestions to improve vocabulary. Empty if not applicable. Each includes:
-- **original**: What user said (acceptable but could be better)
-- **suggestion**: More advanced/natural alternative
-- **explanation**: Why suggestion is better (in target language)
-
-**alternativeExpressions** (array): Different ways to express ideas. Empty if not applicable. Each includes:
-- **context**: Which part of message this applies to
-- **alternatives**: Array of different ways to express the same idea
-- **note**: Nuances between alternatives (use empty string if not applicable)
-
-**culturalNote** (string or empty): Note about culturally inappropriate usage despite grammatical correctness. Use empty string if fine.
-
-### ERROR CATEGORIZATION GUIDELINES:
+### ERROR CATEGORIZATION:
 
 **When to use COHERENCE_ISSUE (vs sabotage):**
 
@@ -135,18 +88,9 @@ Use **sabotage field** (not COHERENCE_ISSUE) for:
 **Example - COHERENCE_ISSUE:**
 AI: "What did you do at the beach?"
 User: "I like beaches because they are beautiful."
-→ Use COHERENCE_ISSUE mistake type + low coherenceWithContext rating (shows effort, 3+ words, but doesn't answer)
+→ Use COHERENCE_ISSUE mistake type + low coherenceWithContext rating
 
 **Example - SABOTAGE:**
 AI: "What did you do at the beach?"
 User: "ok"
 → Set sabotage field with reason + all ratings to 0 + empty arrays
-
-### KEY RULES:
-
-- Explanations in target language (**%%language%%**) unless user is absolute beginner
-- Use empty arrays for: mistakes, strengthsIdentified, vocabularyEnrichment, alternativeExpressions
-- Use empty strings for: sabotage, culturalNote, note (when not applicable)
-- Order mistakes by severity (critical first)
-- If sabotage: set sabotage field with reason, rate everything as 0, empty arrays for mistakes/strengths
-- If perfect message: empty mistakes array, but still provide strengthsIdentified and enrichment suggestions
