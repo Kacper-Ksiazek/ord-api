@@ -81,111 +81,72 @@ Review the user message and provide detailed, constructive feedback.
 - Intermediate (B1-B2): Balance corrections with enrichment suggestions
 - Advanced (C1-C2): Focus on naturalness, idiomatic usage, and subtle nuances
 
-**CRITICAL: Your response MUST be valid JSON only - no explanatory text before or after.**
+### FIELD SPECIFICATIONS:
 
-### OUTPUT FORMAT:
-Return ONLY the raw JSON object. Do not escape the opening or closing quotes of keys or values.
+**sabotage** (string or empty): If user is sabotaging (wrong language, extremely short lazy answers like "ok"/"yes", completely off-topic, or offensive content), provide clear reason. Otherwise use empty string.
 
-Example of valid output structure:
-{
-   "mistakes": [
-      {
-         "phrase": "I goes to work",
-         "correctForm": "I go to work"
-      }
-   ]
-}
+**grammar** (integer 0-10): Accuracy of grammatical structures
 
-Your response should be a JSON object matching the following TypeScript interface:
+**vocabulary** (integer 0-10): Appropriateness, accuracy, and range of word choice
 
+**answerLength** (integer 0-10): Adequacy relative to question asked and conversation type
 
-```ts
-type Rating = number; // 0-10 inclusive
+**naturalness** (integer 0-10): How native-like the expression is (10 = native speaker, 0 = very unnatural)
 
-type ErrorType = **%%errorTypes%%**;
+**coherenceWithContext** (integer 0-10): How well the message responds to the AI's previous message
 
-type Severity = 1 | 2 | 3;
+**registerAppropriate** (boolean): Does the formality level match the conversation type?
 
-interface Mistake {
-    phrase: string;              // Exact quote from user message
-    severity: Severity;          
-    errorType: ErrorType;        // Category for analytics
-    explanation: string;         // Why it's wrong (in target language)
-    correctForm: string;         // The correct version
-}
+**mistakes** (array): List of identified errors, ordered by severity (critical first). Empty if perfect. Each mistake must include:
+- **phrase**: Exact quote from user message
+- **severity**: 1 (Minor), 2 (Moderate), or 3 (Critical)
+- **errorType**: One of: **%%errorTypes%%** (case-sensitive, never invent new types)
+- **explanation**: Why it's wrong (in target language)
+- **correctForm**: The correct version
 
-interface VocabularyEnrichment {
-    original: string;            // What user said (acceptable but could be better)
-    suggestion: string;          // More advanced/natural alternative
-    explanation: string;         // Why suggestion is better (in target language)
-}
+**strengthsIdentified** (array of strings): 2-3 specific positive points. Empty if sabotage detected.
 
-interface AlternativeExpression {
-    context: string;             // Which part of message this applies to
-    alternatives: string[];      // Different ways to express the same idea
-    note?: string;               // Optional: nuances between alternatives
-}
+**vocabularyEnrichment** (array): For B1+ levels. Suggestions to improve vocabulary. Empty if not applicable. Each includes:
+- **original**: What user said (acceptable but could be better)
+- **suggestion**: More advanced/natural alternative
+- **explanation**: Why suggestion is better (in target language)
 
-type ExpectedResult = {
-    /**
-     * Detects sabotage: wrong language, extremely short answers ("yes", "no"), extremely offensive content,
-     * or completely off-topic responses. Return string with reason, rate everything as 0. Otherwise null.
-     */
-    sabotage: string | null;
+**alternativeExpressions** (array): Different ways to express ideas. Empty if not applicable. Each includes:
+- **context**: Which part of message this applies to
+- **alternatives**: Array of different ways to express the same idea
+- **note**: Nuances between alternatives (use empty string if not applicable)
 
-    // Core ratings for point calculation
-    grammar: Rating;
-    vocabulary: Rating;
-    answerLength: Rating;
-    naturalness: Rating;
-    coherenceWithContext: Rating;
-    registerAppropriate: boolean;
+**culturalNote** (string or empty): Note about culturally inappropriate usage despite grammatical correctness. Use empty string if fine.
 
-    mistakes: Mistake[];                    // Empty array if perfect, order by severity (critical first)
-    strengthsIdentified: string[];          // Always try to find 2-3 positive points, empty if sabotage
-
-    // Enrichment - help user level up (empty arrays if not applicable)
-    vocabularyEnrichment: VocabularyEnrichment[];  // Only for B1+ levels
-    alternativeExpressions: AlternativeExpression[];
-
-    // Cultural/pragmatic notes
-    culturalNote: string | null;  // Grammatically correct but culturally inappropriate usage
-};
-```
-
-### CRITICAL GUIDELINES FOR ERROR CATEGORIZATION:
-
-**IMPORTANT - Use the correct ErrorType values ONLY:**
-You MUST use one of the exact values from **%%errorTypes%%** (case-sensitive).
+### ERROR CATEGORIZATION GUIDELINES:
 
 **When to use COHERENCE_ISSUE (vs sabotage):**
 
-Use COHERENCE_ISSUE for mistakes when the user is genuinely trying but made an error:
+Use **COHERENCE_ISSUE** error type when user is genuinely trying but made an error:
 - Answer doesn't fully address the question (but shows effort)
 - Answer changes topic without smooth transition
-- Answer lacks some necessary detail for natural flow
+- Answer lacks necessary detail for natural flow
 - Response is somewhat brief but contains multiple words/sentences
 
-Use SABOTAGE (not COHERENCE_ISSUE) for:
+Use **sabotage field** (not COHERENCE_ISSUE) for:
 - Single-word lazy answers: "ok", "yes", "no", "sure", "fine"
 - Extremely short responses showing no effort to engage
 
-**Example of COHERENCE_ISSUE (not sabotage):**
-- AI asks: "What did you do at the beach?"
-- User answers: "I like beaches because they are beautiful." (3+ words, shows effort but doesn't answer the question)
-- This gets COHERENCE_ISSUE mistake + low coherenceWithContext rating
+**Example - COHERENCE_ISSUE:**
+AI: "What did you do at the beach?"
+User: "I like beaches because they are beautiful."
+→ Use COHERENCE_ISSUE mistake type + low coherenceWithContext rating (shows effort, 3+ words, but doesn't answer)
 
-**Example of SABOTAGE (not COHERENCE_ISSUE):**
-- AI asks: "What did you do at the beach?"
-- User answers: "ok"
-- This gets sabotage flag + all ratings set to 0
+**Example - SABOTAGE:**
+AI: "What did you do at the beach?"
+User: "ok"
+→ Set sabotage field with reason + all ratings to 0 + empty arrays
 
-### IMPORTANT REMINDERS:
+### KEY RULES:
 
-- Always return valid JSON matching the ExpectedResult interface exactly
-- **CRITICAL**: Only use ErrorType values listed above - never invent new ones like "ANSWER_LENGTH" or "ANSWER_TOO_SHORT"
 - Explanations in target language (**%%language%%**) unless user is absolute beginner
-- Use empty arrays (not null) for: mistakes, strengthsIdentified, vocabularyEnrichment, alternativeExpressions
+- Use empty arrays for: mistakes, strengthsIdentified, vocabularyEnrichment, alternativeExpressions
+- Use empty strings for: sabotage, culturalNote, note (when not applicable)
 - Order mistakes by severity (critical first)
-- If sabotage: set sabotage field, rate everything as 0, empty arrays for mistakes/strengths
-- If perfect message: empty mistakes array, but still provide strengthsIdentified and possibly enrichment suggestions
+- If sabotage: set sabotage field with reason, rate everything as 0, empty arrays for mistakes/strengths
+- If perfect message: empty mistakes array, but still provide strengthsIdentified and enrichment suggestions
