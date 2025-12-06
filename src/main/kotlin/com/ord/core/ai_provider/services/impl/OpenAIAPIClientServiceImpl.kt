@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.config.properties.OpenAIProperties
-import com.ord.core.ai_provider.dto.JsonSchemaDefinition
+import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
@@ -14,6 +14,7 @@ import com.ord.core.ai_provider.services.Emitter
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.exceptions.REST.BadGatewayException
+import com.ord.shared.prompts.Prompt
 import com.ord.shared.utils.Console
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
@@ -46,7 +47,7 @@ class OpenAIAPIClientServiceImpl(
 
         userId: UUID,
         gptTokensUsageLogKey: String,
-        structuredOutput: JsonSchemaDefinition?,
+        structuredOutput: StructuredOutputTemplate?,
 
         saveLog: (openAIResponse: OpenAIResponse) -> Unit,
         validateResponseBody: (parsedResponseBody: T?) -> Boolean,
@@ -75,6 +76,26 @@ class OpenAIAPIClientServiceImpl(
         )
     }
 
+    override fun <T> makeRequest(
+        aiResponseType: TypeReference<T>,
+        prompt: Prompt,
+        userId: UUID,
+        gptTokensUsageLogKey: String,
+        saveLog: (OpenAIResponse) -> Unit,
+        validateResponseBody: (T?) -> Boolean,
+        parseResponseBody: (T) -> T
+    ): Mono<T> {
+        return makeRequest(
+            aiResponseType,
+            prompt = prompt.toString(),
+            userId,
+            gptTokensUsageLogKey,
+            structuredOutput = prompt.variant.structuredOutput,
+            saveLog,
+            validateResponseBody,
+        )
+    }
+
     private fun <T> attemptRequest(
         openAIRequest: Any,
         aiResponseType: TypeReference<T>,
@@ -91,13 +112,66 @@ class OpenAIAPIClientServiceImpl(
             .uri(openAIProperties.apiUrl)
             .bodyValue(openAIRequest)
             .retrieve()
-            .bodyToMono(OpenAIResponse::class.java)
-            .doOnNext { response -> saveLog(response) }
+            .bodyToMono(String::class.java)
+            .doOnNext { rawResponse ->
+                println("\n" + "=".repeat(80))
+                println("📨 RAW OPENAI API RESPONSE (before deserialization)")
+                println("=".repeat(80))
+                println(rawResponse)
+                println("=".repeat(80) + "\n")
+            }
+            .flatMap { rawResponse ->
+                try {
+                    Mono.just(objectMapper.readValue(rawResponse, OpenAIResponse::class.java))
+                } catch (e: Exception) {
+                    Console.printRed("\n🚨 [DESERIALIZATION ERROR]")
+                    Console.printRed("Failed to deserialize OpenAI response")
+                    Console.printRed("Error: ${e.message}")
+                    e.printStackTrace()
+                    Mono.error(e)
+                }
+            }
+            .doOnError { error ->
+                Console.printRed("\n🚨 [OPENAI API ERROR]")
+                Console.printRed("Error Type: ${error::class.simpleName}")
+                Console.printRed("Error Message: ${error.message}")
+
+                if (error is org.springframework.web.reactive.function.client.WebClientResponseException) {
+                    Console.printRed("Status Code: ${error.statusCode}")
+                    Console.printRed("Response Body: ${error.responseBodyAsString}")
+                    Console.printRed("Request URL: ${openAIProperties.apiUrl}")
+                    Console.printRed("\nRequest Body:")
+                    try {
+                        Console.printRed(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(openAIRequest))
+                    } catch (e: Exception) {
+                        Console.printRed("Failed to serialize request: ${e.message}")
+                    }
+                }
+
+                error.printStackTrace()
+            }
+            .doOnNext { response ->
+                saveLog(response)
+
+                // Log the raw response from OpenAI
+                println("\n" + "=".repeat(80))
+                println("📥 OPENAI API RAW RESPONSE")
+                println("=".repeat(80))
+                try {
+                    println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response))
+                } catch (e: Exception) {
+                    println("Failed to serialize response: ${e.message}")
+                    println("Raw response.data: ${response.data}")
+                }
+                println("=".repeat(80) + "\n")
+            }
             .flatMap { response ->
                 val parsedResponseBody = try {
                     parseResponseBody(objectMapper.readValue(response.data, aiResponseType))
                 } catch (e: Exception) {
-                    Console.printRed("\n\uD83D\uDEA8 [OPENAI REQUEST PARSING ERROR] Exception: ${e.message}")
+                    Console.printRed("\n🚨 [OPENAI REQUEST PARSING ERROR] Exception: ${e.message}")
+                    Console.printRed("Response data type: ${response.data?.javaClass?.name}")
+                    Console.printRed("Response data content: ${response.data}")
                     println(e)
                     null
                 }
