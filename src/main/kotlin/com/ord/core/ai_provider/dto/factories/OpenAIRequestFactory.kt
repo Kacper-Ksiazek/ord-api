@@ -3,8 +3,9 @@ package com.ord.core.ai_provider.dto.factories
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.ord.config.properties.OpenAIProperties
-import com.ord.core.ai_provider.dto.JsonSchemaDefinition
+import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.core.ai_provider.dto.OpenAIRequest
+import com.ord.shared.prompts.AvailableAIModels
 import org.springframework.stereotype.Component
 
 @Component
@@ -21,10 +22,10 @@ class OpenAIRequestFactory(
         prompt: String,
         context: String = defaultContext,
         stream: Boolean = false,
-        structuredOutput: JsonSchemaDefinition? = null,
+        structuredOutput: StructuredOutputTemplate? = null,
     ): OpenAIRequest {
         val request = OpenAIRequest(
-            model = openAIProperties.gptModel,
+            model = AvailableAIModels.GPT_5_NANO.model,
             temperature = openAIProperties.temperature,
             max_output_tokens = openAIProperties.maxTokens,
             input = prompt,
@@ -35,6 +36,7 @@ class OpenAIRequestFactory(
             )
         )
 
+        // TODO: Remove it / Wrap with debugger mode FF
         // Log structured output request details
         if (structuredOutput != null) {
             println("\n" + "=".repeat(80))

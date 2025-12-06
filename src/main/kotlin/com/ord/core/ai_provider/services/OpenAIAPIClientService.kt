@@ -1,9 +1,10 @@
 package com.ord.core.ai_provider.services
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.ord.core.ai_provider.dto.JsonSchemaDefinition
+import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
+import com.ord.shared.prompts.Prompt
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
@@ -23,7 +24,20 @@ interface OpenAIAPIClientService {
 
         userId: UUID,
         gptTokensUsageLogKey: String,
-        structuredOutput: JsonSchemaDefinition? = null,
+        structuredOutput: StructuredOutputTemplate? = null,
+
+        saveLog: (openAIResponse: OpenAIResponse) -> Unit = {},
+        validateResponseBody: (parsedResponseBody: T?) -> Boolean = { it != null },
+        parseResponseBody: (responseBody: T) -> T = { it }
+    ): Mono<T>
+
+    fun <T> makeRequest(
+        aiResponseType: TypeReference<T>,
+
+        prompt: Prompt,
+
+        userId: UUID,
+        gptTokensUsageLogKey: String,
 
         saveLog: (openAIResponse: OpenAIResponse) -> Unit = {},
         validateResponseBody: (parsedResponseBody: T?) -> Boolean = { it != null },
