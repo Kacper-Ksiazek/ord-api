@@ -5,24 +5,23 @@ import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.exceptions.REST.BadRequestException
-import org.slf4j.LoggerFactory
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.OpenAIReviewedMessage
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
-import com.ord.features.conversation.api.facades.helpers.schemas.ConversationReviewSchema
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
-import com.ord.features.conversation.models.conversation_message.ConversationMessageMapper
-import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
-import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
-import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
 import com.ord.features.conversation.models.conversation.ConversationMapper
+import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
+import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
+import com.ord.features.conversation.models.conversation_message.ConversationMessageMapper
+import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import com.ord.features.conversation.services.ConversationMessageService
 import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.toParamString
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -170,7 +169,7 @@ class OngoingConversationFacadeImpl(
                     aiResponseType = object : TypeReference<OpenAIReviewedMessage>() {},
                     userId = userId,
                     gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
-                    structuredOutput = ConversationReviewSchema
+                    structuredOutput = prompt.variant.structuredOutput,
                 )
                     .map { openAIResponse -> openAIResponse.toDomain() }
                     .flatMap { aiFeedback ->

@@ -9,7 +9,6 @@ import java.math.BigDecimal
 class OpenAIProperties(
     var apiKey: String = "",
     var apiUrl: String = "",
-    var gptModel: String = "",
     var maxTokens: Int = 0,
     var temperature: Float = 0.7f,
 

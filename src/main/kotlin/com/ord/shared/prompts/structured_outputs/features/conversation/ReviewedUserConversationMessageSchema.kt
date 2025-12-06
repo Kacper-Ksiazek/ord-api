@@ -2,7 +2,7 @@ package com.ord.shared.prompts.structured_outputs.features.conversation
 
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 
-val ReviewedUserConversationMessage = StructuredOutputTemplate(
+val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
     name = "conversation_review",
     schema = mapOf(
         "type" to "object",

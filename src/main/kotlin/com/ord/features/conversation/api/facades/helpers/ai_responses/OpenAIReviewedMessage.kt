@@ -6,7 +6,7 @@ import com.ord.features.conversation.models.conversation_user_message_feedback.j
 
 /**
  * Intermediate DTO for OpenAI structured outputs response.
- *
+ src/main/kotlin/com/ord/features/conversation/api/facades/helpers/ai_responses/ReviewedUserConversationMessage.kt*
  * This DTO matches OpenAI's structured output schema where all fields are required.
  * Nullable fields use empty string ("") to represent null values, which are then
  * mapped to proper nulls in the domain model via `toDomain()`.
