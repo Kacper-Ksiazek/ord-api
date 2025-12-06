@@ -160,11 +160,23 @@ abstract class ControllerTestBase(
     }
 
     fun assertGptTokensLogCreated(userId: UUID, operationType: String) {
-        val tokenUsage = gptTokensUsageRepository
-            .findAllByUserId(userId)
-            .collectList()
-            .block()!!
-            .find { it.operationType == operationType }
+        // Wait for async token usage save to complete (with retry logic)
+        var tokenUsage: GptTokensUsageEntity? = null
+        var attempts = 0
+        val maxAttempts = 10
+
+        while (tokenUsage == null && attempts < maxAttempts) {
+            tokenUsage = gptTokensUsageRepository
+                .findAllByUserId(userId)
+                .collectList()
+                .block()!!
+                .find { it.operationType == operationType }
+
+            if (tokenUsage == null) {
+                Thread.sleep(100) // Wait 100ms before retry
+                attempts++
+            }
+        }
 
         tokenUsage shouldNotBe null
         tokenUsage!!.apply {

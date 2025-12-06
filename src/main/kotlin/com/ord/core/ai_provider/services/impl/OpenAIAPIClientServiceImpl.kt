@@ -309,6 +309,7 @@ class OpenAIAPIClientServiceImpl(
         onComplete: (Pair<StreamCompletedPayload<String>, Emitter>) -> Unit
     ): Flux<String> {
         val emitter: Emitter = Sinks.many().unicast().onBackpressureBuffer<String>()
+        var accumulatedContent = StringBuilder()  // Accumulate content as it streams
 
         val request = openAIRequestFactory.createRequest(
             prompt = prompt,
@@ -339,6 +340,7 @@ class OpenAIAPIClientServiceImpl(
                             val delta = type.extractRelevantValue(jsonNode)
 
                             if (delta != null) {
+                                accumulatedContent.append(delta)  // Accumulate delta
                                 onDeltaReceived(Pair(delta, emitter))
                             }
                         }
@@ -349,7 +351,7 @@ class OpenAIAPIClientServiceImpl(
                             onComplete(
                                 Pair(
                                     StreamCompletedPayload(
-                                        finalContent = type.extractRelevantValue(jsonNode) ?: "",
+                                        finalContent = accumulatedContent.toString(),  // Use accumulated content
                                         inputTokens = usage?.get("input_tokens")?.asInt() ?: 0,
                                         outputTokens = usage?.get("output_tokens")?.asInt() ?: 0
                                     ),
