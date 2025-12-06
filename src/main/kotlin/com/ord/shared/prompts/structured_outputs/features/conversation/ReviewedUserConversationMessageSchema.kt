@@ -1,5 +1,6 @@
 package com.ord.shared.prompts.structured_outputs.features.conversation
 
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ErrorType
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 
 val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
@@ -62,12 +63,7 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                         ),
                         "errorType" to mapOf(
                             "type" to "string",
-                            "enum" to listOf(
-                                "GRAMMAR_TENSE", "GRAMMAR_AGREEMENT", "GRAMMAR_WORD_ORDER",
-                                "VOCABULARY_WRONG_WORD", "VOCABULARY_UNNATURAL_COLLOCATION",
-                                "SPELLING", "PUNCTUATION", "MISSING_WORD",
-                                "UNNECESSARY_WORD", "REGISTER_MISMATCH", "COHERENCE_ISSUE"
-                            ),
+                            "enum" to ErrorType.entries,
                             "description" to "Category for analytics"
                         ),
                         "explanation" to mapOf(
