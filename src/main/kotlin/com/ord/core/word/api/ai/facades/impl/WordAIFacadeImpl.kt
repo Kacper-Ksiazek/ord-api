@@ -16,6 +16,7 @@ import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
 import com.ord.core.word.api.ai.responses.dto.VocabularySuggestion
+import com.ord.core.word.api.ai.responses.openai.OpenAIGeneratedWordManual
 import com.ord.core.word.models.word_details.enums.WordCollocationFrequency
 import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word_details.enums.WordGender
@@ -67,29 +68,18 @@ class WordAIFacadeImpl(
                         "wordCollocationFrequency" to WordCollocationFrequency::class.joinEnumValues(separator = " | "),
                         "wordGenders" to WordGender::class.joinEnumValues(separator = " | ")
                     )
-                ).toString()
-
-                openAIAPIClientService.makeRequest(
-                    aiResponseType = object : TypeReference<AIGeneratedWordManual>() {},
-                    prompt = prompt,
-                    userId = user.id,
-                    gptTokensUsageLogKey = GptTokensUsageOperationType.Words.GENERATE_MANUAL,
-                    validateResponseBody = { responseBody ->
-                        responseBody != null &&
-                                !responseBody.toString().contains("NON_EXISTENT_WORD")
-                    },
-                    parseResponseBody = { responseBody ->
-                        when {
-                            responseBody.toString().contains("NON_EXISTENT_WORD") ->
-                                throw BadRequestException("The word ${body.word} does not exist in the language ${body.language}.")
-
-                            else -> {
-                                responseBody.originalWord = body.word
-                                responseBody
-                            }
-                        }
-                    }
                 )
+
+                openAIAPIClientService
+                    .makeRequest(
+                        aiResponseType = object : TypeReference<OpenAIGeneratedWordManual>() {},
+                        prompt = prompt,
+                        userId = user.id,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Words.GENERATE_MANUAL,
+                    )
+                    .map {
+                        it.toDomain(body.word)
+                    }
             }
     }
 
