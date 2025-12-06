@@ -2,6 +2,7 @@ package com.ord.shared.prompts
 
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.shared.prompts.structured_outputs.features.conversation.reviewedUserConversationMessageSchema
+import com.ord.shared.prompts.structured_outputs.features.words.generatedWordManualSchema
 
 enum class AvailablePrompts(
     val resourcePath: String,
@@ -22,7 +23,10 @@ enum class AvailablePrompts(
     GAMES_GENERATE_SENTENCES_WRITING(resourcePath = "games/generate_sentences_writing_game.md"),
     GAMES_REVIEW_SENTENCES_WRITING(resourcePath = "games/review_sentences_writing_game.md"),
 
-    WORDS_GENERATE_MANUAL(resourcePath = "words/generate_word_manual.md"),
+    WORDS_GENERATE_MANUAL(
+        resourcePath = "words/generate_word_manual.md",
+        structuredOutput = generatedWordManualSchema
+    ),
     WORDS_SUGGEST_VOCABULARY(resourcePath = "words/suggest_vocabulary.md"),
     WORDS_EXPLAIN(resourcePath = "words/explain_word.md"),
 }
