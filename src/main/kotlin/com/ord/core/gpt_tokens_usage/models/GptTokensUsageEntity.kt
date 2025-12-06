@@ -1,6 +1,7 @@
 package com.ord.core.gpt_tokens_usage.models
 
 import com.ord.shared.models.IdentifiableUserResource
+import com.ord.shared.prompts.AvailableAIModels
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
@@ -30,6 +31,6 @@ data class GptTokensUsageEntity(
     val createdAt: Instant = Instant.now(),
 ) : IdentifiableUserResource {
     companion object {
-        const val DEFAULT_MODEL = "gpt-4.1-mini"
+        val DEFAULT_MODEL = AvailableAIModels.GPT_5_NANO.model
     }
 }
