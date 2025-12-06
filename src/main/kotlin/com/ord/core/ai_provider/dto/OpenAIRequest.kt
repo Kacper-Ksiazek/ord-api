@@ -1,5 +1,14 @@
 package com.ord.core.ai_provider.dto
 
+enum class OpenAIReasoningEffort(val value: String) {
+    NONE("none"),
+    MINIMAL("minimal"),
+    LOW("low"),
+    MEDIUM("medium"),
+    HIGH("high"),
+    XHIGH("xhigh")
+}
+
 data class OpenAIRequest(
     val model: String,
     val input: String,
@@ -11,5 +20,10 @@ data class OpenAIRequest(
 //    ),
     val max_output_tokens: Int,
 
+    /** Structured output */
     val text: Map<String, Any>? = null,
-)
+) {
+    val reasoning = mapOf(
+        "effort" to OpenAIReasoningEffort.MINIMAL.value
+    )
+}

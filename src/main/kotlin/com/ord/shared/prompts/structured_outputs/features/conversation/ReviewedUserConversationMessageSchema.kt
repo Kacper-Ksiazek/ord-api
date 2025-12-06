@@ -1,18 +1,8 @@
-package com.ord.features.conversation.api.facades.helpers.schemas
+package com.ord.shared.prompts.structured_outputs.features.conversation
 
-import com.ord.core.ai_provider.dto.JsonSchemaDefinition
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ErrorType
+import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 
-/**
- * JSON Schema definition for conversation review structured outputs.
- *
- * This schema ensures OpenAI responses are guaranteed to match the expected format,
- * eliminating JSON parsing errors from malformed responses.
- *
- * Note: All fields are marked as required per OpenAI's structured outputs constraints.
- * Nullable fields (sabotage, culturalNote, note) use empty string "" to represent null.
- */
-val ConversationReviewSchema = JsonSchemaDefinition(
+val ReviewedUserConversationMessage = StructuredOutputTemplate(
     name = "conversation_review",
     schema = mapOf(
         "type" to "object",
