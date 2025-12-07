@@ -101,7 +101,31 @@ data class OpenAIGeneratedWordManual(
 }
 ```
 
-### 3. Connect Schema to Prompt
+### 3. Update the Prompt File
+
+Location: `src/main/resources/prompts/{feature}/{prompt_file}.md`
+
+**IMPORTANT:** Remove TypeScript interface definitions from prompt files when using structured outputs.
+
+**Why?** The schema is now enforced by OpenAI's structured output API, so the prompt doesn't need to include format instructions.
+
+**Before (without structured output):**
+```markdown
+Your response must adhere to this TS format:
+
+```ts
+interface Response {
+    field: string
+}
+```
+```
+
+**After (with structured output):**
+```markdown
+// Simply remove the format section - schema handles it
+```
+
+### 4. Connect Schema to Prompt
 
 Location: `src/main/kotlin/com/ord/shared/prompts/AvailablePrompts.kt`
 
@@ -123,7 +147,7 @@ enum class AvailablePrompts(
 }
 ```
 
-### 4. Update Facade Implementation
+### 5. Update Facade Implementation
 
 Location: `src/main/kotlin/com/ord/core/{domain}/api/ai/facades/impl/{Domain}AIFacadeImpl.kt`
 
@@ -190,8 +214,10 @@ fun toDomain(): WordGrammar? {
 - [ ] Create schema file with `.entries` for all enums
 - [ ] Add empty `properties` map to objects with `additionalProperties`
 - [ ] Mark ALL fields as required in schema
+- [ ] Ensure root schema type is "object" (not "array" - wrap arrays in an object property)
 - [ ] Create intermediate DTO with all non-nullable fields
 - [ ] Implement `toDomain()` conversion method
+- [ ] **Remove TypeScript format instructions from prompt file** (schema enforces format now)
 - [ ] Add schema to `AvailablePrompts` enum
 - [ ] Update facade to use intermediate DTO
 - [ ] Test with actual API calls
