@@ -12,6 +12,7 @@ import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import org.slf4j.LoggerFactory
 import com.ord.features.conversation.api.facades.ConversationAuxiliaryFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.GeneratedAIInterlocutorData
+import com.ord.features.conversation.api.facades.helpers.ai_responses.openai.OpenAIGeneratedAIInterlocutor
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
 import com.ord.features.conversation.models.conversation.enums.ConversationAIBotAvatar
@@ -135,10 +136,12 @@ class ConversationAuxiliaryFacadeImpl(
                 openAIStreamClientService
                     .makeRequest(
                         prompt = prompt.toString(),
-                        aiResponseType = object : TypeReference<GeneratedAIInterlocutorData>() {},
+                        aiResponseType = object : TypeReference<OpenAIGeneratedAIInterlocutor>() {},
                         userId = userId,
-                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.GENERATE_INTERLOCUTOR
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.GENERATE_INTERLOCUTOR,
+                        structuredOutput = prompt.variant.structuredOutput
                     )
+                    .map { it.toDomain() }
             }
     }
 }
