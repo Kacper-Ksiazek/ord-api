@@ -4,6 +4,7 @@ import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.shared.prompts.structured_outputs.features.conversation.reviewedUserConversationMessageSchema
 import com.ord.shared.prompts.structured_outputs.features.games.crosswordGenerateSchema
 import com.ord.shared.prompts.structured_outputs.features.games.sentencesWritingReviewSchema
+import com.ord.shared.prompts.structured_outputs.features.games.wordsTypingGenerateSchema
 import com.ord.shared.prompts.structured_outputs.features.words.generatedWordManualSchema
 
 enum class AvailablePrompts(
@@ -24,7 +25,10 @@ enum class AvailablePrompts(
         resourcePath = "games/generate_crossword_game.md",
         structuredOutput = crosswordGenerateSchema
     ),
-    GAMES_GENERATE_WORDS_TYPING(resourcePath = "games/generate_words_typing_game.md"),
+    GAMES_GENERATE_WORDS_TYPING(
+        resourcePath = "games/generate_words_typing_game.md",
+        structuredOutput = wordsTypingGenerateSchema
+    ),
     GAMES_GENERATE_SENTENCES_WRITING(resourcePath = "games/generate_sentences_writing_game.md"),
     GAMES_REVIEW_SENTENCES_WRITING(
         resourcePath = "games/review_sentences_writing_game.md",
