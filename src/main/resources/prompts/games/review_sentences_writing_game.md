@@ -12,23 +12,3 @@ Answers:
 [
 **%%serializedAnswers%%**
 ]
-
-Your response must adhere to this TS format:
-
-```ts
-interface ScoringCriteria {
-    score: number // value ranging [0-10] inclusive
-    comment?: string // If clarification is NOT needed, then do not add this field at all. 
-}
-
-type ExpectedResult = {
-    topicId: string, // UUID of the topic
-    evaluationCriteria: {
-        "fitsTopic": boolean // Don't be too harsh here, if the sentence is related to the topic set it to true
-        "answerLength": ScoringCriteria,
-        "vocabulary": ScoringCriteria,
-        "correctWordUsage": ScoringCriteria
-    },
-    suggestedCorrectAnswer: string | null // If user answer is 100% correct, then leave this as null
-}[]
-```
