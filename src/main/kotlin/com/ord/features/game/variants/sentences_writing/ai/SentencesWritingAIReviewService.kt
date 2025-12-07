@@ -8,6 +8,8 @@ import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.OngoingSentencesWritingGameDTO
 import com.ord.features.game.model.ongoing_game.json.SentencesWritingProperAnswers
 import com.ord.features.game.variants.sentences_writing.ai.dto.review.AIReviewedSentencesWritingGame
+import com.ord.features.game.variants.sentences_writing.ai.dto.review.openai.OpenAISentencesWritingReview
+import com.ord.features.game.variants.sentences_writing.ai.dto.review.openai.toDomain
 import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameAnswers
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.FinishedSentencesWritingGameResponse
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.ReviewedSentencesWritingSingleTopic
@@ -46,16 +48,18 @@ class SentencesWritingAIReviewService(
                 makeGameAIRequest(
                     userId = userId,
                     operationType = GptTokensUsageOperationType.Game.Review.SENTENCES_WRITING,
-                    aiResponseTypeReference = object : TypeReference<AIReviewedSentencesWritingGame>() {},
+                    aiResponseTypeReference = object : TypeReference<OpenAISentencesWritingReview>() {},
                     prompt = prompt.toString(),
+                    structuredOutput = prompt.variant.structuredOutput,
                     validateResponseBody = { parsedResponse ->
                         val expectedTopicsIds = ongoingGame.properAnswers.map { it.id }
 
-                        parsedResponse is AIReviewedSentencesWritingGame &&
-                                parsedResponse.size == ongoingGame.properAnswers.size &&
-                                parsedResponse.all { it.topicId in expectedTopicsIds }
+                        parsedResponse is OpenAISentencesWritingReview &&
+                                parsedResponse.reviews.size == ongoingGame.properAnswers.size &&
+                                parsedResponse.reviews.all { it.topicId in expectedTopicsIds }
                     }
                 )
+                    .map { it.toDomain() }
             }
             .map { aiReviewedGame ->
                 val (totalScore, maxScorePerTopic, scoringPerTopic) = computeScoring(aiReviewedGame)
