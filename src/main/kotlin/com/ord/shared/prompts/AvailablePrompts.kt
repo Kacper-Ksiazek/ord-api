@@ -1,6 +1,7 @@
 package com.ord.shared.prompts
 
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
+import com.ord.shared.prompts.structured_outputs.features.conversation.generatedAIInterlocutorSchema
 import com.ord.shared.prompts.structured_outputs.features.conversation.reviewedUserConversationMessageSchema
 import com.ord.shared.prompts.structured_outputs.features.games.crosswordGenerateSchema
 import com.ord.shared.prompts.structured_outputs.features.games.sentencesWritingGenerateSchema
@@ -13,7 +14,10 @@ enum class AvailablePrompts(
     val structuredOutput: StructuredOutputTemplate? = null,
 ) {
     CONVERSATION_SUGGEST_TOPIC(resourcePath = "conversation/suggest_conversation_topic.md"),
-    CONVERSATION_GENERATE_AI_INTERLOCUTOR(resourcePath = "conversation/generate_ai_interlocutor.md"),
+    CONVERSATION_GENERATE_AI_INTERLOCUTOR(
+        resourcePath = "conversation/generate_ai_interlocutor.md",
+        structuredOutput = generatedAIInterlocutorSchema
+    ),
 
     CONVERSATION_REQUEST_AI_RESPONSE(resourcePath = "conversation/respond_in_conversation.md"),
     CONVERSATION_INITIALIZE(resourcePath = "conversation/initialize_conversation.md"),
