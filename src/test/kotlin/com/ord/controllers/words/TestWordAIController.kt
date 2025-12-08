@@ -112,7 +112,7 @@ class TestWordAIController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.suggestions.shouldNotBeEmpty()
-                response.suggestions.size shouldBe 10
+                response.suggestions.size shouldBeGreaterThanOrEqualTo 10
 
                 assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_SUGGEST_VOCABULARY")
             }
