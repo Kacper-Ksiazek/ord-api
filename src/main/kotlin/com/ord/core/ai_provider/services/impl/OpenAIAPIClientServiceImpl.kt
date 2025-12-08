@@ -113,13 +113,6 @@ class OpenAIAPIClientServiceImpl(
             .bodyValue(openAIRequest)
             .retrieve()
             .bodyToMono(String::class.java)
-            .doOnNext { rawResponse ->
-                println("\n" + "=".repeat(80))
-                println("📨 RAW OPENAI API RESPONSE (before deserialization)")
-                println("=".repeat(80))
-                println(rawResponse)
-                println("=".repeat(80) + "\n")
-            }
             .flatMap { rawResponse ->
                 try {
                     Mono.just(objectMapper.readValue(rawResponse, OpenAIResponse::class.java))
@@ -152,18 +145,6 @@ class OpenAIAPIClientServiceImpl(
             }
             .doOnNext { response ->
                 saveLog(response)
-
-                // Log the raw response from OpenAI
-                println("\n" + "=".repeat(80))
-                println("📥 OPENAI API RAW RESPONSE")
-                println("=".repeat(80))
-                try {
-                    println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response))
-                } catch (e: Exception) {
-                    println("Failed to serialize response: ${e.message}")
-                    println("Raw response.data: ${response.data}")
-                }
-                println("=".repeat(80) + "\n")
             }
             .flatMap { response ->
                 val parsedResponseBody = try {
