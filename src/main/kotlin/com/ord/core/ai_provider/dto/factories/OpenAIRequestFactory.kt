@@ -1,7 +1,9 @@
 package com.ord.core.ai_provider.dto.factories
 
 import com.ord.config.properties.OpenAIProperties
+import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.core.ai_provider.dto.OpenAIRequest
+import com.ord.shared.prompts.AvailableAIModels
 import org.springframework.stereotype.Component
 
 @Component
@@ -16,14 +18,18 @@ class OpenAIRequestFactory(
         prompt: String,
         context: String = defaultContext,
         stream: Boolean = false,
+        structuredOutput: StructuredOutputTemplate? = null,
     ): OpenAIRequest {
         return OpenAIRequest(
-            model = openAIProperties.gptModel,
+            model = AvailableAIModels.GPT_5_NANO.model,
             temperature = openAIProperties.temperature,
             max_output_tokens = openAIProperties.maxTokens,
             input = prompt,
             instructions = context,
-            stream = stream
+            stream = stream,
+            text = if (structuredOutput == null) null else mapOf(
+                "format" to structuredOutput
+            )
         )
     }
 }

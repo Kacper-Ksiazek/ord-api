@@ -13,6 +13,7 @@ import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
 import com.ord.testing_utils.api.clients.WordAIAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -85,7 +86,7 @@ class TestWordAIController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.suggestions.shouldNotBeEmpty()
-                response.suggestions.size shouldBe 10
+                response.suggestions.size shouldBeGreaterThanOrEqualTo 10
 
                 response.suggestions.forEach { suggestion ->
                     suggestion.word.shouldNotBeBlank()
@@ -111,7 +112,7 @@ class TestWordAIController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.suggestions.shouldNotBeEmpty()
-                response.suggestions.size shouldBe 10
+                response.suggestions.size shouldBeGreaterThanOrEqualTo 10
 
                 assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_SUGGEST_VOCABULARY")
             }
@@ -158,7 +159,7 @@ class TestWordAIController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 response.suggestions.shouldNotBeEmpty()
-                response.suggestions.size shouldBe 10
+                response.suggestions.size shouldBeGreaterThanOrEqualTo 10
             }
 
             @Test

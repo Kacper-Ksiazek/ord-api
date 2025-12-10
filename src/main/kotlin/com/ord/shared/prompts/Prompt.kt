@@ -29,13 +29,13 @@ object PromptCache {
         }
     }
 
-    fun getPromptContent(variant: AvailablePrompts): String {
+    fun loadPromptTemplate(variant: AvailablePrompts): String {
         return cache[variant] ?: throw IllegalStateException("Prompt not found in cache: $variant")
     }
 }
 
 class Prompt(
-    variant: AvailablePrompts,
+    val variant: AvailablePrompts,
     params: Map<String, String> = mapOf()
 ) {
     private val finalPromptContent: String
@@ -43,7 +43,7 @@ class Prompt(
 
     init {
         try {
-            var content: String = PromptCache.getPromptContent(variant)
+            var content: String = PromptCache.loadPromptTemplate(variant)
 
             params.entries.forEach { (key, value) ->
                 val param = "**%%$key%%**"

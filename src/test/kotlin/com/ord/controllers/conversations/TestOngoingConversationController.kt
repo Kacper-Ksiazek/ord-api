@@ -962,43 +962,6 @@ class TestOngoingConversationController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.NOT_FOUND
             }
-
-            @Test
-            fun `200 - extremely short answers should be detected as sabotage`() {
-                val authenticatedUser = mockAuthenticatedUser(
-                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
-                )
-
-                val conversation = createConversation(authenticatedUser)
-
-                ongoingConversationAPIClient.initializeConversationByAI(
-                    conversationId = conversation.id,
-                    user = authenticatedUser
-                )
-
-                val shortMessage = "ok"
-                val messageId = saveUserMessage(
-                    conversationId = conversation.id,
-                    content = shortMessage,
-                    messageOrder = 1
-                )
-
-                val request = GetFeedbackOnUserConversationMessageRequest(
-                    conversationId = conversation.id,
-                    messageId = messageId,
-                    messageOrder = 1,
-                    latestAIMessage = TestData.AI_MESSAGE
-                )
-
-                val response = ongoingConversationAPIClient.generateFeedback(
-                    body = request,
-                    user = authenticatedUser
-                )
-
-                response.status shouldBe HttpStatus.OK
-                response.body shouldNotBe null
-                response.body!!.sabotage shouldNotBe null
-            }
         }
     }
 

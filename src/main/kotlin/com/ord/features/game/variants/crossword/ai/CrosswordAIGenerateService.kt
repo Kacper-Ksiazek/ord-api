@@ -5,6 +5,8 @@ import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.ord.features.game.variants.crossword.ai.dto.AIGeneratedCrossword
 import com.ord.features.game.variants.crossword.ai.dto.GeneratedCrosswordGame
+import com.ord.features.game.variants.crossword.ai.dto.openai.OpenAICrossword
+import com.ord.features.game.variants.crossword.ai.dto.openai.toDomain
 import com.ord.features.game.variants.crossword.dto.CrosswordInstruction
 import com.ord.features.game.variants.shared.ai.AIGenerateGameServiceBase
 import com.ord.features.game.variants.shared.ai.helpers.GameContext
@@ -14,16 +16,16 @@ import org.springframework.stereotype.Service
 @Service
 class CrosswordAIGenerateService() : AIGenerateGameServiceBase<
         GeneratedCrosswordGame,
-        AIGeneratedCrossword
+        OpenAICrossword
         >(
     gameType = GameType.CROSSWORD,
     prompt = AvailablePrompts.GAMES_GENERATE_CROSSWORD,
-    aiResponseTypeReference = object : TypeReference<AIGeneratedCrossword>() {},
+    aiResponseTypeReference = object : TypeReference<OpenAICrossword>() {},
 ) {
     override fun parseAIResponse(
-        responseBody: AIGeneratedCrossword,
+        responseBody: OpenAICrossword,
         context: GameContext
-    ): AIGeneratedCrossword {
+    ): OpenAICrossword {
         val expectedNumberOfQuestions = context.amountOfQuestion
 
         return responseBody.copy(
@@ -38,7 +40,7 @@ class CrosswordAIGenerateService() : AIGenerateGameServiceBase<
     }
 
     override fun validateAIResponse(
-        parsedResponseBody: AIGeneratedCrossword?,
+        parsedResponseBody: OpenAICrossword?,
         context: GameContext
     ): Boolean {
         val amountOfQuestion = context.amountOfQuestion
@@ -48,17 +50,19 @@ class CrosswordAIGenerateService() : AIGenerateGameServiceBase<
     }
 
     override fun refineAIResponse(
-        aiResponse: AIGeneratedCrossword,
+        aiResponse: OpenAICrossword,
         context: GameContext
     ): GeneratedCrosswordGame {
+        val domainResponse = aiResponse.toDomain()
+
         return GeneratedCrosswordGame(
             instruction = CrosswordInstruction.Companion.construct(
-                aiGeneratedQuestions = aiResponse,
+                aiGeneratedQuestions = domainResponse,
                 difficulty = context.difficulty
             ),
             properAnswers = CrosswordProperAnswers(
-                finalWord = aiResponse.answer,
-                questions = aiResponse.questions.associate { it.id to it.word }
+                finalWord = domainResponse.answer,
+                questions = domainResponse.questions.associate { it.id to it.word }
             )
         )
     }

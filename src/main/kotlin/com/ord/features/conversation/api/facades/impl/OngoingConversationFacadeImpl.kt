@@ -5,24 +5,23 @@ import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.exceptions.REST.BadRequestException
-import org.slf4j.LoggerFactory
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
+import com.ord.features.conversation.api.facades.helpers.ai_responses.OpenAIReviewedMessage
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
-import com.ord.features.conversation.models.conversation_message.ConversationMessageMapper
-import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
-import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
-import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
 import com.ord.features.conversation.models.conversation.ConversationMapper
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ErrorType
+import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
+import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
+import com.ord.features.conversation.models.conversation_message.ConversationMessageMapper
+import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import com.ord.features.conversation.services.ConversationMessageService
-import com.ord.shared.utils.EnumUtils.joinEnumValues
 import com.ord.features.conversation.services.ConversationService
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.toParamString
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -161,20 +160,18 @@ class OngoingConversationFacadeImpl(
                     params = conversation.convertToPromptParams() + mapOf(
                         "userMessage" to userMessage.content,
                         "latestAIMessage" to (body.latestAIMessage
-                            ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
-                        "errorTypes" to ErrorType::class
-                            .joinEnumValues(separator = " | ")
-                            .split(" | ")
-                            .joinToString(" | ") { "\"$it\"" },
+                            ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation.")
                     )
                 )
 
                 openAIAPIClientService.makeRequest(
                     prompt = prompt.toString(),
-                    aiResponseType = object : TypeReference<ReviewedUserConversationMessage>() {},
+                    aiResponseType = object : TypeReference<OpenAIReviewedMessage>() {},
                     userId = userId,
-                    gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE
+                    gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
+                    structuredOutput = prompt.variant.structuredOutput,
                 )
+                    .map { openAIResponse -> openAIResponse.toDomain() }
                     .flatMap { aiFeedback ->
                         conversationMessageService.saveFeedbackForExistingMessage(
                             messageId = body.messageId,

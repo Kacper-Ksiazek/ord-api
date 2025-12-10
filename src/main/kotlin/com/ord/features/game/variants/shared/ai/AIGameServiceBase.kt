@@ -7,6 +7,7 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.model.ongoing_game.enums.GameType
+import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Mono
@@ -27,7 +28,8 @@ abstract class AIGameServiceBase {
         aiResponseTypeReference: TypeReference<T>,
         prompt: String,
         parseResponseBody: (T) -> T = { it },
-        validateResponseBody: (T?) -> Boolean
+        validateResponseBody: (T?) -> Boolean,
+        structuredOutput: StructuredOutputTemplate? = null
     ): Mono<T> {
         return openAIAPIClientService.makeRequest(
             prompt = prompt,
@@ -35,7 +37,8 @@ abstract class AIGameServiceBase {
             gptTokensUsageLogKey = operationType,
             validateResponseBody = validateResponseBody,
             parseResponseBody = parseResponseBody,
-            aiResponseType = aiResponseTypeReference
+            aiResponseType = aiResponseTypeReference,
+            structuredOutput = structuredOutput
         )
     }
 }

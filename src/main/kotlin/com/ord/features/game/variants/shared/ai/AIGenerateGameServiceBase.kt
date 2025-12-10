@@ -12,6 +12,7 @@ import com.ord.features.game.model.ongoing_game.extensions.getNumberOfQuestions
 import com.ord.features.game.variants.shared.ai.helpers.GameContext
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
+import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.shared.prompts.toParamString
 import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Mono
@@ -96,7 +97,8 @@ abstract class AIGenerateGameServiceBase<
                     prompt = prompt.toString(),
                     aiResponseTypeReference = aiResponseTypeReference,
                     validateResponseBody = { validateAIResponse(it, context) },
-                    parseResponseBody = { parseAIResponse(it, context) }
+                    parseResponseBody = { parseAIResponse(it, context) },
+                    structuredOutput = prompt.variant.structuredOutput
                 )
                     .map { aiResponse ->
                         refineAIResponse(aiResponse, context)
