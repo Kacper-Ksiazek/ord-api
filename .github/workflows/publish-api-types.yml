@@ -12,6 +12,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write  # Required for OIDC authentication with npm
       contents: write  # Required to create releases and tags
 
     steps:
@@ -35,6 +36,9 @@ jobs:
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: 🔄 Update npm to support OIDC
+        run: npm install -g npm@latest
 
       - name: 🔨 Build application (skip tests)
         run: mvn clean package -DskipTests
@@ -92,8 +96,6 @@ jobs:
       - name: 🚀 Publish to NPM
         working-directory: npm-package
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: 🎉 Create GitHub Release
         uses: softprops/action-gh-release@v2
