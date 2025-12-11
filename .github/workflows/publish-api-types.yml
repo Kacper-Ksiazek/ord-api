@@ -2,7 +2,6 @@ name: 🔷 Publish API Types to NPM
 
 on:
   push:
-    branches: [main]
     paths:
       - 'src/main/kotlin/**/*.kt'
       - 'pom.xml'
@@ -88,9 +87,17 @@ jobs:
       - name: 🔐 Configure npm for OIDC
         working-directory: npm-package
         run: |
-          # Configure npm to use OIDC (requires npm >= 11.5.1)
-          npm config set @ord-api:registry https://registry.npmjs.org/
-          echo "npm will use OIDC authentication with id-token permission"
+          # Verify npm version supports OIDC
+          npm --version
+
+          # Configure npm for OIDC authentication
+          npm config set registry https://registry.npmjs.org/
+
+          # Debug: Show OIDC environment
+          echo "ACTIONS_ID_TOKEN_REQUEST_URL: ${ACTIONS_ID_TOKEN_REQUEST_URL:-not set}"
+          echo "ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${ACTIONS_ID_TOKEN_REQUEST_TOKEN:+set}"
+          echo "GitHub repository: ${{ github.repository }}"
+          echo "Workflow: ${{ github.workflow }}"
 
       - name: 🏷️ Update package version
         working-directory: npm-package
