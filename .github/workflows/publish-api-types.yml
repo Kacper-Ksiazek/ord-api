@@ -35,7 +35,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: 🔄 Update npm to support OIDC
         run: npm install -g npm@latest
@@ -85,6 +84,13 @@ jobs:
           cp types.ts npm-package/
           cp types-package/README.md npm-package/
           cp types-package/package.json npm-package/
+
+      - name: 🔐 Configure npm for OIDC
+        working-directory: npm-package
+        run: |
+          # Configure npm to use OIDC (requires npm >= 11.5.1)
+          npm config set @ord-api:registry https://registry.npmjs.org/
+          echo "npm will use OIDC authentication with id-token permission"
 
       - name: 🏷️ Update package version
         working-directory: npm-package
