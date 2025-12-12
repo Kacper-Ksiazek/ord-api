@@ -2,6 +2,7 @@ name: 🔷 Publish API Types to NPM
 
 on:
   push:
+    branches: [main]
     paths:
       - 'src/main/kotlin/**/*.kt'
       - 'pom.xml'
@@ -11,7 +12,6 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # Required for OIDC authentication with npm
       contents: write  # Required to create releases and tags
 
     steps:
@@ -34,9 +34,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: 🔄 Update npm to support OIDC
-        run: npm install -g npm@latest
+          registry-url: 'https://registry.npmjs.org'
 
       - name: 🔨 Build application (skip tests)
         run: mvn clean package -DskipTests
@@ -84,21 +82,6 @@ jobs:
           cp types-package/README.md npm-package/
           cp types-package/package.json npm-package/
 
-      - name: 🔐 Configure npm for OIDC
-        working-directory: npm-package
-        run: |
-          # Verify npm version supports OIDC
-          npm --version
-
-          # Configure npm for OIDC authentication
-          npm config set registry https://registry.npmjs.org/
-
-          # Debug: Show OIDC environment
-          echo "ACTIONS_ID_TOKEN_REQUEST_URL: ${ACTIONS_ID_TOKEN_REQUEST_URL:-not set}"
-          echo "ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${ACTIONS_ID_TOKEN_REQUEST_TOKEN:+set}"
-          echo "GitHub repository: ${{ github.repository }}"
-          echo "Workflow: ${{ github.workflow }}"
-
       - name: 🏷️ Update package version
         working-directory: npm-package
         run: |
@@ -109,6 +92,8 @@ jobs:
       - name: 🚀 Publish to NPM
         working-directory: npm-package
         run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: 🎉 Create GitHub Release
         uses: softprops/action-gh-release@v2
