@@ -21,11 +21,17 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientRequestException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 import reactor.core.scheduler.Schedulers
+import reactor.util.retry.Retry
+import java.io.IOException
+import java.net.ConnectException
+import java.time.Duration
 import java.util.UUID
+import java.util.concurrent.TimeoutException
 
 @Service
 class OpenAIAPIClientServiceImpl(
@@ -113,6 +119,26 @@ class OpenAIAPIClientServiceImpl(
             .bodyValue(openAIRequest)
             .retrieve()
             .bodyToMono(String::class.java)
+            .timeout(Duration.ofSeconds(openAIProperties.readTimeoutSeconds.toLong()))
+            .retryWhen(
+                Retry.backoff(openAIProperties.retryMaxAttempts.toLong(), Duration.ofSeconds(openAIProperties.retryBackoffSeconds))
+                    .filter { throwable ->
+                        val isRetryable = throwable is TimeoutException ||
+                                throwable is ConnectException ||
+                                throwable is IOException ||
+                                throwable is WebClientRequestException
+
+                        if (isRetryable) {
+                            Console.printYellow("\n⚠️ [OPENAI API RETRY]")
+                            Console.printYellow("Retrying due to: ${throwable::class.simpleName} - ${throwable.message}")
+                        }
+
+                        isRetryable
+                    }
+                    .doBeforeRetry { retrySignal ->
+                        Console.printYellow("Retry attempt ${retrySignal.totalRetries() + 1}/${openAIProperties.retryMaxAttempts}")
+                    }
+            )
             .flatMap { rawResponse ->
                 try {
                     Mono.just(objectMapper.readValue(rawResponse, OpenAIResponse::class.java))
@@ -251,12 +277,18 @@ class OpenAIAPIClientServiceImpl(
                 parsingItemBuffer += delta
 
                 if (separatorRegex.containsMatchIn(parsingItemBuffer)) {
-                    val parsedItem = parseStreamedItem(parsingItemBuffer, separator, streamedItemType)
+                    try {
+                        val parsedItem = parseStreamedItem(parsingItemBuffer, separator, streamedItemType)
 
-                    if (parsedItem != null) {
-                        onItemReceived(parsedItem)
+                        if (parsedItem != null) {
+                            onItemReceived(parsedItem)
 
-                        emitter.tryEmitNext(objectMapper.writeValueAsString(parsedItem))
+                            emitter.tryEmitNext(objectMapper.writeValueAsString(parsedItem))
+                        }
+                    } catch (e: Exception) {
+                        // Log and skip malformed JSON items (e.g., extra characters from AI)
+                        Console.printRed("\n⚠️ [STREAMING PARSER] Failed to parse item: ${e.message}")
+                        Console.printYellow("Buffer content: $parsingItemBuffer")
                     }
 
                     parsingItemBuffer = ""
@@ -306,6 +338,28 @@ class OpenAIAPIClientServiceImpl(
             .accept(MediaType.TEXT_EVENT_STREAM)
             .retrieve()
             .bodyToFlux(String::class.java)
+            .timeout(Duration.ofSeconds(openAIProperties.readTimeoutSeconds.toLong()))
+            .retryWhen(
+                Retry.backoff(openAIProperties.retryMaxAttempts.toLong(), Duration.ofSeconds(openAIProperties.retryBackoffSeconds))
+                    .filter { throwable ->
+                        val isRetryable = throwable is TimeoutException ||
+                                throwable is ConnectException ||
+                                throwable is IOException ||
+                                throwable is WebClientRequestException
+
+                        if (isRetryable) {
+                            Console.printYellow("\n⚠️ [OPENAI STREAMING API RETRY]")
+                            Console.printYellow("Retrying due to: ${throwable::class.simpleName} - ${throwable.message}")
+                        }
+
+                        isRetryable
+                    }
+                    .doBeforeRetry { retrySignal ->
+                        Console.printYellow("Streaming retry attempt ${retrySignal.totalRetries() + 1}/${openAIProperties.retryMaxAttempts}")
+                        // Reset accumulated content on retry to prevent duplication
+                        accumulatedContent.clear()
+                    }
+            )
             .doOnError { error ->
                 emitter.tryEmitError(error)
                 emitter.tryEmitComplete()

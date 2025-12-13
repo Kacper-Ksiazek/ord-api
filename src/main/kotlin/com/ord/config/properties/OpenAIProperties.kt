@@ -15,7 +15,15 @@ class OpenAIProperties(
     var pricePerMlnInputTokens: BigDecimal = BigDecimal.ZERO,
     var pricePerMlnOutputTokens: BigDecimal = BigDecimal.ZERO,
 
-    var maximumNumberOfOpenAIAPIRequestAttempts: Int = 5
+    var maximumNumberOfOpenAIAPIRequestAttempts: Int = 5,
+
+    // Timeout configurations
+    var connectTimeoutSeconds: Int = 10,
+    var readTimeoutSeconds: Int = 45,
+
+    // Retry configurations
+    var retryMaxAttempts: Int = 3,
+    var retryBackoffSeconds: Long = 2
 ) {
     val authenticationHeaderValue: String
         get() = "Bearer $apiKey"
