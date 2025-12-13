@@ -21,8 +21,7 @@ import com.ord.core.word.models.word_details.enums.WordGender
  * Use `toDomain()` to convert this to `AIGeneratedWordManual` for application use.
  */
 data class OpenAIGeneratedWordManual(
-    val originalWord: String,
-    val suggestedCorrection: String,  // Empty string if no correction needed
+    val word: String,  // The actual word (corrected spelling if input was wrong)
     val translation: String,
     val definition: String,
     val type: WordType,
@@ -40,16 +39,16 @@ data class OpenAIGeneratedWordManual(
 ) {
     /**
      * Maps OpenAI response to domain model.
-     * Converts empty strings to nulls and handles nested object mapping.
+     * Converts empty strings and "null" strings to nulls and handles nested object mapping.
      */
-    fun toDomain(word: String): AIGeneratedWordManual {
+    fun toDomain(inputWord: String): AIGeneratedWordManual {
         return AIGeneratedWordManual(
-            originalWord = word,
-            suggestedCorrection = suggestedCorrection.ifEmpty { null },
+            originalWord = inputWord,
+            word = word,
             translation = translation,
             definition = definition,
             type = type,
-            extraMark = if (extraMark.isEmpty()) null else WordExtraMark.valueOf(extraMark),
+            extraMark = extraMark.toNullIfEmpty()?.let { WordExtraMark.valueOf(it) },
             useCases = useCases,
             exampleSentences = exampleSentences.map { it.toDomain() },
             collocations = collocations,
@@ -58,9 +57,29 @@ data class OpenAIGeneratedWordManual(
             synonyms = synonyms,
             antonyms = antonyms,
             commonMistakes = commonMistakes,
-            culturalNotes = culturalNotes.ifEmpty { null },
-            learningTips = learningTips.ifEmpty { null }
+            culturalNotes = culturalNotes.toNullIfEmpty(),
+            learningTips = learningTips.toNullIfEmpty()
         )
+    }
+
+    companion object {
+        /**
+         * Converts various empty-like values to null.
+         * OpenAI sometimes returns punctuation marks or "null" variations to represent null values.
+         */
+        private fun String.toNullIfEmpty(): String? {
+            val trimmed = this.trim()
+            return when {
+                trimmed.isEmpty() -> null
+                // Check if the string contains "null" (case insensitive)
+                trimmed.contains("null", ignoreCase = true) -> null
+                trimmed.equals("n/a", ignoreCase = true) -> null
+                trimmed.equals("none", ignoreCase = true) -> null
+                // Check if string is only punctuation and/or whitespace
+                trimmed.all { it in ",.;:!?-_/\\|*#@$%^&()[]{}\"'`~+=<> \t\n\r" } -> null
+                else -> this
+            }
+        }
     }
 }
 
@@ -75,10 +94,24 @@ data class OpenAIExampleSentence(
 ) {
     fun toDomain(): ExampleSentence {
         return ExampleSentence(
-            context = context.ifEmpty { null },
+            context = context.toNullIfEmpty(),
             sentence = sentence,
             translation = translation
         )
+    }
+
+    private fun String.toNullIfEmpty(): String? {
+        val trimmed = this.trim()
+        return when {
+            trimmed.isEmpty() -> null
+            // Check if the string contains "null" (case insensitive)
+            trimmed.contains("null", ignoreCase = true) -> null
+            trimmed.equals("n/a", ignoreCase = true) -> null
+            trimmed.equals("none", ignoreCase = true) -> null
+            // Check if string is only punctuation and/or whitespace
+            trimmed.all { it in ",.;:!?-_/\\|*#@$%^&()[]{}\"'`~+=<> \t\n\r" } -> null
+            else -> this
+        }
     }
 }
 
@@ -92,14 +125,29 @@ data class OpenAIPronunciation(
     val stress: Int  // 0 if not applicable
 ) {
     fun toDomain(): WordPronunciation? {
-        // If ipa is empty, the entire pronunciation object is null
-        if (ipa.isEmpty()) return null
+        // If ipa is empty-like, the entire pronunciation object is null
+        val cleanedIpa = ipa.toNullIfEmpty()
+        if (cleanedIpa == null) return null
 
         return WordPronunciation(
-            ipa = ipa,
-            syllables = syllables.ifEmpty { null },
+            ipa = cleanedIpa,
+            syllables = syllables.toNullIfEmpty(),
             stress = if (stress == 0) null else stress
         )
+    }
+
+    private fun String.toNullIfEmpty(): String? {
+        val trimmed = this.trim()
+        return when {
+            trimmed.isEmpty() -> null
+            // Check if the string contains "null" (case insensitive)
+            trimmed.contains("null", ignoreCase = true) -> null
+            trimmed.equals("n/a", ignoreCase = true) -> null
+            trimmed.equals("none", ignoreCase = true) -> null
+            // Check if string is only punctuation and/or whitespace
+            trimmed.all { it in ",.;:!?-_/\\|*#@$%^&()[]{}\"'`~+=<> \t\n\r" } -> null
+            else -> this
+        }
     }
 }
 
@@ -117,25 +165,46 @@ data class OpenAIGrammar(
     val conjugations: List<WordConjugation>  // Empty list if not applicable
 ) {
     fun toDomain(): WordGrammar? {
+        // Clean up all string fields
+        val cleanedGender = gender.toNullIfEmpty()
+        val cleanedDefiniteArticle = definiteArticle.toNullIfEmpty()
+        val cleanedPluralForm = pluralForm.toNullIfEmpty()
+        val cleanedComparativeForm = comparativeForm.toNullIfEmpty()
+        val cleanedSuperlativeForm = superlativeForm.toNullIfEmpty()
+
         // If all fields are empty, the entire grammar object is null
-        val hasContent = gender.isNotEmpty() ||
-                        definiteArticle.isNotEmpty() ||
-                        pluralForm.isNotEmpty() ||
-                        comparativeForm.isNotEmpty() ||
-                        superlativeForm.isNotEmpty() ||
+        val hasContent = cleanedGender != null ||
+                        cleanedDefiniteArticle != null ||
+                        cleanedPluralForm != null ||
+                        cleanedComparativeForm != null ||
+                        cleanedSuperlativeForm != null ||
                         irregularForms.isNotEmpty() ||
                         conjugations.isNotEmpty()
 
         if (!hasContent) return null
 
         return WordGrammar(
-            gender = if (gender.isEmpty()) null else WordGender.valueOf(gender),
-            definiteArticle = definiteArticle.ifEmpty { null },
-            pluralForm = pluralForm.ifEmpty { null },
-            comparativeForm = comparativeForm.ifEmpty { null },
-            superlativeForm = superlativeForm.ifEmpty { null },
+            gender = cleanedGender?.let { WordGender.valueOf(it) },
+            definiteArticle = cleanedDefiniteArticle,
+            pluralForm = cleanedPluralForm,
+            comparativeForm = cleanedComparativeForm,
+            superlativeForm = cleanedSuperlativeForm,
             irregularForms = irregularForms.ifEmpty { null },
             conjugations = conjugations.ifEmpty { null }
         )
+    }
+
+    private fun String.toNullIfEmpty(): String? {
+        val trimmed = this.trim()
+        return when {
+            trimmed.isEmpty() -> null
+            // Check if the string contains "null" (case insensitive)
+            trimmed.contains("null", ignoreCase = true) -> null
+            trimmed.equals("n/a", ignoreCase = true) -> null
+            trimmed.equals("none", ignoreCase = true) -> null
+            // Check if string is only punctuation and/or whitespace
+            trimmed.all { it in ",.;:!?-_/\\|*#@$%^&()[]{}\"'`~+=<> \t\n\r" } -> null
+            else -> this
+        }
     }
 }
