@@ -12,9 +12,9 @@ Your task is to create a realistic interlocutor identity that fits the conversat
 
 ### AVAILABLE AVATARS:
 
-**IMPORTANT**: All avatars in the list above have an equal chance of being selected. There is no preference, priority, or bias toward any particular avatar. Choose the avatar that best fits the conversation context and topic.
-
 **%%availableAvatars%%**
+
+**IMPORTANT**: All avatars in the list above have an equal chance of being selected. There is no preference, priority, or bias toward any particular avatar. Choose the avatar that best fits the conversation context and topic.
 
 ### RECENT INTERLOCUTORS (to avoid repetition):
 
