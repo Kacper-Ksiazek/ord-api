@@ -57,16 +57,6 @@ enum class ConversationAIBotAvatar(
 
     companion object {
         /**
-         * Returns a formatted list of avatars for AI prompts.
-         * Excludes AVATAR_DEFAULT as it's only used for fallback scenarios.
-         */
-        fun toPromptList(): String {
-            return entries
-                .filter { it.id != AVATAR_DEFAULT.id }
-                .joinToString(separator = "\n") { "- ${it.name} (${it.gender}) - (${it.description})" }
-        }
-
-        /**
          * Returns a list of valid avatar enum names for structured output schemas.
          * Excludes AVATAR_DEFAULT as it's only used for fallback scenarios.
          */
