@@ -146,6 +146,16 @@ class WordAIFacadeImpl(
                     )
                 ).toString()
 
+                // Create a set of excluded words in lowercase for case-insensitive filtering
+                val excludedWordsSet = (body.excludedWords ?: emptyList())
+                    .map { it.lowercase() }
+                    .toSet()
+
+                // Create a set of existing words in lowercase for case-insensitive filtering
+                val existingWordsSet = allExistingWords
+                    .map { it.lowercase() }
+                    .toSet()
+
                 openAIAPIClientService
                     .openStructuredArrayStream(
                         prompt = prompt,
@@ -153,6 +163,17 @@ class WordAIFacadeImpl(
                         userId = user.id,
                         gptTokensUsageLogKey = GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY
                     )
+                    .filter { jsonString ->
+                        // Parse the JSON to extract the word and filter out excluded/existing words
+                        try {
+                            val suggestion = jsonObjectMapper.readValue(jsonString, VocabularySuggestion::class.java)
+                            val wordLowercase = suggestion.word.lowercase()
+                            !excludedWordsSet.contains(wordLowercase) && !existingWordsSet.contains(wordLowercase)
+                        } catch (e: Exception) {
+                            logger.warn("Failed to parse vocabulary suggestion for filtering: $jsonString", e)
+                            true // If parsing fails, don't filter it out
+                        }
+                    }
             }
     }
 }
