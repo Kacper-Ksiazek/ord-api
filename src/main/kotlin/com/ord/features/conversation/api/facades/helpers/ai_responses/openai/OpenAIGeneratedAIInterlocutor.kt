@@ -2,7 +2,6 @@ package com.ord.features.conversation.api.facades.helpers.ai_responses.openai
 
 import com.ord.features.conversation.api.facades.helpers.ai_responses.GeneratedAIInterlocutorData
 import com.ord.features.conversation.models.conversation.enums.ConversationAIBotAvatar
-import org.slf4j.LoggerFactory
 
 /**
  * Intermediate DTO for OpenAI structured outputs response for AI interlocutor generation.
@@ -25,19 +24,9 @@ data class OpenAIGeneratedAIInterlocutor(
      * which triggers retry logic in the OpenAI service.
      */
     fun toDomain(): GeneratedAIInterlocutorData {
-        // Sanitize avatarId to handle potential AI formatting issues (e.g., extra spaces)
-        val sanitizedAvatarId = avatarId
-            .trim()
-            .replace("\\s+".toRegex(), "_")
-            .uppercase()
-
         return GeneratedAIInterlocutorData(
             name = name.trim(),
-            avatarId = ConversationAIBotAvatar.valueOf(sanitizedAvatarId) // Throws if invalid
+            avatarId = ConversationAIBotAvatar.valueOf(avatarId)
         )
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(OpenAIGeneratedAIInterlocutor::class.java)
     }
 }

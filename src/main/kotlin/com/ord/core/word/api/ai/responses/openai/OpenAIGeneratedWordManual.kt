@@ -10,6 +10,7 @@ import com.ord.core.word.models.word_details.jsonb.WordGrammar
 import com.ord.core.word.models.word_details.jsonb.WordPronunciation
 import com.ord.core.word.models.word_details.enums.WordCollocationFrequency
 import com.ord.core.word.models.word_details.enums.WordGender
+import com.ord.shared.prompts.structured_outputs.StructuredOutputUtils
 
 /**
  * Intermediate DTO for OpenAI structured outputs response.
@@ -48,7 +49,7 @@ data class OpenAIGeneratedWordManual(
             translation = translation,
             definition = definition,
             type = type,
-            extraMark = extraMark.toNullIfEmpty()?.let { WordExtraMark.valueOf(it) },
+            extraMark = StructuredOutputUtils.sanitizeNullableStringValue(extraMark)?.let { WordExtraMark.valueOf(it) },
             useCases = useCases,
             exampleSentences = exampleSentences.map { it.toDomain() },
             collocations = collocations,
@@ -57,29 +58,9 @@ data class OpenAIGeneratedWordManual(
             synonyms = synonyms,
             antonyms = antonyms,
             commonMistakes = commonMistakes,
-            culturalNotes = culturalNotes.toNullIfEmpty(),
-            learningTips = learningTips.toNullIfEmpty()
+            culturalNotes = StructuredOutputUtils.sanitizeNullableStringValue(culturalNotes),
+            learningTips = StructuredOutputUtils.sanitizeNullableStringValue(learningTips)
         )
-    }
-
-    companion object {
-        /**
-         * Converts various empty-like values to null.
-         * OpenAI sometimes returns punctuation marks or "null" variations to represent null values.
-         */
-        private fun String.toNullIfEmpty(): String? {
-            val trimmed = this.trim()
-            return when {
-                trimmed.isEmpty() -> null
-                // Check if the string contains "null" (case insensitive)
-                trimmed.contains("null", ignoreCase = true) -> null
-                trimmed.equals("n/a", ignoreCase = true) -> null
-                trimmed.equals("none", ignoreCase = true) -> null
-                // Check if string is only punctuation and/or whitespace
-                trimmed.all { it in ",.;:!?-_/\\|*#@$%^&()[]{}\"'`~+=<> \t\n\r" } -> null
-                else -> this
-            }
-        }
     }
 }
 
@@ -94,24 +75,10 @@ data class OpenAIExampleSentence(
 ) {
     fun toDomain(): ExampleSentence {
         return ExampleSentence(
-            context = context.toNullIfEmpty(),
+            context = StructuredOutputUtils.sanitizeNullableStringValue(context),
             sentence = sentence,
             translation = translation
         )
-    }
-
-    private fun String.toNullIfEmpty(): String? {
-        val trimmed = this.trim()
-        return when {
-            trimmed.isEmpty() -> null
-            // Check if the string contains "null" (case insensitive)
-            trimmed.contains("null", ignoreCase = true) -> null
-            trimmed.equals("n/a", ignoreCase = true) -> null
-            trimmed.equals("none", ignoreCase = true) -> null
-            // Check if string is only punctuation and/or whitespace
-            trimmed.all { it in ",.;:!?-_/\\|*#@$%^&()[]{}\"'`~+=<> \t\n\r" } -> null
-            else -> this
-        }
     }
 }
 
@@ -126,28 +93,14 @@ data class OpenAIPronunciation(
 ) {
     fun toDomain(): WordPronunciation? {
         // If ipa is empty-like, the entire pronunciation object is null
-        val cleanedIpa = ipa.toNullIfEmpty()
+        val cleanedIpa = StructuredOutputUtils.sanitizeNullableStringValue(ipa)
         if (cleanedIpa == null) return null
 
         return WordPronunciation(
             ipa = cleanedIpa,
-            syllables = syllables.toNullIfEmpty(),
+            syllables = StructuredOutputUtils.sanitizeNullableStringValue(syllables),
             stress = if (stress == 0) null else stress
         )
-    }
-
-    private fun String.toNullIfEmpty(): String? {
-        val trimmed = this.trim()
-        return when {
-            trimmed.isEmpty() -> null
-            // Check if the string contains "null" (case insensitive)
-            trimmed.contains("null", ignoreCase = true) -> null
-            trimmed.equals("n/a", ignoreCase = true) -> null
-            trimmed.equals("none", ignoreCase = true) -> null
-            // Check if string is only punctuation and/or whitespace
-            trimmed.all { it in ",.;:!?-_/\\|*#@$%^&()[]{}\"'`~+=<> \t\n\r" } -> null
-            else -> this
-        }
     }
 }
 
@@ -166,11 +119,11 @@ data class OpenAIGrammar(
 ) {
     fun toDomain(): WordGrammar? {
         // Clean up all string fields
-        val cleanedGender = gender.toNullIfEmpty()
-        val cleanedDefiniteArticle = definiteArticle.toNullIfEmpty()
-        val cleanedPluralForm = pluralForm.toNullIfEmpty()
-        val cleanedComparativeForm = comparativeForm.toNullIfEmpty()
-        val cleanedSuperlativeForm = superlativeForm.toNullIfEmpty()
+        val cleanedGender = StructuredOutputUtils.sanitizeNullableStringValue(gender)
+        val cleanedDefiniteArticle = StructuredOutputUtils.sanitizeNullableStringValue(definiteArticle)
+        val cleanedPluralForm = StructuredOutputUtils.sanitizeNullableStringValue(pluralForm)
+        val cleanedComparativeForm = StructuredOutputUtils.sanitizeNullableStringValue(comparativeForm)
+        val cleanedSuperlativeForm = StructuredOutputUtils.sanitizeNullableStringValue(superlativeForm)
 
         // If all fields are empty, the entire grammar object is null
         val hasContent = cleanedGender != null ||
@@ -192,19 +145,5 @@ data class OpenAIGrammar(
             irregularForms = irregularForms.ifEmpty { null },
             conjugations = conjugations.ifEmpty { null }
         )
-    }
-
-    private fun String.toNullIfEmpty(): String? {
-        val trimmed = this.trim()
-        return when {
-            trimmed.isEmpty() -> null
-            // Check if the string contains "null" (case insensitive)
-            trimmed.contains("null", ignoreCase = true) -> null
-            trimmed.equals("n/a", ignoreCase = true) -> null
-            trimmed.equals("none", ignoreCase = true) -> null
-            // Check if string is only punctuation and/or whitespace
-            trimmed.all { it in ",.;:!?-_/\\|*#@$%^&()[]{}\"'`~+=<> \t\n\r" } -> null
-            else -> this
-        }
     }
 }

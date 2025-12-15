@@ -10,12 +10,6 @@ Your task is to create a realistic interlocutor identity that fits the conversat
 3. Conversation type: **%%type%%** - **%%typeExplanation%%**.
 4. Additional context ( provided by the user ): **%%additionalContext%%**.
 
-### AVAILABLE AVATARS:
-
-**%%availableAvatars%%**
-
-**IMPORTANT**: All avatars in the list above have an equal chance of being selected. There is no preference, priority, or bias toward any particular avatar. Choose the avatar that best fits the conversation context and topic.
-
 ### RECENT INTERLOCUTORS (to avoid repetition):
 
 **%%recentInterlocutors%%**
@@ -27,6 +21,8 @@ Your task is to create a realistic interlocutor identity that fits the conversat
 - Generate a completely fresh and unique combination that has NOT been used recently
 
 ### TASK INSTRUCTIONS:
+
+**IMPORTANT**: All avatars in the list above have an equal chance of being selected. There is no preference, priority, or bias toward any particular avatar. Choose the avatar that best fits the conversation context and topic.
 
 1. Generate a fitting AI interlocutor identity with:
    - **name**: A culturally appropriate full name (with optional titles like "Dr." or "Prof." only when the conversation type/topic requires it)

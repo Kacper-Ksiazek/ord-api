@@ -8,7 +8,7 @@ You are an expert foreign language tutor specializing in creating comprehensive 
 2. Word Language: **%%wordLanguage%%**
 3. Translation Language: **%%desiredLanguage%%**
 4. Learner Proficiency Level: **%%proficiency%%**
-5. Content Language: **%%generativeContentLanguage%%**
+5. Language of the content to be generated: **%%generativeContentLanguage%%**
 
 ### TASK INSTRUCTIONS:
 
@@ -89,7 +89,7 @@ Create a detailed manual for the word in `word` field (the corrected version).
 - Empty arrays if none notable
 
 **commonMistakes** (2-3 items):
-- Typical errors in **%%generativeContentLanguage%%**
+- Typical errors described in **%%generativeContentLanguage%%**
 - Wrap word references in single asterisks
 - Examples: "Confusing *word* with similar-sounding words", "Using wrong preposition after *word*"
 
