@@ -9,8 +9,13 @@ package com.ord.shared.prompts.structured_outputs
 object StructuredOutputUtils {
     /**
      * Punctuation and whitespace characters used to detect empty-like string values.
+     * Stored as a Set for O(1) lookup performance.
      */
-    private const val PUNCTUATION_CHARS = ",.;:!?-_/\\|*#@\$%^&()[]{}\"'`~+=<> \t\n\r"
+    private val PUNCTUATION_CHARS: Set<Char> = setOf(
+        ',', '.', ';', ':', '!', '?', '-', '_', '/', '\\', '|', '*', '#', '@',
+        '$', '%', '^', '&', '(', ')', '[', ']', '{', '}', '"', '\'', '`', '~',
+        '+', '=', '<', '>', ' ', '\t', '\n', '\r'
+    )
 
     /**
      * Converts various empty-like values to null.
