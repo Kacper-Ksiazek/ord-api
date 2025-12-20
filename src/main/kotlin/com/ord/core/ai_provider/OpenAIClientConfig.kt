@@ -24,7 +24,7 @@ class OpenAIClientConfig(
             .responseTimeout(Duration.ofSeconds(openAIProperties.readTimeoutSeconds.toLong()))
             .doOnConnected { conn ->
                 conn.addHandlerLast(ReadTimeoutHandler(openAIProperties.readTimeoutSeconds))
-                    .addHandlerLast(WriteTimeoutHandler(openAIProperties.readTimeoutSeconds))
+                    .addHandlerLast(WriteTimeoutHandler(openAIProperties.writeTimeoutSeconds))
             }
 
         return WebClient.builder()

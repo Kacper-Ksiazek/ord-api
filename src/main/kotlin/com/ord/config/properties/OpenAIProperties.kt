@@ -20,6 +20,7 @@ class OpenAIProperties(
     // Timeout configurations
     var connectTimeoutSeconds: Int = 10,
     var readTimeoutSeconds: Int = 45,
+    var writeTimeoutSeconds: Int = 10,
 
     // Retry configurations
     var retryMaxAttempts: Int = 3,
