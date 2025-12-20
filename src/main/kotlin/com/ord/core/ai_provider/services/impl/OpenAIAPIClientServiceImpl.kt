@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.config.properties.OpenAIProperties
-import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
@@ -15,6 +14,7 @@ import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.exceptions.REST.BadGatewayException
 import com.ord.shared.prompts.Prompt
+import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.shared.utils.Console
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
@@ -22,6 +22,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
@@ -30,7 +31,7 @@ import reactor.util.retry.Retry
 import java.io.IOException
 import java.net.ConnectException
 import java.time.Duration
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.TimeoutException
 
 @Service
@@ -155,7 +156,7 @@ class OpenAIAPIClientServiceImpl(
                 Console.printRed("Error Type: ${error::class.simpleName}")
                 Console.printRed("Error Message: ${error.message}")
 
-                if (error is org.springframework.web.reactive.function.client.WebClientResponseException) {
+                if (error is WebClientResponseException) {
                     Console.printRed("Status Code: ${error.statusCode}")
                     Console.printRed("Response Body: ${error.responseBodyAsString}")
                     Console.printRed("Request URL: ${openAIProperties.apiUrl}")
