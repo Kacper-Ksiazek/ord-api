@@ -32,8 +32,8 @@ object StructuredOutputUtils {
         val trimmed = value.trim()
         return when {
             trimmed.isEmpty() -> null
-            // Check if the string contains "null" (case insensitive)
-            trimmed.contains("null", ignoreCase = true) -> null
+            // Check if the string is exactly "null" (case insensitive)
+            trimmed.equals("null", ignoreCase = true) -> null
             trimmed.equals("n/a", ignoreCase = true) -> null
             trimmed.equals("none", ignoreCase = true) -> null
             // Check if string is only punctuation and/or whitespace

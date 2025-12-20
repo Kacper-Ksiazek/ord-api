@@ -16,16 +16,9 @@ data class OpenAIGeneratedAIInterlocutor(
     val name: String,
     val avatarId: String
 ) {
-    /**
-     * Converts OpenAI response to domain model.
-     *
-     * Sanitizes avatarId to handle minor formatting issues (spaces, case).
-     * Throws IllegalArgumentException if avatarId is invalid after sanitization,
-     * which triggers retry logic in the OpenAI service.
-     */
     fun toDomain(): GeneratedAIInterlocutorData {
         return GeneratedAIInterlocutorData(
-            name = name.trim(),
+            name = name,
             avatarId = ConversationAIBotAvatar.valueOf(avatarId)
         )
     }

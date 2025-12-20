@@ -22,11 +22,11 @@ Your task is to create a realistic interlocutor identity that fits the conversat
 
 ### TASK INSTRUCTIONS:
 
-**IMPORTANT**: All avatars in the list above have an equal chance of being selected. There is no preference, priority, or bias toward any particular avatar. Choose the avatar that best fits the conversation context and topic.
+**IMPORTANT**: All available avatars have an equal chance of being selected. There is no preference, priority, or bias toward any particular avatar. Choose the avatar that best fits the conversation context and topic.
 
 1. Generate a fitting AI interlocutor identity with:
    - **name**: A culturally appropriate full name (with optional titles like "Dr." or "Prof." only when the conversation type/topic requires it)
-   - **avatarId**: Select one avatar ID from the list above that best matches the conversation context. DO NOT invent new avatar IDs always choose from the provided list.
+   - **avatarId**: Select one valid avatar ID that best matches the conversation context. Choose from the available avatar options.
 
 2. Consider the following when generating the identity:
    - Match the avatar's gender and description to the conversation type and topic when possible
@@ -35,8 +35,4 @@ Your task is to create a realistic interlocutor identity that fits the conversat
    - Ensure the name feels natural for someone who would engage in this type of conversation
    - **MANDATORY: The name MUST be different from ALL entries in the recent interlocutors list** - this is critical for user experience
 
-3. Generate a fitting AI interlocutor identity with:
-   - **name**: A culturally appropriate full name (with optional titles like "Dr." or "Prof." only when the conversation type/topic requires it)
-   - **avatarId**: Select one avatar ID from the list above that best matches the conversation context. DO NOT invent new avatar IDs always choose from the provided list.
-
-4. The name should be a realistic name that a person would actually have - avoid overly generic or stereotypical names.
+3. The name should be a realistic name that a person would actually have - avoid overly generic or stereotypical names.
