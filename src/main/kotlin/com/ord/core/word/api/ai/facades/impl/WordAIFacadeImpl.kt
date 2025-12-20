@@ -163,16 +163,23 @@ class WordAIFacadeImpl(
                         userId = user.id,
                         gptTokensUsageLogKey = GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY
                     )
-                    .filter { jsonString ->
-                        // Parse the JSON to extract the word and filter out excluded/existing words
+                    .mapNotNull { jsonString ->
+                        // Parse JSON once and handle parsing errors
                         try {
-                            val suggestion = jsonObjectMapper.readValue(jsonString, VocabularySuggestion::class.java)
-                            val wordLowercase = suggestion.word.lowercase()
-                            !excludedWordsSet.contains(wordLowercase) && !existingWordsSet.contains(wordLowercase)
+                            jsonObjectMapper.readValue(jsonString, VocabularySuggestion::class.java)
                         } catch (e: Exception) {
-                            logger.warn("Failed to parse vocabulary suggestion for filtering: $jsonString", e)
-                            true // If parsing fails, don't filter it out
+                            logger.warn("Failed to parse vocabulary suggestion: $jsonString", e)
+                            null // Filter out invalid JSON
                         }
+                    }
+                    .filter { suggestion ->
+                        // Filter on the parsed object
+                        val wordLowercase = suggestion?.word?.lowercase()
+                        !excludedWordsSet.contains(wordLowercase) && !existingWordsSet.contains(wordLowercase)
+                    }
+                    .map { suggestion ->
+                        // Serialize back to JSON string for the response
+                        jsonObjectMapper.writeValueAsString(suggestion)
                     }
             }
     }
