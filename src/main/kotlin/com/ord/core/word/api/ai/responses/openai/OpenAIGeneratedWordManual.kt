@@ -10,6 +10,7 @@ import com.ord.core.word.models.word_details.jsonb.WordGrammar
 import com.ord.core.word.models.word_details.jsonb.WordPronunciation
 import com.ord.core.word.models.word_details.enums.WordCollocationFrequency
 import com.ord.core.word.models.word_details.enums.WordGender
+import com.ord.shared.prompts.structured_outputs.StructuredOutputUtils
 
 /**
  * Intermediate DTO for OpenAI structured outputs response.
@@ -21,8 +22,7 @@ import com.ord.core.word.models.word_details.enums.WordGender
  * Use `toDomain()` to convert this to `AIGeneratedWordManual` for application use.
  */
 data class OpenAIGeneratedWordManual(
-    val originalWord: String,
-    val suggestedCorrection: String,  // Empty string if no correction needed
+    val word: String,  // The actual word (corrected spelling if input was wrong)
     val translation: String,
     val definition: String,
     val type: WordType,
@@ -40,16 +40,16 @@ data class OpenAIGeneratedWordManual(
 ) {
     /**
      * Maps OpenAI response to domain model.
-     * Converts empty strings to nulls and handles nested object mapping.
+     * Converts empty strings and "null" strings to nulls and handles nested object mapping.
      */
-    fun toDomain(word: String): AIGeneratedWordManual {
+    fun toDomain(inputWord: String): AIGeneratedWordManual {
         return AIGeneratedWordManual(
-            originalWord = word,
-            suggestedCorrection = suggestedCorrection.ifEmpty { null },
+            originalWord = inputWord,
+            word = word,
             translation = translation,
             definition = definition,
             type = type,
-            extraMark = if (extraMark.isEmpty()) null else WordExtraMark.valueOf(extraMark),
+            extraMark = StructuredOutputUtils.sanitizeNullableStringValue(extraMark)?.let { WordExtraMark.valueOf(it) },
             useCases = useCases,
             exampleSentences = exampleSentences.map { it.toDomain() },
             collocations = collocations,
@@ -58,8 +58,8 @@ data class OpenAIGeneratedWordManual(
             synonyms = synonyms,
             antonyms = antonyms,
             commonMistakes = commonMistakes,
-            culturalNotes = culturalNotes.ifEmpty { null },
-            learningTips = learningTips.ifEmpty { null }
+            culturalNotes = StructuredOutputUtils.sanitizeNullableStringValue(culturalNotes),
+            learningTips = StructuredOutputUtils.sanitizeNullableStringValue(learningTips)
         )
     }
 }
@@ -75,7 +75,7 @@ data class OpenAIExampleSentence(
 ) {
     fun toDomain(): ExampleSentence {
         return ExampleSentence(
-            context = context.ifEmpty { null },
+            context = StructuredOutputUtils.sanitizeNullableStringValue(context),
             sentence = sentence,
             translation = translation
         )
@@ -92,12 +92,13 @@ data class OpenAIPronunciation(
     val stress: Int  // 0 if not applicable
 ) {
     fun toDomain(): WordPronunciation? {
-        // If ipa is empty, the entire pronunciation object is null
-        if (ipa.isEmpty()) return null
+        // If ipa is empty-like, the entire pronunciation object is null
+        val cleanedIpa = StructuredOutputUtils.sanitizeNullableStringValue(ipa)
+        if (cleanedIpa == null) return null
 
         return WordPronunciation(
-            ipa = ipa,
-            syllables = syllables.ifEmpty { null },
+            ipa = cleanedIpa,
+            syllables = StructuredOutputUtils.sanitizeNullableStringValue(syllables),
             stress = if (stress == 0) null else stress
         )
     }
@@ -117,23 +118,30 @@ data class OpenAIGrammar(
     val conjugations: List<WordConjugation>  // Empty list if not applicable
 ) {
     fun toDomain(): WordGrammar? {
+        // Clean up all string fields
+        val cleanedGender = StructuredOutputUtils.sanitizeNullableStringValue(gender)
+        val cleanedDefiniteArticle = StructuredOutputUtils.sanitizeNullableStringValue(definiteArticle)
+        val cleanedPluralForm = StructuredOutputUtils.sanitizeNullableStringValue(pluralForm)
+        val cleanedComparativeForm = StructuredOutputUtils.sanitizeNullableStringValue(comparativeForm)
+        val cleanedSuperlativeForm = StructuredOutputUtils.sanitizeNullableStringValue(superlativeForm)
+
         // If all fields are empty, the entire grammar object is null
-        val hasContent = gender.isNotEmpty() ||
-                        definiteArticle.isNotEmpty() ||
-                        pluralForm.isNotEmpty() ||
-                        comparativeForm.isNotEmpty() ||
-                        superlativeForm.isNotEmpty() ||
+        val hasContent = cleanedGender != null ||
+                        cleanedDefiniteArticle != null ||
+                        cleanedPluralForm != null ||
+                        cleanedComparativeForm != null ||
+                        cleanedSuperlativeForm != null ||
                         irregularForms.isNotEmpty() ||
                         conjugations.isNotEmpty()
 
         if (!hasContent) return null
 
         return WordGrammar(
-            gender = if (gender.isEmpty()) null else WordGender.valueOf(gender),
-            definiteArticle = definiteArticle.ifEmpty { null },
-            pluralForm = pluralForm.ifEmpty { null },
-            comparativeForm = comparativeForm.ifEmpty { null },
-            superlativeForm = superlativeForm.ifEmpty { null },
+            gender = cleanedGender?.let { WordGender.valueOf(it) },
+            definiteArticle = cleanedDefiniteArticle,
+            pluralForm = cleanedPluralForm,
+            comparativeForm = cleanedComparativeForm,
+            superlativeForm = cleanedSuperlativeForm,
             irregularForms = irregularForms.ifEmpty { null },
             conjugations = conjugations.ifEmpty { null }
         )

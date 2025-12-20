@@ -12,7 +12,6 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # Required for OIDC authentication with npm
       contents: write  # Required to create releases and tags
 
     steps:
@@ -35,9 +34,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: 🔄 Update npm to support OIDC
-        run: npm install -g npm@latest
+          registry-url: 'https://registry.npmjs.org'
 
       - name: 🔨 Build application (skip tests)
         run: mvn clean package -DskipTests
@@ -85,13 +82,6 @@ jobs:
           cp types-package/README.md npm-package/
           cp types-package/package.json npm-package/
 
-      - name: 🔐 Configure npm for OIDC
-        working-directory: npm-package
-        run: |
-          # Configure npm to use OIDC (requires npm >= 11.5.1)
-          npm config set @ord-api:registry https://registry.npmjs.org/
-          echo "npm will use OIDC authentication with id-token permission"
-
       - name: 🏷️ Update package version
         working-directory: npm-package
         run: |
@@ -102,6 +92,8 @@ jobs:
       - name: 🚀 Publish to NPM
         working-directory: npm-package
         run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: 🎉 Create GitHub Release
         uses: softprops/action-gh-release@v2

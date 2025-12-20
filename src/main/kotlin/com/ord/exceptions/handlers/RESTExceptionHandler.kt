@@ -39,6 +39,8 @@ class RESTExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleUncaughtException(e: Exception): ResponseEntity<HTTPErrorResponse> {
         Console.printRed("\n\uD83D\uDEA8 [500] Internal Server Error: ${e.message}")
+        Console.addBreakLine(1)
+
         logger.error("Uncaught exception: ${e.message}", e)
 
         val errorResponse = HTTPErrorResponse(

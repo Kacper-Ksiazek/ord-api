@@ -128,7 +128,6 @@ class ConversationAuxiliaryFacadeImpl(
                         "type" to body.conversationType.toString(),
                         "typeExplanation" to body.conversationType.contextForAI,
                         "additionalContext" to (body.additionalContext ?: "NONE"),
-                        "availableAvatars" to ConversationAIBotAvatar.toPromptList(),
                         "recentInterlocutors" to formattedRecentInterlocutors
                     )
                 )
@@ -139,9 +138,41 @@ class ConversationAuxiliaryFacadeImpl(
                         aiResponseType = object : TypeReference<OpenAIGeneratedAIInterlocutor>() {},
                         userId = userId,
                         gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.GENERATE_INTERLOCUTOR,
-                        structuredOutput = prompt.variant.structuredOutput
+                        structuredOutput = prompt.variant.structuredOutput,
+                        validateResponseBody = { openAIResponse ->
+                            // Validate that toDomain() succeeds - if not, trigger retry
+                            try {
+                                openAIResponse?.toDomain()
+                                true // Validation passed
+                            } catch (e: IllegalArgumentException) {
+                                logger.warn(
+                                    "Failed to parse AI interlocutor response. " +
+                                    "Received invalid avatarId: '{}'. Triggering retry. Error: {}",
+                                    openAIResponse?.avatarId,
+                                    e.message
+                                )
+                                false // Validation failed - triggers retry in OpenAIAPIClientService
+                            }
+                        }
                     )
                     .map { it.toDomain() }
+                    .onErrorResume { error ->
+                        // Final fallback: if all retries fail, return a default interlocutor
+                        // This prevents 500 errors while alerting us to the issue
+                        logger.error(
+                            "All retry attempts exhausted for AI interlocutor generation. " +
+                            "Falling back to default. Topic: '{}', Error: {}",
+                            body.topic,
+                            error.message,
+                            error
+                        )
+                        Mono.just(
+                            GeneratedAIInterlocutorData(
+                                name = "AI Assistant",
+                                avatarId = ConversationAIBotAvatar.AVATAR_DEFAULT
+                            )
+                        )
+                    }
             }
     }
 }

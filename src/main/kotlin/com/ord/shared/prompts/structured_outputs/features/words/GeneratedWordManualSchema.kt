@@ -11,13 +11,9 @@ val generatedWordManualSchema = StructuredOutputTemplate(
     schema = mapOf(
         "type" to "object",
         "properties" to mapOf(
-            "originalWord" to mapOf(
+            "word" to mapOf(
                 "type" to "string",
-                "description" to "The original word or phrase provided by the user"
-            ),
-            "suggestedCorrection" to mapOf(
-                "type" to "string",
-                "description" to "Corrected spelling if the original word has errors. Null if correct."
+                "description" to "The actual word this manual describes (corrected spelling). Usually same as input, but if input was misspelled, this is the corrected version."
             ),
             "translation" to mapOf(
                 "type" to "string",
@@ -200,8 +196,7 @@ val generatedWordManualSchema = StructuredOutputTemplate(
             )
         ),
         "required" to listOf(
-            "originalWord",
-            "suggestedCorrection",
+            "word",
             "translation",
             "definition",
             "type",

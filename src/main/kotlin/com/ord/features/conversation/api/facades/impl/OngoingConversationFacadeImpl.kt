@@ -148,12 +148,11 @@ class OngoingConversationFacadeImpl(
         return conversationService
             .findByIdOrFail(body.conversationId, userId)
             .map { conversationMapper.toDTO(it) }
-            .zipWith(
+            .flatMap { conversation ->
                 conversationMessageRepository.findById(body.messageId)
-            )
-            .flatMap { t ->
-                val conversation = t.t1
-                val userMessage = t.t2
+                    .map { userMessage -> Pair(conversation, userMessage) }
+            }
+            .flatMap { (conversation, userMessage) ->
 
                 val prompt = Prompt(
                     variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,

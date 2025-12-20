@@ -56,10 +56,14 @@ enum class ConversationAIBotAvatar(
     );
 
     companion object {
-        fun toPromptList(): String {
+        /**
+         * Returns a list of valid avatar enum names for structured output schemas.
+         * Excludes AVATAR_DEFAULT as it's only used for fallback scenarios.
+         */
+        fun toSchemaEnumList(): List<String> {
             return entries
-                .filter { it.id != AVATAR_DEFAULT.id }
-                .joinToString(separator = "\n") { "- ${it.name} (${it.gender}) - (${it.description})" }
+                .filter { it != AVATAR_DEFAULT }
+                .map { it.name }
         }
     }
 }
