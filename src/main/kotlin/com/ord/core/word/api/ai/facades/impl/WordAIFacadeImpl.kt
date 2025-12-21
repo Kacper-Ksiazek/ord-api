@@ -173,8 +173,8 @@ class WordAIFacadeImpl(
                         }
                     }
                     .filter { suggestion ->
-                        // Filter on the parsed object
-                        val wordLowercase = suggestion?.word?.lowercase()
+                        // Filter on the parsed object - skip if word is null/empty
+                        val wordLowercase = suggestion?.word?.lowercase() ?: return@filter false
                         !excludedWordsSet.contains(wordLowercase) && !existingWordsSet.contains(wordLowercase)
                     }
                     .map { suggestion ->
