@@ -69,7 +69,7 @@ class TestOngoingConversationController @Autowired constructor(
         val LANGUAGE = LanguageName.ENGLISH
         val TYPE = ConversationType.SMALL_TALK
         val TONE = ConversationTone.FRIENDLY
-        const val USER_MESSAGE = "I went to the park yesterday and it was beautiful."
+        const val USER_MESSAGE = "I went to the park yesterday and it was absolutely beautiful. The weather was perfect - sunny with a light breeze. I spent several hours walking around the lake, watching the ducks and enjoying the peaceful atmosphere. There were families having picnics on the grass, children playing on the swings, and joggers running along the paths. I brought a book with me and found a nice bench under a big oak tree where I sat and read for a while. It was such a relaxing and enjoyable afternoon that I'm definitely planning to go back there again this weekend."
         const val AI_MESSAGE = "That sounds lovely! What did you do there?"
     }
 
@@ -532,7 +532,7 @@ class TestOngoingConversationController @Autowired constructor(
                     body = SaveUserConversationMessageRequest(
                         conversationId = conversation.id,
                         messageId = customMessageId,
-                        content = "Message with custom ID",
+                        content = "This is a test message with a custom ID that I'm using to verify the conversation message saving functionality. I want to make sure that the system properly handles messages with pre-assigned IDs and stores them correctly in the database. This message is intentionally longer to avoid any issues with message length validation or sabotage detection mechanisms.",
                         messageOrder = 0
                     ),
                     user = authenticatedUser
@@ -555,7 +555,7 @@ class TestOngoingConversationController @Autowired constructor(
                     body = SaveUserConversationMessageRequest(
                         conversationId = conversation.id,
                         messageId = messageId,
-                        content = "Test message",
+                        content = "This is a comprehensive test message that I'm writing to thoroughly test the conversation message saving functionality. I want to ensure that the system properly handles longer messages with appropriate content, maintains the correct message order, and validates all the required fields correctly. This detailed message should help verify that the message persistence layer works as expected.",
                         messageOrder = 5
                     ),
                     user = authenticatedUser
@@ -603,7 +603,7 @@ class TestOngoingConversationController @Autowired constructor(
                     body = SaveUserConversationMessageRequest(
                         conversationId = UUID.randomUUID(),
                         messageId = UUID.randomUUID(),
-                        content = "Test message",
+                        content = "This is a test message for verifying authentication and authorization mechanisms in the conversation system. I'm deliberately testing what happens when an unauthorized user attempts to save a message to a conversation. This longer message ensures we're not triggering any sabotage detection while properly testing the security boundaries of our application.",
                         messageOrder = 0
                     ),
                     user = null
@@ -620,7 +620,7 @@ class TestOngoingConversationController @Autowired constructor(
                     body = SaveUserConversationMessageRequest(
                         conversationId = UUID.randomUUID(),
                         messageId = UUID.randomUUID(),
-                        content = "Test message",
+                        content = "This is a test message designed to verify the system's behavior when attempting to save a message to a conversation that doesn't exist in the database. I want to ensure that the application correctly handles this edge case and returns the appropriate 404 status code. This comprehensive message also helps avoid triggering any sabotage detection mechanisms that might interfere with the test.",
                         messageOrder = 0
                     ),
                     user = authenticatedUser
@@ -642,7 +642,7 @@ class TestOngoingConversationController @Autowired constructor(
                     body = SaveUserConversationMessageRequest(
                         conversationId = conversation.id,
                         messageId = UUID.randomUUID(),
-                        content = "Unauthorized message",
+                        content = "This is a test message being sent by an unauthorized user who should not have access to this conversation. I'm verifying that the system properly enforces ownership and access control rules to prevent users from saving messages to conversations they don't own. This comprehensive test message ensures we're properly testing security boundaries while avoiding any sabotage detection issues.",
                         messageOrder = 0
                     ),
                     user = otherUser
@@ -1083,11 +1083,12 @@ class TestOngoingConversationController @Autowired constructor(
             )
 
             val userMessageId1 = UUID.randomUUID()
+            val firstMessageContent = "This is my first message in this conversation and I wanted to share my thoughts about the topic we're discussing. I've been thinking about this for quite some time now and I have several interesting points to make. Let me start by explaining my perspective on the matter and provide some context that will help you understand where I'm coming from with my analysis."
             ongoingConversationAPIClient.saveUserMessage(
                 body = SaveUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = userMessageId1,
-                    content = "First message",
+                    content = firstMessageContent,
                     messageOrder = 1
                 ),
                 user = authenticatedUser
@@ -1097,7 +1098,7 @@ class TestOngoingConversationController @Autowired constructor(
                 body = CreateAIConversationMessageRequest(
                     conversationId = conversation.id,
                     messageOrder = 2,
-                    latestUserMessage = "First message"
+                    latestUserMessage = firstMessageContent
                 ),
                 user = authenticatedUser
             )
@@ -1112,11 +1113,12 @@ class TestOngoingConversationController @Autowired constructor(
             )
 
             val userMessageId2 = UUID.randomUUID()
+            val secondMessageContent = "Now I'd like to follow up on my previous message with some additional thoughts and observations. Building on what I mentioned earlier, I want to delve deeper into the specific aspects of this topic that I find particularly interesting. There are several key points that I believe warrant further discussion and I'd like to explore each of them in detail."
             ongoingConversationAPIClient.saveUserMessage(
                 body = SaveUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = userMessageId2,
-                    content = "Second message",
+                    content = secondMessageContent,
                     messageOrder = 3
                 ),
                 user = authenticatedUser
@@ -1126,7 +1128,7 @@ class TestOngoingConversationController @Autowired constructor(
                 body = CreateAIConversationMessageRequest(
                     conversationId = conversation.id,
                     messageOrder = 4,
-                    latestUserMessage = "Second message"
+                    latestUserMessage = secondMessageContent
                 ),
                 user = authenticatedUser
             )
