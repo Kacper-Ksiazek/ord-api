@@ -48,6 +48,7 @@ Review the user message and provide detailed, constructive feedback.
 - Celebrate what the user did well (positive reinforcement improves learning)
 - Prioritize mistakes by severity to help user focus on what matters most
 - Tailor feedback complexity to the user's level (**%%level%%**)
+- Keep feedback casual and useful - avoid overly meticulous suggestions like adding quotation marks for readability or minor stylistic preferences that don't affect language learning
 
 **Mistake Identification:**
 
