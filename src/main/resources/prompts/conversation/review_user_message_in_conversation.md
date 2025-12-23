@@ -11,6 +11,7 @@ Your task is to review the user message in the conversation and provide detailed
 4. Additional context for the conversation: **%%additionalContext%%**.
 5. Conversation tone: **%%tone%%** - **%%toneInstruction%%**.
 6. Last AI message (second person in convo): **%%latestAIMessage%%**.
+7. Language of the content to be generated: **%%generativeContentLanguage%%** - Use this language for all auxiliary content (explanations, feedback messages, descriptions). However, learning-relevant content such as quoted mistakes, correct forms, example sentences, and any direct language material must ALWAYS remain in **%%language%%**.
 
 ### USER MESSAGE TO REVIEW:
 **%%userMessage%%**
@@ -52,19 +53,20 @@ Review the user message and provide detailed, constructive feedback.
 
 **Mistake Identification:**
 
-1. **Quote exactly**: Use the precise phrase from the user message
+1. **Quote exactly**: Use the precise phrase from the user message (always in **%%language%%**)
 2. **Assign severity**:
    - **3 (Critical)**: Impedes communication or would confuse a native speaker
    - **2 (Moderate)**: Noticeable error that reduces fluency or sounds unnatural
    - **1 (Minor)**: Technically incorrect but meaning is clear, or unnatural but acceptable
-3. **Explain in target language**: This is a learning opportunity
-4. **Provide correct form**: Show the proper way to say/write it
+3. **Explain**: Provide explanation in **%%generativeContentLanguage%%**
+4. **Provide correct form**: Show the proper way to say/write it (always in **%%language%%**)
 
 **Positive Feedback:**
 
 - Identify at least 2-3 things done well (unless sabotage is detected)
 - Be specific: "Used past perfect correctly" not just "good grammar"
 - Acknowledge progress markers: "Advanced vocabulary for your level"
+- Provide all feedback messages in **%%generativeContentLanguage%%**
 
 **Level Considerations:**
 
