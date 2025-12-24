@@ -11,7 +11,7 @@ Your task is to continue a conversation with the user ( your student ) in the la
 4. Additional context for the conversation: **%%additionalContext%%**.
 5. Conversation tone: **%%tone%%** - **%%toneInstruction%%**.
  
-### Conversation history so fa
+### Conversation history so far
 
 **%%serializedConversationHistory%%**
 
