@@ -1,0 +1,7 @@
+package com.ord.features.conversation.repositories
+
+import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsEntity
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import java.util.*
+
+interface ConversationAIMessageLearningTipsRepository : ReactiveCrudRepository<ConversationAIMessageLearningTipsEntity, UUID>
