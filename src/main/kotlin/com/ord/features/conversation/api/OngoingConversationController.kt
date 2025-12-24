@@ -3,9 +3,11 @@ package com.ord.features.conversation.api
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
+import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import io.swagger.v3.oas.annotations.Operation
@@ -37,22 +39,24 @@ class OngoingConversationController(
         summary = "Initialize conversation with AI",
         description = "Start a conversation with an AI-generated opening message (streaming response)"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "Conversation initialization stream started successfully"
-        ),
-        ApiResponse(
-            responseCode = "404",
-            description = "Conversation not found",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content = [Content()]
-        )
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Conversation initialization stream started successfully"
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Conversation not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
     fun initializeConversationByAI(
         @Parameter(
             description = "Conversation ID",
@@ -69,58 +73,96 @@ class OngoingConversationController(
         summary = "Request AI response",
         description = "Request an AI-generated response in an ongoing conversation (streaming response)"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "AI message stream started successfully"
-        ),
-        ApiResponse(
-            responseCode = "404",
-            description = "Conversation not found",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content = [Content()]
-        )
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "AI message stream started successfully"
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Conversation not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
     fun requestAIMessage(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: CreateAIConversationMessageRequest
     ) = ongoingConversationFacade.requestAIMessage(user.id, body)
+
+    @PostMapping("/ai/generate-learning-tips")
+    @Operation(
+        summary = "Generate learning tips from AI message",
+        description = "Generate structured learning tips and annotations from an AI message in the conversation"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Learning tips generated successfully"
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Conversation or message not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data or message is not from AI",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
+    fun generateLearningTipsForAIMessage(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @Valid @RequestBody body: GetLearningTipsForAIMessageRequest
+    ): Mono<ResponseEntity<AIMessageLearningTips>> =
+        ongoingConversationFacade.generateLearningTipsForAIMessage(user.id, body)
 
     @PostMapping("/user/save-message")
     @Operation(
         summary = "Save user message",
         description = "Save a user message to a conversation"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "User message saved successfully"
-        ),
-        ApiResponse(
-            responseCode = "404",
-            description = "Conversation not found",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content = [Content()]
-        )
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "User message saved successfully"
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Conversation not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
     fun saveUserMessage(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: SaveUserConversationMessageRequest
@@ -132,30 +174,33 @@ class OngoingConversationController(
         summary = "Generate feedback for user message",
         description = "Generate AI-powered grammar and language feedback for an existing user message"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "Feedback generated successfully"
-        ),
-        ApiResponse(
-            responseCode = "404",
-            description = "Conversation or message not found",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content = [Content()]
-        )
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Feedback generated successfully"
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Conversation or message not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
     fun generateFeedback(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: GetFeedbackOnUserConversationMessageRequest
     ): Mono<ResponseEntity<ReviewedUserConversationMessage>> =
         ongoingConversationFacade.generateFeedbackForMessage(user.id, body)
+
 }
