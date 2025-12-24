@@ -6,5 +6,4 @@ target/
 *.log
 
 # Generated OpenAPI files
-openapi.json
 npm-package/
