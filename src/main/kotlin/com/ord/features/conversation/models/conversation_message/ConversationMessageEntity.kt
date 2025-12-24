@@ -20,7 +20,6 @@ data class ConversationMessageEntity(
 
     val conversationId: UUID,
     var feedbackId: UUID? = null,
-    var learningTipsId: UUID? = null,
 
     val createdAt: Instant = Instant.now(),
 )

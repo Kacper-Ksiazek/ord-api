@@ -1,4 +1,3 @@
-# OpenAPI Documentation
 
 This document describes how to use the OpenAPI specification for the ORD API.
 
@@ -165,53 +164,6 @@ See `.github/workflows/publish-api-types.yml` for the complete workflow configur
 
 ## API Structure
 
-### Documented Endpoints
-
-The following API sections are fully documented:
-
-#### Authentication
-- `POST /api/v1/auth/otp-request` - Request OTP code
-- `POST /api/v1/auth/otp-verify` - Verify OTP and login
-- `DELETE /api/v1/auth/logout` - Logout user
-
-#### Users
-- `GET /api/v1/users/me` - Get current user profile
-- `POST /api/v1/users/init-account` - Initialize user account
-
-#### Language Proficiencies
-- `GET /api/v1/language-proficiencies` - List user's language proficiencies
-- `POST /api/v1/language-proficiencies` - Add new language proficiency
-- `PATCH /api/v1/language-proficiencies` - Update language proficiency
-- `DELETE /api/v1/language-proficiencies/{language}` - Remove language
-
-#### Quickly Added Words (QAW)
-- `POST /api/v1/quickly-added-words` - Create a word
-- `POST /api/v1/quickly-added-words/bulk-create` - Bulk create words
-- `GET /api/v1/quickly-added-words` - List words (paginated)
-- `PATCH /api/v1/quickly-added-words/{id}` - Update a word
-- `PATCH /api/v1/quickly-added-words/bulk-update` - Bulk update words
-- `PATCH /api/v1/quickly-added-words/approve-many` - Approve multiple words
-- `DELETE /api/v1/quickly-added-words/{id}` - Delete a word
-- `POST /api/v1/quickly-added-words/bulk-delete` - Bulk delete words
-
-#### Health Check
-- `GET /api/v1/health-check` - Check application and database health
-
-### Documented DTOs
-
-All major DTOs have been annotated with examples:
-
-- **Auth**: `OtpRequestDto`, `OtpVerifyDto`
-- **Users**: `UserDTO`
-- **QAW**: `CreateQAWRequest`, `QuicklyAddedWordDTO`
-- **Shared**: `PaginatedDataResponse<T>`, `PaginationData`
-
-### Documented Enums
-
-- `LanguageName` - All supported languages
-- `WordType` - Types of words/expressions
-- `WordExtraMark` - Word classification marks
-
 ## Authentication in Swagger UI
 
 To test authenticated endpoints in Swagger UI:
@@ -245,55 +197,3 @@ springdoc.swagger-ui.operationsSorter=alpha
 springdoc.swagger-ui.tagsSorter=alpha
 springdoc.show-actuator=false
 ```
-
-## Next Steps
-
-### Remaining Controllers to Document
-
-The following controllers still need OpenAPI annotations (optional improvements):
-
-- Word CRUD Controller
-- Word AI Controller
-- Word Details Controller
-- Games Controllers (4 variants)
-- Conversation Controllers (2)
-- Public QAW Controller
-- AI Demo Controller
-
-### Additional DTOs to Document
-
-As you add more endpoints, annotate their DTOs with:
-
-```kotlin
-@Schema(
-    description = "Brief description",
-    example = "example value"
-)
-```
-
-## Troubleshooting
-
-### Swagger UI Not Loading
-
-- Verify the application is running: `curl http://localhost:8080/api/v1/health-check`
-- Check that SpringDoc dependency is in `pom.xml`
-- Verify application.properties has the correct springdoc settings
-
-### OpenAPI Spec Export Fails
-
-- Ensure the application is fully started before running the export script
-- Check that the port 8080 is not blocked by firewall
-- Try accessing `http://localhost:8080/v3/api-docs` directly in a browser
-
-### TypeScript Generation Errors
-
-- Ensure your `openapi.json` file is valid JSON
-- Try validating it at: https://editor.swagger.io/
-- Update to the latest version of openapi-typescript: `npm install -g openapi-typescript@latest`
-
-## Resources
-
-- [SpringDoc OpenAPI Documentation](https://springdoc.org/)
-- [OpenAPI Specification](https://swagger.io/specification/)
-- [openapi-typescript](https://github.com/drwpow/openapi-typescript)
-- [OpenAPI Generator](https://openapi-generator.tech/)

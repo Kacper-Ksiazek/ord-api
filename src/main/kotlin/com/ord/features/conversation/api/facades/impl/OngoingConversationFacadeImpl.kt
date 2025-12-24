@@ -5,6 +5,7 @@ import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.exceptions.REST.BadRequestException
+import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.OpenAIAIMessageLearningTips
@@ -153,6 +154,7 @@ class OngoingConversationFacadeImpl(
             .map { conversationMapper.toDTO(it) }
             .flatMap { conversation ->
                 conversationMessageRepository.findById(body.messageId)
+                    .switchIfEmpty(Mono.error(NotFoundException("Message with id ${body.messageId} not found")))
                     .map { userMessage -> Pair(conversation, userMessage) }
             }
             .flatMap { (conversation, userMessage) ->
@@ -195,6 +197,7 @@ class OngoingConversationFacadeImpl(
             .map { conversationMapper.toDTO(it) }
             .flatMap { conversation ->
                 conversationMessageRepository.findById(body.messageId)
+                    .switchIfEmpty(Mono.error(NotFoundException("Message with id ${body.messageId} not found")))
                     .map { aiMessage -> Pair(conversation, aiMessage) }
             }
             .flatMap { (conversation, aiMessage) ->

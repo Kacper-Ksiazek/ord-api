@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component
 class ConversationAIMessageLearningTipsMapper :
     BidirectionalEntityMapper<ConversationAIMessageLearningTipsEntity, ConversationAIMessageLearningTipsDTO> {
 
-    val jsonObjectMapper = jacksonObjectMapper()
+    companion object {
+        private val jsonObjectMapper = jacksonObjectMapper()
+    }
 
     override fun toDTO(entity: ConversationAIMessageLearningTipsEntity): ConversationAIMessageLearningTipsDTO {
         return ConversationAIMessageLearningTipsDTO(

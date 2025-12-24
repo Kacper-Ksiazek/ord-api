@@ -102,6 +102,7 @@ class ConversationRepositoryCustomMethodsImpl(
                 m.content,
                 m.message_order,
                 m.created_at as message_created_at,
+                -- User message: Feedback
                 f.id as feedback_id,
                 f.grammar as feedback_grammar,
                 f.vocabulary as feedback_vocabulary,
@@ -114,6 +115,7 @@ class ConversationRepositoryCustomMethodsImpl(
                 f.vocabulary_enrichment as feedback_vocabulary_enrichment,
                 f.alternative_expressions as feedback_alternative_expressions,
                 f.cultural_note as feedback_cultural_note,
+                -- AI message: Learning tips
                 lt.id as learning_tips_id,
                 lt.grammar_tips as learning_tips_grammar_tips,
                 lt.vocabulary_tips as learning_tips_vocabulary_tips,

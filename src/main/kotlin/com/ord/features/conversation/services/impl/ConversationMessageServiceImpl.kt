@@ -161,14 +161,6 @@ class ConversationMessageServiceImpl(
                     messageId = messageId,
                 )
             )
-            .flatMap { tips ->
-                conversationMessageRepository
-                    .findById(messageId)
-                    .flatMap { message ->
-                        conversationMessageRepository.save(
-                            message.copy(learningTipsId = tips.id)
-                        )
-                    }
-            }
+            .then(conversationMessageRepository.findById(messageId))
     }
 }
