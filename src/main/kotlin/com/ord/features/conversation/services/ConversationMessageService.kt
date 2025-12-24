@@ -1,5 +1,6 @@
 package com.ord.features.conversation.services
 
+import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.models.conversation_message.ConversationMessageEntity
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
@@ -32,5 +33,10 @@ interface ConversationMessageService {
     fun saveFeedbackForExistingMessage(
         messageId: UUID,
         aiFeedback: ReviewedUserConversationMessage
+    ): Mono<ConversationMessageEntity>
+
+    fun saveLearningTipsForExistingMessage(
+        messageId: UUID,
+        learningTips: AIMessageLearningTips
     ): Mono<ConversationMessageEntity>
 }
