@@ -158,32 +158,39 @@ class OngoingConversationFacadeImpl(
                     .map { userMessage -> Pair(conversation, userMessage) }
             }
             .flatMap { (conversation, userMessage) ->
-
-                val prompt = Prompt(
-                    variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
-                    params = conversation.convertToPromptParams() + mapOf(
-                        "userMessage" to userMessage.content,
-                        "latestAIMessage" to (body.latestAIMessage
-                            ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation.")
-                    )
-                )
-
-                openAIAPIClientService.makeRequest(
-                    prompt = prompt.toString(),
-                    aiResponseType = object : TypeReference<OpenAIReviewedMessage>() {},
+                // Get user's language proficiency for generativeContentLanguage
+                languageProficiencyService.findUserProficiencyInLanguageOrThrow(
                     userId = userId,
-                    gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
-                    structuredOutput = prompt.variant.structuredOutput,
+                    languageName = conversation.language
                 )
-                    .map { openAIResponse -> openAIResponse.toDomain() }
-                    .flatMap { aiFeedback ->
-                        conversationMessageService.saveFeedbackForExistingMessage(
-                            messageId = body.messageId,
-                            aiFeedback = aiFeedback
+                    .flatMap { proficiency ->
+                        val prompt = Prompt(
+                            variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
+                            params = conversation.convertToPromptParams() + mapOf(
+                                "userMessage" to userMessage.content,
+                                "latestAIMessage" to (body.latestAIMessage
+                                    ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
+                                "generativeContentLanguage" to proficiency.generativeContentLanguage.toString()
+                            )
                         )
-                            .then(Mono.fromCallable {
-                                ResponseEntity.ok(aiFeedback)
-                            })
+
+                        openAIAPIClientService.makeRequest(
+                            prompt = prompt.toString(),
+                            aiResponseType = object : TypeReference<OpenAIReviewedMessage>() {},
+                            userId = userId,
+                            gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
+                            structuredOutput = prompt.variant.structuredOutput,
+                        )
+                            .map { openAIResponse -> openAIResponse.toDomain() }
+                            .flatMap { aiFeedback ->
+                                conversationMessageService.saveFeedbackForExistingMessage(
+                                    messageId = body.messageId,
+                                    aiFeedback = aiFeedback
+                                )
+                                    .then(Mono.fromCallable {
+                                        ResponseEntity.ok(aiFeedback)
+                                    })
+                            }
                     }
             }
     }
