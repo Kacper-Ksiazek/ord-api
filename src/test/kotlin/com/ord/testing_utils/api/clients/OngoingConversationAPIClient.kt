@@ -1,8 +1,10 @@
 package com.ord.testing_utils.api.clients
 
+import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import com.ord.testing_utils.api.APITestClient
@@ -62,6 +64,18 @@ class OngoingConversationAPIClient(
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<ReviewedUserConversationMessage>() {}
+        )
+    }
+
+    fun generateLearningTips(
+        body: GetLearningTipsForAIMessageRequest,
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<AIMessageLearningTips?> {
+        return post(
+            url = "$baseUrl/ai/generate-learning-tips",
+            body = body,
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<AIMessageLearningTips>() {}
         )
     }
 }
