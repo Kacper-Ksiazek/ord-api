@@ -4,6 +4,8 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.conversation.models.conversation.ConversationDTO
+import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsDTO
+import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsMapper
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackDTO
 import com.ord.features.conversation.models.conversation.enums.ConversationType
@@ -23,7 +25,8 @@ import java.util.*
 @Repository
 class ConversationRepositoryCustomMethodsImpl(
     private val template: R2dbcEntityTemplate,
-    private val feedbackMapper: ConversationUserMessageFeedbackMapper
+    private val feedbackMapper: ConversationUserMessageFeedbackMapper,
+    private val learningTipsMapper: ConversationAIMessageLearningTipsMapper
 ) : ConversationRepositoryCustomMethods {
     override fun findRecentTopics(
         userId: UUID,
@@ -99,6 +102,7 @@ class ConversationRepositoryCustomMethodsImpl(
                 m.content,
                 m.message_order,
                 m.created_at as message_created_at,
+                -- User message: Feedback
                 f.id as feedback_id,
                 f.grammar as feedback_grammar,
                 f.vocabulary as feedback_vocabulary,
@@ -110,10 +114,18 @@ class ConversationRepositoryCustomMethodsImpl(
                 f.strengths_identified as feedback_strengths_identified,
                 f.vocabulary_enrichment as feedback_vocabulary_enrichment,
                 f.alternative_expressions as feedback_alternative_expressions,
-                f.cultural_note as feedback_cultural_note
+                f.cultural_note as feedback_cultural_note,
+                -- AI message: Learning tips
+                lt.id as learning_tips_id,
+                lt.grammar_tips as learning_tips_grammar_tips,
+                lt.vocabulary_tips as learning_tips_vocabulary_tips,
+                lt.idiom_tips as learning_tips_idiom_tips,
+                lt.cultural_tips as learning_tips_cultural_tips,
+                lt.message_id as learning_tips_message_id
             FROM conversations c
             LEFT JOIN conversation_messages m ON c.id = m.conversation_id
             LEFT JOIN conversation_user_message_feedback f ON m.id = f.message_id
+            LEFT JOIN conversation_ai_message_learning_tips lt ON m.id = lt.message_id
             WHERE c.user_id = :userId
                 AND c.id = :id
             ORDER BY m.message_order
@@ -154,12 +166,24 @@ class ConversationRepositoryCustomMethodsImpl(
                                 )
                             } else null
 
+                            val learningTips = if (row["learning_tips_id"] != null) {
+                                ConversationAIMessageLearningTipsDTO(
+                                    id = row["learning_tips_id"] as UUID,
+                                    grammarTips = learningTipsMapper.deserializeGrammarTips(row["learning_tips_grammar_tips"] as Json),
+                                    vocabularyTips = learningTipsMapper.deserializeVocabularyTips(row["learning_tips_vocabulary_tips"] as Json),
+                                    idiomTips = learningTipsMapper.deserializeIdiomTips(row["learning_tips_idiom_tips"] as Json),
+                                    culturalTips = learningTipsMapper.deserializeCulturalTips(row["learning_tips_cultural_tips"] as Json),
+                                    messageId = row["learning_tips_message_id"] as UUID
+                                )
+                            } else null
+
                             ConversationMessageDTO(
                                 id = row["message_id"] as UUID,
                                 messageOrder = row["message_order"] as Int,
                                 sender = ConversationMessageSender.valueOf(row["sender"] as String),
                                 content = row["content"] as String,
                                 feedback = feedback,
+                                learningTips = learningTips,
                                 createdAt = (row["message_created_at"] as OffsetDateTime).toInstant()
                             )
                         }.toMutableList()

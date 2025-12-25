@@ -11,6 +11,7 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation.ConversationDTO
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
@@ -105,6 +106,32 @@ class TestOngoingConversationController @Autowired constructor(
             .bind("content", content)
             .bind("messageOrder", messageOrder)
             .bind("sender", ConversationMessageSender.USER.name)
+            .bind("conversationId", conversationId)
+            .bind("createdAt", java.time.Instant.now())
+            .fetch()
+            .rowsUpdated()
+            .block()
+
+        return messageId
+    }
+
+    private fun saveAIMessage(
+        conversationId: UUID,
+        content: String,
+        messageOrder: Int
+    ): UUID {
+        val messageId = UUID.randomUUID()
+
+        databaseClient.sql(
+            """
+            INSERT INTO conversation_messages (id, content, message_order, sender, conversation_id, created_at)
+            VALUES (:id, :content, :messageOrder, :sender, :conversationId, :createdAt)
+        """
+        )
+            .bind("id", messageId)
+            .bind("content", content)
+            .bind("messageOrder", messageOrder)
+            .bind("sender", ConversationMessageSender.AI.name)
             .bind("conversationId", conversationId)
             .bind("createdAt", java.time.Instant.now())
             .fetch()
@@ -966,6 +993,362 @@ class TestOngoingConversationController @Autowired constructor(
     }
 
     @Nested
+    @DisplayName("[POST] /api/v1/conversations/ongoing/ai/generate-learning-tips - generate learning tips for AI message")
+    inner class GenerateLearningTipsForAIMessageTests {
+
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - should generate learning tips for AI message`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val conversation = createConversation(authenticatedUser)
+
+                ongoingConversationAPIClient.initializeConversationByAI(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                )
+
+                val aiMessageId = saveAIMessage(
+                    conversationId = conversation.id,
+                    content = "That sounds wonderful! Could you describe the scenery in more detail? What makes this place so special to you?",
+                    messageOrder = 1
+                )
+
+                val response = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = aiMessageId
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.grammarTips shouldNotBe null
+                response.body.vocabularyTips shouldNotBe null
+                response.body.idiomTips shouldNotBe null
+                response.body.culturalTips shouldNotBe null
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS")
+            }
+
+            @Test
+            fun `200 - should return all tip categories with proper structure`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.C1)
+                )
+
+                val conversation = createConversation(authenticatedUser)
+
+                ongoingConversationAPIClient.initializeConversationByAI(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                )
+
+                val aiMessageId = saveAIMessage(
+                    conversationId = conversation.id,
+                    content = "It's fascinating how you've described the atmosphere. The way you mentioned the oak tree and the peaceful surroundings really paints a vivid picture. Have you considered visiting other parks in the area?",
+                    messageOrder = 1
+                )
+
+                val response = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = aiMessageId
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+                val tips = response.body!!
+
+                tips.grammarTips shouldNotBe null
+                tips.vocabularyTips shouldNotBe null
+                tips.idiomTips shouldNotBe null
+                tips.culturalTips shouldNotBe null
+            }
+
+            @Test
+            fun `200 - learning tips should be persisted and linked to message`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val conversation = createConversation(authenticatedUser)
+
+                ongoingConversationAPIClient.initializeConversationByAI(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                )
+
+                val aiMessageId = saveAIMessage(
+                    conversationId = conversation.id,
+                    content = "That's wonderful! I'd love to hear more about your experience. What was your favorite part of the visit?",
+                    messageOrder = 1
+                )
+
+                ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = aiMessageId
+                    ),
+                    user = authenticatedUser
+                )
+
+                val updatedConversation = conversationAPIClient.getConversationById(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                ).body!!
+
+                val aiMessage = updatedConversation.messages.find { it.id == aiMessageId }
+                aiMessage shouldNotBe null
+                aiMessage!!.learningTips shouldNotBe null
+            }
+
+            @Test
+            fun `200 - should work with different language proficiency levels`() {
+                val proficiencyLevels = listOf(
+                    LanguageProficiencyLevel.A2,
+                    LanguageProficiencyLevel.B2,
+                    LanguageProficiencyLevel.C1
+                )
+
+                proficiencyLevels.forEach { level ->
+                    val authenticatedUser = mockAuthenticatedUser(
+                        languages = mapOf(TestData.LANGUAGE to level)
+                    )
+
+                    val conversation = createConversation(authenticatedUser)
+
+                    ongoingConversationAPIClient.initializeConversationByAI(
+                        conversationId = conversation.id,
+                        user = authenticatedUser
+                    )
+
+                    val aiMessageId = saveAIMessage(
+                        conversationId = conversation.id,
+                        content = "That sounds lovely! What did you enjoy most?",
+                        messageOrder = 1
+                    )
+
+                    val response = ongoingConversationAPIClient.generateLearningTips(
+                        body = GetLearningTipsForAIMessageRequest(
+                            conversationId = conversation.id,
+                            messageId = aiMessageId
+                        ),
+                        user = authenticatedUser
+                    )
+
+                    response.status shouldBe HttpStatus.OK
+                    response.body shouldNotBe null
+                }
+            }
+
+            @Test
+            fun `200 - returned DTO should contain all required fields`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val conversation = createConversation(authenticatedUser)
+
+                ongoingConversationAPIClient.initializeConversationByAI(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                )
+
+                val aiMessageId = saveAIMessage(
+                    conversationId = conversation.id,
+                    content = "That's great! The park sounds like a perfect place to relax and enjoy nature.",
+                    messageOrder = 1
+                )
+
+                val response = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = aiMessageId
+                    ),
+                    user = authenticatedUser
+                )
+
+                val dto = response.body!!
+                dto.grammarTips shouldNotBe null
+                dto.vocabularyTips shouldNotBe null
+                dto.idiomTips shouldNotBe null
+                dto.culturalTips shouldNotBe null
+            }
+
+            @Test
+            fun `200 - should handle AI messages with various content lengths`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.C2)
+                )
+
+                val conversation = createConversation(authenticatedUser)
+
+                ongoingConversationAPIClient.initializeConversationByAI(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                )
+
+                val shortMessage = saveAIMessage(
+                    conversationId = conversation.id,
+                    content = "That's nice!",
+                    messageOrder = 1
+                )
+
+                val longMessage = saveAIMessage(
+                    conversationId = conversation.id,
+                    content = "It's absolutely wonderful to hear about your park experience! The way you've described the serene atmosphere, with the ducks gliding across the lake and families enjoying their time together, really brings the scene to life. I can almost picture the majestic oak tree providing shade as you sat there immersed in your book. Nature has such a remarkable way of rejuvenating our spirits, doesn't it?",
+                    messageOrder = 3
+                )
+
+                val shortResponse = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = shortMessage
+                    ),
+                    user = authenticatedUser
+                )
+
+                val longResponse = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = longMessage
+                    ),
+                    user = authenticatedUser
+                )
+
+                shortResponse.status shouldBe HttpStatus.OK
+                shortResponse.body shouldNotBe null
+                longResponse.status shouldBe HttpStatus.OK
+                longResponse.body shouldNotBe null
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `401 - anonymous user cannot generate learning tips`() {
+                val response = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = UUID.randomUUID(),
+                        messageId = UUID.randomUUID()
+                    ),
+                    user = null
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `404 - cannot generate learning tips for non-existent conversation`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                val response = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = UUID.randomUUID(),
+                        messageId = UUID.randomUUID()
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
+            }
+
+            @Test
+            fun `404 - user cannot generate learning tips for another user's conversation`() {
+                val owner = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+                val otherUser = mockAuthenticatedUser()
+
+                val conversation = createConversation(owner)
+
+                ongoingConversationAPIClient.initializeConversationByAI(
+                    conversationId = conversation.id,
+                    user = owner
+                )
+
+                val aiMessageId = saveAIMessage(
+                    conversationId = conversation.id,
+                    content = "That sounds wonderful!",
+                    messageOrder = 1
+                )
+
+                val response = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = aiMessageId
+                    ),
+                    user = otherUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
+            }
+
+            @Test
+            fun `404 - cannot generate learning tips for non-existent message`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val conversation = createConversation(authenticatedUser)
+
+                ongoingConversationAPIClient.initializeConversationByAI(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                )
+
+                val response = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = UUID.randomUUID()
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
+            }
+
+            @Test
+            fun `400 - cannot generate learning tips for USER message`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val conversation = createConversation(authenticatedUser)
+
+                ongoingConversationAPIClient.initializeConversationByAI(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                )
+
+                val userMessageId = saveUserMessage(
+                    conversationId = conversation.id,
+                    content = TestData.USER_MESSAGE,
+                    messageOrder = 1
+                )
+
+                val response = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = userMessageId
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+        }
+    }
+
+    @Nested
     @DisplayName("Integration - Full conversation flow")
     inner class FullConversationFlowTests {
 
@@ -1152,6 +1535,186 @@ class TestOngoingConversationController @Autowired constructor(
             finalConversation.messages[2].messageOrder shouldBe 2
             finalConversation.messages[3].messageOrder shouldBe 3
             finalConversation.messages[4].messageOrder shouldBe 4
+        }
+
+        @Test
+        fun `should generate both feedback and learning tips in same conversation`() {
+            val authenticatedUser = mockAuthenticatedUser(
+                languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+            )
+
+            val conversation = createConversation(authenticatedUser)
+
+            val aiInit = ongoingConversationAPIClient.initializeConversationByAI(
+                conversationId = conversation.id,
+                user = authenticatedUser
+            )
+            aiInit.status shouldBe HttpStatus.OK
+
+            val userMessageId = UUID.randomUUID()
+            val userMessageContent = "I went to the park yesterday and had a wonderful time enjoying the beautiful scenery."
+
+            ongoingConversationAPIClient.saveUserMessage(
+                body = SaveUserConversationMessageRequest(
+                    conversationId = conversation.id,
+                    messageId = userMessageId,
+                    content = userMessageContent,
+                    messageOrder = 1
+                ),
+                user = authenticatedUser
+            )
+
+            val aiMessageResponse = ongoingConversationAPIClient.requestAIMessage(
+                body = CreateAIConversationMessageRequest(
+                    conversationId = conversation.id,
+                    messageOrder = 2,
+                    latestUserMessage = userMessageContent
+                ),
+                user = authenticatedUser
+            )
+            aiMessageResponse.status shouldBe HttpStatus.OK
+
+            val feedbackResponse = ongoingConversationAPIClient.generateFeedback(
+                body = GetFeedbackOnUserConversationMessageRequest(
+                    conversationId = conversation.id,
+                    messageId = userMessageId,
+                    messageOrder = 1,
+                    latestAIMessage = aiInit.body
+                ),
+                user = authenticatedUser
+            )
+            feedbackResponse.status shouldBe HttpStatus.OK
+
+            val finalConversation = conversationAPIClient.getConversationById(
+                conversationId = conversation.id,
+                user = authenticatedUser
+            ).body!!
+
+            val aiMessageId = finalConversation.messages.find { it.messageOrder == 2 }!!.id
+
+            val learningTipsResponse = ongoingConversationAPIClient.generateLearningTips(
+                body = GetLearningTipsForAIMessageRequest(
+                    conversationId = conversation.id,
+                    messageId = aiMessageId
+                ),
+                user = authenticatedUser
+            )
+            learningTipsResponse.status shouldBe HttpStatus.OK
+
+            val updatedConversation = conversationAPIClient.getConversationById(
+                conversationId = conversation.id,
+                user = authenticatedUser
+            ).body!!
+
+            val userMessage = updatedConversation.messages.find { it.id == userMessageId }!!
+            val aiMessage = updatedConversation.messages.find { it.id == aiMessageId }!!
+
+            userMessage.feedback shouldNotBe null
+            aiMessage.learningTips shouldNotBe null
+        }
+
+        @Test
+        fun `should generate learning tips for multiple AI messages`() {
+            val authenticatedUser = mockAuthenticatedUser(
+                languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.C1)
+            )
+
+            val conversation = createConversation(authenticatedUser)
+
+            val aiInit = ongoingConversationAPIClient.initializeConversationByAI(
+                conversationId = conversation.id,
+                user = authenticatedUser
+            )
+            aiInit.status shouldBe HttpStatus.OK
+
+            val userMessage1Id = UUID.randomUUID()
+            val userMessage1Content = "I love reading books about history and science."
+
+            ongoingConversationAPIClient.saveUserMessage(
+                body = SaveUserConversationMessageRequest(
+                    conversationId = conversation.id,
+                    messageId = userMessage1Id,
+                    content = userMessage1Content,
+                    messageOrder = 1
+                ),
+                user = authenticatedUser
+            )
+
+            val aiMessage1Response = ongoingConversationAPIClient.requestAIMessage(
+                body = CreateAIConversationMessageRequest(
+                    conversationId = conversation.id,
+                    messageOrder = 2,
+                    latestUserMessage = userMessage1Content
+                ),
+                user = authenticatedUser
+            )
+            aiMessage1Response.status shouldBe HttpStatus.OK
+
+            val conversationAfterFirstExchange = conversationAPIClient.getConversationById(
+                conversationId = conversation.id,
+                user = authenticatedUser
+            ).body!!
+
+            val aiMessage1Id = conversationAfterFirstExchange.messages.find { it.messageOrder == 2 }!!.id
+
+            val learningTips1 = ongoingConversationAPIClient.generateLearningTips(
+                body = GetLearningTipsForAIMessageRequest(
+                    conversationId = conversation.id,
+                    messageId = aiMessage1Id
+                ),
+                user = authenticatedUser
+            )
+            learningTips1.status shouldBe HttpStatus.OK
+
+            val userMessage2Id = UUID.randomUUID()
+            val userMessage2Content = "What topics interest you the most?"
+
+            ongoingConversationAPIClient.saveUserMessage(
+                body = SaveUserConversationMessageRequest(
+                    conversationId = conversation.id,
+                    messageId = userMessage2Id,
+                    content = userMessage2Content,
+                    messageOrder = 3
+                ),
+                user = authenticatedUser
+            )
+
+            val aiMessage2Response = ongoingConversationAPIClient.requestAIMessage(
+                body = CreateAIConversationMessageRequest(
+                    conversationId = conversation.id,
+                    messageOrder = 4,
+                    latestUserMessage = userMessage2Content
+                ),
+                user = authenticatedUser
+            )
+            aiMessage2Response.status shouldBe HttpStatus.OK
+
+            val conversationAfterSecondExchange = conversationAPIClient.getConversationById(
+                conversationId = conversation.id,
+                user = authenticatedUser
+            ).body!!
+
+            val aiMessage2Id = conversationAfterSecondExchange.messages.find { it.messageOrder == 4 }!!.id
+
+            val learningTips2 = ongoingConversationAPIClient.generateLearningTips(
+                body = GetLearningTipsForAIMessageRequest(
+                    conversationId = conversation.id,
+                    messageId = aiMessage2Id
+                ),
+                user = authenticatedUser
+            )
+            learningTips2.status shouldBe HttpStatus.OK
+
+            val finalConversation = conversationAPIClient.getConversationById(
+                conversationId = conversation.id,
+                user = authenticatedUser
+            ).body!!
+
+            val aiMsg1 = finalConversation.messages.find { it.id == aiMessage1Id }!!
+            val aiMsg2 = finalConversation.messages.find { it.id == aiMessage2Id }!!
+
+            aiMsg1.learningTips shouldNotBe null
+            aiMsg2.learningTips shouldNotBe null
         }
     }
 }

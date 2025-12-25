@@ -57,13 +57,19 @@ enum class ConversationAIBotAvatar(
 
     companion object {
         /**
+         * Returns a list of selectable avatars, excluding AVATAR_DEFAULT
+         * which is only used for fallback scenarios.
+         */
+        fun getSelectableAvatars(): List<ConversationAIBotAvatar> {
+            return entries.filter { it != AVATAR_DEFAULT }
+        }
+
+        /**
          * Returns a list of valid avatar enum names for structured output schemas.
          * Excludes AVATAR_DEFAULT as it's only used for fallback scenarios.
          */
         fun toSchemaEnumList(): List<String> {
-            return entries
-                .filter { it != AVATAR_DEFAULT }
-                .map { it.name }
+            return getSelectableAvatars().map { it.name }
         }
     }
 }

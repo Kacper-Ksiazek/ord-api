@@ -1,10 +1,14 @@
 package com.ord.features.conversation.services.impl
 
+import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsEntity
+import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsMapper
 import com.ord.features.conversation.models.conversation_message.ConversationMessageEntity
 import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackEntity
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackMapper
+import com.ord.features.conversation.repositories.ConversationAIMessageLearningTipsRepository
 import com.ord.features.conversation.repositories.ConversationMessageRepository
 import com.ord.features.conversation.repositories.ConversationUserMessageFeedbackRepository
 import com.ord.features.conversation.services.ConversationMessageService
@@ -18,7 +22,9 @@ import java.util.*
 class ConversationMessageServiceImpl(
     private val conversationMessageRepository: ConversationMessageRepository,
     private val conversationUserMessageFeedbackRepository: ConversationUserMessageFeedbackRepository,
+    private val conversationAIMessageLearningTipsRepository: ConversationAIMessageLearningTipsRepository,
     private val feedbackMapper: ConversationUserMessageFeedbackMapper,
+    private val learningTipsMapper: ConversationAIMessageLearningTipsMapper,
     private val databaseClient: DatabaseClient,
 ) : ConversationMessageService {
     override fun createMessage(
@@ -139,5 +145,22 @@ class ConversationMessageServiceImpl(
                         )
                     }
             }
+    }
+
+    override fun saveLearningTipsForExistingMessage(
+        messageId: UUID,
+        learningTips: AIMessageLearningTips
+    ): Mono<ConversationMessageEntity> {
+        return conversationAIMessageLearningTipsRepository
+            .save(
+                ConversationAIMessageLearningTipsEntity(
+                    grammarTips = learningTipsMapper.serializeGrammarTips(learningTips.grammarTips),
+                    vocabularyTips = learningTipsMapper.serializeVocabularyTips(learningTips.vocabularyTips),
+                    idiomTips = learningTipsMapper.serializeIdiomTips(learningTips.idiomTips),
+                    culturalTips = learningTipsMapper.serializeCulturalTips(learningTips.culturalTips),
+                    messageId = messageId,
+                )
+            )
+            .then(conversationMessageRepository.findById(messageId))
     }
 }

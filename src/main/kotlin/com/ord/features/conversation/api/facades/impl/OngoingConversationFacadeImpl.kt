@@ -3,13 +3,17 @@ package com.ord.features.conversation.api.facades.impl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
-import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
+import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.exceptions.REST.BadRequestException
+import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
+import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
+import com.ord.features.conversation.api.facades.helpers.ai_responses.OpenAIAIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.OpenAIReviewedMessage
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation.ConversationMapper
 import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
@@ -36,7 +40,7 @@ class OngoingConversationFacadeImpl(
     private val conversationMessageRepository: com.ord.features.conversation.repositories.ConversationMessageRepository,
     private val conversationMapper: ConversationMapper,
     private val conversationMessageMapper: ConversationMessageMapper,
-    private val gptTokensUsageService: GptTokensUsageService,
+    private val languageProficiencyService: LanguageProficiencyService,
 ) : OngoingConversationFacade {
     private val logger = LoggerFactory.getLogger(OngoingConversationFacadeImpl::class.java)
     override fun initializeConversationByAI(
@@ -150,35 +154,97 @@ class OngoingConversationFacadeImpl(
             .map { conversationMapper.toDTO(it) }
             .flatMap { conversation ->
                 conversationMessageRepository.findById(body.messageId)
+                    .switchIfEmpty(Mono.error(NotFoundException("Message with id ${body.messageId} not found")))
                     .map { userMessage -> Pair(conversation, userMessage) }
             }
             .flatMap { (conversation, userMessage) ->
-
-                val prompt = Prompt(
-                    variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
-                    params = conversation.convertToPromptParams() + mapOf(
-                        "userMessage" to userMessage.content,
-                        "latestAIMessage" to (body.latestAIMessage
-                            ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation.")
-                    )
-                )
-
-                openAIAPIClientService.makeRequest(
-                    prompt = prompt.toString(),
-                    aiResponseType = object : TypeReference<OpenAIReviewedMessage>() {},
+                // Get user's language proficiency for generativeContentLanguage
+                languageProficiencyService.findUserProficiencyInLanguageOrThrow(
                     userId = userId,
-                    gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
-                    structuredOutput = prompt.variant.structuredOutput,
+                    languageName = conversation.language
                 )
-                    .map { openAIResponse -> openAIResponse.toDomain() }
-                    .flatMap { aiFeedback ->
-                        conversationMessageService.saveFeedbackForExistingMessage(
-                            messageId = body.messageId,
-                            aiFeedback = aiFeedback
+                    .flatMap { proficiency ->
+                        val prompt = Prompt(
+                            variant = AvailablePrompts.CONVERSATION_REVIEW_USER_RESPONSE,
+                            params = conversation.convertToPromptParams() + mapOf(
+                                "userMessage" to userMessage.content,
+                                "latestAIMessage" to (body.latestAIMessage
+                                    ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
+                                "generativeContentLanguage" to proficiency.generativeContentLanguage.toString()
+                            )
                         )
-                            .then(Mono.fromCallable {
-                                ResponseEntity.ok(aiFeedback)
-                            })
+
+                        openAIAPIClientService.makeRequest(
+                            prompt = prompt.toString(),
+                            aiResponseType = object : TypeReference<OpenAIReviewedMessage>() {},
+                            userId = userId,
+                            gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
+                            structuredOutput = prompt.variant.structuredOutput,
+                        )
+                            .map { openAIResponse -> openAIResponse.toDomain() }
+                            .flatMap { aiFeedback ->
+                                conversationMessageService.saveFeedbackForExistingMessage(
+                                    messageId = body.messageId,
+                                    aiFeedback = aiFeedback
+                                )
+                                    .then(Mono.fromCallable {
+                                        ResponseEntity.ok(aiFeedback)
+                                    })
+                            }
+                    }
+            }
+    }
+
+    override fun generateLearningTipsForAIMessage(
+        userId: UUID,
+        body: GetLearningTipsForAIMessageRequest
+    ): Mono<ResponseEntity<AIMessageLearningTips>> {
+        return conversationService
+            .findByIdOrFail(body.conversationId, userId)
+            .map { conversationMapper.toDTO(it) }
+            .flatMap { conversation ->
+                conversationMessageRepository.findById(body.messageId)
+                    .switchIfEmpty(Mono.error(NotFoundException("Message with id ${body.messageId} not found")))
+                    .map { aiMessage -> Pair(conversation, aiMessage) }
+            }
+            .flatMap { (conversation, aiMessage) ->
+                // Validate that message is from AI
+                if (aiMessage.sender != ConversationMessageSender.AI) {
+                    return@flatMap Mono.error(
+                        BadRequestException("Message ${body.messageId} is not an AI message")
+                    )
+                }
+
+                // Get user's language proficiency for generativeContentLanguage
+                languageProficiencyService.findUserProficiencyInLanguageOrThrow(
+                    userId = userId,
+                    languageName = conversation.language
+                )
+                    .flatMap { proficiency ->
+                        val prompt = Prompt(
+                            variant = AvailablePrompts.CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS,
+                            params = conversation.convertToPromptParams() + mapOf(
+                                "aiMessage" to aiMessage.content,
+                                "generativeContentLanguage" to proficiency.generativeContentLanguage.toString()
+                            )
+                        )
+
+                        openAIAPIClientService.makeRequest(
+                            prompt = prompt,
+                            aiResponseType = object : TypeReference<OpenAIAIMessageLearningTips>() {},
+                            userId = userId,
+                            gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.GENERATE_AI_MESSAGE_LEARNING_TIPS,
+                        )
+                            .map { openAIResponse -> openAIResponse.toDomain() }
+                            .flatMap { learningTips ->
+                                conversationMessageService.saveLearningTipsForExistingMessage(
+                                    messageId = body.messageId,
+                                    learningTips = learningTips
+                                )
+                                    .then(Mono.fromCallable {
+                                        ResponseEntity.ok(learningTips)
+                                    })
+                            }
                     }
             }
     }

@@ -1,6 +1,7 @@
 package com.ord.shared.prompts
 
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
+import com.ord.shared.prompts.structured_outputs.features.conversation.aiMessageLearningTipsSchema
 import com.ord.shared.prompts.structured_outputs.features.conversation.generatedAIInterlocutorSchema
 import com.ord.shared.prompts.structured_outputs.features.conversation.reviewedUserConversationMessageSchema
 import com.ord.shared.prompts.structured_outputs.features.games.crosswordGenerateSchema
@@ -24,6 +25,10 @@ enum class AvailablePrompts(
     CONVERSATION_REVIEW_USER_RESPONSE(
         resourcePath = "conversation/review_user_message_in_conversation.md",
         structuredOutput = reviewedUserConversationMessageSchema
+    ),
+    CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS(
+        resourcePath = "conversation/generate_ai_message_learning_tips.md",
+        structuredOutput = aiMessageLearningTipsSchema
     ),
 
     GAMES_GENERATE_CROSSWORD(

@@ -26,3 +26,5 @@ Your reply should:
 4. Match the requested proficiency level.
 5. Return just a plain text, with neither extra messages nor any kind of formatting. Markdown is not allowed as well.
 6. Always end your answer with a question to the user, so they can continue the conversation.
+7. Use regular hyphens "-" instead of em dashes "—" to sound more natural and human.
+8. Keep your response to one paragraph only. This is a casual chat message, not a structured response with bullet lists, headers, or other formatting features.

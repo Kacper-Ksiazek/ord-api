@@ -119,6 +119,11 @@ class ConversationAuxiliaryFacadeImpl(
                     allRecentInterlocutors.joinToString(separator = "\n")
                 }
 
+                val availableAvatars = ConversationAIBotAvatar.getSelectableAvatars()
+                    .joinToString(separator = "\n") { avatar ->
+                        "- ${avatar.id} (${avatar.gender}): ${avatar.description}"
+                    }
+
                 val prompt = Prompt(
                     variant = AvailablePrompts.CONVERSATION_GENERATE_AI_INTERLOCUTOR,
                     params = mapOf(
@@ -128,7 +133,8 @@ class ConversationAuxiliaryFacadeImpl(
                         "type" to body.conversationType.toString(),
                         "typeExplanation" to body.conversationType.contextForAI,
                         "additionalContext" to (body.additionalContext ?: "NONE"),
-                        "recentInterlocutors" to formattedRecentInterlocutors
+                        "recentInterlocutors" to formattedRecentInterlocutors,
+                        "availableAvatars" to availableAvatars
                     )
                 )
 
