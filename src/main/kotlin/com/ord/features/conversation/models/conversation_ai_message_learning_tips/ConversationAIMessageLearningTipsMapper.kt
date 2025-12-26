@@ -2,7 +2,6 @@ package com.ord.features.conversation.models.conversation_ai_message_learning_ti
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedCulturalTip
 import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedGrammarTip
 import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedIdiomTip
 import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedVocabularyTip
@@ -24,7 +23,6 @@ class ConversationAIMessageLearningTipsMapper :
             grammarTips = deserializeGrammarTips(entity.grammarTips),
             vocabularyTips = deserializeVocabularyTips(entity.vocabularyTips),
             idiomTips = deserializeIdiomTips(entity.idiomTips),
-            culturalTips = deserializeCulturalTips(entity.culturalTips),
             messageId = entity.messageId,
         )
     }
@@ -35,7 +33,6 @@ class ConversationAIMessageLearningTipsMapper :
             grammarTips = serializeGrammarTips(dto.grammarTips),
             vocabularyTips = serializeVocabularyTips(dto.vocabularyTips),
             idiomTips = serializeIdiomTips(dto.idiomTips),
-            culturalTips = serializeCulturalTips(dto.culturalTips),
             messageId = dto.messageId,
         )
     }
@@ -62,13 +59,5 @@ class ConversationAIMessageLearningTipsMapper :
 
     fun deserializeIdiomTips(json: Json): Set<AnnotatedIdiomTip> {
         return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<AnnotatedIdiomTip>>() {})
-    }
-
-    fun serializeCulturalTips(tips: Set<AnnotatedCulturalTip>): Json {
-        return Json.of(jsonObjectMapper.writeValueAsString(tips))
-    }
-
-    fun deserializeCulturalTips(json: Json): Set<AnnotatedCulturalTip> {
-        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<AnnotatedCulturalTip>>() {})
     }
 }
