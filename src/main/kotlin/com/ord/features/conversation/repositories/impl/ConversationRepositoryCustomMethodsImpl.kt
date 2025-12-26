@@ -120,7 +120,6 @@ class ConversationRepositoryCustomMethodsImpl(
                 lt.grammar_tips as learning_tips_grammar_tips,
                 lt.vocabulary_tips as learning_tips_vocabulary_tips,
                 lt.idiom_tips as learning_tips_idiom_tips,
-                lt.cultural_tips as learning_tips_cultural_tips,
                 lt.message_id as learning_tips_message_id
             FROM conversations c
             LEFT JOIN conversation_messages m ON c.id = m.conversation_id
@@ -172,7 +171,6 @@ class ConversationRepositoryCustomMethodsImpl(
                                     grammarTips = learningTipsMapper.deserializeGrammarTips(row["learning_tips_grammar_tips"] as Json),
                                     vocabularyTips = learningTipsMapper.deserializeVocabularyTips(row["learning_tips_vocabulary_tips"] as Json),
                                     idiomTips = learningTipsMapper.deserializeIdiomTips(row["learning_tips_idiom_tips"] as Json),
-                                    culturalTips = learningTipsMapper.deserializeCulturalTips(row["learning_tips_cultural_tips"] as Json),
                                     messageId = row["learning_tips_message_id"] as UUID
                                 )
                             } else null
