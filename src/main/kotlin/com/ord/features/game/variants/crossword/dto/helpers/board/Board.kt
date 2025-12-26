@@ -89,6 +89,10 @@ class Board {
 
         val wordSize: Int = aiGeneratedQuestion.word.length
 
+        // Validate that the entire word fits on the board
+        val endCoordinate = start.copy().shift(offset = wordSize - 1, direction = direction)
+        ensureCoordinatesFitsBoard(endCoordinate)
+
         if (direction == CrosswordWordDirection.HORIZONTAL) {
             for (i in 0 until wordSize) {
                 insertCharacter(
@@ -176,8 +180,20 @@ class Board {
         val remainingWords: MutableList<CrosswordQuestion> = questions.toMutableList()
 
         // Fill the board with the questions forming a crossword puzzle
+        // Find the first word that fits at the starting position
+        val firstWord = remainingWords.shuffled().firstOrNull { question ->
+            checkIfWordFits(
+                wordToFit = question.word,
+                start = firstWordStart,
+                direction = directionOfLastInsertedWord
+            )
+        } ?: throw BadGatewayException(
+            "No words fit at starting position (${firstWordStart.x}, ${firstWordStart.y}) on board (${dimensions.x}x${dimensions.y})"
+        )
+
+        remainingWords.remove(firstWord)
         place(
-            aiGeneratedQuestion = remainingWords.pickRandomQuestionAndRemove(),
+            aiGeneratedQuestion = firstWord,
             start = firstWordStart,
             direction = directionOfLastInsertedWord,
             questionsToInstruction = questionsToInstruction
