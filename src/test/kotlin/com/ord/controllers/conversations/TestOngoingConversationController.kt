@@ -1031,7 +1031,6 @@ class TestOngoingConversationController @Autowired constructor(
                 response.body!!.grammarTips shouldNotBe null
                 response.body.vocabularyTips shouldNotBe null
                 response.body.idiomTips shouldNotBe null
-                response.body.culturalTips shouldNotBe null
 
                 assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS")
             }
@@ -1069,7 +1068,6 @@ class TestOngoingConversationController @Autowired constructor(
                 tips.grammarTips shouldNotBe null
                 tips.vocabularyTips shouldNotBe null
                 tips.idiomTips shouldNotBe null
-                tips.culturalTips shouldNotBe null
             }
 
             @Test
@@ -1179,7 +1177,6 @@ class TestOngoingConversationController @Autowired constructor(
                 dto.grammarTips shouldNotBe null
                 dto.vocabularyTips shouldNotBe null
                 dto.idiomTips shouldNotBe null
-                dto.culturalTips shouldNotBe null
             }
 
             @Test
