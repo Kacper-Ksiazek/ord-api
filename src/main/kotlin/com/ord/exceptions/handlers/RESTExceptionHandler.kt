@@ -26,7 +26,8 @@ class RESTExceptionHandler {
         NotFoundException::class,
         ConflictException::class,
         PayloadTooLargeException::class,
-        InternalServerError::class
+        InternalServerError::class,
+        BadGatewayException::class
     )
     fun handleException(e: Exception): ResponseEntity<HTTPErrorResponse> {
         val status = getStatusForException(e)
