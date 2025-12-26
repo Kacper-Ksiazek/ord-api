@@ -157,7 +157,6 @@ class ConversationMessageServiceImpl(
                     grammarTips = learningTipsMapper.serializeGrammarTips(learningTips.grammarTips),
                     vocabularyTips = learningTipsMapper.serializeVocabularyTips(learningTips.vocabularyTips),
                     idiomTips = learningTipsMapper.serializeIdiomTips(learningTips.idiomTips),
-                    culturalTips = learningTipsMapper.serializeCulturalTips(learningTips.culturalTips),
                     messageId = messageId,
                 )
             )
