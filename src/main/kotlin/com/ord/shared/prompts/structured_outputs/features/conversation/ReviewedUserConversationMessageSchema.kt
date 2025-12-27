@@ -12,6 +12,10 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                 "type" to "string",
                 "description" to "Detects sabotage: wrong language, extremely short answers (\"yes\", \"no\"), extremely offensive content, or completely off-topic responses. Return string with reason, rate everything as 0. Otherwise empty string."
             ),
+            "tutorComment" to mapOf(
+                "type" to "string",
+                "description" to "A short, personal comment (1-2 sentences) from the tutor in the user's chosen feedback language (generativeContentLanguage). Acknowledge progress, highlight key strengths or areas for improvement, and provide encouragement like a real language tutor would. This should complement other feedback without duplicating it."
+            ),
             "grammar" to mapOf(
                 "type" to "integer",
                 "minimum" to 0,
@@ -130,6 +134,7 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
         ),
         "required" to listOf(
             "sabotage",
+            "tutorComment",
             "grammar",
             "vocabulary",
             "answerLength",
