@@ -62,6 +62,7 @@ class ConversationMessageServiceImpl(
                 conversationUserMessageFeedbackRepository
                     .save(
                         ConversationUserMessageFeedbackEntity(
+                            tutorComment = aiFeedback.tutorComment,
                             grammar = aiFeedback.grammar,
                             vocabulary = aiFeedback.vocabulary,
                             answerLength = aiFeedback.answerLength,
@@ -120,6 +121,7 @@ class ConversationMessageServiceImpl(
         return conversationUserMessageFeedbackRepository
             .save(
                 ConversationUserMessageFeedbackEntity(
+                    tutorComment = aiFeedback.tutorComment,
                     grammar = aiFeedback.grammar,
                     vocabulary = aiFeedback.vocabulary,
                     answerLength = aiFeedback.answerLength,

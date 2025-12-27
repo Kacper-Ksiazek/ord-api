@@ -104,6 +104,7 @@ class ConversationRepositoryCustomMethodsImpl(
                 m.created_at as message_created_at,
                 -- User message: Feedback
                 f.id as feedback_id,
+                f.tutor_comment as feedback_tutor_comment,
                 f.grammar as feedback_grammar,
                 f.vocabulary as feedback_vocabulary,
                 f.answer_length as feedback_answer_length,
@@ -150,6 +151,7 @@ class ConversationRepositoryCustomMethodsImpl(
                             val feedback = if (row["feedback_id"] != null) {
                                 ConversationUserMessageFeedbackDTO(
                                     id = row["feedback_id"] as UUID,
+                                    tutorComment = row["feedback_tutor_comment"] as String,
                                     grammar = row["feedback_grammar"] as Int,
                                     vocabulary = row["feedback_vocabulary"] as Int,
                                     answerLength = row["feedback_answer_length"] as Int,
