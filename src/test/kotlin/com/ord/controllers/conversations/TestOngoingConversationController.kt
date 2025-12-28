@@ -1000,7 +1000,7 @@ class TestOngoingConversationController @Autowired constructor(
         @DisplayName("Positive")
         inner class Positive {
             @Test
-            fun `200 - should generate learning tips for AI message`() {
+            fun `200 - should generate learning tips for latest AI message`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
                 )
@@ -1020,8 +1020,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val response = ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = conversation.id,
-                        messageId = aiMessageId
+                        conversationId = conversation.id
                     ),
                     user = authenticatedUser
                 )
@@ -1031,6 +1030,16 @@ class TestOngoingConversationController @Autowired constructor(
                 response.body!!.grammarTips shouldNotBe null
                 response.body.vocabularyTips shouldNotBe null
                 response.body.idiomTips shouldNotBe null
+
+                // Verify the tips were added to the latest AI message
+                val updatedConversation = conversationAPIClient.getConversationById(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                ).body!!
+
+                val tippedMessage = updatedConversation.messages.find { it.id == aiMessageId }
+                tippedMessage shouldNotBe null
+                tippedMessage!!.learningTips shouldNotBe null
 
                 assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS")
             }
@@ -1048,7 +1057,7 @@ class TestOngoingConversationController @Autowired constructor(
                     user = authenticatedUser
                 )
 
-                val aiMessageId = saveAIMessage(
+                saveAIMessage(
                     conversationId = conversation.id,
                     content = "It's fascinating how you've described the atmosphere. The way you mentioned the oak tree and the peaceful surroundings really paints a vivid picture. Have you considered visiting other parks in the area?",
                     messageOrder = 1
@@ -1056,8 +1065,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val response = ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = conversation.id,
-                        messageId = aiMessageId
+                        conversationId = conversation.id
                     ),
                     user = authenticatedUser
                 )
@@ -1091,8 +1099,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                 ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = conversation.id,
-                        messageId = aiMessageId
+                        conversationId = conversation.id
                     ),
                     user = authenticatedUser
                 )
@@ -1127,7 +1134,7 @@ class TestOngoingConversationController @Autowired constructor(
                         user = authenticatedUser
                     )
 
-                    val aiMessageId = saveAIMessage(
+                    saveAIMessage(
                         conversationId = conversation.id,
                         content = "That sounds lovely! What did you enjoy most?",
                         messageOrder = 1
@@ -1135,8 +1142,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                     val response = ongoingConversationAPIClient.generateLearningTips(
                         body = GetLearningTipsForAIMessageRequest(
-                            conversationId = conversation.id,
-                            messageId = aiMessageId
+                            conversationId = conversation.id
                         ),
                         user = authenticatedUser
                     )
@@ -1159,7 +1165,7 @@ class TestOngoingConversationController @Autowired constructor(
                     user = authenticatedUser
                 )
 
-                val aiMessageId = saveAIMessage(
+                saveAIMessage(
                     conversationId = conversation.id,
                     content = "That's great! The park sounds like a perfect place to relax and enjoy nature.",
                     messageOrder = 1
@@ -1167,8 +1173,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val response = ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = conversation.id,
-                        messageId = aiMessageId
+                        conversationId = conversation.id
                     ),
                     user = authenticatedUser
                 )
@@ -1204,18 +1209,18 @@ class TestOngoingConversationController @Autowired constructor(
                     messageOrder = 3
                 )
 
-                val shortResponse = ongoingConversationAPIClient.generateLearningTips(
+                // Generate tips for long message first (it's the latest)
+                val longResponse = ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = conversation.id,
-                        messageId = shortMessage
+                        conversationId = conversation.id
                     ),
                     user = authenticatedUser
                 )
 
-                val longResponse = ongoingConversationAPIClient.generateLearningTips(
+                // Generate tips for short message (now it's the latest without tips)
+                val shortResponse = ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = conversation.id,
-                        messageId = longMessage
+                        conversationId = conversation.id
                     ),
                     user = authenticatedUser
                 )
@@ -1224,6 +1229,59 @@ class TestOngoingConversationController @Autowired constructor(
                 shortResponse.body shouldNotBe null
                 longResponse.status shouldBe HttpStatus.OK
                 longResponse.body shouldNotBe null
+            }
+
+            @Test
+            fun `200 - should generate tips for latest AI message when multiple untipped messages exist`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val conversation = createConversation(authenticatedUser)
+
+                // Initialize - creates AI message at order 0
+                ongoingConversationAPIClient.initializeConversationByAI(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                )
+
+                // Add another AI message at order 1
+                val olderMessageId = saveAIMessage(
+                    conversationId = conversation.id,
+                    content = "This is an older message",
+                    messageOrder = 1
+                )
+
+                // Add latest AI message at order 2
+                val latestMessageId = saveAIMessage(
+                    conversationId = conversation.id,
+                    content = "This is the latest message",
+                    messageOrder = 2
+                )
+
+                // Generate tips - should target latest message (order 2)
+                val response = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.OK
+
+                // Verify tips were added to latest message only
+                val updatedConversation = conversationAPIClient.getConversationById(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                ).body!!
+
+                val latestMessage = updatedConversation.messages.find { it.id == latestMessageId }
+                val olderMessage = updatedConversation.messages.find { it.id == olderMessageId }
+
+                latestMessage shouldNotBe null
+                latestMessage!!.learningTips shouldNotBe null
+                olderMessage shouldNotBe null
+                olderMessage!!.learningTips shouldBe null  // Older message should not have tips
             }
         }
 
@@ -1234,8 +1292,7 @@ class TestOngoingConversationController @Autowired constructor(
             fun `401 - anonymous user cannot generate learning tips`() {
                 val response = ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = UUID.randomUUID(),
-                        messageId = UUID.randomUUID()
+                        conversationId = UUID.randomUUID()
                     ),
                     user = null
                 )
@@ -1249,8 +1306,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val response = ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = UUID.randomUUID(),
-                        messageId = UUID.randomUUID()
+                        conversationId = UUID.randomUUID()
                     ),
                     user = authenticatedUser
                 )
@@ -1272,7 +1328,7 @@ class TestOngoingConversationController @Autowired constructor(
                     user = owner
                 )
 
-                val aiMessageId = saveAIMessage(
+                saveAIMessage(
                     conversationId = conversation.id,
                     content = "That sounds wonderful!",
                     messageOrder = 1
@@ -1280,8 +1336,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val response = ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = conversation.id,
-                        messageId = aiMessageId
+                        conversationId = conversation.id
                     ),
                     user = otherUser
                 )
@@ -1290,22 +1345,17 @@ class TestOngoingConversationController @Autowired constructor(
             }
 
             @Test
-            fun `404 - cannot generate learning tips for non-existent message`() {
+            fun `404 - cannot generate learning tips when no AI messages exist in conversation`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
                 )
 
+                // Create conversation but don't initialize (no AI messages)
                 val conversation = createConversation(authenticatedUser)
-
-                ongoingConversationAPIClient.initializeConversationByAI(
-                    conversationId = conversation.id,
-                    user = authenticatedUser
-                )
 
                 val response = ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = conversation.id,
-                        messageId = UUID.randomUUID()
+                        conversationId = conversation.id
                     ),
                     user = authenticatedUser
                 )
@@ -1314,33 +1364,36 @@ class TestOngoingConversationController @Autowired constructor(
             }
 
             @Test
-            fun `400 - cannot generate learning tips for USER message`() {
+            fun `404 - cannot generate learning tips when all AI messages already have tips`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
                 )
 
                 val conversation = createConversation(authenticatedUser)
 
+                // Initialize conversation - creates first AI message
                 ongoingConversationAPIClient.initializeConversationByAI(
                     conversationId = conversation.id,
                     user = authenticatedUser
                 )
 
-                val userMessageId = saveUserMessage(
-                    conversationId = conversation.id,
-                    content = TestData.USER_MESSAGE,
-                    messageOrder = 1
-                )
-
-                val response = ongoingConversationAPIClient.generateLearningTips(
+                // Generate learning tips for the AI message
+                ongoingConversationAPIClient.generateLearningTips(
                     body = GetLearningTipsForAIMessageRequest(
-                        conversationId = conversation.id,
-                        messageId = userMessageId
+                        conversationId = conversation.id
                     ),
                     user = authenticatedUser
                 )
 
-                response.status shouldBe HttpStatus.BAD_REQUEST
+                // Try to generate tips again - should fail (all messages have tips)
+                val response = ongoingConversationAPIClient.generateLearningTips(
+                    body = GetLearningTipsForAIMessageRequest(
+                        conversationId = conversation.id
+                    ),
+                    user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.NOT_FOUND
             }
         }
     }
@@ -1591,8 +1644,7 @@ class TestOngoingConversationController @Autowired constructor(
 
             val learningTipsResponse = ongoingConversationAPIClient.generateLearningTips(
                 body = GetLearningTipsForAIMessageRequest(
-                    conversationId = conversation.id,
-                    messageId = aiMessageId
+                    conversationId = conversation.id
                 ),
                 user = authenticatedUser
             )
@@ -1656,8 +1708,7 @@ class TestOngoingConversationController @Autowired constructor(
 
             val learningTips1 = ongoingConversationAPIClient.generateLearningTips(
                 body = GetLearningTipsForAIMessageRequest(
-                    conversationId = conversation.id,
-                    messageId = aiMessage1Id
+                    conversationId = conversation.id
                 ),
                 user = authenticatedUser
             )
@@ -1695,8 +1746,7 @@ class TestOngoingConversationController @Autowired constructor(
 
             val learningTips2 = ongoingConversationAPIClient.generateLearningTips(
                 body = GetLearningTipsForAIMessageRequest(
-                    conversationId = conversation.id,
-                    messageId = aiMessage2Id
+                    conversationId = conversation.id
                 ),
                 user = authenticatedUser
             )
