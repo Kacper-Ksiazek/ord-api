@@ -90,8 +90,8 @@ class Board {
         val wordSize: Int = aiGeneratedQuestion.word.length
 
         // Validate that the entire word fits on the board
-        val endCoordinate = start.copy().shift(offset = wordSize - 1, direction = direction)
-        ensureCoordinatesFitsBoard(endCoordinate)
+        val endCoordinates = start.copy().shift(offset = wordSize - 1, direction = direction)
+        ensureCoordinatesFitsBoard(endCoordinates)
 
         if (direction == CrosswordWordDirection.HORIZONTAL) {
             for (i in 0 until wordSize) {
@@ -111,11 +111,6 @@ class Board {
                 )
             }
         }
-
-        val endCoordinates: Coordinates = start.copy().shift(
-            offset = wordSize - 1,
-            direction = direction
-        )
 
         val result = CrosswordQuestion(
             id = aiGeneratedQuestion.id,
