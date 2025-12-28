@@ -103,8 +103,8 @@ class OngoingConversationController(
 
     @PostMapping("/ai/generate-learning-tips")
     @Operation(
-        summary = "Generate learning tips from AI message",
-        description = "Generate structured learning tips and annotations from an AI message in the conversation"
+        summary = "Generate learning tips from latest AI message",
+        description = "Generate structured learning tips and annotations from the most recent AI message in the conversation that doesn't have learning tips yet. The system automatically identifies the appropriate message."
     )
     @ApiResponses(
         value = [
@@ -114,12 +114,7 @@ class OngoingConversationController(
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "Conversation or message not found",
-                content = [Content()]
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Invalid request data or message is not from AI",
+                description = "Conversation not found or no AI message without learning tips exists",
                 content = [Content()]
             ),
             ApiResponse(

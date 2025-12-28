@@ -203,18 +203,11 @@ class OngoingConversationFacadeImpl(
             .findByIdOrFail(body.conversationId, userId)
             .map { conversationMapper.toDTO(it) }
             .flatMap { conversation ->
-                conversationMessageRepository.findById(body.messageId)
-                    .switchIfEmpty(Mono.error(NotFoundException("Message with id ${body.messageId} not found")))
+                conversationMessageRepository.findLatestAIMessageWithoutLearningTips(body.conversationId)
+                    .switchIfEmpty(Mono.error(NotFoundException("No AI message without learning tips found in conversation ${body.conversationId}")))
                     .map { aiMessage -> Pair(conversation, aiMessage) }
             }
             .flatMap { (conversation, aiMessage) ->
-                // Validate that message is from AI
-                if (aiMessage.sender != ConversationMessageSender.AI) {
-                    return@flatMap Mono.error(
-                        BadRequestException("Message ${body.messageId} is not an AI message")
-                    )
-                }
-
                 // Get user's language proficiency for generativeContentLanguage
                 languageProficiencyService.findUserProficiencyInLanguageOrThrow(
                     userId = userId,
@@ -238,7 +231,7 @@ class OngoingConversationFacadeImpl(
                             .map { openAIResponse -> openAIResponse.toDomain() }
                             .flatMap { learningTips ->
                                 conversationMessageService.saveLearningTipsForExistingMessage(
-                                    messageId = body.messageId,
+                                    messageId = aiMessage.id!!,
                                     learningTips = learningTips
                                 )
                                     .then(Mono.fromCallable {
