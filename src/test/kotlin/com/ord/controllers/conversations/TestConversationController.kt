@@ -82,8 +82,8 @@ class TestConversationController @Autowired constructor(
         proficiencyLevel: LanguageProficiencyLevel = LanguageProficiencyLevel.B2,
         type: ConversationType = TestData.TYPE,
         tone: ConversationTone = TestData.TONE,
-        aiInterlocutorName: String? = TestData.AI_INTERLOCUTOR_NAME,
-        aiInterlocutorAvatarId: String? = TestData.AI_INTERLOCUTOR_AVATAR_ID
+        aiInterlocutorName: String = TestData.AI_INTERLOCUTOR_NAME,
+        aiInterlocutorAvatarId: String = TestData.AI_INTERLOCUTOR_AVATAR_ID
     ): ConversationEntity {
         return conversationRepository.save(
             ConversationEntity(
@@ -666,7 +666,7 @@ class TestConversationController @Autowired constructor(
             }
 
             @Test
-            fun `201 - should create conversation without optional fields`() {
+            fun `201 - should create conversation with required fields and without optional additional context`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.A2)
                 )
@@ -677,8 +677,8 @@ class TestConversationController @Autowired constructor(
                     language = TestData.LANGUAGE,
                     tone = ConversationTone.NEUTRAL,
                     type = ConversationType.SMALL_TALK,
-                    aiInterlocutorName = null,
-                    aiInterlocutorAvatarId = null
+                    aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                    aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                 )
 
                 val response = conversationAPIClient.createConversation(
@@ -689,8 +689,8 @@ class TestConversationController @Autowired constructor(
                 response.status shouldBe HttpStatus.CREATED
                 response.body shouldNotBe null
                 response.body!!.additionalContext shouldBe ""
-                response.body.aiInterlocutorName shouldBe null
-                response.body.aiInterlocutorAvatarId shouldBe null
+                response.body.aiInterlocutorName shouldBe TestData.AI_INTERLOCUTOR_NAME
+                response.body.aiInterlocutorAvatarId shouldBe TestData.AI_INTERLOCUTOR_AVATAR_ID
             }
 
             @Test
@@ -704,7 +704,9 @@ class TestConversationController @Autowired constructor(
                     additionalContext = null,
                     language = TestData.LANGUAGE,
                     tone = TestData.TONE,
-                    type = TestData.TYPE
+                    type = TestData.TYPE,
+                    aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                    aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                 )
 
                 val request2 = CreateConversationRequest(
@@ -712,7 +714,9 @@ class TestConversationController @Autowired constructor(
                     additionalContext = null,
                     language = TestData.LANGUAGE,
                     tone = ConversationTone.FORMAL,
-                    type = ConversationType.EXAM_PRACTICE
+                    type = ConversationType.EXAM_PRACTICE,
+                    aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                    aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                 )
 
                 val response1 = conversationAPIClient.createConversation(
@@ -742,7 +746,9 @@ class TestConversationController @Autowired constructor(
                         additionalContext = null,
                         language = TestData.LANGUAGE,
                         tone = TestData.TONE,
-                        type = type
+                        type = type,
+                        aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                        aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                     )
 
                     val response = conversationAPIClient.createConversation(
@@ -767,7 +773,9 @@ class TestConversationController @Autowired constructor(
                         additionalContext = null,
                         language = TestData.LANGUAGE,
                         tone = tone,
-                        type = TestData.TYPE
+                        type = TestData.TYPE,
+                        aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                        aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                     )
 
                     val response = conversationAPIClient.createConversation(
@@ -791,7 +799,9 @@ class TestConversationController @Autowired constructor(
                     additionalContext = null,
                     language = TestData.LANGUAGE,
                     tone = TestData.TONE,
-                    type = TestData.TYPE
+                    type = TestData.TYPE,
+                    aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                    aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                 )
 
                 val response = conversationAPIClient.createConversation(
@@ -813,7 +823,9 @@ class TestConversationController @Autowired constructor(
                     additionalContext = null,
                     language = LanguageName.ITALIAN,
                     tone = TestData.TONE,
-                    type = TestData.TYPE
+                    type = TestData.TYPE,
+                    aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                    aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                 )
 
                 val response = conversationAPIClient.createConversation(
@@ -835,7 +847,9 @@ class TestConversationController @Autowired constructor(
                     additionalContext = null,
                     language = TestData.LANGUAGE,
                     tone = TestData.TONE,
-                    type = TestData.TYPE
+                    type = TestData.TYPE,
+                    aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                    aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                 )
 
                 val response = conversationAPIClient.createConversation(
@@ -857,7 +871,9 @@ class TestConversationController @Autowired constructor(
                     additionalContext = null,
                     language = TestData.LANGUAGE,
                     tone = TestData.TONE,
-                    type = TestData.TYPE
+                    type = TestData.TYPE,
+                    aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                    aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                 )
 
                 val response = conversationAPIClient.createConversation(
@@ -879,7 +895,9 @@ class TestConversationController @Autowired constructor(
                     additionalContext = "a".repeat(5001),
                     language = TestData.LANGUAGE,
                     tone = TestData.TONE,
-                    type = TestData.TYPE
+                    type = TestData.TYPE,
+                    aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                    aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                 )
 
                 val response = conversationAPIClient.createConversation(
@@ -949,7 +967,9 @@ class TestConversationController @Autowired constructor(
                     additionalContext = null,
                     language = LanguageName.FRENCH,
                     tone = TestData.TONE,
-                    type = TestData.TYPE
+                    type = TestData.TYPE,
+                    aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                    aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                 )
 
                 val response = conversationAPIClient.createConversation(

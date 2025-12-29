@@ -70,6 +70,8 @@ class TestOngoingConversationController @Autowired constructor(
         val LANGUAGE = LanguageName.ENGLISH
         val TYPE = ConversationType.SMALL_TALK
         val TONE = ConversationTone.FRIENDLY
+        const val AI_INTERLOCUTOR_NAME = "Dr. Smith"
+        const val AI_INTERLOCUTOR_AVATAR_ID = "AVATAR_ALPHA"
         const val USER_MESSAGE = "I went to the park yesterday and it was absolutely beautiful. The weather was perfect - sunny with a light breeze. I spent several hours walking around the lake, watching the ducks and enjoying the peaceful atmosphere. There were families having picnics on the grass, children playing on the swings, and joggers running along the paths. I brought a book with me and found a nice bench under a big oak tree where I sat and read for a while. It was such a relaxing and enjoyable afternoon that I'm definitely planning to go back there again this weekend."
         const val AI_MESSAGE = "That sounds lovely! What did you do there?"
     }
@@ -80,7 +82,9 @@ class TestOngoingConversationController @Autowired constructor(
             additionalContext = null,
             language = TestData.LANGUAGE,
             tone = TestData.TONE,
-            type = TestData.TYPE
+            type = TestData.TYPE,
+            aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+            aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
         )
 
         return conversationAPIClient.createConversation(
@@ -160,7 +164,9 @@ class TestOngoingConversationController @Autowired constructor(
                         additionalContext = "Focus on renewable energy solutions",
                         language = TestData.LANGUAGE,
                         tone = TestData.TONE,
-                        type = TestData.TYPE
+                        type = TestData.TYPE,
+                        aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                        aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                     ),
                     user = authenticatedUser
                 ).body!!
@@ -189,7 +195,9 @@ class TestOngoingConversationController @Autowired constructor(
                         additionalContext = null,
                         language = TestData.LANGUAGE,
                         tone = TestData.TONE,
-                        type = TestData.TYPE
+                        type = TestData.TYPE,
+                        aiInterlocutorName = TestData.AI_INTERLOCUTOR_NAME,
+                        aiInterlocutorAvatarId = TestData.AI_INTERLOCUTOR_AVATAR_ID
                     ),
                     user = authenticatedUser
                 ).body!!
