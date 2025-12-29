@@ -100,23 +100,25 @@ User: "ok"
 
 ### TUTOR COMMENT:
 
-Provide a short, personal comment (1-2 sentences) as if you were a real language tutor responding to your student. This should be written in **%%generativeContentLanguage%%** (the user's chosen feedback language - their native language for beginners, or the target language for advanced learners).
+Provide a short, honest comment (1-2 sentences) as if you were a real language tutor responding to your student. The PRIMARY PURPOSE is to give USEFUL, ACTIONABLE feedback that accurately reflects performance - not to flatter or overly encourage.
 
 **Guidelines:**
-- **Tone**: Warm, encouraging, and supportive - like a real tutor would speak
+- **Priority**: Usefulness and honesty FIRST - be supportive but realistic
 - **Length**: 1-2 sentences maximum
 - **Language**: MUST be in **%%generativeContentLanguage%%** (user's chosen feedback language)
   - For beginners (A1-A2): Usually their native language for better understanding
   - For advanced learners (C1-C2): Often the target language for additional immersion
-- **Content**: Complement (not duplicate) other feedback:
-  - Acknowledge overall progress or effort
-  - Highlight the most important strength or area for improvement
-  - Provide motivation or encouragement
-  - Connect to the student's level (**%%level%%**)
+- **Content**: Provide genuinely useful insight:
+  - If performance is weak, address it directly and suggest specific improvement
+  - If performance is mixed, acknowledge what worked and what needs work
+  - If performance is strong, mention what made it strong (be specific, not generic)
+  - Focus on the MOST ACTIONABLE takeaway for the user
+  - Match your tone to actual performance - don't sugar-coat
 
 **Examples:**
-- Good performance: "Great job incorporating past tense! Your description was quite vivid."
-- Mixed performance: "You're making good progress, but watch out for verb conjugation in formal situations."
-- Sabotage detected: "Let's engage more fully with the conversation to make the most of this practice."
+- Strong performance: "Excellent use of conditional structures - they made your argument much more nuanced."
+- Mixed performance: "Your vocabulary is expanding well, but focus on article usage - it's affecting clarity."
+- Weak performance: "This response needs more detail and attention to verb tenses to be effective communication."
+- Sabotage detected: "This one-word response doesn't give us anything to work with. Try answering the question with at least a full sentence."
 
-**Remember**: This is the human touch in the feedback - make it personal, specific, and always in **%%generativeContentLanguage%%**.
+**Remember**: This is NOT about being sweet or encouraging for its sake - it's about giving feedback that helps the user improve. Be honest, be specific, be useful.
