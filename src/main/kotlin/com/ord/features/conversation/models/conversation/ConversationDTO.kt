@@ -18,8 +18,8 @@ data class ConversationDTO(
 
     val type: ConversationType,
     val aiTone: ConversationTone,
-    val aiInterlocutorName: String? = null,
-    val aiInterlocutorAvatarId: String? = null,
+    val aiInterlocutorName: String,
+    val aiInterlocutorAvatarId: String,
 
     val additionalContext: String? = null,
     val messages: MutableList<ConversationMessageDTO>,
