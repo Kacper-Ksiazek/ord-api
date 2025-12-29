@@ -36,8 +36,8 @@ VALUES
      'C1',
      'SMALL_TALK',
      'FRIENDLY',
-     NULL,
-     NULL,
+     'Sarah',
+     'AVATAR_ALPHA',
      'aab3de51-c9ed-4b53-b6ba-927f0bf567e4',
      CURRENT_TIMESTAMP,
      CURRENT_TIMESTAMP);
