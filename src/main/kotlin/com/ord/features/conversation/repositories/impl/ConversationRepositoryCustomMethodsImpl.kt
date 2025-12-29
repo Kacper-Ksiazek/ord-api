@@ -66,8 +66,6 @@ class ConversationRepositoryCustomMethodsImpl(
             WHERE c.user_id = :userId
                 AND c.type = :type
                 AND c.language = :language
-                AND c.ai_interlocutor_avatar_id IS NOT NULL
-                AND c.ai_interlocutor_name IS NOT NULL
             ORDER BY c.created_at DESC
             LIMIT :limit
         """
@@ -197,8 +195,8 @@ class ConversationRepositoryCustomMethodsImpl(
                             type = ConversationType.valueOf(firstRow["type"] as String),
                             aiTone = ConversationTone.valueOf(firstRow["ai_tone"] as String),
                             additionalContext = firstRow["additional_context"] as String?,
-                            aiInterlocutorName = firstRow["ai_interlocutor_name"] as String?,
-                            aiInterlocutorAvatarId = firstRow["ai_interlocutor_avatar_id"] as String?,
+                            aiInterlocutorName = firstRow["ai_interlocutor_name"] as String,
+                            aiInterlocutorAvatarId = firstRow["ai_interlocutor_avatar_id"] as String,
                             messages = messages,
                             createdAt = (firstRow["created_at"] as OffsetDateTime).toInstant(),
                             updatedAt = (firstRow["updated_at"] as OffsetDateTime).toInstant()
