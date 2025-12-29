@@ -32,13 +32,13 @@ if ! curl -s -f "$API_HOST/api/v1/health-check" > /dev/null 2>&1; then
     exit 1
 fi
 
-echo "✓ API is accessible"
+echo "✅  API is accessible"
 echo ""
 
 # Export OpenAPI spec
 echo "Exporting OpenAPI specification..."
 if curl -s -f -u "$SWAGGER_USERNAME:$SWAGGER_PASSWORD" "$API_HOST/v3/api-docs" -o "$OUTPUT_FILE"; then
-    echo "✓ OpenAPI spec exported successfully to: $OUTPUT_FILE"
+    echo "✅  OpenAPI spec exported successfully to: $OUTPUT_FILE"
     echo ""
 
     # Display file info
