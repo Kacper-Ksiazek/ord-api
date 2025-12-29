@@ -78,37 +78,13 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                     "required" to listOf("phrase", "meaning", "example"),
                     "additionalProperties" to false
                 ),
-                "description" to "0-1 idiom tips. Empty array if none applicable."
-            ),
-            "culturalTips" to mapOf(
-                "type" to "array",
-                "items" to mapOf(
-                    "type" to "object",
-                    "properties" to mapOf(
-                        "phrase" to mapOf(
-                            "type" to "string",
-                            "description" to "Culture-relevant phrase from AI message (in target language)"
-                        ),
-                        "culturalContext" to mapOf(
-                            "type" to "string",
-                            "description" to "Cultural significance explanation (in generativeContentLanguage)"
-                        ),
-                        "regionalNote" to mapOf(
-                            "type" to "string",
-                            "description" to "Regional variations. Empty string if not applicable."
-                        )
-                    ),
-                    "required" to listOf("phrase", "culturalContext", "regionalNote"),
-                    "additionalProperties" to false
-                ),
-                "description" to "0-1 cultural tips. Empty array if none applicable."
+                "description" to "0-2 idiom tips. Empty array if none applicable."
             )
         ),
         "required" to listOf(
             "grammarTips",
             "vocabularyTips",
-            "idiomTips",
-            "culturalTips"
+            "idiomTips"
         ),
         "additionalProperties" to false
     )

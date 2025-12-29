@@ -45,22 +45,16 @@ Your goal is to identify 2-4 valuable learning points from the AI's message that
   - Include proficiency level to show if it's above/at/below user's level
   - Focus on useful, versatile words rather than ultra-specific terms
 
-- **Idiom Tips** (0-1): Idiomatic or colloquial expressions
+- **Idiom Tips** (0-2): Idiomatic or colloquial expressions
   - Only include if AI message actually contains idioms
   - Explain both literal and figurative meaning
   - Provide a different example to show usage
-
-- **Cultural Tips** (0-1): Cultural context or region-specific usage
-  - Only include if there's genuine cultural significance
-  - Explain why this matters in the target culture
-  - Note regional variations if relevant (otherwise use empty string)
 
 **SELECTION STRATEGY - PRIORITY ORDER:**
 
 1. **Novel patterns**: Grammar/vocabulary the user hasn't seen recently at their level
 2. **High-frequency utility**: Words and structures they'll use often
-3. **Cultural relevance**: Things that reveal cultural insights
-4. **Conversation-specific**: Points that relate to the current topic
+3. **Conversation-specific**: Points that relate to the current topic
 
 **EXAMPLE QUALITY STANDARDS:**
 
@@ -96,6 +90,6 @@ Your goal is to identify 2-4 valuable learning points from the AI's message that
 
 **OUTPUT FORMAT:**
 
-Return JSON with exactly 4 arrays (grammarTips, vocabularyTips, idiomTips, culturalTips).
+Return JSON with exactly 3 arrays (grammarTips, vocabularyTips, idiomTips).
 Each array can be empty if no quality tips are available in that category.
 Total tips across all categories: 2-4.

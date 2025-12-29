@@ -2,6 +2,7 @@ package com.ord.features.game.variants.crossword.api
 
 import com.ord.config.GamesConfig
 import com.ord.core.security.UserRepository
+import com.ord.exceptions.REST.BadGatewayException
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.services.GameReviewService
@@ -39,6 +40,15 @@ class CrosswordGameFacade(
                 language = body.language,
                 difficulty = body.difficulty
             )
+            .onErrorMap { e ->
+                // Map IllegalArgumentException from board validation to BadGatewayException
+                when (e) {
+                    is IllegalArgumentException -> BadGatewayException(
+                        "Failed to generate crossword puzzle: ${e.message}"
+                    )
+                    else -> e
+                }
+            }
             .flatMap {
                 val (instruction, properAnswers) = it
 

@@ -10,8 +10,8 @@ class ConversationAIBotAvatarIdValidator : ConstraintValidator<ValidConversation
     private val validAvatarIds = ConversationAIBotAvatar.entries.map { it.id }.toSet()
 
     override fun isValid(value: String?, context: ConstraintValidatorContext): Boolean {
-        // Null is valid (optional field)
-        if (value == null) return true
+        // Null is not valid (required field)
+        if (value == null) return false
 
         // Check if the value is in the set of valid avatar IDs
         return validAvatarIds.contains(value)

@@ -8,6 +8,8 @@ import java.util.UUID
 data class ConversationUserMessageFeedbackDTO(
     val id: UUID,
 
+    val tutorComment: String,
+
     val grammar: Int,
     val vocabulary: Int,
     val answerLength: Int,

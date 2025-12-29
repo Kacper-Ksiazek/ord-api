@@ -17,6 +17,7 @@ class ConversationUserMessageFeedbackMapper(
     override fun toDTO(entity: ConversationUserMessageFeedbackEntity): ConversationUserMessageFeedbackDTO {
         return ConversationUserMessageFeedbackDTO(
             id = entity.id ?: error("ConversationUserMessageFeedback id must not be null"),
+            tutorComment = entity.tutorComment,
             grammar = entity.grammar,
             vocabulary = entity.vocabulary,
             answerLength = entity.answerLength,
@@ -35,6 +36,7 @@ class ConversationUserMessageFeedbackMapper(
     override fun toEntity(dto: ConversationUserMessageFeedbackDTO): ConversationUserMessageFeedbackEntity {
         return ConversationUserMessageFeedbackEntity(
             id = dto.id,
+            tutorComment = dto.tutorComment,
             grammar = dto.grammar,
             vocabulary = dto.vocabulary,
             answerLength = dto.answerLength,

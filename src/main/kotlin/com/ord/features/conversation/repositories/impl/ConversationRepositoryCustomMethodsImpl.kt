@@ -66,8 +66,6 @@ class ConversationRepositoryCustomMethodsImpl(
             WHERE c.user_id = :userId
                 AND c.type = :type
                 AND c.language = :language
-                AND c.ai_interlocutor_avatar_id IS NOT NULL
-                AND c.ai_interlocutor_name IS NOT NULL
             ORDER BY c.created_at DESC
             LIMIT :limit
         """
@@ -104,6 +102,7 @@ class ConversationRepositoryCustomMethodsImpl(
                 m.created_at as message_created_at,
                 -- User message: Feedback
                 f.id as feedback_id,
+                f.tutor_comment as feedback_tutor_comment,
                 f.grammar as feedback_grammar,
                 f.vocabulary as feedback_vocabulary,
                 f.answer_length as feedback_answer_length,
@@ -120,7 +119,6 @@ class ConversationRepositoryCustomMethodsImpl(
                 lt.grammar_tips as learning_tips_grammar_tips,
                 lt.vocabulary_tips as learning_tips_vocabulary_tips,
                 lt.idiom_tips as learning_tips_idiom_tips,
-                lt.cultural_tips as learning_tips_cultural_tips,
                 lt.message_id as learning_tips_message_id
             FROM conversations c
             LEFT JOIN conversation_messages m ON c.id = m.conversation_id
@@ -151,6 +149,7 @@ class ConversationRepositoryCustomMethodsImpl(
                             val feedback = if (row["feedback_id"] != null) {
                                 ConversationUserMessageFeedbackDTO(
                                     id = row["feedback_id"] as UUID,
+                                    tutorComment = row["feedback_tutor_comment"] as String,
                                     grammar = row["feedback_grammar"] as Int,
                                     vocabulary = row["feedback_vocabulary"] as Int,
                                     answerLength = row["feedback_answer_length"] as Int,
@@ -172,7 +171,6 @@ class ConversationRepositoryCustomMethodsImpl(
                                     grammarTips = learningTipsMapper.deserializeGrammarTips(row["learning_tips_grammar_tips"] as Json),
                                     vocabularyTips = learningTipsMapper.deserializeVocabularyTips(row["learning_tips_vocabulary_tips"] as Json),
                                     idiomTips = learningTipsMapper.deserializeIdiomTips(row["learning_tips_idiom_tips"] as Json),
-                                    culturalTips = learningTipsMapper.deserializeCulturalTips(row["learning_tips_cultural_tips"] as Json),
                                     messageId = row["learning_tips_message_id"] as UUID
                                 )
                             } else null
@@ -197,8 +195,8 @@ class ConversationRepositoryCustomMethodsImpl(
                             type = ConversationType.valueOf(firstRow["type"] as String),
                             aiTone = ConversationTone.valueOf(firstRow["ai_tone"] as String),
                             additionalContext = firstRow["additional_context"] as String?,
-                            aiInterlocutorName = firstRow["ai_interlocutor_name"] as String?,
-                            aiInterlocutorAvatarId = firstRow["ai_interlocutor_avatar_id"] as String?,
+                            aiInterlocutorName = firstRow["ai_interlocutor_name"] as String,
+                            aiInterlocutorAvatarId = firstRow["ai_interlocutor_avatar_id"] as String,
                             messages = messages,
                             createdAt = (firstRow["created_at"] as OffsetDateTime).toInstant(),
                             updatedAt = (firstRow["updated_at"] as OffsetDateTime).toInstant()

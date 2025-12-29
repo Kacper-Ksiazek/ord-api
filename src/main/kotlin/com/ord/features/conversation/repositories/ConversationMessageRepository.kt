@@ -4,4 +4,6 @@ import com.ord.features.conversation.models.conversation_message.ConversationMes
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import java.util.*
 
-interface ConversationMessageRepository : ReactiveCrudRepository<ConversationMessageEntity, UUID>
+interface ConversationMessageRepository :
+    ReactiveCrudRepository<ConversationMessageEntity, UUID>,
+    ConversationMessageRepositoryCustomMethods

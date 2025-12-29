@@ -16,6 +16,8 @@ import com.ord.features.conversation.models.conversation_user_message_feedback.j
 data class OpenAIReviewedMessage(
     val sabotage: String,  // Empty string if no sabotage
 
+    val tutorComment: String,
+
     val grammar: Int,
     val vocabulary: Int,
     val answerLength: Int,
@@ -38,6 +40,7 @@ data class OpenAIReviewedMessage(
     fun toDomain(): ReviewedUserConversationMessage {
         return ReviewedUserConversationMessage(
             sabotage = sabotage.ifEmpty { null },
+            tutorComment = tutorComment,
             grammar = grammar,
             vocabulary = vocabulary,
             answerLength = answerLength,

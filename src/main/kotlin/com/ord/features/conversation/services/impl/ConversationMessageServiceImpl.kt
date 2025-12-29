@@ -62,6 +62,7 @@ class ConversationMessageServiceImpl(
                 conversationUserMessageFeedbackRepository
                     .save(
                         ConversationUserMessageFeedbackEntity(
+                            tutorComment = aiFeedback.tutorComment,
                             grammar = aiFeedback.grammar,
                             vocabulary = aiFeedback.vocabulary,
                             answerLength = aiFeedback.answerLength,
@@ -120,6 +121,7 @@ class ConversationMessageServiceImpl(
         return conversationUserMessageFeedbackRepository
             .save(
                 ConversationUserMessageFeedbackEntity(
+                    tutorComment = aiFeedback.tutorComment,
                     grammar = aiFeedback.grammar,
                     vocabulary = aiFeedback.vocabulary,
                     answerLength = aiFeedback.answerLength,
@@ -157,7 +159,6 @@ class ConversationMessageServiceImpl(
                     grammarTips = learningTipsMapper.serializeGrammarTips(learningTips.grammarTips),
                     vocabularyTips = learningTipsMapper.serializeVocabularyTips(learningTips.vocabularyTips),
                     idiomTips = learningTipsMapper.serializeIdiomTips(learningTips.idiomTips),
-                    culturalTips = learningTipsMapper.serializeCulturalTips(learningTips.culturalTips),
                     messageId = messageId,
                 )
             )

@@ -25,8 +25,8 @@ data class ConversationEntity(
 
     val type: ConversationType,
     val aiTone: ConversationTone,
-    val aiInterlocutorName: String? = null,
-    val aiInterlocutorAvatarId: String? = null,
+    val aiInterlocutorName: String,
+    val aiInterlocutorAvatarId: String,
 
     override var userId: UUID,
 

@@ -11,6 +11,8 @@ data class ConversationUserMessageFeedbackEntity(
     @Id
     val id: UUID? = null,
 
+    val tutorComment: String,
+
     val grammar: Int,
     val vocabulary: Int,
     val answerLength: Int,

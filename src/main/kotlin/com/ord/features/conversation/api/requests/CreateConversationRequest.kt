@@ -20,9 +20,11 @@ data class CreateConversationRequest(
     val tone: ConversationTone,
     val type: ConversationType,
 
+    @field:NotBlank(message = "AI interlocutor name is required")
     @field:Size(max = 200, message = "AI interlocutor name must be less than 200 characters")
-    val aiInterlocutorName: String? = null,
+    val aiInterlocutorName: String,
 
+    @field:NotBlank(message = "AI interlocutor avatar ID is required")
     @field:ValidConversationAIBotAvatarId
-    val aiInterlocutorAvatarId: String? = null,
+    val aiInterlocutorAvatarId: String,
 )
