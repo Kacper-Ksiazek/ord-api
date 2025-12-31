@@ -36,10 +36,7 @@ CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
 
     mistakes         JSONB NOT NULL,
     strengths_identified JSONB NOT NULL,
-    vocabulary_enrichment JSONB NOT NULL,
-    alternative_expressions JSONB NOT NULL,
-    
-    cultural_note    TEXT,
+    suggestions      JSONB NOT NULL,
 
     message_id       UUID NOT NULL,
 
