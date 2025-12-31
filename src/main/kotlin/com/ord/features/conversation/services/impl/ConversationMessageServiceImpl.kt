@@ -70,10 +70,8 @@ class ConversationMessageServiceImpl(
                             coherenceWithContext = aiFeedback.coherenceWithContext,
                             registerAppropriate = aiFeedback.registerAppropriate,
                             mistakes = feedbackMapper.serializeMistakes(aiFeedback.mistakes),
-                            strengthsIdentified = feedbackMapper.serializeStringSet(aiFeedback.strengthsIdentified),
-                            vocabularyEnrichment = feedbackMapper.serializeVocabularyEnrichment(aiFeedback.vocabularyEnrichment),
-                            alternativeExpressions = feedbackMapper.serializeAlternativeExpressions(aiFeedback.alternativeExpressions),
-                            culturalNote = aiFeedback.culturalNote,
+                            strengthsIdentified = feedbackMapper.serializeStrengths(aiFeedback.strengthsIdentified),
+                            suggestions = feedbackMapper.serializeSuggestions(aiFeedback.suggestions),
                             messageId = message.id!!,
                         )
                     )
@@ -129,10 +127,8 @@ class ConversationMessageServiceImpl(
                     coherenceWithContext = aiFeedback.coherenceWithContext,
                     registerAppropriate = aiFeedback.registerAppropriate,
                     mistakes = feedbackMapper.serializeMistakes(aiFeedback.mistakes),
-                    strengthsIdentified = feedbackMapper.serializeStringSet(aiFeedback.strengthsIdentified),
-                    vocabularyEnrichment = feedbackMapper.serializeVocabularyEnrichment(aiFeedback.vocabularyEnrichment),
-                    alternativeExpressions = feedbackMapper.serializeAlternativeExpressions(aiFeedback.alternativeExpressions),
-                    culturalNote = aiFeedback.culturalNote,
+                    strengthsIdentified = feedbackMapper.serializeStrengths(aiFeedback.strengthsIdentified),
+                    suggestions = feedbackMapper.serializeSuggestions(aiFeedback.suggestions),
                     messageId = messageId,
                 )
             )
