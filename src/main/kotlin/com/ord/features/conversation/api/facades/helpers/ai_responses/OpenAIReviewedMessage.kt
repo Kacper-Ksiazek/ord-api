@@ -1,12 +1,13 @@
 package com.ord.features.conversation.api.facades.helpers.ai_responses
 
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.AlternativeExpression
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.SuggestionType
 import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Mistake
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.VocabularyEnrichment
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Strength
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Suggestion
 
 /**
  * Intermediate DTO for OpenAI structured outputs response.
- src/main/kotlin/com/ord/features/conversation/api/facades/helpers/ai_responses/ReviewedUserConversationMessage.kt*
+ *
  * This DTO matches OpenAI's structured output schema where all fields are required.
  * Nullable fields use empty string ("") to represent null values, which are then
  * mapped to proper nulls in the domain model via `toDomain()`.
@@ -26,12 +27,9 @@ data class OpenAIReviewedMessage(
     val registerAppropriate: Boolean,
 
     val mistakes: List<Mistake>,
-    val strengthsIdentified: List<String>,
+    val strengthsIdentified: List<Strength>,
 
-    val vocabularyEnrichment: List<VocabularyEnrichment>,
-    val alternativeExpressions: List<OpenAIAlternativeExpression>,  // Uses intermediate type for note field
-
-    val culturalNote: String  // Empty string if not applicable
+    val suggestions: List<OpenAISuggestion>
 ) {
     /**
      * Maps OpenAI response to domain model.
@@ -49,27 +47,27 @@ data class OpenAIReviewedMessage(
             registerAppropriate = registerAppropriate,
             mistakes = mistakes.toSet(),
             strengthsIdentified = strengthsIdentified.toSet(),
-            vocabularyEnrichment = vocabularyEnrichment.toSet(),
-            alternativeExpressions = alternativeExpressions.map { it.toDomain() }.toSet(),
-            culturalNote = culturalNote.ifEmpty { null }
+            suggestions = suggestions.map { it.toDomain() }.toSet()
         )
     }
 }
 
 /**
- * Intermediate version of AlternativeExpression for OpenAI structured outputs.
- * The `note` field is required (uses empty string for null).
+ * Intermediate version of Suggestion for OpenAI structured outputs.
+ * Uses List instead of Set for alternatives (OpenAI returns arrays).
  */
-data class OpenAIAlternativeExpression(
-    val context: String,
+data class OpenAISuggestion(
+    val original: String,
+    val suggestionType: SuggestionType,
     val alternatives: List<String>,
-    val note: String  // Empty string if not applicable
+    val explanation: String
 ) {
-    fun toDomain(): AlternativeExpression {
-        return AlternativeExpression(
-            context = context,
+    fun toDomain(): Suggestion {
+        return Suggestion(
+            original = original,
+            suggestionType = suggestionType,
             alternatives = alternatives.toSet(),
-            note = note.ifEmpty { null }
+            explanation = explanation
         )
     }
 }
