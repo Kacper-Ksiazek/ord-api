@@ -36,11 +36,18 @@ Review the user message and provide detailed, constructive feedback.
 4. **Explain in target language**: This is a learning opportunity
 5. **Provide correct form**: Show the proper way to say/write it
 
-**Positive Feedback:**
+**Strength Identification:**
 
-- Identify at least 2-3 things done well (unless sabotage is detected)
-- Be specific: "Used past perfect correctly" not just "good grammar"
-- Acknowledge progress markers: "Advanced vocabulary for your level"
+For each strength, provide a structured entry with:
+
+1. **Quote exactly**: Use the precise phrase from the user message that demonstrates the strength
+2. **Categorize by strength type**: GRAMMAR, VOCABULARY, FLUENCY, PRAGMATICS, or COMMUNICATION
+3. **Explain**: Provide explanation of why this is good
+
+**Guidelines:**
+- Identify at least 2-3 strengths (unless sabotage is detected)
+- Be specific: Quote the exact phrase and explain what makes it strong
+- Vary the strength types - highlight different aspects of language use
 
 **Rating Guidelines:**
 
@@ -76,6 +83,19 @@ type ErrorType =
 
 type Severity = 1 | 2 | 3;
 
+type StrengthType =
+    | "GRAMMAR"
+    | "VOCABULARY"
+    | "FLUENCY"
+    | "PRAGMATICS"
+    | "COMMUNICATION";
+
+interface Strength {
+    phrase: string;              // Exact quote from user message demonstrating this strength
+    strengthType: StrengthType;  // Category of linguistic strength
+    explanation: string;         // Why this is good
+}
+
 interface Mistake {
     phrase: string;              // Exact quote from user message
     severity: Severity;          
@@ -84,16 +104,15 @@ interface Mistake {
     correctForm: string;         // The correct version
 }
 
-interface VocabularyEnrichment {
-    original: string;            // What user said (acceptable but could be better)
-    suggestion: string;          // More advanced/natural alternative
-    explanation: string;         // Why suggestion is better (in target language)
-}
+type SuggestionType =
+    | "IMPROVEMENT"   // Vocabulary/phrasing is inadequate for context (especially at C1/C2)
+    | "ENRICHMENT";   // Interesting alternative phrasings to expand repertoire at user's level
 
-interface AlternativeExpression {
-    context: string;             // Which part of message this applies to
-    alternatives: string[];      // Different ways to express the same idea
-    note?: string;               // Optional: nuances between alternatives
+interface Suggestion {
+    original: string;            // Exact phrase from user message
+    suggestionType: SuggestionType;
+    alternatives: string[];      // Better/different ways to express it (1 or more)
+    explanation: string;         // Why these alternatives are better/useful
 }
 
 type ExpectedResult = {
@@ -112,14 +131,10 @@ type ExpectedResult = {
     registerAppropriate: boolean;
 
     mistakes: Mistake[];                    // Empty array if perfect, order by severity (critical first)
-    strengthsIdentified: string[];          // Always try to find 2-3 positive points, empty if sabotage
+    strengthsIdentified: Strength[];        // Always try to find 2-3 positive points with specific examples, empty if sabotage
 
-    // Enrichment - help user level up (empty arrays if not applicable)
-    vocabularyEnrichment: VocabularyEnrichment[];  // Only for B1+ levels
-    alternativeExpressions: AlternativeExpression[];
-
-    // Cultural/pragmatic notes
-    culturalNote: string | null;  // Grammatically correct but culturally inappropriate usage
+    // Suggestions - help user level up (empty array if not applicable)
+    suggestions: Suggestion[];              // Vocabulary & expression improvements for B1+ levels
 };
 ```
 
@@ -127,7 +142,7 @@ type ExpectedResult = {
 
 - Always return valid JSON matching the ExpectedResult interface
 - Explanations in target language (%%language%%) unless user is absolute beginner
-- Use empty arrays (not null) for: mistakes, strengthsIdentified, vocabularyEnrichment, alternativeExpressions
+- Use empty arrays (not null) for: mistakes, strengthsIdentified, suggestions
 - Order mistakes by severity (critical first)
-- If sabotage: set sabotage field, rate everything as 0, empty arrays for mistakes/strengths
-- If perfect message: empty mistakes array, but still provide strengthsIdentified and possibly enrichment suggestions
+- If sabotage: set sabotage field, rate everything as 0, empty arrays for mistakes/strengths/suggestions
+- If perfect message: empty mistakes array, but still provide strengthsIdentified and possibly suggestions

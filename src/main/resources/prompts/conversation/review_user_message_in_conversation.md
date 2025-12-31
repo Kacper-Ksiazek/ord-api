@@ -61,18 +61,56 @@ Review the user message and provide detailed, constructive feedback.
 3. **Explain**: Provide explanation in **%%generativeContentLanguage%%**
 4. **Provide correct form**: Show the proper way to say/write it (always in **%%language%%**)
 
-**Positive Feedback:**
+**Strength Identification:**
 
-- Identify at least 2-3 things done well (unless sabotage is detected)
-- Be specific: "Used past perfect correctly" not just "good grammar"
-- Acknowledge progress markers: "Advanced vocabulary for your level"
-- Provide all feedback messages in **%%generativeContentLanguage%%**
+For each strength, provide a structured entry with:
+
+1. **Quote exactly**: Use the precise phrase from the user message that demonstrates the strength (always in **%%language%%**)
+2. **Categorize by strength type**:
+   - **GRAMMAR**: Correct use of grammatical structures, tenses, agreement, word order
+   - **VOCABULARY**: Good word choice, appropriate vocabulary for level, precise terminology
+   - **FLUENCY**: Natural flow, smooth expression, native-like phrasing
+   - **PRAGMATICS**: Appropriate register, politeness, cultural awareness
+   - **COMMUNICATION**: Clear message delivery, coherent response, engaging content
+3. **Explain**: Provide explanation in **%%generativeContentLanguage%%** of why this is good
+
+**Guidelines:**
+- Identify at least 2-3 strengths (unless sabotage is detected)
+- Be specific: Quote the exact phrase and explain what makes it strong
+- Acknowledge progress markers appropriate to the user's level (**%%level%%**)
+- Vary the strength types - try to highlight different aspects of their language use
+
+**Examples:**
+- **GRAMMAR**: phrase: "If I had known earlier", explanation: "Excellent use of third conditional - shows mastery of complex hypothetical structures"
+- **VOCABULARY**: phrase: "breathtaking scenery", explanation: "Sophisticated adjective choice that elevates the description beyond basic vocabulary"
+- **FLUENCY**: phrase: "I couldn't help but smile", explanation: "Natural idiomatic expression that a native speaker would use"
+- **COMMUNICATION**: phrase: "That reminds me of the time when...", explanation: "Smooth topic transition that keeps the conversation engaging"
 
 **Level Considerations:**
 
 - Beginner (A1-A2): Focus on critical mistakes only, be extra encouraging
 - Intermediate (B1-B2): Balance corrections with enrichment suggestions
 - Advanced (C1-C2): Focus on naturalness, idiomatic usage, and subtle nuances
+
+**Suggestions (Vocabulary & Expression Improvements):**
+
+Provide suggestions to help the user improve their vocabulary and expression. Each suggestion should include:
+
+1. **Quote exactly**: The phrase from the user message (always in **%%language%%**)
+2. **Categorize by suggestion type**:
+   - **IMPROVEMENT**: User's vocabulary/phrasing is inadequate for the context or their proficiency level. At C1/C2, basic vocabulary in formal contexts would trigger this.
+   - **ENRICHMENT**: User's phrasing is fine, but here are interesting alternatives at their level to expand their repertoire. For C1 learners, suggest C1-C2 level phrasings, not obvious B2 expressions.
+3. **Alternatives**: Provide 1 or more better/different ways to express it (always in **%%language%%**)
+4. **Explain**: Why these alternatives are better/useful (in **%%generativeContentLanguage%%**)
+
+**Guidelines:**
+- For B1+ levels, actively look for opportunities to suggest more sophisticated vocabulary
+- Match suggestion sophistication to user level - don't suggest C2 vocabulary to B1 learners
+- Empty array if not applicable or sabotage detected
+
+**Examples:**
+- **IMPROVEMENT**: original: "very good", alternatives: ["excellent", "outstanding"], explanation: "At C1 level, 'very good' is too basic for formal contexts"
+- **ENRICHMENT**: original: "I went to the store", alternatives: ["I popped by the store", "I stopped by the store"], explanation: "These phrasal verbs sound more natural in casual conversation"
 
 ### ERROR CATEGORIZATION:
 
