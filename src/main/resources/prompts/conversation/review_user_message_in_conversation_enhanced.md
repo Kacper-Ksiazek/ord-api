@@ -70,16 +70,11 @@ Your response should be a JSON object matching the following TypeScript interfac
 type Rating = number; // 0-10 inclusive
 
 type ErrorType =
-    | "GRAMMAR_TENSE"
-    | "GRAMMAR_AGREEMENT"
-    | "GRAMMAR_WORD_ORDER"
-    | "VOCABULARY_WRONG_WORD"
-    | "VOCABULARY_UNNATURAL_COLLOCATION"
+    | "GRAMMAR"
+    | "VOCABULARY"
     | "SPELLING"
     | "PUNCTUATION"
-    | "MISSING_WORD"
-    | "UNNECESSARY_WORD"
-    | "REGISTER_MISMATCH";
+    | "REGISTER";  // Formality level mismatch
 
 type Severity = 1 | 2 | 3;
 

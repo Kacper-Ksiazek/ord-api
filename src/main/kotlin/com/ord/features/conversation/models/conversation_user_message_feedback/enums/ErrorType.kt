@@ -4,15 +4,9 @@ import com.ord.shared.annotations.ExportToOpenAPI
 
 @ExportToOpenAPI
 enum class ErrorType {
-    GRAMMAR_TENSE,
-    GRAMMAR_AGREEMENT,
-    GRAMMAR_WORD_ORDER,
-    VOCABULARY_WRONG_WORD,
-    VOCABULARY_UNNATURAL_COLLOCATION,
+    GRAMMAR,
+    VOCABULARY,
     SPELLING,
     PUNCTUATION,
-    MISSING_WORD,
-    UNNECESSARY_WORD,
-    REGISTER_MISMATCH,
-    COHERENCE_ISSUE  // Answer doesn't properly respond to the question or advance the conversation
+    REGISTER  // Formality level mismatch for the context
 }
