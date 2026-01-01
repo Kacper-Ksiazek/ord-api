@@ -54,21 +54,11 @@ If sabotage is detected, you MUST:
 - **2 (Moderate)**: Noticeable error that reduces fluency or sounds unnatural
 - **1 (Minor)**: Technically incorrect but meaning is clear, or unnatural but acceptable
 
-**Strength Types - What They Mean:**
+**Strength Types:**
 **%%strengthTypeDescriptions%%**
 
-**Strength Examples:**
-- GRAMMAR: "If I had known earlier" → "Excellent use of third conditional - shows mastery of complex hypothetical structures"
-- VOCABULARY: "breathtaking scenery" → "Sophisticated adjective choice that elevates the description"
-- FLUENCY: "I couldn't help but smile" → "Natural idiomatic expression that a native speaker would use"
-- COMMUNICATION: "That reminds me of the time when..." → "Smooth topic transition that keeps the conversation engaging"
-
-**Suggestion Types - When to Use:**
+**Suggestion Types:**
 **%%suggestionTypeDescriptions%%**
-
-**Suggestion Examples:**
-- IMPROVEMENT: "very good" → ["excellent", "outstanding"] - "At C1 level, 'very good' is too basic for formal contexts"
-- ENRICHMENT: "I went to the store" → ["I popped by the store", "I stopped by the store"] - "These phrasal verbs sound more natural in casual conversation"
 
 ### LEVEL CONSIDERATIONS:
 
