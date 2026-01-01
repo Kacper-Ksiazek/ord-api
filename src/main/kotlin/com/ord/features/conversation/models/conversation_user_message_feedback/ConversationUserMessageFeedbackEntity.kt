@@ -21,7 +21,7 @@ data class ConversationUserMessageFeedbackEntity(
     val registerAppropriate: Boolean,
 
     val mistakes: Json, // JSONB - Set<Mistake>
-    val strengthsIdentified: Json, // JSONB - Set<Strength>
+    val strengths: Json, // JSONB - Set<Strength>
     val suggestions: Json, // JSONB - Set<Suggestion>
 
     val messageId: UUID,

@@ -86,7 +86,7 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                 ),
                 "description" to "Empty array if perfect, order by severity (critical first)"
             ),
-            "strengthsIdentified" to mapOf(
+            "strengths" to mapOf(
                 "type" to "array",
                 "items" to mapOf(
                     "type" to "object",
@@ -150,7 +150,7 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
             "coherenceWithContext",
             "registerAppropriate",
             "mistakes",
-            "strengthsIdentified",
+            "strengths",
             "suggestions"
         ),
         "additionalProperties" to false

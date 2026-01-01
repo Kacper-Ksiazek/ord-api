@@ -25,7 +25,7 @@ class ConversationUserMessageFeedbackMapper(
             coherenceWithContext = entity.coherenceWithContext,
             registerAppropriate = entity.registerAppropriate,
             mistakes = deserializeMistakes(entity.mistakes),
-            strengthsIdentified = deserializeStrengths(entity.strengthsIdentified),
+            strengths = deserializeStrengths(entity.strengths),
             suggestions = deserializeSuggestions(entity.suggestions),
             messageId = entity.messageId,
         )
@@ -42,7 +42,7 @@ class ConversationUserMessageFeedbackMapper(
             coherenceWithContext = dto.coherenceWithContext,
             registerAppropriate = dto.registerAppropriate,
             mistakes = serializeMistakes(dto.mistakes),
-            strengthsIdentified = serializeStrengths(dto.strengthsIdentified),
+            strengths = serializeStrengths(dto.strengths),
             suggestions = serializeSuggestions(dto.suggestions),
             messageId = dto.messageId,
         )

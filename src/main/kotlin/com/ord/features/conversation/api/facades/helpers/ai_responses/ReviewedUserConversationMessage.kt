@@ -17,7 +17,7 @@ data class ReviewedUserConversationMessage(
     val registerAppropriate: Boolean,
 
     val mistakes: Set<Mistake>,
-    val strengthsIdentified: Set<Strength>,
+    val strengths: Set<Strength>,
 
     val suggestions: Set<Suggestion>
 )

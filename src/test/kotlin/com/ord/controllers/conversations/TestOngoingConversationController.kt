@@ -777,7 +777,7 @@ class TestOngoingConversationController @Autowired constructor(
                 feedback.coherenceWithContext shouldBeInRange 0..10
                 feedback.registerAppropriate shouldNotBe null
                 feedback.mistakes shouldNotBe null
-                feedback.strengthsIdentified shouldNotBe null
+                feedback.strengths shouldNotBe null
             }
 
             @Test

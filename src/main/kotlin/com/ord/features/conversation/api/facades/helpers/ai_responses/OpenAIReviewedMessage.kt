@@ -27,7 +27,7 @@ data class OpenAIReviewedMessage(
     val registerAppropriate: Boolean,
 
     val mistakes: List<Mistake>,
-    val strengthsIdentified: List<Strength>,
+    val strengths: List<Strength>,
 
     val suggestions: List<OpenAISuggestion>
 ) {
@@ -46,7 +46,7 @@ data class OpenAIReviewedMessage(
             coherenceWithContext = coherenceWithContext,
             registerAppropriate = registerAppropriate,
             mistakes = mistakes.toSet(),
-            strengthsIdentified = strengthsIdentified.toSet(),
+            strengths = strengths.toSet(),
             suggestions = suggestions.map { it.toDomain() }.toSet()
         )
     }

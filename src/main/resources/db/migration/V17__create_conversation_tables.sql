@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
     register_appropriate BOOLEAN NOT NULL,
 
     mistakes         JSONB NOT NULL,
-    strengths_identified JSONB NOT NULL,
+    strengths        JSONB NOT NULL,
     suggestions      JSONB NOT NULL,
 
     message_id       UUID NOT NULL,

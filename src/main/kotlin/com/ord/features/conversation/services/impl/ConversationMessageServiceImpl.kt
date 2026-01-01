@@ -70,7 +70,7 @@ class ConversationMessageServiceImpl(
                             coherenceWithContext = aiFeedback.coherenceWithContext,
                             registerAppropriate = aiFeedback.registerAppropriate,
                             mistakes = feedbackMapper.serializeMistakes(aiFeedback.mistakes),
-                            strengthsIdentified = feedbackMapper.serializeStrengths(aiFeedback.strengthsIdentified),
+                            strengths = feedbackMapper.serializeStrengths(aiFeedback.strengths),
                             suggestions = feedbackMapper.serializeSuggestions(aiFeedback.suggestions),
                             messageId = message.id!!,
                         )
@@ -127,7 +127,7 @@ class ConversationMessageServiceImpl(
                     coherenceWithContext = aiFeedback.coherenceWithContext,
                     registerAppropriate = aiFeedback.registerAppropriate,
                     mistakes = feedbackMapper.serializeMistakes(aiFeedback.mistakes),
-                    strengthsIdentified = feedbackMapper.serializeStrengths(aiFeedback.strengthsIdentified),
+                    strengths = feedbackMapper.serializeStrengths(aiFeedback.strengths),
                     suggestions = feedbackMapper.serializeSuggestions(aiFeedback.suggestions),
                     messageId = messageId,
                 )

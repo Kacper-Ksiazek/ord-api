@@ -140,7 +140,7 @@ VALUES
 -- Feedback for Message 2 (USER) - Perfect message, no mistakes
 INSERT INTO public.conversation_user_message_feedback
     (id, tutor_comment, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
-     register_appropriate, mistakes, strengths_identified, suggestions, message_id, created_at)
+     register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed2222-bacf-4eed-bacf-eedba2feed02',
      'Excellent response! Your message is warm, engaging, and perfectly appropriate for casual conversation. The use of ''absolutely breathtaking'' shows strong command of intensifiers. Your grammar and structure are flawless, and the question at the end effectively encourages continued dialogue.',
@@ -159,7 +159,7 @@ VALUES
 -- Feedback for Message 4 (USER) - Contains grammar mistakes
 INSERT INTO public.conversation_user_message_feedback
     (id, tutor_comment, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
-     register_appropriate, mistakes, strengths_identified, suggestions, message_id, created_at)
+     register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed4444-bacf-4eed-bacf-eedba4feed04',
      'Good response with excellent detail! You maintained the conversational flow nicely and showed interest in your partner''s activity. However, there are a couple of grammar errors to address: ''That''s sound'' should be ''That sounds'' (subject-verb agreement), and ''The weather were'' should be ''The weather was'' (weather is singular). These are minor but important for C1 proficiency.',
@@ -178,7 +178,7 @@ VALUES
 -- Feedback for Message 6 (USER) - Minor grammar mistake
 INSERT INTO public.conversation_user_message_feedback
     (id, tutor_comment, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
-     register_appropriate, mistakes, strengths_identified, suggestions, message_id, created_at)
+     register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed6666-bacf-4eed-bacf-eedba6feed06',
      'Great enthusiasm and engagement! Your response effectively answers the question and maintains the conversational flow. However, there''s a grammar issue: ''couple of deer'' should be ''a couple of deer'' - the article ''a'' is needed before ''couple''. Your vocabulary choices like ''soaring'' and ''peaceful'' are excellent and show strong lexical range.',
