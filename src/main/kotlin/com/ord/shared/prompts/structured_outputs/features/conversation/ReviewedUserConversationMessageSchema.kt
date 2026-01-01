@@ -1,6 +1,8 @@
 package com.ord.shared.prompts.structured_outputs.features.conversation
 
 import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ErrorType
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.StrengthType
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.SuggestionType
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 
 val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
@@ -84,52 +86,58 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                 ),
                 "description" to "Empty array if perfect, order by severity (critical first)"
             ),
-            "strengthsIdentified" to mapOf(
-                "type" to "array",
-                "items" to mapOf("type" to "string"),
-                "description" to "Always try to find 2-3 positive points, empty if sabotage"
-            ),
-            "vocabularyEnrichment" to mapOf(
+            "strengths" to mapOf(
                 "type" to "array",
                 "items" to mapOf(
                     "type" to "object",
                     "properties" to mapOf(
-                        "original" to mapOf("type" to "string", "description" to "What user said"),
-                        "suggestion" to mapOf("type" to "string", "description" to "More advanced alternative"),
-                        "explanation" to mapOf("type" to "string", "description" to "Why suggestion is better")
+                        "phrase" to mapOf(
+                            "type" to "string",
+                            "description" to "Exact quote from user message demonstrating this strength"
+                        ),
+                        "strengthType" to mapOf(
+                            "type" to "string",
+                            "enum" to StrengthType.entries,
+                            "description" to "Category of linguistic strength"
+                        ),
+                        "explanation" to mapOf(
+                            "type" to "string",
+                            "description" to "Why this is good (in generativeContentLanguage)"
+                        )
                     ),
-                    "required" to listOf("original", "suggestion", "explanation"),
+                    "required" to listOf("phrase", "strengthType", "explanation"),
                     "additionalProperties" to false
                 ),
-                "description" to "Only for B1+ levels. Empty array if not applicable"
+                "description" to "Always try to find 2-3 positive points with specific examples, empty if sabotage"
             ),
-            "alternativeExpressions" to mapOf(
+            "suggestions" to mapOf(
                 "type" to "array",
                 "items" to mapOf(
                     "type" to "object",
                     "properties" to mapOf(
-                        "context" to mapOf(
+                        "original" to mapOf(
                             "type" to "string",
-                            "description" to "Which part of message this applies to"
+                            "description" to "Exact phrase from user message"
+                        ),
+                        "suggestionType" to mapOf(
+                            "type" to "string",
+                            "enum" to SuggestionType.entries,
+                            "description" to "IMPROVEMENT: vocabulary/phrasing inadequate for context. ENRICHMENT: interesting alternatives to expand repertoire."
                         ),
                         "alternatives" to mapOf(
                             "type" to "array",
                             "items" to mapOf("type" to "string"),
-                            "description" to "Different ways to express the same idea"
+                            "description" to "Better/different ways to express it (1 or more)"
                         ),
-                        "note" to mapOf(
+                        "explanation" to mapOf(
                             "type" to "string",
-                            "description" to "Nuances between alternatives. Use empty string if not applicable."
+                            "description" to "Why these alternatives are better/useful (in generativeContentLanguage)"
                         )
                     ),
-                    "required" to listOf("context", "alternatives", "note"),
+                    "required" to listOf("original", "suggestionType", "alternatives", "explanation"),
                     "additionalProperties" to false
                 ),
-                "description" to "Help user level up. Empty array if not applicable"
-            ),
-            "culturalNote" to mapOf(
-                "type" to "string",
-                "description" to "Grammatically correct but culturally inappropriate usage. Empty string if fine."
+                "description" to "Vocabulary and expression suggestions. Empty array if not applicable or sabotage."
             )
         ),
         "required" to listOf(
@@ -142,10 +150,8 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
             "coherenceWithContext",
             "registerAppropriate",
             "mistakes",
-            "strengthsIdentified",
-            "vocabularyEnrichment",
-            "alternativeExpressions",
-            "culturalNote"
+            "strengths",
+            "suggestions"
         ),
         "additionalProperties" to false
     )

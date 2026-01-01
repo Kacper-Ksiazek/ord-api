@@ -110,10 +110,8 @@ class ConversationRepositoryCustomMethodsImpl(
                 f.coherence_with_context as feedback_coherence_with_context,
                 f.register_appropriate as feedback_register_appropriate,
                 f.mistakes as feedback_mistakes,
-                f.strengths_identified as feedback_strengths_identified,
-                f.vocabulary_enrichment as feedback_vocabulary_enrichment,
-                f.alternative_expressions as feedback_alternative_expressions,
-                f.cultural_note as feedback_cultural_note,
+                f.strengths as feedback_strengths,
+                f.suggestions as feedback_suggestions,
                 -- AI message: Learning tips
                 lt.id as learning_tips_id,
                 lt.grammar_tips as learning_tips_grammar_tips,
@@ -157,10 +155,8 @@ class ConversationRepositoryCustomMethodsImpl(
                                     coherenceWithContext = row["feedback_coherence_with_context"] as Int,
                                     registerAppropriate = row["feedback_register_appropriate"] as Boolean,
                                     mistakes = feedbackMapper.deserializeMistakes(row["feedback_mistakes"] as Json),
-                                    strengthsIdentified = feedbackMapper.deserializeStringSet(row["feedback_strengths_identified"] as Json),
-                                    vocabularyEnrichment = feedbackMapper.deserializeVocabularyEnrichment(row["feedback_vocabulary_enrichment"] as Json),
-                                    alternativeExpressions = feedbackMapper.deserializeAlternativeExpressions(row["feedback_alternative_expressions"] as Json),
-                                    culturalNote = row["feedback_cultural_note"] as String?,
+                                    strengths = feedbackMapper.deserializeStrengths(row["feedback_strengths"] as Json),
+                                    suggestions = feedbackMapper.deserializeSuggestions(row["feedback_suggestions"] as Json),
                                     messageId = row["message_id"] as UUID
                                 )
                             } else null

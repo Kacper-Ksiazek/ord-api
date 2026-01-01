@@ -17,6 +17,8 @@ import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageReq
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation.ConversationMapper
 import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.StrengthType
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.SuggestionType
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import com.ord.features.conversation.models.conversation_message.ConversationMessageMapper
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
@@ -170,7 +172,9 @@ class OngoingConversationFacadeImpl(
                                 "userMessage" to userMessage.content,
                                 "latestAIMessage" to (body.latestAIMessage
                                     ?: "NO PREVIOUS MESSAGES. This message is the first one in the conversation."),
-                                "generativeContentLanguage" to proficiency.generativeContentLanguage.toString()
+                                "generativeContentLanguage" to proficiency.generativeContentLanguage.toString(),
+                                "strengthTypeDescriptions" to StrengthType.toPromptDescription(),
+                                "suggestionTypeDescriptions" to SuggestionType.toPromptDescription()
                             )
                         )
 

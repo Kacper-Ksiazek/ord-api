@@ -1,8 +1,8 @@
 package com.ord.features.conversation.api.facades.helpers.ai_responses
 
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.AlternativeExpression
 import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Mistake
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.VocabularyEnrichment
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Strength
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Suggestion
 
 data class ReviewedUserConversationMessage(
     val sabotage: String? = null,
@@ -17,10 +17,7 @@ data class ReviewedUserConversationMessage(
     val registerAppropriate: Boolean,
 
     val mistakes: Set<Mistake>,
-    val strengthsIdentified: Set<String>,
+    val strengths: Set<Strength>,
 
-    val vocabularyEnrichment: Set<VocabularyEnrichment>,
-    val alternativeExpressions: Set<AlternativeExpression>,
-
-    val culturalNote: String? = null
+    val suggestions: Set<Suggestion>
 )

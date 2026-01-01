@@ -1,8 +1,8 @@
 package com.ord.features.conversation.models.conversation_user_message_feedback
 
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.AlternativeExpression
 import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Mistake
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.VocabularyEnrichment
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Strength
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Suggestion
 import java.util.UUID
 
 data class ConversationUserMessageFeedbackDTO(
@@ -18,10 +18,8 @@ data class ConversationUserMessageFeedbackDTO(
     val registerAppropriate: Boolean,
 
     val mistakes: Set<Mistake>,
-    val strengthsIdentified: Set<String>,
-    val vocabularyEnrichment: Set<VocabularyEnrichment>,
-    val alternativeExpressions: Set<AlternativeExpression>,
-    val culturalNote: String? = null,
+    val strengths: Set<Strength>,
+    val suggestions: Set<Suggestion>,
 
     val messageId: UUID,
 )

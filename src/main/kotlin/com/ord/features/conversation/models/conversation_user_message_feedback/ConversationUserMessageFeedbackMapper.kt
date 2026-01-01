@@ -2,9 +2,9 @@ package com.ord.features.conversation.models.conversation_user_message_feedback
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.AlternativeExpression
 import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Mistake
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.VocabularyEnrichment
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Strength
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Suggestion
 import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import io.r2dbc.postgresql.codec.Json
 import org.springframework.stereotype.Component
@@ -25,10 +25,8 @@ class ConversationUserMessageFeedbackMapper(
             coherenceWithContext = entity.coherenceWithContext,
             registerAppropriate = entity.registerAppropriate,
             mistakes = deserializeMistakes(entity.mistakes),
-            strengthsIdentified = deserializeStringSet(entity.strengthsIdentified),
-            vocabularyEnrichment = deserializeVocabularyEnrichment(entity.vocabularyEnrichment),
-            alternativeExpressions = deserializeAlternativeExpressions(entity.alternativeExpressions),
-            culturalNote = entity.culturalNote,
+            strengths = deserializeStrengths(entity.strengths),
+            suggestions = deserializeSuggestions(entity.suggestions),
             messageId = entity.messageId,
         )
     }
@@ -44,20 +42,10 @@ class ConversationUserMessageFeedbackMapper(
             coherenceWithContext = dto.coherenceWithContext,
             registerAppropriate = dto.registerAppropriate,
             mistakes = serializeMistakes(dto.mistakes),
-            strengthsIdentified = serializeStringSet(dto.strengthsIdentified),
-            vocabularyEnrichment = serializeVocabularyEnrichment(dto.vocabularyEnrichment),
-            alternativeExpressions = serializeAlternativeExpressions(dto.alternativeExpressions),
-            culturalNote = dto.culturalNote,
+            strengths = serializeStrengths(dto.strengths),
+            suggestions = serializeSuggestions(dto.suggestions),
             messageId = dto.messageId,
         )
-    }
-
-    fun serializeStringSet(set: Set<String>): Json {
-        return Json.of(jsonObjectMapper.writeValueAsString(set))
-    }
-
-    fun deserializeStringSet(json: Json): Set<String> {
-        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<String>>() {})
     }
 
     fun serializeMistakes(mistakes: Set<Mistake>): Json {
@@ -68,19 +56,19 @@ class ConversationUserMessageFeedbackMapper(
         return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<Mistake>>() {})
     }
 
-    fun serializeVocabularyEnrichment(enrichment: Set<VocabularyEnrichment>): Json {
-        return Json.of(jsonObjectMapper.writeValueAsString(enrichment))
+    fun serializeStrengths(strengths: Set<Strength>): Json {
+        return Json.of(jsonObjectMapper.writeValueAsString(strengths))
     }
 
-    fun deserializeVocabularyEnrichment(json: Json): Set<VocabularyEnrichment> {
-        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<VocabularyEnrichment>>() {})
+    fun deserializeStrengths(json: Json): Set<Strength> {
+        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<Strength>>() {})
     }
 
-    fun serializeAlternativeExpressions(expressions: Set<AlternativeExpression>): Json {
-        return Json.of(jsonObjectMapper.writeValueAsString(expressions))
+    fun serializeSuggestions(suggestions: Set<Suggestion>): Json {
+        return Json.of(jsonObjectMapper.writeValueAsString(suggestions))
     }
 
-    fun deserializeAlternativeExpressions(json: Json): Set<AlternativeExpression> {
-        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<AlternativeExpression>>() {})
+    fun deserializeSuggestions(json: Json): Set<Suggestion> {
+        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<Suggestion>>() {})
     }
 }
