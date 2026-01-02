@@ -1,9 +1,9 @@
 package com.ord.features.conversation.api.facades.helpers.ai_responses
 
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.SuggestionType
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Mistake
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Strength
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Suggestion
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageSuggestionType
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageMistake
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageStrength
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageSuggestion
 
 /**
  * Intermediate DTO for OpenAI structured outputs response.
@@ -26,8 +26,8 @@ data class OpenAIReviewedMessage(
     val coherenceWithContext: Int,
     val registerAppropriate: Boolean,
 
-    val mistakes: List<Mistake>,
-    val strengths: List<Strength>,
+    val mistakes: List<ConversationMessageMistake>,
+    val strengths: List<ConversationMessageStrength>,
 
     val suggestions: List<OpenAISuggestion>
 ) {
@@ -58,12 +58,12 @@ data class OpenAIReviewedMessage(
  */
 data class OpenAISuggestion(
     val original: String,
-    val suggestionType: SuggestionType,
+    val suggestionType: ConversationMessageSuggestionType,
     val alternatives: List<String>,
     val explanation: String
 ) {
-    fun toDomain(): Suggestion {
-        return Suggestion(
+    fun toDomain(): ConversationMessageSuggestion {
+        return ConversationMessageSuggestion(
             original = original,
             suggestionType = suggestionType,
             alternatives = alternatives.toSet(),

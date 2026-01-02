@@ -3,7 +3,7 @@ package com.ord.features.conversation.models.conversation_user_message_feedback.
 import com.ord.shared.annotations.ExportToOpenAPI
 
 @ExportToOpenAPI
-enum class ErrorType {
+enum class ConversationMessageErrorType {
     GRAMMAR,
     VOCABULARY,
     SPELLING,

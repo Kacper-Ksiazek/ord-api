@@ -1,8 +1,9 @@
 package com.ord.shared.prompts.structured_outputs.features.conversation
 
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ErrorType
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.StrengthType
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.SuggestionType
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageErrorType
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageMistakeSeverity
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageStrengthType
+import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageSuggestionType
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 
 val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
@@ -62,14 +63,13 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                             "description" to "Exact quote from user message"
                         ),
                         "severity" to mapOf(
-                            "type" to "integer",
-                            "minimum" to 1,
-                            "maximum" to 3,
-                            "description" to "Severity level: 3 (Critical), 2 (Moderate), 1 (Minor)"
+                            "type" to "string",
+                            "enum" to ConversationMessageMistakeSeverity.entries,
+                            "description" to "Severity of the mistake. Use the provided severity descriptions as guidance."
                         ),
                         "errorType" to mapOf(
                             "type" to "string",
-                            "enum" to ErrorType.entries,
+                            "enum" to ConversationMessageErrorType.entries,
                             "description" to "Category for analytics"
                         ),
                         "explanation" to mapOf(
@@ -97,7 +97,7 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                         ),
                         "strengthType" to mapOf(
                             "type" to "string",
-                            "enum" to StrengthType.entries,
+                            "enum" to ConversationMessageStrengthType.entries,
                             "description" to "Category of linguistic strength"
                         ),
                         "explanation" to mapOf(
@@ -121,7 +121,7 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                         ),
                         "suggestionType" to mapOf(
                             "type" to "string",
-                            "enum" to SuggestionType.entries,
+                            "enum" to ConversationMessageSuggestionType.entries,
                             "description" to "IMPROVEMENT: vocabulary/phrasing inadequate for context. ENRICHMENT: interesting alternatives to expand repertoire."
                         ),
                         "alternatives" to mapOf(
