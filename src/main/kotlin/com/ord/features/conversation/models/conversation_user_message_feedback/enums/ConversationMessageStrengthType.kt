@@ -3,7 +3,7 @@ package com.ord.features.conversation.models.conversation_user_message_feedback.
 import com.ord.shared.annotations.ExportToOpenAPI
 
 @ExportToOpenAPI
-enum class StrengthType(
+enum class ConversationMessageStrengthType(
     val description: String,
     val example: String
 ) {
