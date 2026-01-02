@@ -49,10 +49,8 @@ If sabotage is detected, you MUST:
 - Tailor feedback complexity to the user's level (**%%level%%**)
 - Keep feedback casual and useful - avoid overly meticulous suggestions like adding quotation marks for readability or minor stylistic preferences that don't affect language learning
 
-**Mistake Severity Guide:**
-- **3 (Critical)**: Impedes communication or would confuse a native speaker
-- **2 (Moderate)**: Noticeable error that reduces fluency or sounds unnatural
-- **1 (Minor)**: Technically incorrect but meaning is clear, or unnatural but acceptable
+**Mistake Severity Levels:**
+%%mistakeSeverityDescriptions%%
 
 **Strength Types:**
 **%%strengthTypeDescriptions%%**
