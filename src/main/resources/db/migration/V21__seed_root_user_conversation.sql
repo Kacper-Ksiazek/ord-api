@@ -137,22 +137,22 @@ VALUES
 --- Feedback for USER messages (orders 2, 4, 6)
 -------------
 
--- Feedback for Message 2 (USER) - Perfect message, no mistakes
+-- Feedback for Message 2 (USER) - Minor mistake with good overall quality
 INSERT INTO public.conversation_user_message_feedback
     (id, tutor_comment, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
      register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed2222-bacf-4eed-bacf-eedba2feed02',
-     'Excellent response! Your message is warm, engaging, and perfectly appropriate for casual conversation. The use of ''absolutely breathtaking'' shows strong command of intensifiers. Your grammar and structure are flawless, and the question at the end effectively encourages continued dialogue.',
-     10,
+     'Excellent response! Your message is warm, engaging, and perfectly appropriate for casual conversation. The use of ''absolutely breathtaking'' shows strong command of intensifiers. However, there''s a minor issue with question structure that could be improved. Overall, great conversational skills!',
+     9,
      9,
      9,
      10,
      10,
      true,
-     '[]'::jsonb,
+     '[{"phrase": "Did you do anything interesting besides reading?", "severity": 1, "errorType": "REGISTER", "explanation": "While grammatically correct, this question could be more conversational. Starting with ''How was your weekend?'' and then asking about specific activities creates better flow than jumping to a ''Did you'' question.", "correctForm": "How did you spend the rest of your weekend?"}]'::jsonb,
      '[{"phrase": "absolutely breathtaking", "strengthType": "VOCABULARY", "explanation": "Excellent use of intensifier for vivid description"}, {"phrase": "How was your weekend?", "strengthType": "FLUENCY", "explanation": "Perfect casual conversation opener with genuine enthusiasm"}, {"phrase": "Did you do anything interesting besides reading?", "strengthType": "COMMUNICATION", "explanation": "Effective use of follow-up question to maintain conversation flow"}]'::jsonb,
-     '[{"original": "interesting", "suggestionType": "ENRICHMENT", "alternatives": ["eventful", "memorable", "noteworthy"], "explanation": "While ''interesting'' works well here, these alternatives can add variety and nuance to your vocabulary."}, {"original": "Did you do anything interesting besides reading?", "suggestionType": "ENRICHMENT", "alternatives": ["What did you get up to?", "How did you spend your weekend?", "Did you have any other plans?"], "explanation": "All of these are equally casual and natural for this context"}]'::jsonb,
+     '[{"original": "interesting", "suggestionType": "ENRICHMENT", "alternatives": ["eventful", "memorable", "noteworthy"], "explanation": "While ''interesting'' works well here, these alternatives can add variety and nuance to your vocabulary."}, {"original": "Did you do anything interesting besides reading?", "suggestionType": "IMPROVEMENT", "alternatives": ["What else did you get up to?", "How did you spend the rest of your weekend?"], "explanation": "These alternatives create a smoother conversational flow and sound more natural in casual English."}, {"original": "I spent most of Saturday hiking", "suggestionType": "ENRICHMENT", "alternatives": ["I dedicated most of Saturday to hiking", "I spent the better part of Saturday hiking"], "explanation": "These alternatives add sophistication while maintaining the casual tone."}]'::jsonb,
      '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d2',
      CURRENT_TIMESTAMP);
 
@@ -171,7 +171,7 @@ VALUES
      true,
      '[{"phrase": "that''s sound great", "severity": 2, "errorType": "GRAMMAR", "explanation": "After ''that'' as the subject, you need the third-person singular verb form. The contraction ''that''s'' (that is) doesn''t work with ''sound'' as a verb here. You need the verb ''sounds''.", "correctForm": "that sounds great"}, {"phrase": "The weather were perfect", "severity": 2, "errorType": "GRAMMAR", "explanation": "''Weather'' is an uncountable noun that always takes a singular verb. Even though we might think of weather as having multiple elements, grammatically it''s treated as singular.", "correctForm": "The weather was perfect"}]'::jsonb,
      '[{"phrase": "moderately difficult", "strengthType": "VOCABULARY", "explanation": "Good use of precise vocabulary to describe the challenge level"}, {"phrase": "totally worth it", "strengthType": "FLUENCY", "explanation": "Excellent use of natural informal expression"}, {"phrase": "What book are you reading?", "strengthType": "COMMUNICATION", "explanation": "Natural transition from answering about hiking to asking about the book"}]'::jsonb,
-     '[{"original": "perfect", "suggestionType": "ENRICHMENT", "alternatives": ["ideal", "pristine", "glorious"], "explanation": "While ''perfect'' is great, these alternatives can make your descriptions more vivid."}, {"original": "I even saw some wildlife", "suggestionType": "ENRICHMENT", "alternatives": ["I even spotted some wildlife", "I encountered some wildlife", "I came across some wildlife"], "explanation": "''Spotted'' and ''came across'' suggest unexpectedness, while ''encountered'' is more neutral"}]'::jsonb,
+     '[{"original": "perfect", "suggestionType": "ENRICHMENT", "alternatives": ["ideal", "pristine", "glorious"], "explanation": "While ''perfect'' is great, these alternatives can make your descriptions more vivid."}, {"original": "totally worth it for the views", "suggestionType": "IMPROVEMENT", "alternatives": ["well worth it for the spectacular views", "the views made it all worthwhile"], "explanation": "Adding descriptive adjectives to ''views'' enhances your description and reduces reliance on intensifiers like ''totally''."}, {"original": "I even saw some wildlife", "suggestionType": "ENRICHMENT", "alternatives": ["I even spotted some wildlife", "I encountered some wildlife", "I came across some wildlife"], "explanation": "''Spotted'' and ''came across'' suggest unexpectedness, while ''encountered'' is more neutral"}]'::jsonb,
      '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d4',
      CURRENT_TIMESTAMP);
 
@@ -190,7 +190,7 @@ VALUES
      true,
      '[{"phrase": "I saw couple of deer", "severity": 1, "errorType": "GRAMMAR", "explanation": "The phrase ''couple of'' requires the indefinite article ''a'' before it. ''Couple'' on its own means two people in a relationship, while ''a couple of'' means ''a few'' or approximately two.", "correctForm": "I saw a couple of deer"}]'::jsonb,
      '[{"phrase": "soaring above", "strengthType": "VOCABULARY", "explanation": "Excellent verb choice - vivid and precise for describing bird flight"}, {"phrase": "It was really peaceful up there", "strengthType": "FLUENCY", "explanation": "Good use of ''peaceful'' to convey the atmosphere of the experience"}, {"phrase": "Thanks for the recommendation", "strengthType": "PRAGMATICS", "explanation": "Natural acknowledgment showing politeness and engagement"}]'::jsonb,
-     '[{"original": "check it out", "suggestionType": "ENRICHMENT", "alternatives": ["give it a try", "look into it", "add it to my reading list"], "explanation": "''Check it out'' is perfectly natural, but these alternatives offer variety."}, {"original": "Do you usually prefer reading over outdoor activities", "suggestionType": "ENRICHMENT", "alternatives": ["Are you more of a bookworm or an outdoorsy person?", "Do you tend to lean more towards reading or being active outdoors?"], "explanation": "These alternatives range from informal (''bookworm'') to more neutral. All work well in casual conversation."}]'::jsonb,
+     '[{"original": "check it out", "suggestionType": "ENRICHMENT", "alternatives": ["give it a try", "look into it", "add it to my reading list"], "explanation": "''Check it out'' is perfectly natural, but these alternatives offer variety."}, {"original": "It was really peaceful up there", "suggestionType": "IMPROVEMENT", "alternatives": ["It was incredibly peaceful up there", "The tranquility up there was remarkable"], "explanation": "''Really'' is a common intensifier. Using ''incredibly'' or rephrasing with stronger vocabulary like ''tranquility'' adds sophistication to your expression."}, {"original": "Do you usually prefer reading over outdoor activities", "suggestionType": "ENRICHMENT", "alternatives": ["Are you more of a bookworm or an outdoorsy person?", "Do you tend to lean more towards reading or being active outdoors?"], "explanation": "These alternatives range from informal (''bookworm'') to more neutral. All work well in casual conversation."}]'::jsonb,
      '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d6',
      CURRENT_TIMESTAMP);
 

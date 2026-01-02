@@ -1,6 +1,7 @@
 package com.ord.config.security
 
 import com.ord.core.security.AnonymousOnlyAuthorizationManager
+import com.ord.core.security.ApiAuthenticationEntryPoint
 import com.ord.core.security.JwtReactiveAuthenticationManager
 import com.ord.core.security.JwtSecurityContextRepository
 import org.springframework.context.annotation.Bean
@@ -17,6 +18,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 class SecurityConfiguration(
     private val authManager: JwtReactiveAuthenticationManager,
     private val contextRepository: JwtSecurityContextRepository,
+    private val apiAuthenticationEntryPoint: ApiAuthenticationEntryPoint,
 ) {
     val anonymousOnlyAuthorizationManager = AnonymousOnlyAuthorizationManager()
 
@@ -59,6 +61,7 @@ class SecurityConfiguration(
                 ex.pathMatchers(*ANONYMOUS_PATHS).access(anonymousOnlyAuthorizationManager)
                 ex.pathMatchers(*AUTHORIZED_PATHS).authenticated()
             }
+            .exceptionHandling { it.authenticationEntryPoint(apiAuthenticationEntryPoint) }
             .build()
     }
 }
