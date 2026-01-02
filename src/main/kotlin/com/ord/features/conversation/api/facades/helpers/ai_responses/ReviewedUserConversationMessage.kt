@@ -1,8 +1,8 @@
 package com.ord.features.conversation.api.facades.helpers.ai_responses
 
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Mistake
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Strength
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.Suggestion
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageMistake
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageStrength
+import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageSuggestion
 
 data class ReviewedUserConversationMessage(
     val sabotage: String? = null,
@@ -16,8 +16,8 @@ data class ReviewedUserConversationMessage(
     val coherenceWithContext: Int,
     val registerAppropriate: Boolean,
 
-    val mistakes: Set<Mistake>,
-    val strengths: Set<Strength>,
+    val mistakes: Set<ConversationMessageMistake>,
+    val strengths: Set<ConversationMessageStrength>,
 
-    val suggestions: Set<Suggestion>
+    val suggestions: Set<ConversationMessageSuggestion>
 )
