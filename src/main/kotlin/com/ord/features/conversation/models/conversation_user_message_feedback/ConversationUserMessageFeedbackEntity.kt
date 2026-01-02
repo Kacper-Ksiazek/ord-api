@@ -20,9 +20,9 @@ data class ConversationUserMessageFeedbackEntity(
     val coherenceWithContext: Int,
     val registerAppropriate: Boolean,
 
-    val mistakes: Json, // JSONB - Set<Mistake>
-    val strengths: Json, // JSONB - Set<Strength>
-    val suggestions: Json, // JSONB - Set<Suggestion>
+    val mistakes: Json, // JSONB - Set<ConversationMessageMistake>
+    val strengths: Json, // JSONB - Set<ConversationMessageStrength>
+    val suggestions: Json, // JSONB - Set<ConversationMessageSuggestion>
 
     val messageId: UUID,
 
