@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS conversations
     proficiency_level         language_proficiency NOT NULL,
     type                      conversation_type    NOT NULL,
     ai_tone                   conversation_tone    NOT NULL,
-    ai_interlocutor_name      TEXT                     DEFAULT NULL,
-    ai_interlocutor_avatar_id VARCHAR(64)              DEFAULT NULL,
+    ai_interlocutor_name      TEXT                 NOT NULL,
+    ai_interlocutor_avatar_id VARCHAR(64)          NOT NULL,
 
     user_id                   UUID                 NOT NULL,
 
