@@ -56,6 +56,9 @@ If sabotage is detected, you MUST:
 **%%strengthTypeDescriptions%%**
 
 **Suggestion Types:**
+
+**IMPORTANT:** The suggestions field is for learning guidance only - NOT for fixing errors. Use the `mistakes` field to correct errors. Suggestions should point the user toward better/more sophisticated alternatives when their phrasing is already correct but could be enhanced.
+
 **%%suggestionTypeDescriptions%%**
 
 ### LEVEL CONSIDERATIONS:
