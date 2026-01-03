@@ -122,7 +122,7 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                         "suggestionType" to mapOf(
                             "type" to "string",
                             "enum" to ConversationMessageSuggestionType.entries,
-                            "description" to "IMPROVEMENT: vocabulary/phrasing inadequate for context. ENRICHMENT: interesting alternatives to expand repertoire."
+                            "description" to "Type of learning suggestion. VOCABULARY: alternative word choices for learning. STRUCTURE: alternative sentence structures for learning. NOT for error correction - use mistakes field for errors."
                         ),
                         "alternatives" to mapOf(
                             "type" to "array",
