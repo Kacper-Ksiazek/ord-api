@@ -86,7 +86,7 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                             "description" to "Usage examples in different contexts (in target language)"
                         )
                     ),
-                    "required" to listOf("phrase", "meaning", "exampleSentences"),
+                    "required" to listOf("phrase", "meaning"),
                     "additionalProperties" to false
                 ),
                 "description" to "0-2 idiom tips. Empty array if none applicable."

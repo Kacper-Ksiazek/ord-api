@@ -9,5 +9,5 @@ package com.ord.features.conversation.models.ai_message_tips.jsonb
 data class AnnotatedIdiomTip(
     val phrase: String,
     val meaning: String,
-    val exampleSentences: List<String>
+    val exampleSentences: List<String> = emptyList()
 )
