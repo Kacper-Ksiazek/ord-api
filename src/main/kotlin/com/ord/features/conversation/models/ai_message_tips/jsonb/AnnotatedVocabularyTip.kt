@@ -6,10 +6,12 @@ package com.ord.features.conversation.models.ai_message_tips.jsonb
  * @property definition Clear definition (in generativeContentLanguage)
  * @property usageNote When/how to use this word (in generativeContentLanguage)
  * @property proficiencyLevel Level indicator (e.g., "B2", "C1") to help users know complexity
+ * @property exampleSentences Example sentences demonstrating word usage (in target language)
  */
 data class AnnotatedVocabularyTip(
     val word: String,
     val definition: String,
     val usageNote: String,
-    val proficiencyLevel: String
+    val proficiencyLevel: String,
+    val exampleSentences: List<String> = emptyList()
 )
