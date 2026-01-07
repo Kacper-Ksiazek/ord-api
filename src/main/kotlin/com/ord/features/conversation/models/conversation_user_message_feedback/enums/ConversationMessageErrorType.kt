@@ -7,6 +7,5 @@ enum class ConversationMessageErrorType {
     GRAMMAR,
     VOCABULARY,
     SPELLING,
-    PUNCTUATION,
-    REGISTER  // Formality level mismatch for the context
+    PUNCTUATION
 }

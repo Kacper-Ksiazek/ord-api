@@ -23,6 +23,11 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                         "grammarPoint" to mapOf(
                             "type" to "string",
                             "description" to "Specific grammar structure (e.g., 'Past Perfect', 'Subjunctive')"
+                        ),
+                        "exampleSentences" to mapOf(
+                            "type" to "array",
+                            "items" to mapOf("type" to "string"),
+                            "description" to "1-2 example sentences showing the grammar point in context (in target language)"
                         )
                     ),
                     "required" to listOf("phrase", "explanation", "grammarPoint"),
@@ -50,6 +55,11 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                         "proficiencyLevel" to mapOf(
                             "type" to "string",
                             "description" to "Level indicator (A1, A2, B1, B2, C1, C2)"
+                        ),
+                        "exampleSentences" to mapOf(
+                            "type" to "array",
+                            "items" to mapOf("type" to "string"),
+                            "description" to "1-2 example sentences demonstrating word usage (in target language)"
                         )
                     ),
                     "required" to listOf("word", "definition", "usageNote", "proficiencyLevel"),
@@ -70,12 +80,13 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                             "type" to "string",
                             "description" to "Literal and figurative meaning (in generativeContentLanguage)"
                         ),
-                        "example" to mapOf(
-                            "type" to "string",
-                            "description" to "Usage example in different context (in target language)"
+                        "exampleSentences" to mapOf(
+                            "type" to "array",
+                            "items" to mapOf("type" to "string"),
+                            "description" to "Usage examples in different contexts (in target language)"
                         )
                     ),
-                    "required" to listOf("phrase", "meaning", "example"),
+                    "required" to listOf("phrase", "meaning", "exampleSentences"),
                     "additionalProperties" to false
                 ),
                 "description" to "0-2 idiom tips. Empty array if none applicable."
