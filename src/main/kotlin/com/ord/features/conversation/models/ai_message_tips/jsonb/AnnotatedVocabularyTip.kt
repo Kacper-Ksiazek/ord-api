@@ -13,5 +13,5 @@ data class AnnotatedVocabularyTip(
     val definition: String,
     val usageNote: String,
     val proficiencyLevel: String,
-    val exampleSentences: List<String> = emptyList()
+    val exampleSentences: List<String>
 )

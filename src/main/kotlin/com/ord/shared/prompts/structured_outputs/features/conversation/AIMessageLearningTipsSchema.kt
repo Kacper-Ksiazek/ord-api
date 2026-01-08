@@ -30,7 +30,7 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                             "description" to "1-2 example sentences showing the grammar point in context (in target language)"
                         )
                     ),
-                    "required" to listOf("phrase", "explanation", "grammarPoint"),
+                    "required" to listOf("phrase", "explanation", "grammarPoint", "exampleSentences"),
                     "additionalProperties" to false
                 ),
                 "description" to "0-2 grammar-focused tips. Empty array if none applicable."
@@ -62,7 +62,7 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                             "description" to "1-2 example sentences demonstrating word usage (in target language)"
                         )
                     ),
-                    "required" to listOf("word", "definition", "usageNote", "proficiencyLevel"),
+                    "required" to listOf("word", "definition", "usageNote", "proficiencyLevel", "exampleSentences"),
                     "additionalProperties" to false
                 ),
                 "description" to "0-2 vocabulary tips. Empty array if none applicable."
