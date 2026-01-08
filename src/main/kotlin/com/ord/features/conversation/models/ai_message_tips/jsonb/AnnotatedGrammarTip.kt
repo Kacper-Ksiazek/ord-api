@@ -11,5 +11,5 @@ data class AnnotatedGrammarTip(
     val phrase: String,
     val explanation: String,
     val grammarPoint: String,
-    val exampleSentences: List<String> = emptyList()
+    val exampleSentences: List<String>
 )
