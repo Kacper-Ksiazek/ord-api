@@ -1037,7 +1037,7 @@ class TestOngoingConversationController @Autowired constructor(
                 response.body shouldNotBe null
                 response.body!!.grammarTips shouldNotBe null
                 response.body.vocabularyTips shouldNotBe null
-                response.body.idiomTips shouldNotBe null
+                response.body.phraseTips shouldNotBe null
 
                 // Verify the tips were added to the latest AI message
                 val updatedConversation = conversationAPIClient.getConversationById(
@@ -1083,7 +1083,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                 tips.grammarTips shouldNotBe null
                 tips.vocabularyTips shouldNotBe null
-                tips.idiomTips shouldNotBe null
+                tips.phraseTips shouldNotBe null
             }
 
             @Test
@@ -1189,7 +1189,7 @@ class TestOngoingConversationController @Autowired constructor(
                 val dto = response.body!!
                 dto.grammarTips shouldNotBe null
                 dto.vocabularyTips shouldNotBe null
-                dto.idiomTips shouldNotBe null
+                dto.phraseTips shouldNotBe null
             }
 
             @Test
