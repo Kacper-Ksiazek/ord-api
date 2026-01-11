@@ -13,7 +13,7 @@ data class ConversationAIMessageLearningTipsEntity(
 
     val grammarTips: Json,      // JSONB - Set<AnnotatedGrammarTip>
     val vocabularyTips: Json,   // JSONB - Set<AnnotatedVocabularyTip>
-    val idiomTips: Json,        // JSONB - Set<AnnotatedIdiomTip>
+    val phraseTips: Json,       // JSONB - Set<AnnotatedPhraseTip>
 
     val messageId: UUID,
 
