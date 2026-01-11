@@ -1,5 +1,8 @@
 package com.ord.shared.prompts.structured_outputs.features.conversation
 
+import com.ord.core.word.models.word.enums.WordType
+import com.ord.features.conversation.models.ai_message_tips.enums.PhraseType
+import com.ord.features.conversation.models.ai_message_tips.enums.TipRegister
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 
 val aiMessageLearningTipsSchema = StructuredOutputTemplate(
@@ -27,10 +30,15 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                         "exampleSentences" to mapOf(
                             "type" to "array",
                             "items" to mapOf("type" to "string"),
-                            "description" to "1-2 example sentences showing the grammar point in context (in target language)"
+                            "description" to "1-2 example sentences showing the grammar point in context, with the relevant phrase/structure wrapped in ** markers (e.g., \"I **have been reading** for hours\") (in target language)"
+                        ),
+                        "register" to mapOf(
+                            "type" to "string",
+                            "enum" to TipRegister.entries,
+                            "description" to "Formality level: FORMAL (business/academic), INFORMAL (everyday), COLLOQUIAL (casual/slangy)"
                         )
                     ),
-                    "required" to listOf("phrase", "explanation", "grammarPoint", "exampleSentences"),
+                    "required" to listOf("phrase", "explanation", "grammarPoint", "exampleSentences", "register"),
                     "additionalProperties" to false
                 ),
                 "description" to "0-2 grammar-focused tips. Empty array if none applicable."
@@ -48,54 +56,74 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                             "type" to "string",
                             "description" to "Clear definition (in generativeContentLanguage)"
                         ),
-                        "usageNote" to mapOf(
+                    "usageNote" to mapOf(
                             "type" to "string",
                             "description" to "When/how to use (in generativeContentLanguage)"
                         ),
-                        "proficiencyLevel" to mapOf(
+                        "wordType" to mapOf(
                             "type" to "string",
-                            "description" to "Level indicator (A1, A2, B1, B2, C1, C2)"
+                            "enum" to WordType.entries,
+                            "description" to "Type of word or expression (NOUN, VERB, ADJECTIVE, ADVERB, IDIOM, PHRASE)"
                         ),
                         "exampleSentences" to mapOf(
                             "type" to "array",
                             "items" to mapOf("type" to "string"),
-                            "description" to "1-2 example sentences demonstrating word usage (in target language)"
+                            "description" to "1-2 example sentences demonstrating word usage, with the word wrapped in ** markers (e.g., \"The **car** is red\") (in target language)"
+                        ),
+                        "register" to mapOf(
+                            "type" to "string",
+                            "enum" to TipRegister.entries,
+                            "description" to "Formality level: FORMAL (business/academic), INFORMAL (everyday), COLLOQUIAL (casual/slangy)"
+                        ),
+                        "nativeLanguageEquivalent" to mapOf(
+                            "type" to "string",
+                            "description" to "Translation or equivalent in user's native language (in generativeContentLanguage). Use empty string if no direct equivalent exists."
                         )
                     ),
-                    "required" to listOf("word", "definition", "usageNote", "proficiencyLevel", "exampleSentences"),
+                    "required" to listOf("word", "definition", "usageNote", "wordType", "exampleSentences", "register", "nativeLanguageEquivalent"),
                     "additionalProperties" to false
                 ),
                 "description" to "0-2 vocabulary tips. Empty array if none applicable."
             ),
-            "idiomTips" to mapOf(
+            "phraseTips" to mapOf(
                 "type" to "array",
                 "items" to mapOf(
                     "type" to "object",
                     "properties" to mapOf(
                         "phrase" to mapOf(
                             "type" to "string",
-                            "description" to "Exact idiomatic phrase from AI message (in target language)"
+                            "description" to "Exact phrase from AI message (in target language)"
+                        ),
+                        "phraseType" to mapOf(
+                            "type" to "string",
+                            "enum" to PhraseType.entries,
+                            "description" to "Type of phrase: IDIOMATIC (true idioms like 'break the ice') or LITERAL (collocations, expressions, compounds)"
                         ),
                         "meaning" to mapOf(
                             "type" to "string",
-                            "description" to "Literal and figurative meaning (in generativeContentLanguage)"
+                            "description" to "Explanation of what the phrase means (in generativeContentLanguage)"
                         ),
                         "exampleSentences" to mapOf(
                             "type" to "array",
                             "items" to mapOf("type" to "string"),
-                            "description" to "Usage examples in different contexts (in target language)"
+                            "description" to "Usage examples in different contexts, with the phrase wrapped in ** markers (e.g., \"Don't **cry over spilled milk**\") (in target language)"
+                        ),
+                        "register" to mapOf(
+                            "type" to "string",
+                            "enum" to TipRegister.entries,
+                            "description" to "Formality level: FORMAL (business/academic), INFORMAL (everyday), COLLOQUIAL (casual/slangy)"
                         )
                     ),
-                    "required" to listOf("phrase", "meaning", "exampleSentences"),
+                    "required" to listOf("phrase", "phraseType", "meaning", "exampleSentences", "register"),
                     "additionalProperties" to false
                 ),
-                "description" to "0-2 idiom tips. Empty array if none applicable."
+                "description" to "0-2 phrase tips (idioms, collocations, useful expressions). Empty array if none applicable."
             )
         ),
         "required" to listOf(
             "grammarTips",
             "vocabularyTips",
-            "idiomTips"
+            "phraseTips"
         ),
         "additionalProperties" to false
     )
