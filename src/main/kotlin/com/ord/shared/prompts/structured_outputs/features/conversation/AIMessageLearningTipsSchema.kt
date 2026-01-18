@@ -56,7 +56,7 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                             "type" to "string",
                             "description" to "Clear definition (in generativeContentLanguage)"
                         ),
-                    "usageNote" to mapOf(
+                        "usageNote" to mapOf(
                             "type" to "string",
                             "description" to "When/how to use (in generativeContentLanguage)"
                         ),
@@ -80,7 +80,15 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                             "description" to "Translation or equivalent in user's native language (in generativeContentLanguage). Use empty string if no direct equivalent exists."
                         )
                     ),
-                    "required" to listOf("word", "definition", "usageNote", "wordType", "exampleSentences", "register", "nativeLanguageEquivalent"),
+                    "required" to listOf(
+                        "word",
+                        "definition",
+                        "usageNote",
+                        "wordType",
+                        "exampleSentences",
+                        "register",
+                        "nativeLanguageEquivalent"
+                    ),
                     "additionalProperties" to false
                 ),
                 "description" to "0-2 vocabulary tips. Empty array if none applicable."
