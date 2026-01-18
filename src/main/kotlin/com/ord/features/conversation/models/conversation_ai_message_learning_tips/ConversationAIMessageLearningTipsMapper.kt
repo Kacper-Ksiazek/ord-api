@@ -2,8 +2,9 @@ package com.ord.features.conversation.models.conversation_ai_message_learning_ti
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ord.features.conversation.models.ai_message_tips.enums.TipRegister
 import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedGrammarTip
-import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedIdiomTip
+import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedPhraseTip
 import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedVocabularyTip
 import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import io.r2dbc.postgresql.codec.Json
@@ -22,7 +23,7 @@ class ConversationAIMessageLearningTipsMapper :
             id = entity.id ?: error("ConversationAIMessageLearningTips id must not be null"),
             grammarTips = deserializeGrammarTips(entity.grammarTips),
             vocabularyTips = deserializeVocabularyTips(entity.vocabularyTips),
-            idiomTips = deserializeIdiomTips(entity.idiomTips),
+            phraseTips = deserializePhraseTips(entity.phraseTips),
             messageId = entity.messageId,
         )
     }
@@ -32,7 +33,7 @@ class ConversationAIMessageLearningTipsMapper :
             id = dto.id,
             grammarTips = serializeGrammarTips(dto.grammarTips),
             vocabularyTips = serializeVocabularyTips(dto.vocabularyTips),
-            idiomTips = serializeIdiomTips(dto.idiomTips),
+            phraseTips = serializePhraseTips(dto.phraseTips),
             messageId = dto.messageId,
         )
     }
@@ -53,11 +54,11 @@ class ConversationAIMessageLearningTipsMapper :
         return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<AnnotatedVocabularyTip>>() {})
     }
 
-    fun serializeIdiomTips(tips: Set<AnnotatedIdiomTip>): Json {
+    fun serializePhraseTips(tips: Set<AnnotatedPhraseTip>): Json {
         return Json.of(jsonObjectMapper.writeValueAsString(tips))
     }
 
-    fun deserializeIdiomTips(json: Json): Set<AnnotatedIdiomTip> {
-        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<AnnotatedIdiomTip>>() {})
+    fun deserializePhraseTips(json: Json): Set<AnnotatedPhraseTip> {
+        return jsonObjectMapper.readValue(json.asString(), object : TypeReference<Set<AnnotatedPhraseTip>>() {})
     }
 }

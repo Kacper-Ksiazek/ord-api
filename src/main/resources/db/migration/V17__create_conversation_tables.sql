@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS conversation_ai_message_learning_tips
 
     grammar_tips     JSONB NOT NULL,
     vocabulary_tips  JSONB NOT NULL,
-    idiom_tips       JSONB NOT NULL,
+    phrase_tips      JSONB NOT NULL,
 
     message_id       UUID NOT NULL,
 
@@ -84,10 +84,10 @@ CREATE TABLE IF NOT EXISTS conversation_ai_message_learning_tips
 );
 
 COMMENT ON COLUMN conversation_ai_message_learning_tips.grammar_tips IS
-'JSONB array (0-2 items). Schema: {phrase, explanation, grammarPoint}';
+'JSONB array (0-2 items). Schema: {phrase, explanation, grammarPoint, exampleSentences, register}';
 
 COMMENT ON COLUMN conversation_ai_message_learning_tips.vocabulary_tips IS
-'JSONB array (0-2 items). Schema: {word, definition, usageNote, proficiencyLevel}';
+'JSONB array (0-2 items). Schema: {word, definition, usageNote, wordType, exampleSentences, register, nativeLanguageEquivalent}';
 
-COMMENT ON COLUMN conversation_ai_message_learning_tips.idiom_tips IS
-'JSONB array (0-2 items). Schema: {phrase, meaning, example}';
+COMMENT ON COLUMN conversation_ai_message_learning_tips.phrase_tips IS
+'JSONB array (0-2 items). Schema: {phrase, phraseType, meaning, exampleSentences, register}';

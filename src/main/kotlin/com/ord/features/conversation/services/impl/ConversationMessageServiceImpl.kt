@@ -154,7 +154,7 @@ class ConversationMessageServiceImpl(
                 ConversationAIMessageLearningTipsEntity(
                     grammarTips = learningTipsMapper.serializeGrammarTips(learningTips.grammarTips),
                     vocabularyTips = learningTipsMapper.serializeVocabularyTips(learningTips.vocabularyTips),
-                    idiomTips = learningTipsMapper.serializeIdiomTips(learningTips.idiomTips),
+                    phraseTips = learningTipsMapper.serializePhraseTips(learningTips.phraseTips),
                     messageId = messageId,
                 )
             )

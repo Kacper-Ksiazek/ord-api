@@ -1,7 +1,7 @@
 package com.ord.features.conversation.api.facades.helpers.ai_responses
 
 import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedGrammarTip
-import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedIdiomTip
+import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedPhraseTip
 import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedVocabularyTip
 
 /**
@@ -14,7 +14,7 @@ import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedVocab
 data class OpenAIAIMessageLearningTips(
     val grammarTips: List<AnnotatedGrammarTip>,
     val vocabularyTips: List<AnnotatedVocabularyTip>,
-    val idiomTips: List<AnnotatedIdiomTip>
+    val phraseTips: List<AnnotatedPhraseTip>
 ) {
     /**
      * Maps OpenAI response to domain model.
@@ -24,7 +24,7 @@ data class OpenAIAIMessageLearningTips(
         return AIMessageLearningTips(
             grammarTips = grammarTips.toSet(),
             vocabularyTips = vocabularyTips.toSet(),
-            idiomTips = idiomTips.toSet()
+            phraseTips = phraseTips.toSet()
         )
     }
 }
