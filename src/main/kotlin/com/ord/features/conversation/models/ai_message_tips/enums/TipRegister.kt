@@ -7,6 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema
 @ExportToOpenAPI
 enum class TipRegister {
     FORMAL,      // Business, academic, official
-    INFORMAL,    // Everyday conversation
+    NEUTRAL,     // Everyday conversation
     COLLOQUIAL   // Very casual, slangy
 }
