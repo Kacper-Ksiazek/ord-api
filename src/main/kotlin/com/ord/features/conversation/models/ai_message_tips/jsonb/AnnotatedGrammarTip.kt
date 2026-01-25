@@ -9,11 +9,13 @@ import com.ord.features.conversation.models.ai_message_tips.enums.TipRegister
  * @property grammarPoint The specific grammar structure being highlighted (e.g., "Past Perfect", "Subjunctive")
  * @property exampleSentences Examples showing the grammar point in context (in target language)
  * @property register Formality level (FORMAL, INFORMAL, COLLOQUIAL)
+ * @property nativeLanguageEquivalent Explanation of how this grammar structure is expressed in user's native language (in generativeContentLanguage). Empty string if not applicable.
  */
 data class AnnotatedGrammarTip(
     val phrase: String,
     val explanation: String,
     val grammarPoint: String,
     val exampleSentences: List<String>,
-    val register: TipRegister
+    val register: TipRegister,
+    val nativeLanguageEquivalent: String
 )

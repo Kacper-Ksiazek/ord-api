@@ -10,11 +10,13 @@ import com.ord.features.conversation.models.ai_message_tips.enums.TipRegister
  * @property meaning Explanation of what the phrase means (in generativeContentLanguage)
  * @property exampleSentences Usage examples in different contexts (in target language)
  * @property register Formality level (FORMAL, INFORMAL, COLLOQUIAL)
+ * @property nativeLanguageEquivalent Translation or equivalent in user's native language (in generativeContentLanguage). Empty string if no direct equivalent exists.
  */
 data class AnnotatedPhraseTip(
     val phrase: String,
     val phraseType: PhraseType,
     val meaning: String,
     val exampleSentences: List<String>,
-    val register: TipRegister
+    val register: TipRegister,
+    val nativeLanguageEquivalent: String
 )
