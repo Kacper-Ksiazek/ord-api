@@ -36,9 +36,13 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                             "type" to "string",
                             "enum" to TipRegister.entries,
                             "description" to "Formality level: FORMAL (business/academic), INFORMAL (everyday), COLLOQUIAL (casual/slangy)"
+                        ),
+                        "nativeLanguageEquivalent" to mapOf(
+                            "type" to "string",
+                            "description" to "Explanation of how this grammar structure is expressed in user's native language (in generativeContentLanguage). Use empty string if not applicable. For multiple equivalents, separate with / (e.g., 'option1 / option2')."
                         )
                     ),
-                    "required" to listOf("phrase", "explanation", "grammarPoint", "exampleSentences", "register"),
+                    "required" to listOf("phrase", "explanation", "grammarPoint", "exampleSentences", "register", "nativeLanguageEquivalent"),
                     "additionalProperties" to false
                 ),
                 "description" to "0-2 grammar-focused tips. Empty array if none applicable."
@@ -77,7 +81,7 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                         ),
                         "nativeLanguageEquivalent" to mapOf(
                             "type" to "string",
-                            "description" to "Translation or equivalent in user's native language (in generativeContentLanguage). Use empty string if no direct equivalent exists."
+                            "description" to "Translation or equivalent in user's native language (in generativeContentLanguage). Use empty string if no direct equivalent exists. For multiple equivalents, separate with / (e.g., 'translation1 / translation2')."
                         )
                     ),
                     "required" to listOf(
@@ -120,9 +124,13 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                             "type" to "string",
                             "enum" to TipRegister.entries,
                             "description" to "Formality level: FORMAL (business/academic), INFORMAL (everyday), COLLOQUIAL (casual/slangy)"
+                        ),
+                        "nativeLanguageEquivalent" to mapOf(
+                            "type" to "string",
+                            "description" to "Translation or equivalent in user's native language (in generativeContentLanguage). Use empty string if no direct equivalent exists. For multiple equivalents, separate with / (e.g., 'translation1 / translation2')."
                         )
                     ),
-                    "required" to listOf("phrase", "phraseType", "meaning", "exampleSentences", "register"),
+                    "required" to listOf("phrase", "phraseType", "meaning", "exampleSentences", "register", "nativeLanguageEquivalent"),
                     "additionalProperties" to false
                 ),
                 "description" to "0-2 phrase tips (idioms, collocations, useful expressions). Empty array if none applicable."
