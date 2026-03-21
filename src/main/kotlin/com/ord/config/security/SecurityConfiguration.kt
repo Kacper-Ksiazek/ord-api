@@ -39,6 +39,7 @@ class SecurityConfiguration(
             "/api/v1/language-proficiencies/**",
             "/api/v1/quickly-added-words/**",
             "/api/v1/ai-explainer/**",
+            "/api/v1/gpt-tokens-usage/**",
         )
     }
 

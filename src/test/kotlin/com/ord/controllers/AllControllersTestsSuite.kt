@@ -2,6 +2,7 @@ package com.ord.controllers
 
 import com.ord.controllers.ai_explainer.TestAIExplainerController
 import com.ord.controllers.auth.TestAuthController
+import com.ord.controllers.gpt_tokens_usage_analytics.TestGptTokensUsageAnalyticsController
 import com.ord.controllers.conversations.AllConversationControllersTestsSuite
 import com.ord.controllers.games.AllGameControllersTestsSuite
 import com.ord.controllers.language_proficiencies.TestLanguageProficienciesController
@@ -24,6 +25,7 @@ import org.junit.platform.suite.api.SuiteDisplayName
         AllConversationControllersTestsSuite::class,
         AllQAWControllersTestsSuite::class,
         TestAIExplainerController::class,
+        TestGptTokensUsageAnalyticsController::class,
     ]
 )
 class AllControllersTestsSuite
