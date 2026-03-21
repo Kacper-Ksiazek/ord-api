@@ -5,6 +5,7 @@ import com.ord.features.conversation.api.facades.ConversationCRUDFacade
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.models.conversation.ConversationDTO
 import com.ord.features.conversation.models.conversation.ConversationEntity
+import com.ord.features.conversation.models.conversation.ConversationListFilters
 import com.ord.features.conversation.models.conversation.ConversationMapper
 import com.ord.features.conversation.models.conversation.ConversationSummaryDTO
 import com.ord.features.conversation.models.conversation.ConversationSummaryMapper
@@ -60,10 +61,11 @@ class ConversationCRUDFacadeImpl(
     }
 
     override fun getManyConversations(
-        userId: UUID
+        userId: UUID,
+        filters: ConversationListFilters,
     ): Mono<ResponseEntity<List<ConversationSummaryDTO>>> {
         return conversationService
-            .findAll(userId)
+            .findAllWithFilters(userId, filters)
             .map { it.toSummaryDTO() }
             .collectList()
             .map { conversationDTOs ->
