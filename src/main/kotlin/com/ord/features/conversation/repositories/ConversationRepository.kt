@@ -3,6 +3,7 @@ package com.ord.features.conversation.repositories
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.features.conversation.models.conversation.ConversationDTO
 import com.ord.features.conversation.models.conversation.ConversationEntity
+import com.ord.features.conversation.models.conversation.ConversationListFilters
 import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.models.dto.RecentConversationInfo
 import com.ord.shared.repositories.UserResourceRepository
@@ -29,6 +30,8 @@ interface ConversationRepositoryCustomMethods {
         id: UUID,
         userId: UUID
     ): Mono<ConversationDTO>
+
+    fun findAllWithFilters(userId: UUID, filters: ConversationListFilters): Flux<ConversationEntity>
 }
 
 

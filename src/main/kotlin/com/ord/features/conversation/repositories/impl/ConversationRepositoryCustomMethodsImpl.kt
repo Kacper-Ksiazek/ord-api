@@ -4,13 +4,16 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.conversation.models.conversation.ConversationDTO
+import com.ord.features.conversation.models.conversation.ConversationEntity
+import com.ord.features.conversation.models.conversation.ConversationListFilters
+import com.ord.features.conversation.models.conversation.recencyBucketToInstantRange
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsDTO
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsMapper
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackDTO
 import com.ord.features.conversation.models.conversation.enums.ConversationType
-import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import com.ord.features.conversation.models.conversation.enums.ConversationTone
+import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackMapper
 import com.ord.features.conversation.models.dto.RecentConversationInfo
 import com.ord.features.conversation.repositories.ConversationRepositoryCustomMethods
@@ -19,6 +22,7 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Instant
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -200,5 +204,53 @@ class ConversationRepositoryCustomMethodsImpl(
                     )
                 }
             }
+    }
+
+    override fun findAllWithFilters(userId: UUID, filters: ConversationListFilters): Flux<ConversationEntity> {
+        val now = Instant.now()
+
+        val conditions = buildList {
+            add("c.user_id = :userId")
+            if (filters.search != null) add("(LOWER(c.topic) LIKE :search OR LOWER(c.ai_interlocutor_name) LIKE :search)")
+            if (filters.type != null) add("c.type = :type")
+            if (filters.recencyBucket != null) {
+                val range = recencyBucketToInstantRange(filters.recencyBucket, now)
+                if (range.from != null) add("c.updated_at >= :bucketFrom")
+                if (range.until != null) add("c.updated_at < :bucketUntil")
+            }
+        }.joinToString(" AND ")
+
+        val bindings = mutableMapOf<String, Any>("userId" to userId).apply {
+            filters.search?.let { put("search", "%${it.lowercase()}%") }
+            filters.type?.let { put("type", it.name) }
+            filters.recencyBucket?.let {
+                val range = recencyBucketToInstantRange(it, now)
+                range.from?.let { f -> put("bucketFrom", f) }
+                range.until?.let { u -> put("bucketUntil", u) }
+            }
+        }
+
+        val query = "SELECT * FROM conversations c WHERE $conditions ORDER BY c.updated_at DESC, c.id DESC"
+
+        return template.databaseClient
+            .sql(query)
+            .bindValues(bindings)
+            .map { row ->
+                ConversationEntity(
+                    id = row["id"] as UUID,
+                    topic = row["topic"] as String,
+                    additionalContext = row["additional_context"] as String?,
+                    language = LanguageName.valueOf(row["language"] as String),
+                    proficiencyLevel = LanguageProficiencyLevel.valueOf(row["proficiency_level"] as String),
+                    type = ConversationType.valueOf(row["type"] as String),
+                    aiTone = ConversationTone.valueOf(row["ai_tone"] as String),
+                    aiInterlocutorName = row["ai_interlocutor_name"] as String,
+                    aiInterlocutorAvatarId = row["ai_interlocutor_avatar_id"] as String,
+                    userId = row["user_id"] as UUID,
+                    createdAt = (row["created_at"] as OffsetDateTime).toInstant(),
+                    updatedAt = (row["updated_at"] as OffsetDateTime).toInstant()
+                )
+            }
+            .all()
     }
 }

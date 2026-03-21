@@ -3,6 +3,8 @@ package com.ord.features.conversation.services.impl
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.conversation.models.conversation.ConversationDTO
+import com.ord.features.conversation.models.conversation.ConversationEntity
+import com.ord.features.conversation.models.conversation.ConversationListFilters
 import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.models.dto.RecentConversationInfo
 import com.ord.features.conversation.repositories.ConversationRepository
@@ -54,4 +56,7 @@ class ConversationServiceImpl(
             .findByIdOrFailWithMessages(id, userId)
             .switchIfEmpty(Mono.error(NotFoundException("Conversation with id $id not found")))
     }
+
+    override fun findAllWithFilters(userId: UUID, filters: ConversationListFilters): Flux<ConversationEntity> =
+        conversationRepository.findAllWithFilters(userId, filters)
 }
