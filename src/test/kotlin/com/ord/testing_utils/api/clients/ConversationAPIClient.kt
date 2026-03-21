@@ -6,6 +6,8 @@ import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequ
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
 import com.ord.features.conversation.models.conversation.ConversationDTO
 import com.ord.features.conversation.models.conversation.ConversationSummaryDTO
+import com.ord.features.conversation.models.conversation.enums.ConversationType
+import com.ord.features.conversation.models.conversation.enums.RecencyBucket
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -43,11 +45,20 @@ class ConversationAPIClient(
     }
 
     fun getConversations(
-        user: MockedAuthenticatedUser? = null
+        user: MockedAuthenticatedUser? = null,
+        search: String? = null,
+        recencyBucket: RecencyBucket? = null,
+        type: ConversationType? = null,
     ): APIClientResponse<List<ConversationSummaryDTO>?> {
+        val queryParams = buildMap<String, String> {
+            search?.let { put("search", it) }
+            recencyBucket?.let { put("recencyBucket", it.name) }
+            type?.let { put("type", it.name) }
+        }.ifEmpty { null }
         return get(
             url = "$baseUrl/",
             user = user,
+            queryParams = queryParams,
             responseBodyType = object : ParameterizedTypeReference<List<ConversationSummaryDTO>>() {}
         )
     }

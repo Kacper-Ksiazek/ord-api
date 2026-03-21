@@ -84,7 +84,8 @@ class TestConversationController @Autowired constructor(
         type: ConversationType = TestData.TYPE,
         tone: ConversationTone = TestData.TONE,
         aiInterlocutorName: String = TestData.AI_INTERLOCUTOR_NAME,
-        aiInterlocutorAvatarId: String = TestData.AI_INTERLOCUTOR_AVATAR_ID
+        aiInterlocutorAvatarId: String = TestData.AI_INTERLOCUTOR_AVATAR_ID,
+        updatedAt: java.time.Instant = java.time.Instant.now()
     ): ConversationEntity {
         return conversationRepository.save(
             ConversationEntity(
@@ -96,7 +97,8 @@ class TestConversationController @Autowired constructor(
                 aiTone = tone,
                 aiInterlocutorName = aiInterlocutorName,
                 aiInterlocutorAvatarId = aiInterlocutorAvatarId,
-                userId = userId
+                userId = userId,
+                updatedAt = updatedAt
             )
         ).block()!!
     }
@@ -530,6 +532,124 @@ class TestConversationController @Autowired constructor(
                 response1.body!! shouldHaveSize 1
                 response2.body!! shouldHaveSize 1
                 response1.body[0].id shouldNotBe response2.body[0].id
+            }
+        }
+
+        @Nested
+        @DisplayName("Filtering")
+        inner class Filtering {
+
+            @Test
+            fun `200 - search by topic returns matching conversations`() {
+                val user = mockAuthenticatedUser(languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2))
+
+                createConversationEntity(userId = user.userInfo.id, topic = "Trip to Paris")
+                createConversationEntity(userId = user.userInfo.id, topic = "Learning guitar")
+
+                val response = conversationAPIClient.getConversations(user = user, search = "paris")
+
+                response.status shouldBe HttpStatus.OK
+                response.body!! shouldHaveSize 1
+                response.body[0].topic shouldBe "Trip to Paris"
+            }
+
+            @Test
+            fun `200 - search by interlocutor name returns matching conversations`() {
+                val user = mockAuthenticatedUser(languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2))
+
+                createConversationEntity(userId = user.userInfo.id, aiInterlocutorName = "Alice")
+                createConversationEntity(userId = user.userInfo.id, aiInterlocutorName = "Bob")
+
+                val response = conversationAPIClient.getConversations(user = user, search = "alice")
+
+                response.status shouldBe HttpStatus.OK
+                response.body!! shouldHaveSize 1
+                response.body[0].aiInterlocutorName shouldBe "Alice"
+            }
+
+            @Test
+            fun `200 - type filter returns only conversations of given type`() {
+                val user = mockAuthenticatedUser(languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2))
+
+                createConversationEntity(userId = user.userInfo.id, type = ConversationType.SMALL_TALK)
+                createConversationEntity(userId = user.userInfo.id, type = ConversationType.TOPIC_EXPLORATION)
+
+                val response = conversationAPIClient.getConversations(user = user, type = ConversationType.SMALL_TALK)
+
+                response.status shouldBe HttpStatus.OK
+                response.body!! shouldHaveSize 1
+                response.body[0].type shouldBe ConversationType.SMALL_TALK
+            }
+
+            @Test
+            fun `200 - recencyBucket TODAY returns only today's conversations`() {
+                val user = mockAuthenticatedUser(languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2))
+
+                createConversationEntity(userId = user.userInfo.id, topic = "Today's conversation")
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "Old conversation",
+                    updatedAt = java.time.Instant.now().minus(60, java.time.temporal.ChronoUnit.DAYS)
+                )
+
+                val response = conversationAPIClient.getConversations(user = user, recencyBucket = RecencyBucket.TODAY)
+
+                response.status shouldBe HttpStatus.OK
+                response.body!! shouldHaveSize 1
+                response.body[0].topic shouldBe "Today's conversation"
+                response.body[0].recencyBucket shouldBe RecencyBucket.TODAY
+            }
+
+            @Test
+            fun `200 - recencyBucket LATER returns only old conversations`() {
+                val user = mockAuthenticatedUser(languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2))
+
+                createConversationEntity(userId = user.userInfo.id, topic = "Today's conversation")
+                createConversationEntity(
+                    userId = user.userInfo.id,
+                    topic = "Old conversation",
+                    updatedAt = java.time.Instant.now().minus(60, java.time.temporal.ChronoUnit.DAYS)
+                )
+
+                val response = conversationAPIClient.getConversations(user = user, recencyBucket = RecencyBucket.LATER)
+
+                response.status shouldBe HttpStatus.OK
+                response.body!! shouldHaveSize 1
+                response.body[0].topic shouldBe "Old conversation"
+                response.body[0].recencyBucket shouldBe RecencyBucket.LATER
+            }
+
+            @Test
+            fun `200 - combining search and type filter narrows results`() {
+                val user = mockAuthenticatedUser(languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2))
+
+                createConversationEntity(userId = user.userInfo.id, topic = "Paris trip", type = ConversationType.SMALL_TALK)
+                createConversationEntity(userId = user.userInfo.id, topic = "Paris trip", type = ConversationType.TOPIC_EXPLORATION)
+                createConversationEntity(userId = user.userInfo.id, topic = "Guitar lessons", type = ConversationType.SMALL_TALK)
+
+                val response = conversationAPIClient.getConversations(
+                    user = user,
+                    search = "paris",
+                    type = ConversationType.SMALL_TALK
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body!! shouldHaveSize 1
+                response.body[0].topic shouldBe "Paris trip"
+                response.body[0].type shouldBe ConversationType.SMALL_TALK
+            }
+
+            @Test
+            fun `200 - no filters returns all user conversations`() {
+                val user = mockAuthenticatedUser(languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2))
+
+                createConversationEntity(userId = user.userInfo.id, topic = "Conversation A")
+                createConversationEntity(userId = user.userInfo.id, topic = "Conversation B")
+
+                val response = conversationAPIClient.getConversations(user = user)
+
+                response.status shouldBe HttpStatus.OK
+                response.body!! shouldHaveSize 2
             }
         }
 
