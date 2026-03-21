@@ -6,6 +6,8 @@ import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.models.conversation.ConversationDTO
 import com.ord.features.conversation.models.conversation.ConversationEntity
 import com.ord.features.conversation.models.conversation.ConversationMapper
+import com.ord.features.conversation.models.conversation.ConversationSummaryDTO
+import com.ord.features.conversation.models.conversation.ConversationSummaryMapper
 import com.ord.features.conversation.services.ConversationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,11 +19,16 @@ import java.util.*
 class ConversationCRUDFacadeImpl(
     private val conversationService: ConversationService,
     private val conversationMapper: ConversationMapper,
+    private val conversationSummaryMapper: ConversationSummaryMapper,
     private val languageProficiencyService: LanguageProficiencyService,
 ) : ConversationCRUDFacade {
 
     internal fun ConversationEntity.toDTO(): ConversationDTO {
         return conversationMapper.toDTO(this)
+    }
+
+    internal fun ConversationEntity.toSummaryDTO(): ConversationSummaryDTO {
+        return conversationSummaryMapper.toDTO(this)
     }
 
     override fun createConversation(
@@ -54,10 +61,10 @@ class ConversationCRUDFacadeImpl(
 
     override fun getManyConversations(
         userId: UUID
-    ): Mono<ResponseEntity<List<ConversationDTO>>> {
+    ): Mono<ResponseEntity<List<ConversationSummaryDTO>>> {
         return conversationService
             .findAll(userId)
-            .map { it.toDTO() }
+            .map { it.toSummaryDTO() }
             .collectList()
             .map { conversationDTOs ->
                 ResponseEntity

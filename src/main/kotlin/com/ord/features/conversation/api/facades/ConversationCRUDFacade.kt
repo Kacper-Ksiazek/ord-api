@@ -2,6 +2,7 @@ package com.ord.features.conversation.api.facades
 
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.models.conversation.ConversationDTO
+import com.ord.features.conversation.models.conversation.ConversationSummaryDTO
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Mono
 import java.util.UUID
@@ -15,7 +16,7 @@ interface ConversationCRUDFacade {
 
     fun getManyConversations(
         userId: UUID,
-    ): Mono<ResponseEntity<List<ConversationDTO>>>
+    ): Mono<ResponseEntity<List<ConversationSummaryDTO>>>
 
 
     fun getConversationById(

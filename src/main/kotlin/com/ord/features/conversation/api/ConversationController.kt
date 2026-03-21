@@ -8,6 +8,7 @@ import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
 import com.ord.features.conversation.models.conversation.ConversationDTO
+import com.ord.features.conversation.models.conversation.ConversationSummaryDTO
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -116,7 +117,7 @@ class ConversationController(
     ])
     fun getConversations(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO
-    ): Mono<ResponseEntity<List<ConversationDTO>>> = conversationCRUDFacade.getManyConversations(
+    ): Mono<ResponseEntity<List<ConversationSummaryDTO>>> = conversationCRUDFacade.getManyConversations(
         userId = user.id
     )
 
