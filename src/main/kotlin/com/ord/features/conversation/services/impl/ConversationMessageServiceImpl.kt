@@ -40,7 +40,13 @@ class ConversationMessageServiceImpl(
                 content = content,
                 messageOrder = messageOrder
             )
-        )
+        ).flatMap { message ->
+            if (sender == ConversationMessageSender.USER) {
+                bumpConversationUpdatedAt(conversationId).thenReturn(message)
+            } else {
+                Mono.just(message)
+            }
+        }
     }
 
     override fun createMessageWithFeedback(
@@ -75,7 +81,7 @@ class ConversationMessageServiceImpl(
                             messageId = message.id!!,
                         )
                     )
-                    .map { _ -> message }
+                    .flatMap { _ -> bumpConversationUpdatedAt(conversationId).thenReturn(message) }
             }
     }
 
@@ -100,16 +106,18 @@ class ConversationMessageServiceImpl(
             .bind("createdAt", createdAt)
             .fetch()
             .rowsUpdated()
-            .thenReturn(
-                ConversationMessageEntity(
-                    id = messageId,
-                    content = content,
-                    messageOrder = messageOrder,
-                    sender = ConversationMessageSender.USER,
-                    conversationId = conversationId,
-                    createdAt = createdAt
+            .flatMap {
+                bumpConversationUpdatedAt(conversationId).thenReturn(
+                    ConversationMessageEntity(
+                        id = messageId,
+                        content = content,
+                        messageOrder = messageOrder,
+                        sender = ConversationMessageSender.USER,
+                        conversationId = conversationId,
+                        createdAt = createdAt
+                    )
                 )
-            )
+            }
     }
 
     override fun saveFeedbackForExistingMessage(
@@ -159,5 +167,14 @@ class ConversationMessageServiceImpl(
                 )
             )
             .then(conversationMessageRepository.findById(messageId))
+    }
+
+    private fun bumpConversationUpdatedAt(conversationId: UUID): Mono<Void> {
+        return databaseClient.sql("UPDATE conversations SET updated_at = :now WHERE id = :id")
+            .bind("now", Instant.now())
+            .bind("id", conversationId)
+            .fetch()
+            .rowsUpdated()
+            .then()
     }
 }
