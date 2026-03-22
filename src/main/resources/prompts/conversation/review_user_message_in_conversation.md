@@ -50,7 +50,10 @@ If sabotage is detected, you MUST:
 - Keep feedback casual and useful - avoid overly meticulous suggestions like adding quotation marks for readability or minor stylistic preferences that don't affect language learning
 
 **Mistake Severity Levels:**
-%%mistakeSeverityDescriptions%%
+**%%mistakeSeverityDescriptions%%**
+
+**IMPORTANT — Mistake Granularity Rule:**
+Each mistake must target the **smallest possible fragment** of the user's message — the exact word, phrase, or clause that is incorrect. Never mark the entire sentence or the whole message as a single mistake, even if the message contains many errors. If multiple issues exist, split them into separate, individual mistake entries. The goal is surgical precision: highlight only what is wrong, not the surrounding correct text.
 
 **Strength Types:**
 **%%strengthTypeDescriptions%%**
