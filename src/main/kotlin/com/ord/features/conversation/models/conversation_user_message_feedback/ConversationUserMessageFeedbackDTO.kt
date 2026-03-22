@@ -22,4 +22,5 @@ data class ConversationUserMessageFeedbackDTO(
     val suggestions: Set<ConversationMessageSuggestion>,
 
     val messageId: UUID,
+    val correctedMessage: String,
 )
