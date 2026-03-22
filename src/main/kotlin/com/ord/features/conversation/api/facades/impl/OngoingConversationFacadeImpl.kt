@@ -3,6 +3,7 @@ package com.ord.features.conversation.api.facades.impl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.REST.NotFoundException
@@ -203,6 +204,7 @@ class OngoingConversationFacadeImpl(
 
     override fun generateLearningTipsForAIMessage(
         userId: UUID,
+        userNativeLanguage: LanguageName,
         body: GetLearningTipsForAIMessageRequest
     ): Mono<ResponseEntity<AIMessageLearningTips>> {
         return conversationService
@@ -224,7 +226,8 @@ class OngoingConversationFacadeImpl(
                             variant = AvailablePrompts.CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS,
                             params = conversation.convertToPromptParams() + mapOf(
                                 "aiMessage" to aiMessage.content,
-                                "generativeContentLanguage" to proficiency.generativeContentLanguage.toString()
+                                "generativeContentLanguage" to proficiency.generativeContentLanguage.toString(),
+                                "nativeLanguage" to userNativeLanguage.toString(),
                             )
                         )
 

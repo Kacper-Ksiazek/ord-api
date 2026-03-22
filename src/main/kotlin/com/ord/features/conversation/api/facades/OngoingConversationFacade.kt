@@ -1,5 +1,6 @@
 package com.ord.features.conversation.api.facades
 
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
@@ -50,6 +51,7 @@ interface OngoingConversationFacade {
      */
     fun generateLearningTipsForAIMessage(
         userId: UUID,
+        userNativeLanguage: LanguageName,
         body: GetLearningTipsForAIMessageRequest
     ): Mono<ResponseEntity<AIMessageLearningTips>>
 }
