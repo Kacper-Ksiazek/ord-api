@@ -627,6 +627,33 @@ class TestOngoingConversationController @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body!!.content shouldBe longMessage
             }
+
+            @Test
+            fun `200 - saving user message should bump conversation updatedAt`() {
+                val authenticatedUser = mockAuthenticatedUser(
+                    languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
+                )
+
+                val conversation = createConversation(authenticatedUser)
+                val updatedAtBefore = conversation.updatedAt
+
+                ongoingConversationAPIClient.saveUserMessage(
+                    body = SaveUserConversationMessageRequest(
+                        conversationId = conversation.id,
+                        messageId = UUID.randomUUID(),
+                        content = TestData.USER_MESSAGE,
+                        messageOrder = 0
+                    ),
+                    user = authenticatedUser
+                )
+
+                val updatedConversation = conversationAPIClient.getConversationById(
+                    conversationId = conversation.id,
+                    user = authenticatedUser
+                ).body!!
+
+                updatedConversation.updatedAt.isAfter(updatedAtBefore) shouldBe true
+            }
         }
 
         @Nested

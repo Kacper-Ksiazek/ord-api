@@ -18,5 +18,4 @@ interface UserResourceRepository<TEntity : Any> : ReactiveCrudRepository<TEntity
 
 
     fun deleteByIdAndUserId(id: UUID, userId: UUID): Mono<Void>
-
 }
