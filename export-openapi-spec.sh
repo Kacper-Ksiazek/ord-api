@@ -37,7 +37,9 @@ echo ""
 
 # Export OpenAPI spec
 echo "Exporting OpenAPI specification..."
-if curl -s -f -u "$SWAGGER_USERNAME:$SWAGGER_PASSWORD" "$API_HOST/v3/api-docs" -o "$OUTPUT_FILE"; then
+TEMP_FILE=$(mktemp)
+if curl -s -f -u "$SWAGGER_USERNAME:$SWAGGER_PASSWORD" "$API_HOST/v3/api-docs" -o "$TEMP_FILE" && python3 -m json.tool "$TEMP_FILE" > "$OUTPUT_FILE"; then
+    rm -f "$TEMP_FILE"
     echo "✅  OpenAPI spec exported successfully to: $OUTPUT_FILE"
     echo ""
 
@@ -72,6 +74,7 @@ if curl -s -f -u "$SWAGGER_USERNAME:$SWAGGER_PASSWORD" "$API_HOST/v3/api-docs" -
     echo "   (Paste the contents of $OUTPUT_FILE)"
     echo ""
 else
+    rm -f "$TEMP_FILE"
     echo "ERROR: Failed to export OpenAPI specification"
     echo "Please check that the API is running correctly."
     exit 1

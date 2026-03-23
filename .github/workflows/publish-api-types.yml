@@ -71,11 +71,48 @@ jobs:
           chmod +x ./export-openapi-spec.sh
           ./export-openapi-spec.sh
 
+      - name: 📥 Download previous OpenAPI spec
+        id: prev-spec
+        run: |
+          LATEST_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          if [ -n "$LATEST_TAG" ]; then
+            if gh release download "$LATEST_TAG" --pattern "openapi.json" --output openapi-previous.json 2>/dev/null; then
+              echo "found=true" >> $GITHUB_OUTPUT
+              echo "Previous spec downloaded from release $LATEST_TAG"
+            else
+              echo "found=false" >> $GITHUB_OUTPUT
+              echo "No openapi.json asset in latest release"
+            fi
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "No previous releases found"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔍 Compare OpenAPI specs
+        id: compare
+        run: |
+          if [ -f openapi-previous.json ]; then
+            if diff -q openapi.json openapi-previous.json > /dev/null 2>&1; then
+              echo "changed=false" >> $GITHUB_OUTPUT
+              echo "OpenAPI spec unchanged - skipping publish"
+            else
+              echo "changed=true" >> $GITHUB_OUTPUT
+              echo "OpenAPI spec has changed - will publish"
+            fi
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "No previous spec found - will publish"
+          fi
+
       - name: 🔧 Generate TypeScript types
+        if: steps.compare.outputs.changed == 'true'
         run: |
           npx openapi-typescript@^7.0.0 openapi.json -o types.ts
 
       - name: 📦 Prepare NPM package
+        if: steps.compare.outputs.changed == 'true'
         run: |
           mkdir -p npm-package
           cp types.ts npm-package/
@@ -83,23 +120,27 @@ jobs:
           cp types-package/package.json npm-package/
 
       - name: 🏷️ Update package version
+        if: steps.compare.outputs.changed == 'true'
         working-directory: npm-package
         run: |
           VERSION="1.0.${{ github.run_number }}"
           npm version $VERSION --no-git-tag-version
-          echo "📦 Publishing version: $VERSION"
+          echo "Publishing version: $VERSION"
 
       - name: 🚀 Publish to NPM
+        if: steps.compare.outputs.changed == 'true'
         working-directory: npm-package
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: 🎉 Create GitHub Release
+        if: steps.compare.outputs.changed == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ord-api-types-v1.0.${{ github.run_number }}
           name: ORD API Types v1.0.${{ github.run_number }}
+          files: openapi.json
           body: |
             🎉 Automatically generated TypeScript types for ORD API
 

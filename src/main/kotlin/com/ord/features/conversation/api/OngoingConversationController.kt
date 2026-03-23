@@ -128,7 +128,7 @@ class OngoingConversationController(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: GetLearningTipsForAIMessageRequest
     ): Mono<ResponseEntity<AIMessageLearningTips>> =
-        ongoingConversationFacade.generateLearningTipsForAIMessage(user.id, body)
+        ongoingConversationFacade.generateLearningTipsForAIMessage(user.id, user.nativeLanguage!!, body)
 
     @PostMapping("/user/save-message")
     @Operation(

@@ -167,11 +167,12 @@ VALUES
 
 -- Feedback for Message 2 (USER) - Minor mistake with good overall quality
 INSERT INTO public.conversation_user_message_feedback
-    (id, tutor_comment, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
+    (id, tutor_comment, corrected_message, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
      register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed2222-bacf-4eed-bacf-eedba2feed02',
      'Excellent response! Your message is warm, engaging, and perfectly appropriate for casual conversation. The use of ''absolutely breathtaking'' shows strong command of intensifiers. However, there''s a minor issue with question structure that could be improved. Overall, great conversational skills!',
+     'Hey! How was your weekend? I spent most of Saturday hiking in the mountains and it was absolutely breathtaking. Did you do anything interesting besides reading?',
      9,
      9,
      9,
@@ -186,11 +187,12 @@ VALUES
 
 -- Feedback for Message 4 (USER) - Contains grammar mistakes
 INSERT INTO public.conversation_user_message_feedback
-    (id, tutor_comment, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
+    (id, tutor_comment, corrected_message, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
      register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed4444-bacf-4eed-bacf-eedba4feed04',
      'Good response with excellent detail! You maintained the conversational flow nicely and showed interest in your partner''s activity. However, there are a couple of grammar errors to address: ''That''s sound'' should be ''That sounds'' (subject-verb agreement), and ''The weather were'' should be ''The weather was'' (weather is singular). These are minor but important for C1 proficiency.',
+     'Oh, that sounds great! I took the Eagle Peak trail, which is moderately difficult but totally worth it for the views. The weather was perfect, and I even saw some wildlife along the way. What book are you reading? I''ve been looking for something new to read myself.',
      7,
      9,
      10,
@@ -205,11 +207,12 @@ VALUES
 
 -- Feedback for Message 6 (USER) - Minor grammar mistake
 INSERT INTO public.conversation_user_message_feedback
-    (id, tutor_comment, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
+    (id, tutor_comment, corrected_message, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
      register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed6666-bacf-4eed-bacf-eedba6feed06',
      'Great enthusiasm and engagement! Your response effectively answers the question and maintains the conversational flow. However, there''s a grammar issue: ''couple of deer'' should be ''a couple of deer'' - the article ''a'' is needed before ''couple''. Your vocabulary choices like ''soaring'' and ''peaceful'' are excellent and show strong lexical range.',
+     'I saw a couple of deer and a hawk soaring above! It was really peaceful up there. Thanks for the recommendation - I''ll definitely check it out. Do you usually prefer reading over outdoor activities, or do you like to mix it up?',
      8,
      9,
      9,
@@ -224,11 +227,12 @@ VALUES
 
 -- Feedback for Message 8 (USER) - Multiple grammar mistakes of varying severity
 INSERT INTO public.conversation_user_message_feedback
-    (id, tutor_comment, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
+    (id, tutor_comment, corrected_message, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
      register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed8888-bacf-4eed-bacf-eedba8feed08',
      'Your message shows good enthusiasm and communicative intent, but there are several grammar issues that need attention. You have problems with subject-verb agreement (''That make''), article usage (''lot of sense'', ''for hour''), verb tense consistency (''going to started''), present perfect formation (''I''m really been wanting''), and conditional structure (''if I would wake up''). These errors impact clarity and are important to address at C1 level. Focus on reviewing basic tense formation and article usage.',
+     'That makes a lot of sense! I think I''m going to start that book you mentioned tomorrow. I''ve really been wanting to read more historical fiction lately, but I never have enough time because work is so demanding. Maybe if I woke up earlier, I could read for an hour before work. Do you have any other recommendations?',
      4,
      8,
      9,

@@ -18,6 +18,7 @@ class ConversationUserMessageFeedbackMapper(
         return ConversationUserMessageFeedbackDTO(
             id = entity.id ?: error("ConversationUserMessageFeedback id must not be null"),
             tutorComment = entity.tutorComment,
+            correctedMessage = entity.correctedMessage,
             grammar = entity.grammar,
             vocabulary = entity.vocabulary,
             answerLength = entity.answerLength,
@@ -35,6 +36,7 @@ class ConversationUserMessageFeedbackMapper(
         return ConversationUserMessageFeedbackEntity(
             id = dto.id,
             tutorComment = dto.tutorComment,
+            correctedMessage = dto.correctedMessage,
             grammar = dto.grammar,
             vocabulary = dto.vocabulary,
             answerLength = dto.answerLength,

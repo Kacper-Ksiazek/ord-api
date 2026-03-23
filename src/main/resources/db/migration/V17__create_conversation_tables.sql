@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
     id               UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
 
     tutor_comment    TEXT NOT NULL,
+corrected_message TEXT NOT NULL,
 
     grammar          INT  NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
     vocabulary       INT  NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),

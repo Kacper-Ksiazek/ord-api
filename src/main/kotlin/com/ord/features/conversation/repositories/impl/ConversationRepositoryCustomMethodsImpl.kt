@@ -107,6 +107,7 @@ class ConversationRepositoryCustomMethodsImpl(
                 -- User message: Feedback
                 f.id as feedback_id,
                 f.tutor_comment as feedback_tutor_comment,
+                f.corrected_message as feedback_corrected_message,
                 f.grammar as feedback_grammar,
                 f.vocabulary as feedback_vocabulary,
                 f.answer_length as feedback_answer_length,
@@ -161,7 +162,8 @@ class ConversationRepositoryCustomMethodsImpl(
                                     mistakes = feedbackMapper.deserializeMistakes(row["feedback_mistakes"] as Json),
                                     strengths = feedbackMapper.deserializeStrengths(row["feedback_strengths"] as Json),
                                     suggestions = feedbackMapper.deserializeSuggestions(row["feedback_suggestions"] as Json),
-                                    messageId = row["message_id"] as UUID
+                                    messageId = row["message_id"] as UUID,
+                                    correctedMessage = row["feedback_corrected_message"] as String
                                 )
                             } else null
 

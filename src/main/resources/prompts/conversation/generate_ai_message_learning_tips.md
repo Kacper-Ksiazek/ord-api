@@ -11,7 +11,11 @@ Your task is to extract and explain useful learning points from the AI's message
 4. Additional context for the conversation: **%%additionalContext%%**.
 5. Conversation tone: **%%tone%%** - **%%toneInstruction%%**.
 6. Language of explanations: **%%generativeContentLanguage%%** - Use this language for all explanations, definitions, and notes. However, all quoted phrases, words, and examples must ALWAYS remain in **%%language%%**.
-7. User's proficiency level: **%%level%%** - Adapt complexity and selection of tips to this level.
+
+### USER DETAILS:
+
+1. Proficiency level: **%%level%%** - Adapt complexity and selection of tips to this level.
+2. Native language: **%%nativeLanguage%%** - use this as the target language for all `nativeLanguageEquivalent` fields
 
 ### AI MESSAGE TO ANALYZE:
 
