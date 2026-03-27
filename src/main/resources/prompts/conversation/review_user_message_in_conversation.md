@@ -35,7 +35,6 @@ Before evaluating the message quality, you MUST check if the user is sabotaging 
 If sabotage is detected, you MUST:
 - Set `sabotage` field with clear reason (e.g., "Extremely short answer that doesn't engage with the question")
 - Set ALL ratings to 0
-- Set `registerAppropriate: false`
 - Set all arrays to empty
 - SKIP all further evaluation steps
 
