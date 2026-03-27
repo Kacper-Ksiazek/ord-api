@@ -37,7 +37,7 @@ class ConversationMessageRepositoryCustomMethodsImpl(
                     messageOrder = row.get("message_order", Int::class.java)!!,
                     sender = ConversationMessageSender.valueOf(row.get("sender", String::class.java)!!),
                     conversationId = row.get("conversation_id", UUID::class.java)!!,
-                    feedbackId = row.get("feedback_id", UUID::class.java),
+                    analysisId = row.get("analysis_id", UUID::class.java),
                     createdAt = row.get("created_at", Instant::class.java)!!
                 )
             }

@@ -13,7 +13,7 @@ data class ConversationMessageDTO(
     val sender: ConversationMessageSender,
     val content: String,
 
-    val feedback: ConversationUserMessageAnalysisDTO? = null,
+    val analysis: ConversationUserMessageAnalysisDTO? = null,
     val learningTips: ConversationAIMessageLearningTipsDTO? = null,
 
     val createdAt: Instant = Instant.now()

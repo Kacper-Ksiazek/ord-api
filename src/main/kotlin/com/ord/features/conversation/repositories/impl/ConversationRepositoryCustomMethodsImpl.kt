@@ -29,7 +29,7 @@ import java.util.*
 @Repository
 class ConversationRepositoryCustomMethodsImpl(
     private val template: R2dbcEntityTemplate,
-    private val feedbackMapper: ConversationUserMessageAnalysisMapper,
+    private val analysisMapper: ConversationUserMessageAnalysisMapper,
     private val learningTipsMapper: ConversationAIMessageLearningTipsMapper
 ) : ConversationRepositoryCustomMethods {
     override fun findRecentTopics(
@@ -104,17 +104,17 @@ class ConversationRepositoryCustomMethodsImpl(
                 m.content,
                 m.message_order,
                 m.created_at as message_created_at,
-                -- User message: Feedback
-                f.id as feedback_id,
-                f.tutor_comment as feedback_tutor_comment,
-                f.corrected_message as feedback_corrected_message,
-                f.grammar as feedback_grammar,
-                f.vocabulary as feedback_vocabulary,
-                f.naturalness as feedback_naturalness,
-                f.coherence_with_context as feedback_coherence_with_context,
-                f.mistakes as feedback_mistakes,
-                f.strengths as feedback_strengths,
-                f.suggestions as feedback_suggestions,
+                -- User message: Analysis
+                f.id as analysis_id,
+                f.tutor_comment as analysis_tutor_comment,
+                f.corrected_message as analysis_corrected_message,
+                f.grammar as analysis_grammar,
+                f.vocabulary as analysis_vocabulary,
+                f.naturalness as analysis_naturalness,
+                f.coherence_with_context as analysis_coherence_with_context,
+                f.mistakes as analysis_mistakes,
+                f.strengths as analysis_strengths,
+                f.suggestions as analysis_suggestions,
                 -- AI message: Learning tips
                 lt.id as learning_tips_id,
                 lt.grammar_tips as learning_tips_grammar_tips,
@@ -147,19 +147,19 @@ class ConversationRepositoryCustomMethodsImpl(
                         .filter { it["message_id"] != null }
                         .distinctBy { it["message_id"] }
                         .map { row ->
-                            val feedback = if (row["feedback_id"] != null) {
+                            val analysis = if (row["analysis_id"] != null) {
                                 ConversationUserMessageAnalysisDTO(
-                                    id = row["feedback_id"] as UUID,
-                                    tutorComment = row["feedback_tutor_comment"] as String,
-                                    grammar = row["feedback_grammar"] as Int,
-                                    vocabulary = row["feedback_vocabulary"] as Int,
-                                    naturalness = row["feedback_naturalness"] as Int,
-                                    coherenceWithContext = row["feedback_coherence_with_context"] as Int,
-                                    mistakes = feedbackMapper.deserializeMistakes(row["feedback_mistakes"] as Json),
-                                    strengths = feedbackMapper.deserializeStrengths(row["feedback_strengths"] as Json),
-                                    suggestions = feedbackMapper.deserializeSuggestions(row["feedback_suggestions"] as Json),
+                                    id = row["analysis_id"] as UUID,
+                                    tutorComment = row["analysis_tutor_comment"] as String,
+                                    grammar = row["analysis_grammar"] as Int,
+                                    vocabulary = row["analysis_vocabulary"] as Int,
+                                    naturalness = row["analysis_naturalness"] as Int,
+                                    coherenceWithContext = row["analysis_coherence_with_context"] as Int,
+                                    mistakes = analysisMapper.deserializeMistakes(row["analysis_mistakes"] as Json),
+                                    strengths = analysisMapper.deserializeStrengths(row["analysis_strengths"] as Json),
+                                    suggestions = analysisMapper.deserializeSuggestions(row["analysis_suggestions"] as Json),
                                     messageId = row["message_id"] as UUID,
-                                    correctedMessage = row["feedback_corrected_message"] as String?
+                                    correctedMessage = row["analysis_corrected_message"] as String?
                                 )
                             } else null
 
@@ -178,7 +178,7 @@ class ConversationRepositoryCustomMethodsImpl(
                                 messageOrder = row["message_order"] as Int,
                                 sender = ConversationMessageSender.valueOf(row["sender"] as String),
                                 content = row["content"] as String,
-                                feedback = feedback,
+                                analysis = analysis,
                                 learningTips = learningTips,
                                 createdAt = (row["message_created_at"] as OffsetDateTime).toInstant()
                             )
