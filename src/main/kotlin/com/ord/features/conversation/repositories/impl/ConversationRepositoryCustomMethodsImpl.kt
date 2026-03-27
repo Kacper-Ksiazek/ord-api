@@ -10,11 +10,11 @@ import com.ord.features.conversation.models.conversation.recencyBucketToInstantR
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsDTO
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsMapper
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
-import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackDTO
+import com.ord.features.conversation.models.conversation_user_message_analysis.ConversationUserMessageAnalysisDTO
 import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.models.conversation.enums.ConversationTone
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
-import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackMapper
+import com.ord.features.conversation.models.conversation_user_message_analysis.ConversationUserMessageAnalysisMapper
 import com.ord.features.conversation.models.dto.RecentConversationInfo
 import com.ord.features.conversation.repositories.ConversationRepositoryCustomMethods
 import io.r2dbc.postgresql.codec.Json
@@ -29,7 +29,7 @@ import java.util.*
 @Repository
 class ConversationRepositoryCustomMethodsImpl(
     private val template: R2dbcEntityTemplate,
-    private val feedbackMapper: ConversationUserMessageFeedbackMapper,
+    private val feedbackMapper: ConversationUserMessageAnalysisMapper,
     private val learningTipsMapper: ConversationAIMessageLearningTipsMapper
 ) : ConversationRepositoryCustomMethods {
     override fun findRecentTopics(
@@ -110,10 +110,8 @@ class ConversationRepositoryCustomMethodsImpl(
                 f.corrected_message as feedback_corrected_message,
                 f.grammar as feedback_grammar,
                 f.vocabulary as feedback_vocabulary,
-                f.answer_length as feedback_answer_length,
                 f.naturalness as feedback_naturalness,
                 f.coherence_with_context as feedback_coherence_with_context,
-                f.register_appropriate as feedback_register_appropriate,
                 f.mistakes as feedback_mistakes,
                 f.strengths as feedback_strengths,
                 f.suggestions as feedback_suggestions,
@@ -125,7 +123,7 @@ class ConversationRepositoryCustomMethodsImpl(
                 lt.message_id as learning_tips_message_id
             FROM conversations c
             LEFT JOIN conversation_messages m ON c.id = m.conversation_id
-            LEFT JOIN conversation_user_message_feedback f ON m.id = f.message_id
+            LEFT JOIN conversation_user_message_analysis f ON m.id = f.message_id
             LEFT JOIN conversation_ai_message_learning_tips lt ON m.id = lt.message_id
             WHERE c.user_id = :userId
                 AND c.id = :id
@@ -150,20 +148,18 @@ class ConversationRepositoryCustomMethodsImpl(
                         .distinctBy { it["message_id"] }
                         .map { row ->
                             val feedback = if (row["feedback_id"] != null) {
-                                ConversationUserMessageFeedbackDTO(
+                                ConversationUserMessageAnalysisDTO(
                                     id = row["feedback_id"] as UUID,
                                     tutorComment = row["feedback_tutor_comment"] as String,
                                     grammar = row["feedback_grammar"] as Int,
                                     vocabulary = row["feedback_vocabulary"] as Int,
-                                    answerLength = row["feedback_answer_length"] as Int,
                                     naturalness = row["feedback_naturalness"] as Int,
                                     coherenceWithContext = row["feedback_coherence_with_context"] as Int,
-                                    registerAppropriate = row["feedback_register_appropriate"] as Boolean,
                                     mistakes = feedbackMapper.deserializeMistakes(row["feedback_mistakes"] as Json),
                                     strengths = feedbackMapper.deserializeStrengths(row["feedback_strengths"] as Json),
                                     suggestions = feedbackMapper.deserializeSuggestions(row["feedback_suggestions"] as Json),
                                     messageId = row["message_id"] as UUID,
-                                    correctedMessage = row["feedback_corrected_message"] as String
+                                    correctedMessage = row["feedback_corrected_message"] as String?
                                 )
                             } else null
 

@@ -18,9 +18,9 @@ import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageReq
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation.ConversationMapper
 import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageMistakeSeverity
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageStrengthType
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageSuggestionType
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageMistakeSeverity
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageStrengthType
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageSuggestionType
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import com.ord.features.conversation.models.conversation_message.ConversationMessageMapper
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender

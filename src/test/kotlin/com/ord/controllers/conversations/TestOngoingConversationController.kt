@@ -756,7 +756,6 @@ class TestOngoingConversationController @Autowired constructor(
                 response.body shouldNotBe null
                 response.body!!.grammar shouldBeInRange 0..10
                 response.body.vocabulary shouldBeInRange 0..10
-                response.body.answerLength shouldBeInRange 0..10
 
                 assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_REVIEW_USER_MESSAGE")
             }
@@ -799,10 +798,8 @@ class TestOngoingConversationController @Autowired constructor(
                 val feedback = response.body!!
                 feedback.grammar shouldBeGreaterThan 0
                 feedback.vocabulary shouldBeGreaterThan 0
-                feedback.answerLength shouldBeGreaterThan 0
                 feedback.naturalness shouldBeInRange 0..10
                 feedback.coherenceWithContext shouldBeInRange 0..10
-                feedback.registerAppropriate shouldNotBe null
                 feedback.mistakes shouldNotBe null
                 feedback.strengths shouldNotBe null
             }
