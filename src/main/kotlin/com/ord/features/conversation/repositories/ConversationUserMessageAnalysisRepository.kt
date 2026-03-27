@@ -1,0 +1,7 @@
+package com.ord.features.conversation.repositories
+
+import com.ord.features.conversation.models.conversation_user_message_analysis.ConversationUserMessageAnalysisEntity
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import java.util.*
+
+interface ConversationUserMessageAnalysisRepository : ReactiveCrudRepository<ConversationUserMessageAnalysisEntity, UUID>

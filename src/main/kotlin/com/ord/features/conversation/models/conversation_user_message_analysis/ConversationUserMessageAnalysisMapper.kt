@@ -1,30 +1,28 @@
-package com.ord.features.conversation.models.conversation_user_message_feedback
+package com.ord.features.conversation.models.conversation_user_message_analysis
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageMistake
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageStrength
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageSuggestion
+import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageMistake
+import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageStrength
+import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageSuggestion
 import com.ord.shared.models.mappers.BidirectionalEntityMapper
 import io.r2dbc.postgresql.codec.Json
 import org.springframework.stereotype.Component
 
 @Component
-class ConversationUserMessageFeedbackMapper(
-) : BidirectionalEntityMapper<ConversationUserMessageFeedbackEntity, ConversationUserMessageFeedbackDTO> {
+class ConversationUserMessageAnalysisMapper(
+) : BidirectionalEntityMapper<ConversationUserMessageAnalysisEntity, ConversationUserMessageAnalysisDTO> {
     val jsonObjectMapper = jacksonObjectMapper()
 
-    override fun toDTO(entity: ConversationUserMessageFeedbackEntity): ConversationUserMessageFeedbackDTO {
-        return ConversationUserMessageFeedbackDTO(
-            id = entity.id ?: error("ConversationUserMessageFeedback id must not be null"),
+    override fun toDTO(entity: ConversationUserMessageAnalysisEntity): ConversationUserMessageAnalysisDTO {
+        return ConversationUserMessageAnalysisDTO(
+            id = entity.id ?: error("ConversationUserMessageAnalysis id must not be null"),
             tutorComment = entity.tutorComment,
             correctedMessage = entity.correctedMessage,
             grammar = entity.grammar,
             vocabulary = entity.vocabulary,
-            answerLength = entity.answerLength,
             naturalness = entity.naturalness,
             coherenceWithContext = entity.coherenceWithContext,
-            registerAppropriate = entity.registerAppropriate,
             mistakes = deserializeMistakes(entity.mistakes),
             strengths = deserializeStrengths(entity.strengths),
             suggestions = deserializeSuggestions(entity.suggestions),
@@ -32,17 +30,15 @@ class ConversationUserMessageFeedbackMapper(
         )
     }
 
-    override fun toEntity(dto: ConversationUserMessageFeedbackDTO): ConversationUserMessageFeedbackEntity {
-        return ConversationUserMessageFeedbackEntity(
+    override fun toEntity(dto: ConversationUserMessageAnalysisDTO): ConversationUserMessageAnalysisEntity {
+        return ConversationUserMessageAnalysisEntity(
             id = dto.id,
             tutorComment = dto.tutorComment,
             correctedMessage = dto.correctedMessage,
             grammar = dto.grammar,
             vocabulary = dto.vocabulary,
-            answerLength = dto.answerLength,
             naturalness = dto.naturalness,
             coherenceWithContext = dto.coherenceWithContext,
-            registerAppropriate = dto.registerAppropriate,
             mistakes = serializeMistakes(dto.mistakes),
             strengths = serializeStrengths(dto.strengths),
             suggestions = serializeSuggestions(dto.suggestions),

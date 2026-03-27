@@ -1,4 +1,4 @@
-package com.ord.features.conversation.models.conversation_user_message_feedback.enums
+package com.ord.features.conversation.models.conversation_user_message_analysis.enums
 
 import com.ord.shared.annotations.ExportToOpenAPI
 
