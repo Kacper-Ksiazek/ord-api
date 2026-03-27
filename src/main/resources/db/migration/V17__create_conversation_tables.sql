@@ -21,19 +21,17 @@ CREATE TABLE IF NOT EXISTS conversations
 );
 
 
-CREATE TABLE IF NOT EXISTS conversation_user_message_feedback
+CREATE TABLE IF NOT EXISTS conversation_user_message_analysis
 (
     id               UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
 
-    tutor_comment    TEXT NOT NULL,
-corrected_message TEXT NOT NULL,
+    tutor_comment     TEXT NOT NULL,
+    corrected_message TEXT,
 
-    grammar          INT  NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
-    vocabulary       INT  NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),
-    answer_length    INT  NOT NULL CHECK (answer_length >= 0 AND answer_length <= 10),
-    naturalness      INT  NOT NULL CHECK (naturalness >= 0 AND naturalness <= 10),
-    coherence_with_context INT NOT NULL CHECK (coherence_with_context >= 0 AND coherence_with_context <= 10),
-    register_appropriate BOOLEAN NOT NULL,
+    grammar                INT  NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
+    vocabulary             INT  NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),
+    naturalness            INT  NOT NULL CHECK (naturalness >= 0 AND naturalness <= 10),
+    coherence_with_context INT  NOT NULL CHECK (coherence_with_context >= 0 AND coherence_with_context <= 10),
 
     mistakes         JSONB NOT NULL,
     strengths        JSONB NOT NULL,
@@ -59,12 +57,12 @@ CREATE TABLE IF NOT EXISTS conversation_messages
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (conversation_id) REFERENCES conversations (id) ON DELETE CASCADE,
-    FOREIGN KEY (feedback_id) REFERENCES conversation_user_message_feedback (id) ON DELETE CASCADE
+    FOREIGN KEY (feedback_id) REFERENCES conversation_user_message_analysis (id) ON DELETE CASCADE
 );
 
 -- Add foreign key constraint after both tables are created
-ALTER TABLE conversation_user_message_feedback
-    ADD CONSTRAINT fk_message_feedback_message_id
+ALTER TABLE conversation_user_message_analysis
+    ADD CONSTRAINT fk_message_analysis_message_id
         FOREIGN KEY (message_id) REFERENCES conversation_messages (id) ON DELETE CASCADE;
 
 
