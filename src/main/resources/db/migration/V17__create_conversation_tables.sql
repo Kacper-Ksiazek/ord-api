@@ -21,27 +21,6 @@ CREATE TABLE IF NOT EXISTS conversations
 );
 
 
-CREATE TABLE IF NOT EXISTS conversation_user_message_analysis
-(
-    id               UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-
-    tutor_comment     TEXT NOT NULL,
-    corrected_message TEXT,
-
-    grammar                INT  NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
-    vocabulary             INT  NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),
-    naturalness            INT  NOT NULL CHECK (naturalness >= 0 AND naturalness <= 10),
-    coherence_with_context INT  NOT NULL CHECK (coherence_with_context >= 0 AND coherence_with_context <= 10),
-
-    mistakes         JSONB NOT NULL,
-    strengths        JSONB NOT NULL,
-    suggestions      JSONB NOT NULL,
-
-    message_id       UUID NOT NULL,
-
-    created_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
 
 CREATE TABLE IF NOT EXISTS conversation_messages
 (
@@ -52,41 +31,56 @@ CREATE TABLE IF NOT EXISTS conversation_messages
     sender          conversation_message_sender NOT NULL,
 
     conversation_id UUID                        NOT NULL,
-    feedback_id     UUID                     DEFAULT NULL,
+    analysis_id     UUID                     DEFAULT NULL,
 
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (conversation_id) REFERENCES conversations (id) ON DELETE CASCADE,
-    FOREIGN KEY (feedback_id) REFERENCES conversation_user_message_analysis (id) ON DELETE CASCADE
+    FOREIGN KEY (conversation_id) REFERENCES conversations (id) ON DELETE CASCADE
 );
 
--- Add foreign key constraint after both tables are created
-ALTER TABLE conversation_user_message_analysis
-    ADD CONSTRAINT fk_message_analysis_message_id
-        FOREIGN KEY (message_id) REFERENCES conversation_messages (id) ON DELETE CASCADE;
 
+
+CREATE TABLE IF NOT EXISTS conversation_user_message_analysis
+(
+    id                     UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+
+    tutor_comment          TEXT  NOT NULL,
+    corrected_message      TEXT,
+
+    grammar                INT   NOT NULL CHECK (grammar >= 0 AND grammar <= 10),
+    vocabulary             INT   NOT NULL CHECK (vocabulary >= 0 AND vocabulary <= 10),
+    naturalness            INT   NOT NULL CHECK (naturalness >= 0 AND naturalness <= 10),
+    coherence_with_context INT   NOT NULL CHECK (coherence_with_context >= 0 AND coherence_with_context <= 10),
+
+    mistakes               JSONB NOT NULL,
+    strengths              JSONB NOT NULL,
+    suggestions            JSONB NOT NULL,
+
+    message_id             UUID  NOT NULL,
+
+    created_at             TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_user_message_analysis_message_id
+        FOREIGN KEY (message_id) REFERENCES conversation_messages (id) ON DELETE CASCADE
+);
+
+-- Add FK from conversation_messages to conversation_user_message_analysis after both tables exist
+ALTER TABLE conversation_messages
+    ADD CONSTRAINT fk_message_analysis_id
+        FOREIGN KEY (analysis_id) REFERENCES conversation_user_message_analysis (id) ON DELETE CASCADE;
 
 CREATE TABLE IF NOT EXISTS conversation_ai_message_learning_tips
 (
-    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
 
-    grammar_tips     JSONB NOT NULL,
-    vocabulary_tips  JSONB NOT NULL,
-    phrase_tips      JSONB NOT NULL,
+    grammar_tips    JSONB NOT NULL,
+    vocabulary_tips JSONB NOT NULL,
+    phrase_tips     JSONB NOT NULL,
 
-    message_id       UUID NOT NULL,
+    message_id      UUID  NOT NULL,
 
-    created_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_learning_tips_message_id
         FOREIGN KEY (message_id) REFERENCES conversation_messages (id) ON DELETE CASCADE
 );
-
-COMMENT ON COLUMN conversation_ai_message_learning_tips.grammar_tips IS
-'JSONB array (0-2 items). Schema: {phrase, explanation, grammarPoint, exampleSentences, register}';
-
-COMMENT ON COLUMN conversation_ai_message_learning_tips.vocabulary_tips IS
-'JSONB array (0-2 items). Schema: {word, definition, usageNote, wordType, exampleSentences, register, nativeLanguageEquivalent}';
-
-COMMENT ON COLUMN conversation_ai_message_learning_tips.phrase_tips IS
-'JSONB array (0-2 items). Schema: {phrase, phraseType, meaning, exampleSentences, register}';

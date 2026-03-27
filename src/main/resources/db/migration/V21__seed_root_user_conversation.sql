@@ -55,7 +55,7 @@ VALUES
 
 -- Message 1 (AI, order 1) - Conversation opener
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d1',
      1,
@@ -67,7 +67,7 @@ VALUES
 
 -- Message 2 (USER, order 2)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d2',
      2,
@@ -79,7 +79,7 @@ VALUES
 
 -- Message 3 (AI, order 3)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d3',
      3,
@@ -91,7 +91,7 @@ VALUES
 
 -- Message 4 (USER, order 4)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d4',
      4,
@@ -103,7 +103,7 @@ VALUES
 
 -- Message 5 (AI, order 5)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d5',
      5,
@@ -115,7 +115,7 @@ VALUES
 
 -- Message 6 (USER, order 6)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d6',
      6,
@@ -127,7 +127,7 @@ VALUES
 
 -- Message 7 (AI, order 7)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d7',
      7,
@@ -139,7 +139,7 @@ VALUES
 
 -- Message 8 (USER, order 8) - Message with many mistakes
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d8',
      8,
@@ -151,7 +151,7 @@ VALUES
 
 -- Message 9 (AI, order 9) - Conversation closing
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d9',
      9,
@@ -297,21 +297,21 @@ VALUES
      CURRENT_TIMESTAMP);
 
 -------------
---- Link feedback to USER messages via feedback_id
+--- Link analysis to USER messages via analysis_id
 -------------
 
 UPDATE public.conversation_messages
-SET feedback_id = 'feed2222-bacf-4eed-bacf-eedba2feed02'
+SET analysis_id = 'feed2222-bacf-4eed-bacf-eedba2feed02'
 WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d2';
 
 UPDATE public.conversation_messages
-SET feedback_id = 'feed4444-bacf-4eed-bacf-eedba4feed04'
+SET analysis_id = 'feed4444-bacf-4eed-bacf-eedba4feed04'
 WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d4';
 
 UPDATE public.conversation_messages
-SET feedback_id = 'feed6666-bacf-4eed-bacf-eedba6feed06'
+SET analysis_id = 'feed6666-bacf-4eed-bacf-eedba6feed06'
 WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d6';
 
 UPDATE public.conversation_messages
-SET feedback_id = 'feed8888-bacf-4eed-bacf-eedba8feed08'
+SET analysis_id = 'feed8888-bacf-4eed-bacf-eedba8feed08'
 WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d8';
