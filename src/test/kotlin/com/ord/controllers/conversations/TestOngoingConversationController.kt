@@ -10,7 +10,7 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.CreateConversationRequest
-import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetAnalysisForUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation.ConversationDTO
@@ -716,14 +716,14 @@ class TestOngoingConversationController @Autowired constructor(
     }
 
     @Nested
-    @DisplayName("[POST] /api/v1/conversations/ongoing/user/generate-feedback - generate feedback for user message")
-    inner class GenerateFeedbackTests {
+    @DisplayName("[POST] /api/v1/conversations/ongoing/user/generate-analysis - generate analysis for user message")
+    inner class GenerateAnalysisTests {
 
         @Nested
         @DisplayName("Positive")
         inner class Positive {
             @Test
-            fun `200 - should generate feedback for user message`() {
+            fun `200 - should generate analysis for user message`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
                 )
@@ -742,9 +742,9 @@ class TestOngoingConversationController @Autowired constructor(
                         messageOrder = 1
                     )
 
-                val response = ongoingConversationAPIClient.generateFeedback(
+                val response = ongoingConversationAPIClient.generateAnalysis(
                     user = authenticatedUser,
-                    body = GetFeedbackOnUserConversationMessageRequest(
+                    body = GetAnalysisForUserConversationMessageRequest(
                         conversationId = conversation.id,
                         messageId = messageId,
                         messageOrder = 1,
@@ -761,7 +761,7 @@ class TestOngoingConversationController @Autowired constructor(
             }
 
             @Test
-            fun `200 - should provide feedback scores`() {
+            fun `200 - should provide analysis scores`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.A2)
                 )
@@ -780,14 +780,14 @@ class TestOngoingConversationController @Autowired constructor(
                     messageOrder = 1
                 )
 
-                val request = GetFeedbackOnUserConversationMessageRequest(
+                val request = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = messageId,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                val response = ongoingConversationAPIClient.generateFeedback(
+                val response = ongoingConversationAPIClient.generateAnalysis(
                     body = request,
                     user = authenticatedUser
                 )
@@ -795,17 +795,17 @@ class TestOngoingConversationController @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
 
-                val feedback = response.body!!
-                feedback.grammar shouldBeGreaterThan 0
-                feedback.vocabulary shouldBeGreaterThan 0
-                feedback.naturalness shouldBeInRange 0..10
-                feedback.coherenceWithContext shouldBeInRange 0..10
-                feedback.mistakes shouldNotBe null
-                feedback.strengths shouldNotBe null
+                val analysis = response.body!!
+                analysis.grammar shouldBeGreaterThan 0
+                analysis.vocabulary shouldBeGreaterThan 0
+                analysis.naturalness shouldBeInRange 0..10
+                analysis.coherenceWithContext shouldBeInRange 0..10
+                analysis.mistakes shouldNotBe null
+                analysis.strengths shouldNotBe null
             }
 
             @Test
-            fun `200 - feedback should be persisted and linked to user message`() {
+            fun `200 - analysis should be persisted and linked to user message`() {
                 val authenticatedUser = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.C1)
                 )
@@ -823,14 +823,14 @@ class TestOngoingConversationController @Autowired constructor(
                     messageOrder = 1
                 )
 
-                val request = GetFeedbackOnUserConversationMessageRequest(
+                val request = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = messageId,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                ongoingConversationAPIClient.generateFeedback(
+                ongoingConversationAPIClient.generateAnalysis(
                     body = request,
                     user = authenticatedUser
                 )
@@ -844,8 +844,8 @@ class TestOngoingConversationController @Autowired constructor(
                 updatedConversation.messages[1].sender shouldBe ConversationMessageSender.USER
                 updatedConversation.messages[1].messageOrder shouldBe 1
                 updatedConversation.messages[1].content shouldBe TestData.USER_MESSAGE
-                updatedConversation.messages[1].feedback shouldNotBe null
-                updatedConversation.messages[1].feedback!!.grammar shouldBeInRange 0..10
+                updatedConversation.messages[1].analysis shouldNotBe null
+                updatedConversation.messages[1].analysis!!.grammar shouldBeInRange 0..10
             }
 
             @Test
@@ -867,14 +867,14 @@ class TestOngoingConversationController @Autowired constructor(
                     messageOrder = 1
                 )
 
-                val request = GetFeedbackOnUserConversationMessageRequest(
+                val request = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = messageId,
                     messageOrder = 1,
                     latestAIMessage = null
                 )
 
-                val response = ongoingConversationAPIClient.generateFeedback(
+                val response = ongoingConversationAPIClient.generateAnalysis(
                     body = request,
                     user = authenticatedUser
                 )
@@ -910,26 +910,26 @@ class TestOngoingConversationController @Autowired constructor(
                     messageOrder = 3
                 )
 
-                val request1 = GetFeedbackOnUserConversationMessageRequest(
+                val request1 = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = messageId1,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                val request2 = GetFeedbackOnUserConversationMessageRequest(
+                val request2 = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = messageId2,
                     messageOrder = 3,
                     latestAIMessage = "What kind of sports do you enjoy?"
                 )
 
-                val response1 = ongoingConversationAPIClient.generateFeedback(
+                val response1 = ongoingConversationAPIClient.generateAnalysis(
                     body = request1,
                     user = authenticatedUser
                 )
 
-                val response2 = ongoingConversationAPIClient.generateFeedback(
+                val response2 = ongoingConversationAPIClient.generateAnalysis(
                     body = request2,
                     user = authenticatedUser
                 )
@@ -950,15 +950,15 @@ class TestOngoingConversationController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `401 - anonymous user cannot generate feedback`() {
-                val request = GetFeedbackOnUserConversationMessageRequest(
+            fun `401 - anonymous user cannot generate analysis`() {
+                val request = GetAnalysisForUserConversationMessageRequest(
                     conversationId = UUID.randomUUID(),
                     messageId = UUID.randomUUID(),
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                val response = ongoingConversationAPIClient.generateFeedback(
+                val response = ongoingConversationAPIClient.generateAnalysis(
                     body = request,
                     user = null
                 )
@@ -967,17 +967,17 @@ class TestOngoingConversationController @Autowired constructor(
             }
 
             @Test
-            fun `404 - cannot generate feedback for non-existent conversation`() {
+            fun `404 - cannot generate analysis for non-existent conversation`() {
                 val authenticatedUser = mockAuthenticatedUser()
 
-                val request = GetFeedbackOnUserConversationMessageRequest(
+                val request = GetAnalysisForUserConversationMessageRequest(
                     conversationId = UUID.randomUUID(),
                     messageId = UUID.randomUUID(),
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                val response = ongoingConversationAPIClient.generateFeedback(
+                val response = ongoingConversationAPIClient.generateAnalysis(
                     body = request,
                     user = authenticatedUser
                 )
@@ -986,7 +986,7 @@ class TestOngoingConversationController @Autowired constructor(
             }
 
             @Test
-            fun `404 - user cannot generate feedback for another user's conversation`() {
+            fun `404 - user cannot generate analysis for another user's conversation`() {
                 val owner = mockAuthenticatedUser(
                     languages = mapOf(TestData.LANGUAGE to LanguageProficiencyLevel.B2)
                 )
@@ -1007,14 +1007,14 @@ class TestOngoingConversationController @Autowired constructor(
                 )
 
                 // Other user tries to generate feedback for owner's message
-                val request = GetFeedbackOnUserConversationMessageRequest(
+                val request = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = messageId,
                     messageOrder = 1,
                     latestAIMessage = TestData.AI_MESSAGE
                 )
 
-                val response = ongoingConversationAPIClient.generateFeedback(
+                val response = ongoingConversationAPIClient.generateAnalysis(
                     body = request,
                     user = otherUser
                 )
@@ -1472,8 +1472,8 @@ class TestOngoingConversationController @Autowired constructor(
             )
             aiMessage1.status shouldBe HttpStatus.OK
 
-            val userFeedback1 = ongoingConversationAPIClient.generateFeedback(
-                body = GetFeedbackOnUserConversationMessageRequest(
+            val userAnalysis1 = ongoingConversationAPIClient.generateAnalysis(
+                body = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = userMessageId1,
                     messageOrder = 1,
@@ -1481,7 +1481,7 @@ class TestOngoingConversationController @Autowired constructor(
                 ),
                 user = authenticatedUser
             )
-            userFeedback1.status shouldBe HttpStatus.OK
+            userAnalysis1.status shouldBe HttpStatus.OK
 
             // Second user message - save, get AI response, and get feedback
             val userMessageId2 = UUID.randomUUID()
@@ -1507,8 +1507,8 @@ class TestOngoingConversationController @Autowired constructor(
             )
             aiMessage2.status shouldBe HttpStatus.OK
 
-            val userFeedback2 = ongoingConversationAPIClient.generateFeedback(
-                body = GetFeedbackOnUserConversationMessageRequest(
+            val userAnalysis2 = ongoingConversationAPIClient.generateAnalysis(
+                body = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = userMessageId2,
                     messageOrder = 3,
@@ -1516,7 +1516,7 @@ class TestOngoingConversationController @Autowired constructor(
                 ),
                 user = authenticatedUser
             )
-            userFeedback2.status shouldBe HttpStatus.OK
+            userAnalysis2.status shouldBe HttpStatus.OK
 
             val finalConversation = conversationAPIClient.getConversationById(
                 conversationId = conversation.id,
@@ -1530,8 +1530,8 @@ class TestOngoingConversationController @Autowired constructor(
             finalConversation.messages[3].sender shouldBe ConversationMessageSender.USER
             finalConversation.messages[4].sender shouldBe ConversationMessageSender.AI
 
-            finalConversation.messages[1].feedback shouldNotBe null
-            finalConversation.messages[3].feedback shouldNotBe null
+            finalConversation.messages[1].analysis shouldNotBe null
+            finalConversation.messages[3].analysis shouldNotBe null
         }
 
         @Test
@@ -1568,8 +1568,8 @@ class TestOngoingConversationController @Autowired constructor(
                 user = authenticatedUser
             )
 
-            ongoingConversationAPIClient.generateFeedback(
-                body = GetFeedbackOnUserConversationMessageRequest(
+            ongoingConversationAPIClient.generateAnalysis(
+                body = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = userMessageId1,
                     messageOrder = 1
@@ -1598,8 +1598,8 @@ class TestOngoingConversationController @Autowired constructor(
                 user = authenticatedUser
             )
 
-            ongoingConversationAPIClient.generateFeedback(
-                body = GetFeedbackOnUserConversationMessageRequest(
+            ongoingConversationAPIClient.generateAnalysis(
+                body = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = userMessageId2,
                     messageOrder = 3
@@ -1656,8 +1656,8 @@ class TestOngoingConversationController @Autowired constructor(
             )
             aiMessageResponse.status shouldBe HttpStatus.OK
 
-            val feedbackResponse = ongoingConversationAPIClient.generateFeedback(
-                body = GetFeedbackOnUserConversationMessageRequest(
+            val analysisResponse = ongoingConversationAPIClient.generateAnalysis(
+                body = GetAnalysisForUserConversationMessageRequest(
                     conversationId = conversation.id,
                     messageId = userMessageId,
                     messageOrder = 1,
@@ -1665,7 +1665,7 @@ class TestOngoingConversationController @Autowired constructor(
                 ),
                 user = authenticatedUser
             )
-            feedbackResponse.status shouldBe HttpStatus.OK
+            analysisResponse.status shouldBe HttpStatus.OK
 
             val finalConversation = conversationAPIClient.getConversationById(
                 conversationId = conversation.id,
@@ -1690,7 +1690,7 @@ class TestOngoingConversationController @Autowired constructor(
             val userMessage = updatedConversation.messages.find { it.id == userMessageId }!!
             val aiMessage = updatedConversation.messages.find { it.id == aiMessageId }!!
 
-            userMessage.feedback shouldNotBe null
+            userMessage.analysis shouldNotBe null
             aiMessage.learningTips shouldNotBe null
         }
 
