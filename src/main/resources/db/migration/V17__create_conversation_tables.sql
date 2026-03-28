@@ -31,7 +31,6 @@ CREATE TABLE IF NOT EXISTS conversation_messages
     sender          conversation_message_sender NOT NULL,
 
     conversation_id UUID                        NOT NULL,
-    analysis_id     UUID                     DEFAULT NULL,
 
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
@@ -64,10 +63,6 @@ CREATE TABLE IF NOT EXISTS conversation_user_message_analysis
         FOREIGN KEY (message_id) REFERENCES conversation_messages (id) ON DELETE CASCADE
 );
 
--- Add FK from conversation_messages to conversation_user_message_analysis after both tables exist
-ALTER TABLE conversation_messages
-    ADD CONSTRAINT fk_message_analysis_id
-        FOREIGN KEY (analysis_id) REFERENCES conversation_user_message_analysis (id) ON DELETE CASCADE;
 
 CREATE TABLE IF NOT EXISTS conversation_ai_message_learning_tips
 (

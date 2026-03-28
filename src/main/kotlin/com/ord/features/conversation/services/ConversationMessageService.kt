@@ -33,7 +33,7 @@ interface ConversationMessageService {
     fun saveAnalysisForExistingMessage(
         messageId: UUID,
         aiAnalysis: ReviewedUserConversationMessage
-    ): Mono<ConversationMessageEntity>
+    ): Mono<Void>
 
     fun saveLearningTipsForExistingMessage(
         messageId: UUID,

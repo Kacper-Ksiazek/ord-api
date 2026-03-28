@@ -55,110 +55,101 @@ VALUES
 
 -- Message 1 (AI, order 1) - Conversation opener
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d1',
      1,
      'Hey there! I hope you''ve had a wonderful week. I''ve been diving into a fascinating historical novel set in medieval England - the author''s vivid descriptions really bring the period to life. What have you been up to lately? Any exciting weekend plans?',
      'AI',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL,
      CURRENT_TIMESTAMP);
 
 -- Message 2 (USER, order 2)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d2',
      2,
      'Hey! How was your weekend? I spent most of Saturday hiking in the mountains and it was absolutely breathtaking. Did you do anything interesting besides reading?',
      'USER',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL, -- Will be updated after feedback is created
      CURRENT_TIMESTAMP);
 
 -- Message 3 (AI, order 3)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d3',
      3,
      'That sounds wonderful! I''m glad you had such a refreshing experience. I actually spent most of my weekend reading, but I did take a lovely walk through the park on Sunday morning. What trail did you hike, and how challenging was it?',
      'AI',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL,
      CURRENT_TIMESTAMP);
 
 -- Message 4 (USER, order 4)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d4',
      4,
      'Oh, that''s sound great! I took the Eagle Peak trail, which is moderately difficult but totally worth it for the views. The weather were perfect, and I even saw some wildlife along the way. What book are you reading? I''ve been looking for something new to read myself.',
      'USER',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL, -- Will be updated after feedback is created
      CURRENT_TIMESTAMP);
 
 -- Message 5 (AI, order 5)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d5',
      5,
      'The trail sounds magnificent! I''d love to hear more about the wildlife you encountered - was it deer, or perhaps some birds of prey? As for the book, it''s called ''The Pillars of the Earth'' by Ken Follett. It''s quite lengthy, but utterly captivating. If you enjoy historical fiction with intricate plots and well-developed characters, I''d highly recommend it.',
      'AI',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL,
      CURRENT_TIMESTAMP);
 
 -- Message 6 (USER, order 6)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d6',
      6,
      'I saw couple of deer and a hawk soaring above! It was really peaceful up there. Thanks for the recommendation - I''ll definitely check it out. Do you usually prefer reading over outdoor activities, or do you like to mix it up?',
      'USER',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL, -- Will be updated after feedback is created
      CURRENT_TIMESTAMP);
 
 -- Message 7 (AI, order 7)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d7',
      7,
      'How marvelous! Hawks are such majestic creatures. To answer your question, I genuinely appreciate both pursuits. While I do gravitate towards reading, especially during colder months, I find that alternating between intellectual and physical activities creates a nice balance. There''s something rejuvenating about being outdoors after spending time immersed in a book.',
      'AI',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL,
      CURRENT_TIMESTAMP);
 
 -- Message 8 (USER, order 8) - Message with many mistakes
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d8',
      8,
      'That make lot of sense! I think I''m going to started that book you mentioned tomorrow. I''m really been wanting to read more historical fiction lately, but I never have enough time because of work is so demanding. Maybe if I would wake up earlier, I could read for hour before work. Do you have any other recommendations?',
      'USER',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL, -- Will be updated after feedback is created
      CURRENT_TIMESTAMP);
 
 -- Message 9 (AI, order 9) - Conversation closing
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, analysis_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d9',
      9,
      'I''m delighted you''re interested in the book! Starting tomorrow sounds like a wonderful plan. Regarding your question about early morning reading, I''ve found it to be quite rewarding - there''s something peaceful about reading before the day''s demands begin. For other recommendations, if you enjoy Follett, you might also appreciate Hilary Mantel''s ''Wolf Hall'' or Bernard Cornwell''s ''The Last Kingdom'' series. Both offer rich historical detail and compelling narratives.',
      'AI',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL,
      CURRENT_TIMESTAMP);
 
 -------------
@@ -296,22 +287,3 @@ VALUES
      '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d9',
      CURRENT_TIMESTAMP);
 
--------------
---- Link analysis to USER messages via analysis_id
--------------
-
-UPDATE public.conversation_messages
-SET analysis_id = 'feed2222-bacf-4eed-bacf-eedba2feed02'
-WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d2';
-
-UPDATE public.conversation_messages
-SET analysis_id = 'feed4444-bacf-4eed-bacf-eedba4feed04'
-WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d4';
-
-UPDATE public.conversation_messages
-SET analysis_id = 'feed6666-bacf-4eed-bacf-eedba6feed06'
-WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d6';
-
-UPDATE public.conversation_messages
-SET analysis_id = 'feed8888-bacf-4eed-bacf-eedba8feed08'
-WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d8';

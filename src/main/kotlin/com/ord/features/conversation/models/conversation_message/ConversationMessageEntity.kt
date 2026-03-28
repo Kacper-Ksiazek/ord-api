@@ -18,7 +18,6 @@ data class ConversationMessageEntity(
     val sender: ConversationMessageSender,
 
     val conversationId: UUID,
-    var analysisId: UUID? = null,
 
     val createdAt: Instant = Instant.now(),
 )

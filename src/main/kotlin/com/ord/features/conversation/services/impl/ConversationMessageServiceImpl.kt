@@ -122,7 +122,7 @@ class ConversationMessageServiceImpl(
     override fun saveAnalysisForExistingMessage(
         messageId: UUID,
         aiAnalysis: ReviewedUserConversationMessage
-    ): Mono<ConversationMessageEntity> {
+    ): Mono<Void> {
         return conversationUserMessageAnalysisRepository
             .save(
                 ConversationUserMessageAnalysisEntity(
@@ -138,17 +138,7 @@ class ConversationMessageServiceImpl(
                     messageId = messageId,
                 )
             )
-            .flatMap { analysis ->
-                conversationMessageRepository
-                    .findById(messageId)
-                    .flatMap { message ->
-                        conversationMessageRepository.save(
-                            message.copy(
-                                analysisId = analysis.id
-                            )
-                        )
-                    }
-            }
+            .then()
     }
 
     override fun saveLearningTipsForExistingMessage(
