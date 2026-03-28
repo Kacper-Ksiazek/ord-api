@@ -9,7 +9,9 @@ import com.ord.features.conversation.models.conversation.ConversationListFilters
 import com.ord.features.conversation.models.conversation.recencyBucketToInstantRange
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsDTO
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsMapper
+import com.ord.features.conversation.models.conversation_message.ConversationAIMessageDTO
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
+import com.ord.features.conversation.models.conversation_message.ConversationUserMessageDTO
 import com.ord.features.conversation.models.conversation_user_message_analysis.ConversationUserMessageAnalysisDTO
 import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.models.conversation.enums.ConversationTone
@@ -173,15 +175,23 @@ class ConversationRepositoryCustomMethodsImpl(
                                 )
                             } else null
 
-                            ConversationMessageDTO(
-                                id = row["message_id"] as UUID,
-                                messageOrder = row["message_order"] as Int,
-                                sender = ConversationMessageSender.valueOf(row["sender"] as String),
-                                content = row["content"] as String,
-                                analysis = analysis,
-                                learningTips = learningTips,
-                                createdAt = (row["message_created_at"] as OffsetDateTime).toInstant()
-                            )
+                            val sender = ConversationMessageSender.valueOf(row["sender"] as String)
+                            when (sender) {
+                                ConversationMessageSender.USER -> ConversationUserMessageDTO(
+                                    id = row["message_id"] as UUID,
+                                    messageOrder = row["message_order"] as Int,
+                                    content = row["content"] as String,
+                                    analysis = analysis,
+                                    createdAt = (row["message_created_at"] as OffsetDateTime).toInstant()
+                                )
+                                ConversationMessageSender.AI -> ConversationAIMessageDTO(
+                                    id = row["message_id"] as UUID,
+                                    messageOrder = row["message_order"] as Int,
+                                    content = row["content"] as String,
+                                    learningTips = learningTips,
+                                    createdAt = (row["message_created_at"] as OffsetDateTime).toInstant()
+                                )
+                            }
                         }.toMutableList()
 
                     Mono.just(
