@@ -14,6 +14,8 @@ import com.ord.features.conversation.api.requests.GetAnalysisForUserConversation
 import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation.ConversationDTO
+import com.ord.features.conversation.models.conversation_message.ConversationAIMessageDTO
+import com.ord.features.conversation.models.conversation_message.ConversationUserMessageDTO
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import com.ord.features.conversation.models.conversation.enums.ConversationTone
 import com.ord.features.conversation.models.conversation.enums.ConversationType
@@ -844,8 +846,8 @@ class TestOngoingConversationController @Autowired constructor(
                 updatedConversation.messages[1].sender shouldBe ConversationMessageSender.USER
                 updatedConversation.messages[1].messageOrder shouldBe 1
                 updatedConversation.messages[1].content shouldBe TestData.USER_MESSAGE
-                updatedConversation.messages[1].analysis shouldNotBe null
-                updatedConversation.messages[1].analysis!!.grammar shouldBeInRange 0..10
+                (updatedConversation.messages[1] as ConversationUserMessageDTO).analysis shouldNotBe null
+                (updatedConversation.messages[1] as ConversationUserMessageDTO).analysis!!.grammar shouldBeInRange 0..10
             }
 
             @Test
@@ -1071,7 +1073,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val tippedMessage = updatedConversation.messages.find { it.id == aiMessageId }
                 tippedMessage shouldNotBe null
-                tippedMessage!!.learningTips shouldNotBe null
+                (tippedMessage!! as ConversationAIMessageDTO).learningTips shouldNotBe null
 
                 assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS")
             }
@@ -1143,7 +1145,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val aiMessage = updatedConversation.messages.find { it.id == aiMessageId }
                 aiMessage shouldNotBe null
-                aiMessage!!.learningTips shouldNotBe null
+                (aiMessage!! as ConversationAIMessageDTO).learningTips shouldNotBe null
             }
 
             @Test
@@ -1311,9 +1313,9 @@ class TestOngoingConversationController @Autowired constructor(
                 val olderMessage = updatedConversation.messages.find { it.id == olderMessageId }
 
                 latestMessage shouldNotBe null
-                latestMessage!!.learningTips shouldNotBe null
+                (latestMessage!! as ConversationAIMessageDTO).learningTips shouldNotBe null
                 olderMessage shouldNotBe null
-                olderMessage!!.learningTips shouldBe null  // Older message should not have tips
+                (olderMessage!! as ConversationAIMessageDTO).learningTips shouldBe null  // Older message should not have tips
             }
         }
 
@@ -1530,8 +1532,8 @@ class TestOngoingConversationController @Autowired constructor(
             finalConversation.messages[3].sender shouldBe ConversationMessageSender.USER
             finalConversation.messages[4].sender shouldBe ConversationMessageSender.AI
 
-            finalConversation.messages[1].analysis shouldNotBe null
-            finalConversation.messages[3].analysis shouldNotBe null
+            (finalConversation.messages[1] as ConversationUserMessageDTO).analysis shouldNotBe null
+            (finalConversation.messages[3] as ConversationUserMessageDTO).analysis shouldNotBe null
         }
 
         @Test
@@ -1690,8 +1692,8 @@ class TestOngoingConversationController @Autowired constructor(
             val userMessage = updatedConversation.messages.find { it.id == userMessageId }!!
             val aiMessage = updatedConversation.messages.find { it.id == aiMessageId }!!
 
-            userMessage.analysis shouldNotBe null
-            aiMessage.learningTips shouldNotBe null
+            (userMessage as ConversationUserMessageDTO).analysis shouldNotBe null
+            (aiMessage as ConversationAIMessageDTO).learningTips shouldNotBe null
         }
 
         @Test
@@ -1792,8 +1794,8 @@ class TestOngoingConversationController @Autowired constructor(
             val aiMsg1 = finalConversation.messages.find { it.id == aiMessage1Id }!!
             val aiMsg2 = finalConversation.messages.find { it.id == aiMessage2Id }!!
 
-            aiMsg1.learningTips shouldNotBe null
-            aiMsg2.learningTips shouldNotBe null
+            (aiMsg1 as ConversationAIMessageDTO).learningTips shouldNotBe null
+            (aiMsg2 as ConversationAIMessageDTO).learningTips shouldNotBe null
         }
     }
 }
