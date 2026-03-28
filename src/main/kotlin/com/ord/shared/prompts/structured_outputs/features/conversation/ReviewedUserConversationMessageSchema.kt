@@ -1,9 +1,9 @@
 package com.ord.shared.prompts.structured_outputs.features.conversation
 
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageErrorType
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageMistakeSeverity
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageStrengthType
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageSuggestionType
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageErrorType
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageMistakeSeverity
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageStrengthType
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageSuggestionType
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 
 val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
@@ -17,7 +17,7 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
             ),
             "correctedMessage" to mapOf(
                 "type" to "string",
-                "description" to "The user's message rewritten correctly, without any language mistakes"
+                "description" to "The user's message rewritten correctly, without any language mistakes. Empty string if the message has no mistakes and needs no correction."
             ),
             "tutorComment" to mapOf(
                 "type" to "string",
@@ -35,12 +35,6 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                 "maximum" to 10,
                 "description" to "Appropriateness, accuracy, and range of word choice (0-10 inclusive)"
             ),
-            "answerLength" to mapOf(
-                "type" to "integer",
-                "minimum" to 0,
-                "maximum" to 10,
-                "description" to "Adequacy relative to question asked and conversation type (0-10 inclusive)"
-            ),
             "naturalness" to mapOf(
                 "type" to "integer",
                 "minimum" to 0,
@@ -52,10 +46,6 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                 "minimum" to 0,
                 "maximum" to 10,
                 "description" to "How well the message responds to the AI's previous message (0-10 inclusive)"
-            ),
-            "registerAppropriate" to mapOf(
-                "type" to "boolean",
-                "description" to "Does the formality level match the conversation type?"
             ),
             "mistakes" to mapOf(
                 "type" to "array",
@@ -150,10 +140,8 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
             "tutorComment",
             "grammar",
             "vocabulary",
-            "answerLength",
             "naturalness",
             "coherenceWithContext",
-            "registerAppropriate",
             "mistakes",
             "strengths",
             "suggestions"

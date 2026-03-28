@@ -5,12 +5,12 @@ import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUs
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsEntity
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsMapper
 import com.ord.features.conversation.models.conversation_message.ConversationMessageEntity
-import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackEntity
+import com.ord.features.conversation.models.conversation_user_message_analysis.ConversationUserMessageAnalysisEntity
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
-import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackMapper
+import com.ord.features.conversation.models.conversation_user_message_analysis.ConversationUserMessageAnalysisMapper
 import com.ord.features.conversation.repositories.ConversationAIMessageLearningTipsRepository
 import com.ord.features.conversation.repositories.ConversationMessageRepository
-import com.ord.features.conversation.repositories.ConversationUserMessageFeedbackRepository
+import com.ord.features.conversation.repositories.ConversationUserMessageAnalysisRepository
 import com.ord.features.conversation.services.ConversationMessageService
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Service
@@ -21,9 +21,9 @@ import java.util.*
 @Service
 class ConversationMessageServiceImpl(
     private val conversationMessageRepository: ConversationMessageRepository,
-    private val conversationUserMessageFeedbackRepository: ConversationUserMessageFeedbackRepository,
+    private val conversationUserMessageAnalysisRepository: ConversationUserMessageAnalysisRepository,
     private val conversationAIMessageLearningTipsRepository: ConversationAIMessageLearningTipsRepository,
-    private val feedbackMapper: ConversationUserMessageFeedbackMapper,
+    private val analysisMapper: ConversationUserMessageAnalysisMapper,
     private val learningTipsMapper: ConversationAIMessageLearningTipsMapper,
     private val databaseClient: DatabaseClient,
 ) : ConversationMessageService {
@@ -49,11 +49,11 @@ class ConversationMessageServiceImpl(
         }
     }
 
-    override fun createMessageWithFeedback(
+    override fun createMessageWithAnalysis(
         conversationId: UUID,
         messageOrder: Int,
         content: String,
-        aiFeedback: ReviewedUserConversationMessage
+        aiAnalysis: ReviewedUserConversationMessage
     ): Mono<ConversationMessageEntity> {
         return conversationMessageRepository
             .save(
@@ -65,20 +65,18 @@ class ConversationMessageServiceImpl(
                 )
             )
             .flatMap { message ->
-                conversationUserMessageFeedbackRepository
+                conversationUserMessageAnalysisRepository
                     .save(
-                        ConversationUserMessageFeedbackEntity(
-                            tutorComment = aiFeedback.tutorComment,
-                            correctedMessage = aiFeedback.correctedMessage,
-                            grammar = aiFeedback.grammar,
-                            vocabulary = aiFeedback.vocabulary,
-                            answerLength = aiFeedback.answerLength,
-                            naturalness = aiFeedback.naturalness,
-                            coherenceWithContext = aiFeedback.coherenceWithContext,
-                            registerAppropriate = aiFeedback.registerAppropriate,
-                            mistakes = feedbackMapper.serializeMistakes(aiFeedback.mistakes),
-                            strengths = feedbackMapper.serializeStrengths(aiFeedback.strengths),
-                            suggestions = feedbackMapper.serializeSuggestions(aiFeedback.suggestions),
+                        ConversationUserMessageAnalysisEntity(
+                            tutorComment = aiAnalysis.tutorComment,
+                            correctedMessage = aiAnalysis.correctedMessage,
+                            grammar = aiAnalysis.grammar,
+                            vocabulary = aiAnalysis.vocabulary,
+                            naturalness = aiAnalysis.naturalness,
+                            coherenceWithContext = aiAnalysis.coherenceWithContext,
+                            mistakes = analysisMapper.serializeMistakes(aiAnalysis.mistakes),
+                            strengths = analysisMapper.serializeStrengths(aiAnalysis.strengths),
+                            suggestions = analysisMapper.serializeSuggestions(aiAnalysis.suggestions),
                             messageId = message.id!!,
                         )
                     )
@@ -121,38 +119,26 @@ class ConversationMessageServiceImpl(
             }
     }
 
-    override fun saveFeedbackForExistingMessage(
+    override fun saveAnalysisForExistingMessage(
         messageId: UUID,
-        aiFeedback: ReviewedUserConversationMessage
-    ): Mono<ConversationMessageEntity> {
-        return conversationUserMessageFeedbackRepository
+        aiAnalysis: ReviewedUserConversationMessage
+    ): Mono<Void> {
+        return conversationUserMessageAnalysisRepository
             .save(
-                ConversationUserMessageFeedbackEntity(
-                    tutorComment = aiFeedback.tutorComment,
-                    correctedMessage = aiFeedback.correctedMessage,
-                    grammar = aiFeedback.grammar,
-                    vocabulary = aiFeedback.vocabulary,
-                    answerLength = aiFeedback.answerLength,
-                    naturalness = aiFeedback.naturalness,
-                    coherenceWithContext = aiFeedback.coherenceWithContext,
-                    registerAppropriate = aiFeedback.registerAppropriate,
-                    mistakes = feedbackMapper.serializeMistakes(aiFeedback.mistakes),
-                    strengths = feedbackMapper.serializeStrengths(aiFeedback.strengths),
-                    suggestions = feedbackMapper.serializeSuggestions(aiFeedback.suggestions),
+                ConversationUserMessageAnalysisEntity(
+                    tutorComment = aiAnalysis.tutorComment,
+                    correctedMessage = aiAnalysis.correctedMessage,
+                    grammar = aiAnalysis.grammar,
+                    vocabulary = aiAnalysis.vocabulary,
+                    naturalness = aiAnalysis.naturalness,
+                    coherenceWithContext = aiAnalysis.coherenceWithContext,
+                    mistakes = analysisMapper.serializeMistakes(aiAnalysis.mistakes),
+                    strengths = analysisMapper.serializeStrengths(aiAnalysis.strengths),
+                    suggestions = analysisMapper.serializeSuggestions(aiAnalysis.suggestions),
                     messageId = messageId,
                 )
             )
-            .flatMap { feedback ->
-                conversationMessageRepository
-                    .findById(messageId)
-                    .flatMap { message ->
-                        conversationMessageRepository.save(
-                            message.copy(
-                                feedbackId = feedback.id
-                            )
-                        )
-                    }
-            }
+            .then()
     }
 
     override fun saveLearningTipsForExistingMessage(

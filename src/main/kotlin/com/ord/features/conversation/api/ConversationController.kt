@@ -46,22 +46,24 @@ class ConversationController(
         summary = "Suggest conversation topics",
         description = "Get AI-generated conversation topic suggestions based on language and user preferences (streaming response)"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "Topic suggestions stream started successfully"
-        ),
-        ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content = [Content()]
-        )
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Topic suggestions stream started successfully"
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
     fun suggestTopic(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: SuggestConversationTopicRequest
@@ -75,22 +77,24 @@ class ConversationController(
         summary = "Generate AI interlocutor profile",
         description = "Generate a detailed AI interlocutor profile with personality, background, and conversation style"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "AI interlocutor generated successfully"
-        ),
-        ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content = [Content()]
-        )
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "AI interlocutor generated successfully"
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
     fun generateAIInterlocutorData(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: GenerateAIInterlocutorDataRequest
@@ -107,23 +111,28 @@ class ConversationController(
         summary = "Get all conversations",
         description = "Retrieve all conversation sessions for the authenticated user"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "Conversations retrieved successfully"
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content = [Content()]
-        )
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Conversations retrieved successfully"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
     fun getConversations(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+
         @Parameter(description = "Case-insensitive substring search on topic and interlocutor name")
         @RequestParam(required = false) search: String?,
+
         @Parameter(description = "Filter by recency bucket")
         @RequestParam(required = false) recencyBucket: RecencyBucket?,
+
         @Parameter(description = "Filter by conversation type")
         @RequestParam(required = false) type: ConversationType?,
     ): Mono<ResponseEntity<List<ConversationSummaryDTO>>> = conversationCRUDFacade.getManyConversations(
@@ -137,22 +146,24 @@ class ConversationController(
         summary = "Get conversation by ID",
         description = "Retrieve detailed information about a specific conversation"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "Conversation retrieved successfully"
-        ),
-        ApiResponse(
-            responseCode = "404",
-            description = "Conversation not found",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content = [Content()]
-        )
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Conversation retrieved successfully"
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Conversation not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
     fun getConversationById(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Parameter(
@@ -170,22 +181,24 @@ class ConversationController(
         summary = "Create a conversation",
         description = "Create a new conversation session with a topic, language, and AI interlocutor"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "Conversation created successfully"
-        ),
-        ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content = [Content()]
-        )
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Conversation created successfully"
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
     fun createConversation(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: CreateConversationRequest
@@ -200,22 +213,24 @@ class ConversationController(
         summary = "Delete a conversation",
         description = "Permanently delete a conversation and all its messages"
     )
-    @ApiResponses(value = [
-        ApiResponse(
-            responseCode = "200",
-            description = "Conversation deleted successfully"
-        ),
-        ApiResponse(
-            responseCode = "404",
-            description = "Conversation not found",
-            content = [Content()]
-        ),
-        ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized",
-            content = [Content()]
-        )
-    ])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Conversation deleted successfully"
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Conversation not found",
+                content = [Content()]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
     fun deleteConversation(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Parameter(

@@ -6,7 +6,7 @@ import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
-import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetAnalysisForUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
@@ -164,16 +164,16 @@ class OngoingConversationController(
     ): Mono<ResponseEntity<ConversationMessageDTO>> =
         ongoingConversationFacade.saveUserMessage(user.id, body)
 
-    @PostMapping("/user/generate-feedback")
+    @PostMapping("/user/generate-analysis")
     @Operation(
-        summary = "Generate feedback for user message",
-        description = "Generate AI-powered grammar and language feedback for an existing user message"
+        summary = "Generate analysis for user message",
+        description = "Generate AI-powered grammar and language analysis for an existing user message"
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Feedback generated successfully"
+                description = "Analysis generated successfully"
             ),
             ApiResponse(
                 responseCode = "404",
@@ -192,10 +192,10 @@ class OngoingConversationController(
             )
         ]
     )
-    fun generateFeedback(
+    fun generateAnalysis(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
-        @Valid @RequestBody body: GetFeedbackOnUserConversationMessageRequest
+        @Valid @RequestBody body: GetAnalysisForUserConversationMessageRequest
     ): Mono<ResponseEntity<ReviewedUserConversationMessage>> =
-        ongoingConversationFacade.generateFeedbackForMessage(user.id, body)
+        ongoingConversationFacade.generateAnalysisForUserMessage(user.id, body)
 
 }

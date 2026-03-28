@@ -1,13 +1,13 @@
-package com.ord.features.conversation.api.facades.helpers.ai_responses
+package com.ord.features.conversation.models.conversation_user_message_analysis
 
 import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageMistake
 import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageStrength
 import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageSuggestion
+import java.util.UUID
 
-data class ReviewedUserConversationMessage(
-    val sabotage: String? = null,
+data class ConversationUserMessageAnalysisDTO(
+    val id: UUID,
 
-    val correctedMessage: String?,
     val tutorComment: String,
 
     val grammar: Int,
@@ -17,6 +17,8 @@ data class ReviewedUserConversationMessage(
 
     val mistakes: Set<ConversationMessageMistake>,
     val strengths: Set<ConversationMessageStrength>,
+    val suggestions: Set<ConversationMessageSuggestion>,
 
-    val suggestions: Set<ConversationMessageSuggestion>
+    val messageId: UUID,
+    val correctedMessage: String?,
 )

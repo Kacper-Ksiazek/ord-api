@@ -1,9 +1,9 @@
 package com.ord.features.conversation.api.facades.helpers.ai_responses
 
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageSuggestionType
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageMistake
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageStrength
-import com.ord.features.conversation.models.conversation_user_message_feedback.jsonb.ConversationMessageSuggestion
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageSuggestionType
+import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageMistake
+import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageStrength
+import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageSuggestion
 
 /**
  * Intermediate DTO for OpenAI structured outputs response.
@@ -22,10 +22,8 @@ data class OpenAIReviewedMessage(
 
     val grammar: Int,
     val vocabulary: Int,
-    val answerLength: Int,
     val naturalness: Int,
     val coherenceWithContext: Int,
-    val registerAppropriate: Boolean,
 
     val mistakes: List<ConversationMessageMistake>,
     val strengths: List<ConversationMessageStrength>,
@@ -39,14 +37,12 @@ data class OpenAIReviewedMessage(
     fun toDomain(): ReviewedUserConversationMessage {
         return ReviewedUserConversationMessage(
             sabotage = sabotage.ifEmpty { null },
-            correctedMessage = correctedMessage,
+            correctedMessage = correctedMessage.ifEmpty { null },
             tutorComment = tutorComment,
             grammar = grammar,
             vocabulary = vocabulary,
-            answerLength = answerLength,
             naturalness = naturalness,
             coherenceWithContext = coherenceWithContext,
-            registerAppropriate = registerAppropriate,
             mistakes = mistakes.toSet(),
             strengths = strengths.toSet(),
             suggestions = suggestions.map { it.toDomain() }.toSet()

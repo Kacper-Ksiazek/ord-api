@@ -1,7 +1,6 @@
 package com.ord.features.conversation.models.conversation_message
 
 import com.ord.features.conversation.models.conversation.ConversationEntity
-import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackEntity
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
@@ -19,7 +18,6 @@ data class ConversationMessageEntity(
     val sender: ConversationMessageSender,
 
     val conversationId: UUID,
-    var feedbackId: UUID? = null,
 
     val createdAt: Instant = Instant.now(),
 )

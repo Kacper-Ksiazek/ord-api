@@ -55,110 +55,101 @@ VALUES
 
 -- Message 1 (AI, order 1) - Conversation opener
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d1',
      1,
      'Hey there! I hope you''ve had a wonderful week. I''ve been diving into a fascinating historical novel set in medieval England - the author''s vivid descriptions really bring the period to life. What have you been up to lately? Any exciting weekend plans?',
      'AI',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL,
      CURRENT_TIMESTAMP);
 
 -- Message 2 (USER, order 2)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d2',
      2,
      'Hey! How was your weekend? I spent most of Saturday hiking in the mountains and it was absolutely breathtaking. Did you do anything interesting besides reading?',
      'USER',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL, -- Will be updated after feedback is created
      CURRENT_TIMESTAMP);
 
 -- Message 3 (AI, order 3)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d3',
      3,
      'That sounds wonderful! I''m glad you had such a refreshing experience. I actually spent most of my weekend reading, but I did take a lovely walk through the park on Sunday morning. What trail did you hike, and how challenging was it?',
      'AI',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL,
      CURRENT_TIMESTAMP);
 
 -- Message 4 (USER, order 4)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d4',
      4,
      'Oh, that''s sound great! I took the Eagle Peak trail, which is moderately difficult but totally worth it for the views. The weather were perfect, and I even saw some wildlife along the way. What book are you reading? I''ve been looking for something new to read myself.',
      'USER',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL, -- Will be updated after feedback is created
      CURRENT_TIMESTAMP);
 
 -- Message 5 (AI, order 5)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d5',
      5,
      'The trail sounds magnificent! I''d love to hear more about the wildlife you encountered - was it deer, or perhaps some birds of prey? As for the book, it''s called ''The Pillars of the Earth'' by Ken Follett. It''s quite lengthy, but utterly captivating. If you enjoy historical fiction with intricate plots and well-developed characters, I''d highly recommend it.',
      'AI',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL,
      CURRENT_TIMESTAMP);
 
 -- Message 6 (USER, order 6)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d6',
      6,
      'I saw couple of deer and a hawk soaring above! It was really peaceful up there. Thanks for the recommendation - I''ll definitely check it out. Do you usually prefer reading over outdoor activities, or do you like to mix it up?',
      'USER',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL, -- Will be updated after feedback is created
      CURRENT_TIMESTAMP);
 
 -- Message 7 (AI, order 7)
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d7',
      7,
      'How marvelous! Hawks are such majestic creatures. To answer your question, I genuinely appreciate both pursuits. While I do gravitate towards reading, especially during colder months, I find that alternating between intellectual and physical activities creates a nice balance. There''s something rejuvenating about being outdoors after spending time immersed in a book.',
      'AI',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL,
      CURRENT_TIMESTAMP);
 
 -- Message 8 (USER, order 8) - Message with many mistakes
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d8',
      8,
      'That make lot of sense! I think I''m going to started that book you mentioned tomorrow. I''m really been wanting to read more historical fiction lately, but I never have enough time because of work is so demanding. Maybe if I would wake up earlier, I could read for hour before work. Do you have any other recommendations?',
      'USER',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL, -- Will be updated after feedback is created
      CURRENT_TIMESTAMP);
 
 -- Message 9 (AI, order 9) - Conversation closing
 INSERT INTO public.conversation_messages
-    (id, message_order, content, sender, conversation_id, feedback_id, created_at)
+    (id, message_order, content, sender, conversation_id, created_at)
 VALUES
     ('4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d9',
      9,
      'I''m delighted you''re interested in the book! Starting tomorrow sounds like a wonderful plan. Regarding your question about early morning reading, I''ve found it to be quite rewarding - there''s something peaceful about reading before the day''s demands begin. For other recommendations, if you enjoy Follett, you might also appreciate Hilary Mantel''s ''Wolf Hall'' or Bernard Cornwell''s ''The Last Kingdom'' series. Both offer rich historical detail and compelling narratives.',
      'AI',
      'bef8d741-8a29-4c5e-9c1a-d5e6f7890123',
-     NULL,
      CURRENT_TIMESTAMP);
 
 -------------
@@ -166,19 +157,17 @@ VALUES
 -------------
 
 -- Feedback for Message 2 (USER) - Minor mistake with good overall quality
-INSERT INTO public.conversation_user_message_feedback
-    (id, tutor_comment, corrected_message, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
-     register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
+INSERT INTO public.conversation_user_message_analysis
+    (id, tutor_comment, corrected_message, grammar, vocabulary, naturalness, coherence_with_context,
+     mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed2222-bacf-4eed-bacf-eedba2feed02',
      'Excellent response! Your message is warm, engaging, and perfectly appropriate for casual conversation. The use of ''absolutely breathtaking'' shows strong command of intensifiers. However, there''s a minor issue with question structure that could be improved. Overall, great conversational skills!',
-     'Hey! How was your weekend? I spent most of Saturday hiking in the mountains and it was absolutely breathtaking. Did you do anything interesting besides reading?',
-     9,
+     NULL,
      9,
      9,
      10,
      10,
-     true,
      '[]'::jsonb,
      '[{"phrase": "absolutely breathtaking", "strengthType": "VOCABULARY", "explanation": "Excellent use of intensifier for vivid description"}, {"phrase": "How was your weekend?", "strengthType": "FLUENCY", "explanation": "Perfect casual conversation opener with genuine enthusiasm"}, {"phrase": "Did you do anything interesting besides reading?", "strengthType": "COMMUNICATION", "explanation": "Effective use of follow-up question to maintain conversation flow"}]'::jsonb,
      '[{"original": "interesting", "suggestionType": "VOCABULARY", "alternatives": ["eventful", "memorable", "noteworthy"], "explanation": "While ''interesting'' works well here, these alternatives can add variety and nuance to your vocabulary."}, {"original": "Did you do anything interesting besides reading?", "suggestionType": "STRUCTURE", "alternatives": ["What else did you get up to?", "How did you spend the rest of your weekend?"], "explanation": "These alternatives create a smoother conversational flow and sound more natural in casual English."}, {"original": "I spent most of Saturday hiking", "suggestionType": "VOCABULARY", "alternatives": ["I dedicated most of Saturday to hiking", "I spent the better part of Saturday hiking"], "explanation": "These alternatives add sophistication while maintaining the casual tone."}]'::jsonb,
@@ -186,19 +175,17 @@ VALUES
      CURRENT_TIMESTAMP);
 
 -- Feedback for Message 4 (USER) - Contains grammar mistakes
-INSERT INTO public.conversation_user_message_feedback
-    (id, tutor_comment, corrected_message, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
-     register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
+INSERT INTO public.conversation_user_message_analysis
+    (id, tutor_comment, corrected_message, grammar, vocabulary, naturalness, coherence_with_context,
+     mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed4444-bacf-4eed-bacf-eedba4feed04',
      'Good response with excellent detail! You maintained the conversational flow nicely and showed interest in your partner''s activity. However, there are a couple of grammar errors to address: ''That''s sound'' should be ''That sounds'' (subject-verb agreement), and ''The weather were'' should be ''The weather was'' (weather is singular). These are minor but important for C1 proficiency.',
      'Oh, that sounds great! I took the Eagle Peak trail, which is moderately difficult but totally worth it for the views. The weather was perfect, and I even saw some wildlife along the way. What book are you reading? I''ve been looking for something new to read myself.',
      7,
      9,
-     10,
      9,
      10,
-     true,
      '[{"phrase": "that''s sound great", "severity": "MODERATE", "errorType": "GRAMMAR", "explanation": "After ''that'' as the subject, you need the third-person singular verb form. The contraction ''that''s'' (that is) doesn''t work with ''sound'' as a verb here. You need the verb ''sounds''.", "correctForm": "that sounds great"}, {"phrase": "The weather were perfect", "severity": "MODERATE", "errorType": "GRAMMAR", "explanation": "''Weather'' is an uncountable noun that always takes a singular verb. Even though we might think of weather as having multiple elements, grammatically it''s treated as singular.", "correctForm": "The weather was perfect"}]'::jsonb,
      '[{"phrase": "moderately difficult", "strengthType": "VOCABULARY", "explanation": "Good use of precise vocabulary to describe the challenge level"}, {"phrase": "totally worth it", "strengthType": "FLUENCY", "explanation": "Excellent use of natural informal expression"}, {"phrase": "What book are you reading?", "strengthType": "COMMUNICATION", "explanation": "Natural transition from answering about hiking to asking about the book"}]'::jsonb,
      '[{"original": "perfect", "suggestionType": "VOCABULARY", "alternatives": ["ideal", "pristine", "glorious"], "explanation": "While ''perfect'' is great, these alternatives can make your descriptions more vivid."}, {"original": "totally worth it for the views", "suggestionType": "VOCABULARY", "alternatives": ["well worth it for the spectacular views", "the views made it all worthwhile"], "explanation": "Adding descriptive adjectives to ''views'' enhances your description and reduces reliance on intensifiers like ''totally''."}, {"original": "I even saw some wildlife", "suggestionType": "VOCABULARY", "alternatives": ["I even spotted some wildlife", "I encountered some wildlife", "I came across some wildlife"], "explanation": "''Spotted'' and ''came across'' suggest unexpectedness, while ''encountered'' is more neutral"}]'::jsonb,
@@ -206,9 +193,9 @@ VALUES
      CURRENT_TIMESTAMP);
 
 -- Feedback for Message 6 (USER) - Minor grammar mistake
-INSERT INTO public.conversation_user_message_feedback
-    (id, tutor_comment, corrected_message, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
-     register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
+INSERT INTO public.conversation_user_message_analysis
+    (id, tutor_comment, corrected_message, grammar, vocabulary, naturalness, coherence_with_context,
+     mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed6666-bacf-4eed-bacf-eedba6feed06',
      'Great enthusiasm and engagement! Your response effectively answers the question and maintains the conversational flow. However, there''s a grammar issue: ''couple of deer'' should be ''a couple of deer'' - the article ''a'' is needed before ''couple''. Your vocabulary choices like ''soaring'' and ''peaceful'' are excellent and show strong lexical range.',
@@ -216,9 +203,7 @@ VALUES
      8,
      9,
      9,
-     9,
      10,
-     true,
      '[{"phrase": "I saw couple of deer", "severity": "MINOR", "errorType": "GRAMMAR", "explanation": "The phrase ''couple of'' requires the indefinite article ''a'' before it. ''Couple'' on its own means two people in a relationship, while ''a couple of'' means ''a few'' or approximately two.", "correctForm": "I saw a couple of deer"}]'::jsonb,
      '[{"phrase": "soaring above", "strengthType": "VOCABULARY", "explanation": "Excellent verb choice - vivid and precise for describing bird flight"}, {"phrase": "It was really peaceful up there", "strengthType": "FLUENCY", "explanation": "Good use of ''peaceful'' to convey the atmosphere of the experience"}, {"phrase": "Thanks for the recommendation", "strengthType": "PRAGMATICS", "explanation": "Natural acknowledgment showing politeness and engagement"}]'::jsonb,
      '[{"original": "check it out", "suggestionType": "VOCABULARY", "alternatives": ["give it a try", "look into it", "add it to my reading list"], "explanation": "''Check it out'' is perfectly natural, but these alternatives offer variety."}, {"original": "It was really peaceful up there", "suggestionType": "VOCABULARY", "alternatives": ["It was incredibly peaceful up there", "The tranquility up there was remarkable"], "explanation": "''Really'' is a common intensifier. Using ''incredibly'' or rephrasing with stronger vocabulary like ''tranquility'' adds sophistication to your expression."}, {"original": "Do you usually prefer reading over outdoor activities", "suggestionType": "VOCABULARY", "alternatives": ["Are you more of a bookworm or an outdoorsy person?", "Do you tend to lean more towards reading or being active outdoors?"], "explanation": "These alternatives range from informal (''bookworm'') to more neutral. All work well in casual conversation."}]'::jsonb,
@@ -226,19 +211,17 @@ VALUES
      CURRENT_TIMESTAMP);
 
 -- Feedback for Message 8 (USER) - Multiple grammar mistakes of varying severity
-INSERT INTO public.conversation_user_message_feedback
-    (id, tutor_comment, corrected_message, grammar, vocabulary, answer_length, naturalness, coherence_with_context,
-     register_appropriate, mistakes, strengths, suggestions, message_id, created_at)
+INSERT INTO public.conversation_user_message_analysis
+    (id, tutor_comment, corrected_message, grammar, vocabulary, naturalness, coherence_with_context,
+     mistakes, strengths, suggestions, message_id, created_at)
 VALUES
     ('feed8888-bacf-4eed-bacf-eedba8feed08',
      'Your message shows good enthusiasm and communicative intent, but there are several grammar issues that need attention. You have problems with subject-verb agreement (''That make''), article usage (''lot of sense'', ''for hour''), verb tense consistency (''going to started''), present perfect formation (''I''m really been wanting''), and conditional structure (''if I would wake up''). These errors impact clarity and are important to address at C1 level. Focus on reviewing basic tense formation and article usage.',
      'That makes a lot of sense! I think I''m going to start that book you mentioned tomorrow. I''ve really been wanting to read more historical fiction lately, but I never have enough time because work is so demanding. Maybe if I woke up earlier, I could read for an hour before work. Do you have any other recommendations?',
      4,
      8,
-     9,
      7,
      9,
-     true,
      '[{"phrase": "That make lot of sense", "severity": "MODERATE", "errorType": "GRAMMAR", "explanation": "Two errors here: (1) ''That'' is singular and requires ''makes'' not ''make''. (2) The phrase ''lot of'' needs the article ''a'' before it to be grammatically correct.", "correctForm": "That makes a lot of sense"}, {"phrase": "I''m going to started that book", "severity": "CRITICAL", "errorType": "GRAMMAR", "explanation": "After ''going to'' you need the base form of the verb (infinitive), not the past tense. ''Going to'' is already expressing future intention, so the main verb should be ''start''.", "correctForm": "I''m going to start that book"}, {"phrase": "I''m really been wanting to read", "severity": "CRITICAL", "errorType": "GRAMMAR", "explanation": "Present perfect continuous should be ''I''ve been wanting'' (have + been + -ing) not ''I''m been wanting''. You''re mixing present continuous (I''m) with present perfect continuous (have been).", "correctForm": "I''ve really been wanting to read"}, {"phrase": "I never have enough time because of work is so demanding", "severity": "MODERATE", "errorType": "GRAMMAR", "explanation": "After ''because of'' you need a noun phrase, not a clause. Since ''work is so demanding'' is a complete clause, you should use ''because'' (not ''because of''). Alternatively, restructure to ''because of how demanding work is''.", "correctForm": "I never have enough time because work is so demanding"}, {"phrase": "Maybe if I would wake up earlier", "severity": "MINOR", "errorType": "GRAMMAR", "explanation": "In first conditional statements about future possibilities, use the simple past tense in the ''if'' clause, not ''would''. ''Would'' only appears in the main clause. This is a common error even at advanced levels.", "correctForm": "Maybe if I woke up earlier"}, {"phrase": "read for hour before work", "severity": "MINOR", "errorType": "GRAMMAR", "explanation": "''Hour'' is a countable noun and requires an article. Since you''re talking about an unspecified single hour, use the indefinite article ''an'' (not ''a'' because ''hour'' starts with a vowel sound).", "correctForm": "read for an hour before work"}]'::jsonb,
      '[{"phrase": "historical fiction", "strengthType": "VOCABULARY", "explanation": "Good use of specific genre terminology"}, {"phrase": "demanding", "strengthType": "VOCABULARY", "explanation": "Appropriate adjective to describe work intensity"}]'::jsonb,
      '[]'::jsonb,
@@ -304,22 +287,3 @@ VALUES
      '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d9',
      CURRENT_TIMESTAMP);
 
--------------
---- Link feedback to USER messages via feedback_id
--------------
-
-UPDATE public.conversation_messages
-SET feedback_id = 'feed2222-bacf-4eed-bacf-eedba2feed02'
-WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d2';
-
-UPDATE public.conversation_messages
-SET feedback_id = 'feed4444-bacf-4eed-bacf-eedba4feed04'
-WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d4';
-
-UPDATE public.conversation_messages
-SET feedback_id = 'feed6666-bacf-4eed-bacf-eedba6feed06'
-WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d6';
-
-UPDATE public.conversation_messages
-SET feedback_id = 'feed8888-bacf-4eed-bacf-eedba8feed08'
-WHERE id = '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d8';

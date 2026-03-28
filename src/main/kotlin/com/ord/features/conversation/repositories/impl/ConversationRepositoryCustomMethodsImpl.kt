@@ -9,12 +9,14 @@ import com.ord.features.conversation.models.conversation.ConversationListFilters
 import com.ord.features.conversation.models.conversation.recencyBucketToInstantRange
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsDTO
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsMapper
+import com.ord.features.conversation.models.conversation_message.ConversationAIMessageDTO
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
-import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackDTO
+import com.ord.features.conversation.models.conversation_message.ConversationUserMessageDTO
+import com.ord.features.conversation.models.conversation_user_message_analysis.ConversationUserMessageAnalysisDTO
 import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.models.conversation.enums.ConversationTone
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
-import com.ord.features.conversation.models.conversation_user_message_feedback.ConversationUserMessageFeedbackMapper
+import com.ord.features.conversation.models.conversation_user_message_analysis.ConversationUserMessageAnalysisMapper
 import com.ord.features.conversation.models.dto.RecentConversationInfo
 import com.ord.features.conversation.repositories.ConversationRepositoryCustomMethods
 import io.r2dbc.postgresql.codec.Json
@@ -29,7 +31,7 @@ import java.util.*
 @Repository
 class ConversationRepositoryCustomMethodsImpl(
     private val template: R2dbcEntityTemplate,
-    private val feedbackMapper: ConversationUserMessageFeedbackMapper,
+    private val analysisMapper: ConversationUserMessageAnalysisMapper,
     private val learningTipsMapper: ConversationAIMessageLearningTipsMapper
 ) : ConversationRepositoryCustomMethods {
     override fun findRecentTopics(
@@ -104,19 +106,17 @@ class ConversationRepositoryCustomMethodsImpl(
                 m.content,
                 m.message_order,
                 m.created_at as message_created_at,
-                -- User message: Feedback
-                f.id as feedback_id,
-                f.tutor_comment as feedback_tutor_comment,
-                f.corrected_message as feedback_corrected_message,
-                f.grammar as feedback_grammar,
-                f.vocabulary as feedback_vocabulary,
-                f.answer_length as feedback_answer_length,
-                f.naturalness as feedback_naturalness,
-                f.coherence_with_context as feedback_coherence_with_context,
-                f.register_appropriate as feedback_register_appropriate,
-                f.mistakes as feedback_mistakes,
-                f.strengths as feedback_strengths,
-                f.suggestions as feedback_suggestions,
+                -- User message: Analysis
+                f.id as analysis_id,
+                f.tutor_comment as analysis_tutor_comment,
+                f.corrected_message as analysis_corrected_message,
+                f.grammar as analysis_grammar,
+                f.vocabulary as analysis_vocabulary,
+                f.naturalness as analysis_naturalness,
+                f.coherence_with_context as analysis_coherence_with_context,
+                f.mistakes as analysis_mistakes,
+                f.strengths as analysis_strengths,
+                f.suggestions as analysis_suggestions,
                 -- AI message: Learning tips
                 lt.id as learning_tips_id,
                 lt.grammar_tips as learning_tips_grammar_tips,
@@ -125,7 +125,7 @@ class ConversationRepositoryCustomMethodsImpl(
                 lt.message_id as learning_tips_message_id
             FROM conversations c
             LEFT JOIN conversation_messages m ON c.id = m.conversation_id
-            LEFT JOIN conversation_user_message_feedback f ON m.id = f.message_id
+            LEFT JOIN conversation_user_message_analysis f ON m.id = f.message_id
             LEFT JOIN conversation_ai_message_learning_tips lt ON m.id = lt.message_id
             WHERE c.user_id = :userId
                 AND c.id = :id
@@ -149,21 +149,19 @@ class ConversationRepositoryCustomMethodsImpl(
                         .filter { it["message_id"] != null }
                         .distinctBy { it["message_id"] }
                         .map { row ->
-                            val feedback = if (row["feedback_id"] != null) {
-                                ConversationUserMessageFeedbackDTO(
-                                    id = row["feedback_id"] as UUID,
-                                    tutorComment = row["feedback_tutor_comment"] as String,
-                                    grammar = row["feedback_grammar"] as Int,
-                                    vocabulary = row["feedback_vocabulary"] as Int,
-                                    answerLength = row["feedback_answer_length"] as Int,
-                                    naturalness = row["feedback_naturalness"] as Int,
-                                    coherenceWithContext = row["feedback_coherence_with_context"] as Int,
-                                    registerAppropriate = row["feedback_register_appropriate"] as Boolean,
-                                    mistakes = feedbackMapper.deserializeMistakes(row["feedback_mistakes"] as Json),
-                                    strengths = feedbackMapper.deserializeStrengths(row["feedback_strengths"] as Json),
-                                    suggestions = feedbackMapper.deserializeSuggestions(row["feedback_suggestions"] as Json),
+                            val analysis = if (row["analysis_id"] != null) {
+                                ConversationUserMessageAnalysisDTO(
+                                    id = row["analysis_id"] as UUID,
+                                    tutorComment = row["analysis_tutor_comment"] as String,
+                                    grammar = row["analysis_grammar"] as Int,
+                                    vocabulary = row["analysis_vocabulary"] as Int,
+                                    naturalness = row["analysis_naturalness"] as Int,
+                                    coherenceWithContext = row["analysis_coherence_with_context"] as Int,
+                                    mistakes = analysisMapper.deserializeMistakes(row["analysis_mistakes"] as Json),
+                                    strengths = analysisMapper.deserializeStrengths(row["analysis_strengths"] as Json),
+                                    suggestions = analysisMapper.deserializeSuggestions(row["analysis_suggestions"] as Json),
                                     messageId = row["message_id"] as UUID,
-                                    correctedMessage = row["feedback_corrected_message"] as String
+                                    correctedMessage = row["analysis_corrected_message"] as String?
                                 )
                             } else null
 
@@ -177,15 +175,23 @@ class ConversationRepositoryCustomMethodsImpl(
                                 )
                             } else null
 
-                            ConversationMessageDTO(
-                                id = row["message_id"] as UUID,
-                                messageOrder = row["message_order"] as Int,
-                                sender = ConversationMessageSender.valueOf(row["sender"] as String),
-                                content = row["content"] as String,
-                                feedback = feedback,
-                                learningTips = learningTips,
-                                createdAt = (row["message_created_at"] as OffsetDateTime).toInstant()
-                            )
+                            val sender = ConversationMessageSender.valueOf(row["sender"] as String)
+                            when (sender) {
+                                ConversationMessageSender.USER -> ConversationUserMessageDTO(
+                                    id = row["message_id"] as UUID,
+                                    messageOrder = row["message_order"] as Int,
+                                    content = row["content"] as String,
+                                    analysis = analysis,
+                                    createdAt = (row["message_created_at"] as OffsetDateTime).toInstant()
+                                )
+                                ConversationMessageSender.AI -> ConversationAIMessageDTO(
+                                    id = row["message_id"] as UUID,
+                                    messageOrder = row["message_order"] as Int,
+                                    content = row["content"] as String,
+                                    learningTips = learningTips,
+                                    createdAt = (row["message_created_at"] as OffsetDateTime).toInstant()
+                                )
+                            }
                         }.toMutableList()
 
                     Mono.just(

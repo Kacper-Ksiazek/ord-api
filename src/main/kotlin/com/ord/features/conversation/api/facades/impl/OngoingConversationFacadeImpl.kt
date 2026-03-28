@@ -13,14 +13,14 @@ import com.ord.features.conversation.api.facades.helpers.ai_responses.OpenAIAIMe
 import com.ord.features.conversation.api.facades.helpers.ai_responses.OpenAIReviewedMessage
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
-import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetAnalysisForUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation.ConversationMapper
 import com.ord.features.conversation.models.conversation.extensions.convertToPromptParams
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageMistakeSeverity
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageStrengthType
-import com.ord.features.conversation.models.conversation_user_message_feedback.enums.ConversationMessageSuggestionType
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageMistakeSeverity
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageStrengthType
+import com.ord.features.conversation.models.conversation_user_message_analysis.enums.ConversationMessageSuggestionType
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
 import com.ord.features.conversation.models.conversation_message.ConversationMessageMapper
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
@@ -149,9 +149,9 @@ class OngoingConversationFacadeImpl(
             .map { dto -> ResponseEntity.ok(dto) }
     }
 
-    override fun generateFeedbackForMessage(
+    override fun generateAnalysisForUserMessage(
         userId: UUID,
-        body: GetFeedbackOnUserConversationMessageRequest
+        body: GetAnalysisForUserConversationMessageRequest
     ): Mono<ResponseEntity<ReviewedUserConversationMessage>> {
         return conversationService
             .findByIdOrFail(body.conversationId, userId)
@@ -189,13 +189,13 @@ class OngoingConversationFacadeImpl(
                             structuredOutput = prompt.variant.structuredOutput,
                         )
                             .map { openAIResponse -> openAIResponse.toDomain() }
-                            .flatMap { aiFeedback ->
-                                conversationMessageService.saveFeedbackForExistingMessage(
+                            .flatMap { aiAnalysis ->
+                                conversationMessageService.saveAnalysisForExistingMessage(
                                     messageId = body.messageId,
-                                    aiFeedback = aiFeedback
+                                    aiAnalysis = aiAnalysis
                                 )
                                     .then(Mono.fromCallable {
-                                        ResponseEntity.ok(aiFeedback)
+                                        ResponseEntity.ok(aiAnalysis)
                                     })
                             }
                     }

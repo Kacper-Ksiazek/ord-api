@@ -3,7 +3,7 @@ package com.ord.testing_utils.api.clients
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
-import com.ord.features.conversation.api.requests.GetFeedbackOnUserConversationMessageRequest
+import com.ord.features.conversation.api.requests.GetAnalysisForUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
 import com.ord.features.conversation.api.requests.SaveUserConversationMessageRequest
 import com.ord.features.conversation.models.conversation_message.ConversationMessageDTO
@@ -55,12 +55,12 @@ class OngoingConversationAPIClient(
         )
     }
 
-    fun generateFeedback(
-        body: GetFeedbackOnUserConversationMessageRequest,
+    fun generateAnalysis(
+        body: GetAnalysisForUserConversationMessageRequest,
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<ReviewedUserConversationMessage?> {
         return post(
-            url = "$baseUrl/user/generate-feedback",
+            url = "$baseUrl/user/generate-analysis",
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<ReviewedUserConversationMessage>() {}

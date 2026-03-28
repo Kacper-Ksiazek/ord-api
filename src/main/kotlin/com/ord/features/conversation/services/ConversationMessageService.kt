@@ -16,11 +16,11 @@ interface ConversationMessageService {
     ): Mono<ConversationMessageEntity>
 
 
-    fun createMessageWithFeedback(
+    fun createMessageWithAnalysis(
         conversationId: UUID,
         messageOrder: Int,
         content: String,
-        aiFeedback: ReviewedUserConversationMessage
+        aiAnalysis: ReviewedUserConversationMessage
     ): Mono<ConversationMessageEntity>
 
     fun saveUserMessageWithId(
@@ -30,10 +30,10 @@ interface ConversationMessageService {
         messageOrder: Int
     ): Mono<ConversationMessageEntity>
 
-    fun saveFeedbackForExistingMessage(
+    fun saveAnalysisForExistingMessage(
         messageId: UUID,
-        aiFeedback: ReviewedUserConversationMessage
-    ): Mono<ConversationMessageEntity>
+        aiAnalysis: ReviewedUserConversationMessage
+    ): Mono<Void>
 
     fun saveLearningTipsForExistingMessage(
         messageId: UUID,
