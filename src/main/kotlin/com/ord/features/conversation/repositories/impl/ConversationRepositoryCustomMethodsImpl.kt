@@ -7,6 +7,7 @@ import com.ord.features.conversation.models.conversation.ConversationDTO
 import com.ord.features.conversation.models.conversation.ConversationEntity
 import com.ord.features.conversation.models.conversation.ConversationListFilters
 import com.ord.features.conversation.models.conversation.recencyBucketToInstantRange
+import com.ord.features.conversation.models.conversation_activity.DailyActivityCount
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsDTO
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsMapper
 import com.ord.features.conversation.models.conversation_message.ConversationAIMessageDTO
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -257,6 +259,31 @@ class ConversationRepositoryCustomMethodsImpl(
                     userId = row["user_id"] as UUID,
                     createdAt = (row["created_at"] as OffsetDateTime).toInstant(),
                     updatedAt = (row["updated_at"] as OffsetDateTime).toInstant()
+                )
+            }
+            .all()
+    }
+
+    override fun countDailyNewConversations(userId: UUID, from: Instant, to: Instant): Flux<DailyActivityCount> {
+        val query = """
+            SELECT DATE(c.created_at AT TIME ZONE 'UTC') AS activity_date, COUNT(*) AS cnt
+            FROM conversations c
+            WHERE c.user_id = :userId
+              AND c.created_at >= :from
+              AND c.created_at < :to
+            GROUP BY activity_date
+            ORDER BY activity_date
+        """
+
+        return template.databaseClient
+            .sql(query)
+            .bind("userId", userId)
+            .bind("from", from)
+            .bind("to", to)
+            .map { row ->
+                DailyActivityCount(
+                    date = row.get("activity_date", LocalDate::class.java)!!,
+                    count = row.get("cnt", java.lang.Long::class.java)!!.toLong(),
                 )
             }
             .all()

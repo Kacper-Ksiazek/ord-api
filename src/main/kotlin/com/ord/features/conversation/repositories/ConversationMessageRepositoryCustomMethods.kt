@@ -1,7 +1,10 @@
 package com.ord.features.conversation.repositories
 
+import com.ord.features.conversation.models.conversation_activity.DailyActivityCount
 import com.ord.features.conversation.models.conversation_message.ConversationMessageEntity
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Instant
 import java.util.UUID
 
 interface ConversationMessageRepositoryCustomMethods {
@@ -12,4 +15,6 @@ interface ConversationMessageRepositoryCustomMethods {
      * @return Mono of the latest AI message without learning tips, or empty Mono if none found
      */
     fun findLatestAIMessageWithoutLearningTips(conversationId: UUID): Mono<ConversationMessageEntity>
+
+    fun countDailyMessages(userId: UUID, from: Instant, to: Instant): Flux<DailyActivityCount>
 }
