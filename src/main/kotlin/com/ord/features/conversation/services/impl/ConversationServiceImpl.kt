@@ -6,12 +6,14 @@ import com.ord.features.conversation.models.conversation.ConversationDTO
 import com.ord.features.conversation.models.conversation.ConversationEntity
 import com.ord.features.conversation.models.conversation.ConversationListFilters
 import com.ord.features.conversation.models.conversation.enums.ConversationType
+import com.ord.features.conversation.models.conversation_activity.DailyActivityCount
 import com.ord.features.conversation.models.dto.RecentConversationInfo
 import com.ord.features.conversation.repositories.ConversationRepository
 import com.ord.features.conversation.services.ConversationService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Instant
 import java.util.UUID
 
 @Service
@@ -59,4 +61,7 @@ class ConversationServiceImpl(
 
     override fun findAllWithFilters(userId: UUID, filters: ConversationListFilters): Flux<ConversationEntity> =
         conversationRepository.findAllWithFilters(userId, filters)
+
+    override fun countDailyNewConversations(userId: UUID, from: Instant, to: Instant): Flux<DailyActivityCount> =
+        conversationRepository.countDailyNewConversations(userId, from, to)
 }

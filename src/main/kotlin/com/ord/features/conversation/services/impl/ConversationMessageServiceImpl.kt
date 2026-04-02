@@ -11,9 +11,11 @@ import com.ord.features.conversation.models.conversation_user_message_analysis.C
 import com.ord.features.conversation.repositories.ConversationAIMessageLearningTipsRepository
 import com.ord.features.conversation.repositories.ConversationMessageRepository
 import com.ord.features.conversation.repositories.ConversationUserMessageAnalysisRepository
+import com.ord.features.conversation.models.conversation_activity.DailyActivityCount
 import com.ord.features.conversation.services.ConversationMessageService
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
 import java.util.*
@@ -156,6 +158,9 @@ class ConversationMessageServiceImpl(
             )
             .then(conversationMessageRepository.findById(messageId))
     }
+
+    override fun countDailyMessages(userId: UUID, from: Instant, to: Instant): Flux<DailyActivityCount> =
+        conversationMessageRepository.countDailyMessages(userId, from, to)
 
     private fun bumpConversationUpdatedAt(conversationId: UUID): Mono<Void> {
         return databaseClient.sql("UPDATE conversations SET updated_at = :now WHERE id = :id")
