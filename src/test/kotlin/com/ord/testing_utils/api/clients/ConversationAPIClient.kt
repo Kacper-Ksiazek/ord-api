@@ -8,6 +8,7 @@ import com.ord.features.conversation.models.conversation.ConversationDTO
 import com.ord.features.conversation.models.conversation.ConversationSummaryDTO
 import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.models.conversation.enums.RecencyBucket
+import com.ord.features.conversation.models.conversation_activity.ConversationActivityOverviewDTO
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -83,6 +84,16 @@ class ConversationAPIClient(
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<ConversationDTO>() {}
+        )
+    }
+
+    fun getActivityOverview(
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<ConversationActivityOverviewDTO?> {
+        return get(
+            url = "$baseUrl/overview",
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<ConversationActivityOverviewDTO>() {}
         )
     }
 
