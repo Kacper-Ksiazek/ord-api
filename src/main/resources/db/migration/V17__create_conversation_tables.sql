@@ -79,3 +79,10 @@ CREATE TABLE IF NOT EXISTS conversation_ai_message_learning_tips
     CONSTRAINT fk_learning_tips_message_id
         FOREIGN KEY (message_id) REFERENCES conversation_messages (id) ON DELETE CASCADE
 );
+
+
+CREATE INDEX IF NOT EXISTS idx_conversations_user_id_created_at
+    ON conversations (user_id, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_conversation_messages_conversation_id_created_at
+    ON conversation_messages (conversation_id, created_at);
