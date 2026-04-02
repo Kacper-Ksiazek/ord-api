@@ -217,9 +217,6 @@
                     "401": {
                         "description": "Unauthorized"
                     },
-                    "404": {
-                        "description": "Word not found"
-                    },
                     "200": {
                         "description": "Word details created successfully",
                         "content": {
@@ -229,6 +226,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Word not found"
                     }
                 },
                 "security": [
@@ -619,6 +619,9 @@
                         "description": "Invalid request data or user does not have proficiency in the requested language",
                         "content": {}
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "200": {
                         "description": "Vocabulary suggestions stream started successfully",
                         "content": {
@@ -631,9 +634,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -812,9 +812,6 @@
                         "description": "Invalid word data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
                     "201": {
                         "description": "Word created successfully",
                         "content": {
@@ -824,6 +821,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
                     }
                 },
                 "security": [
@@ -907,14 +907,14 @@
                         "description": "Invalid word data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
                     "201": {
                         "description": "Words created successfully",
                         "content": {
                             "application/json": {}
                         }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
                     }
                 },
                 "security": [
@@ -1067,6 +1067,12 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
+                    "404": {
+                        "description": "Language proficiency not found"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
                     "200": {
                         "description": "Language proficiency updated successfully",
                         "content": {
@@ -1076,12 +1082,6 @@
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "description": "Language proficiency not found"
-                    },
-                    "401": {
-                        "description": "Not authenticated"
                     }
                 },
                 "security": [
@@ -1158,9 +1158,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "404": {
-                        "description": "Game not found"
-                    },
                     "200": {
                         "description": "Words typing game finished successfully",
                         "content": {
@@ -1173,6 +1170,9 @@
                     },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Game not found"
                     }
                 },
                 "security": [
@@ -1249,11 +1249,11 @@
                         "description": "Invalid request data or sentence exceeds 1024 characters",
                         "content": {}
                     },
-                    "404": {
-                        "description": "Game not found"
-                    },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Game not found"
                     },
                     "200": {
                         "description": "Sentences writing game finished successfully",
@@ -1350,11 +1350,11 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Game not found"
-                    },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Game not found"
                     }
                 },
                 "security": [
@@ -1406,14 +1406,14 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "Game not found"
                     },
                     "204": {
                         "description": "Game cancelled successfully"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1677,7 +1677,14 @@
                         "content": {
                             "*/*": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ConversationMessageDTO"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ConversationAIMessageDTO"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/ConversationUserMessageDTO"
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -1690,19 +1697,19 @@
                 ]
             }
         },
-        "/api/v1/conversations/ongoing/user/generate-feedback": {
+        "/api/v1/conversations/ongoing/user/generate-analysis": {
             "post": {
                 "tags": [
                     "5. Conversations: Ongoing Sessions"
                 ],
-                "summary": "Generate feedback for user message",
-                "description": "Generate AI-powered grammar and language feedback for an existing user message",
-                "operationId": "generateFeedback",
+                "summary": "Generate analysis for user message",
+                "description": "Generate AI-powered grammar and language analysis for an existing user message",
+                "operationId": "generateAnalysis",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/GetFeedbackOnUserConversationMessageRequest"
+                                "$ref": "#/components/schemas/GetAnalysisForUserConversationMessageRequest"
                             }
                         }
                     },
@@ -1713,11 +1720,14 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "Conversation or message not found"
                     },
                     "200": {
-                        "description": "Feedback generated successfully",
+                        "description": "Analysis generated successfully",
                         "content": {
                             "*/*": {
                                 "schema": {
@@ -1725,9 +1735,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1875,6 +1882,12 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "Conversation not found or no AI message without learning tips exists"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "200": {
                         "description": "Learning tips generated successfully",
                         "content": {
@@ -1884,12 +1897,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "description": "Conversation not found or no AI message without learning tips exists"
                     }
                 },
                 "security": [
@@ -1922,9 +1929,6 @@
                         "description": "Invalid OTP code",
                         "content": {}
                     },
-                    "401": {
-                        "description": "OTP expired or invalid"
-                    },
                     "200": {
                         "description": "OTP verified successfully, user authenticated",
                         "content": {
@@ -1934,6 +1938,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "OTP expired or invalid"
                     }
                 }
             }
@@ -2363,9 +2370,6 @@
                         "description": "Invalid approval data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
                     "200": {
                         "description": "Words approved successfully",
                         "content": {
@@ -2375,6 +2379,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
                     }
                 },
                 "security": [
@@ -2543,6 +2550,9 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "Conversation not found"
+                    },
                     "200": {
                         "description": "Conversation deleted successfully",
                         "content": {
@@ -2553,11 +2563,48 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Conversation not found"
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer-jwt": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/conversations/overview": {
+            "get": {
+                "tags": [
+                    "5. Conversations: Management"
+                ],
+                "summary": "Get conversation activity overview",
+                "description": "Retrieve activity metrics for the last 90 days: daily heatmap, weekly message/conversation trends, and totals",
+                "operationId": "getActivityOverview",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "200": {
+                        "description": "Activity overview retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConversationActivityOverviewDTO"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -4574,9 +4621,6 @@
                             "$ref": "#/components/schemas/IdentifiableReviewedWordAnswer"
                         }
                     },
-                    "accuracy": {
-                        "type": "string"
-                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4587,6 +4631,9 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
@@ -4733,9 +4780,6 @@
                             "$ref": "#/components/schemas/ReviewedSentencesWritingSingleTopic"
                         }
                     },
-                    "accuracy": {
-                        "type": "string"
-                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4746,6 +4790,9 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
@@ -5073,9 +5120,6 @@
                     "reviewedAnswers": {
                         "$ref": "#/components/schemas/CrosswordReviewedAnswers"
                     },
-                    "accuracy": {
-                        "type": "string"
-                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -5086,6 +5130,9 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
@@ -5328,6 +5375,29 @@
                     }
                 }
             },
+            "ConversationAIMessageDTO": {
+                "required": [
+                    "content",
+                    "createdAt",
+                    "id",
+                    "messageOrder",
+                    "sender"
+                ],
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ConversationMessageDTO"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "learningTips": {
+                                "$ref": "#/components/schemas/ConversationAIMessageLearningTipsDTO"
+                            }
+                        }
+                    }
+                ]
+            },
             "ConversationAIMessageLearningTipsDTO": {
                 "required": [
                     "grammarTips",
@@ -5451,7 +5521,14 @@
                     "messages": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/ConversationMessageDTO"
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/ConversationAIMessageDTO"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/ConversationUserMessageDTO"
+                                }
+                            ]
                         }
                     },
                     "createdAt": {
@@ -5478,9 +5555,16 @@
                         "type": "string",
                         "format": "uuid"
                     },
+                    "content": {
+                        "type": "string"
+                    },
                     "messageOrder": {
                         "type": "integer",
                         "format": "int32"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "sender": {
                         "type": "string",
@@ -5488,20 +5572,10 @@
                             "USER",
                             "AI"
                         ]
-                    },
-                    "content": {
-                        "type": "string"
-                    },
-                    "feedback": {
-                        "$ref": "#/components/schemas/ConversationUserMessageFeedbackDTO"
-                    },
-                    "learningTips": {
-                        "$ref": "#/components/schemas/ConversationAIMessageLearningTipsDTO"
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
                     }
+                },
+                "discriminator": {
+                    "propertyName": "sender"
                 }
             },
             "ConversationMessageMistake": {
@@ -5599,16 +5673,14 @@
                     }
                 }
             },
-            "ConversationUserMessageFeedbackDTO": {
+            "ConversationUserMessageAnalysisDTO": {
                 "required": [
-                    "answerLength",
                     "coherenceWithContext",
                     "grammar",
                     "id",
                     "messageId",
                     "mistakes",
                     "naturalness",
-                    "registerAppropriate",
                     "strengths",
                     "suggestions",
                     "tutorComment",
@@ -5631,10 +5703,6 @@
                         "type": "integer",
                         "format": "int32"
                     },
-                    "answerLength": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
                     "naturalness": {
                         "type": "integer",
                         "format": "int32"
@@ -5642,9 +5710,6 @@
                     "coherenceWithContext": {
                         "type": "integer",
                         "format": "int32"
-                    },
-                    "registerAppropriate": {
-                        "type": "boolean"
                     },
                     "mistakes": {
                         "uniqueItems": true,
@@ -5670,8 +5735,34 @@
                     "messageId": {
                         "type": "string",
                         "format": "uuid"
+                    },
+                    "correctedMessage": {
+                        "type": "string"
                     }
                 }
+            },
+            "ConversationUserMessageDTO": {
+                "required": [
+                    "content",
+                    "createdAt",
+                    "id",
+                    "messageOrder",
+                    "sender"
+                ],
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ConversationMessageDTO"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "analysis": {
+                                "$ref": "#/components/schemas/ConversationUserMessageAnalysisDTO"
+                            }
+                        }
+                    }
+                ]
             },
             "SuggestConversationTopicRequest": {
                 "required": [
@@ -5838,7 +5929,7 @@
                     }
                 }
             },
-            "GetFeedbackOnUserConversationMessageRequest": {
+            "GetAnalysisForUserConversationMessageRequest": {
                 "required": [
                     "conversationId",
                     "messageId",
@@ -5865,12 +5956,10 @@
             },
             "ReviewedUserConversationMessage": {
                 "required": [
-                    "answerLength",
                     "coherenceWithContext",
                     "grammar",
                     "mistakes",
                     "naturalness",
-                    "registerAppropriate",
                     "strengths",
                     "suggestions",
                     "tutorComment",
@@ -5879,6 +5968,9 @@
                 "type": "object",
                 "properties": {
                     "sabotage": {
+                        "type": "string"
+                    },
+                    "correctedMessage": {
                         "type": "string"
                     },
                     "tutorComment": {
@@ -5892,10 +5984,6 @@
                         "type": "integer",
                         "format": "int32"
                     },
-                    "answerLength": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
                     "naturalness": {
                         "type": "integer",
                         "format": "int32"
@@ -5903,9 +5991,6 @@
                     "coherenceWithContext": {
                         "type": "integer",
                         "format": "int32"
-                    },
-                    "registerAppropriate": {
-                        "type": "boolean"
                     },
                     "mistakes": {
                         "uniqueItems": true,
@@ -6568,6 +6653,91 @@
                     }
                 }
             },
+            "ActivityWeekPointDTO": {
+                "required": [
+                    "count",
+                    "weekRange"
+                ],
+                "type": "object",
+                "properties": {
+                    "weekRange": {
+                        "type": "string"
+                    },
+                    "count": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "ConversationActivityOverviewDTO": {
+                "required": [
+                    "conversationsByWeek",
+                    "conversationsTotal",
+                    "heatmap",
+                    "messagesByWeek",
+                    "messagesTotal",
+                    "periodLabel"
+                ],
+                "type": "object",
+                "properties": {
+                    "periodLabel": {
+                        "type": "string"
+                    },
+                    "messagesTotal": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "conversationsTotal": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "heatmap": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/HeatmapDayDTO"
+                        }
+                    },
+                    "messagesByWeek": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ActivityWeekPointDTO"
+                        }
+                    },
+                    "conversationsByWeek": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ActivityWeekPointDTO"
+                        }
+                    }
+                }
+            },
+            "HeatmapDayDTO": {
+                "required": [
+                    "count",
+                    "date",
+                    "percentile"
+                ],
+                "type": "object",
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "date": {
+                        "type": "string"
+                    },
+                    "percentile": {
+                        "type": "string",
+                        "enum": [
+                            "p0",
+                            "p20",
+                            "p40",
+                            "p60",
+                            "p80"
+                        ]
+                    }
+                }
+            },
             "WordCollocationFrequency": {
                 "type": "string",
                 "enum": [
@@ -6672,6 +6842,23 @@
                     "AI"
                 ]
             },
+            "TipRegister": {
+                "type": "string",
+                "description": "Formality register indicator for learning tips",
+                "enum": [
+                    "FORMAL",
+                    "NEUTRAL",
+                    "COLLOQUIAL"
+                ]
+            },
+            "PhraseType": {
+                "type": "string",
+                "description": "Type of phrase learning tip",
+                "enum": [
+                    "IDIOMATIC",
+                    "LITERAL"
+                ]
+            },
             "ConversationMessageErrorType": {
                 "type": "string",
                 "enum": [
@@ -6704,23 +6891,6 @@
                     "MINOR",
                     "MODERATE",
                     "CRITICAL"
-                ]
-            },
-            "TipRegister": {
-                "type": "string",
-                "description": "Formality register indicator for learning tips",
-                "enum": [
-                    "FORMAL",
-                    "NEUTRAL",
-                    "COLLOQUIAL"
-                ]
-            },
-            "PhraseType": {
-                "type": "string",
-                "description": "Type of phrase learning tip",
-                "enum": [
-                    "IDIOMATIC",
-                    "LITERAL"
                 ]
             },
             "ConversationType": {

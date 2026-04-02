@@ -2,9 +2,12 @@ package com.ord.features.conversation.services
 
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.models.conversation_activity.DailyActivityCount
 import com.ord.features.conversation.models.conversation_message.ConversationMessageEntity
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Instant
 import java.util.*
 
 interface ConversationMessageService {
@@ -39,4 +42,6 @@ interface ConversationMessageService {
         messageId: UUID,
         learningTips: AIMessageLearningTips
     ): Mono<ConversationMessageEntity>
+
+    fun countDailyMessages(userId: UUID, from: Instant, to: Instant): Flux<DailyActivityCount>
 }

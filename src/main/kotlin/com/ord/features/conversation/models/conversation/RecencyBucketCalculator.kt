@@ -37,7 +37,7 @@ fun computeRecencyBucket(activity: Instant, now: Instant): RecencyBucket {
         activityDate == today -> RecencyBucket.TODAY
         activityDate == yesterday -> RecencyBucket.YESTERDAY
         activityDate >= weekMonday && activityDate < today -> RecencyBucket.THIS_WEEK
-        activityDate.year == today.year && activityDate.month == today.month -> RecencyBucket.THIS_MONTH
+        activityDate.year == today.year && activityDate.month == today.month && activityDate < today -> RecencyBucket.THIS_MONTH
         else -> RecencyBucket.LATER
     }
 }

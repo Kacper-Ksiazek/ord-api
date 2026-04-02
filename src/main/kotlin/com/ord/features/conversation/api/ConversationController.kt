@@ -2,12 +2,14 @@ package com.ord.features.conversation.api
 
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
+import com.ord.features.conversation.api.facades.ConversationActivityFacade
 import com.ord.features.conversation.api.facades.ConversationCRUDFacade
 import com.ord.features.conversation.api.facades.ConversationAuxiliaryFacade
 import com.ord.features.conversation.api.requests.CreateConversationRequest
 import com.ord.features.conversation.api.requests.GenerateAIInterlocutorDataRequest
 import com.ord.features.conversation.api.requests.SuggestConversationTopicRequest
 import com.ord.features.conversation.models.conversation.ConversationDTO
+import com.ord.features.conversation.models.conversation_activity.ConversationActivityOverviewDTO
 import com.ord.features.conversation.models.conversation.ConversationListFilters
 import com.ord.features.conversation.models.conversation.ConversationSummaryDTO
 import com.ord.features.conversation.models.conversation.enums.ConversationType
@@ -36,6 +38,7 @@ import java.util.*
 class ConversationController(
     val conversationTopicFacade: ConversationAuxiliaryFacade,
     val conversationCRUDFacade: ConversationCRUDFacade,
+    val conversationActivityFacade: ConversationActivityFacade,
 ) {
     //
     // AUXILIARY ENDPOINTS - not directly related to any conversation
@@ -138,6 +141,31 @@ class ConversationController(
     ): Mono<ResponseEntity<List<ConversationSummaryDTO>>> = conversationCRUDFacade.getManyConversations(
         userId = user.id,
         filters = ConversationListFilters(search = search, recencyBucket = recencyBucket, type = type)
+    )
+
+
+    @GetMapping("/overview")
+    @Operation(
+        summary = "Get conversation activity overview",
+        description = "Retrieve activity metrics for the last 90 days: daily heatmap, weekly message/conversation trends, and totals"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Activity overview retrieved successfully"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()]
+            )
+        ]
+    )
+    fun getActivityOverview(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+    ): Mono<ResponseEntity<ConversationActivityOverviewDTO>> = conversationActivityFacade.getActivityOverview(
+        userId = user.id
     )
 
 
