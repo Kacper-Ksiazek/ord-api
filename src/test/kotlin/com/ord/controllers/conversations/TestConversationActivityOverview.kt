@@ -78,7 +78,12 @@ class TestConversationActivityOverview @Autowired constructor(
         ).block()!!
     }
 
-    private fun insertMessageAt(conversationId: UUID, createdAt: Instant, messageOrder: Int = 1) {
+    private fun insertMessageAt(
+        conversationId: UUID,
+        createdAt: Instant,
+        messageOrder: Int = 1,
+        sender: String = "USER",
+    ) {
         databaseClient.sql(
             """
             INSERT INTO conversation_messages (id, content, message_order, sender, conversation_id, created_at)
@@ -88,7 +93,7 @@ class TestConversationActivityOverview @Autowired constructor(
             .bind("id", UUID.randomUUID())
             .bind("content", "Test message")
             .bind("messageOrder", messageOrder)
-            .bind("sender", "USER")
+            .bind("sender", sender)
             .bind("conversationId", conversationId)
             .bind("createdAt", createdAt)
             .fetch()
@@ -135,16 +140,21 @@ class TestConversationActivityOverview @Autowired constructor(
             }
 
             @Test
-            fun `200 - should count conversations and messages correctly`() {
+            fun `200 - should count conversations and only USER messages`() {
                 val user = mockAuthenticatedUser()
                 val today = LocalDate.now(ZoneOffset.UTC)
 
                 val conv1 = createConversationAt(user.userInfo.id, instantOf(today))
                 val conv2 = createConversationAt(user.userInfo.id, instantOf(today.minusDays(1)))
 
-                insertMessageAt(conv1.id!!, instantOf(today), messageOrder = 1)
-                insertMessageAt(conv1.id!!, instantOf(today), messageOrder = 2)
-                insertMessageAt(conv2.id!!, instantOf(today.minusDays(1)), messageOrder = 1)
+                // USER messages — should be counted
+                insertMessageAt(conv1.id!!, instantOf(today), messageOrder = 1, sender = "USER")
+                insertMessageAt(conv1.id!!, instantOf(today), messageOrder = 3, sender = "USER")
+                insertMessageAt(conv2.id!!, instantOf(today.minusDays(1)), messageOrder = 1, sender = "USER")
+
+                // AI messages — should NOT be counted
+                insertMessageAt(conv1.id!!, instantOf(today), messageOrder = 2, sender = "AI")
+                insertMessageAt(conv2.id!!, instantOf(today.minusDays(1)), messageOrder = 2, sender = "AI")
 
                 val response = conversationAPIClient.getActivityOverview(user = user)
 

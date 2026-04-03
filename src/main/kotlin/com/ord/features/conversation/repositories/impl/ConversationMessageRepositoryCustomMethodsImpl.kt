@@ -52,6 +52,7 @@ class ConversationMessageRepositoryCustomMethodsImpl(
             FROM conversation_messages cm
             JOIN conversations c ON cm.conversation_id = c.id
             WHERE c.user_id = :userId
+              AND cm.sender = :sender
               AND cm.created_at >= :from
               AND cm.created_at < :to
             GROUP BY activity_date
@@ -61,6 +62,7 @@ class ConversationMessageRepositoryCustomMethodsImpl(
         return template.databaseClient
             .sql(query)
             .bind("userId", userId)
+            .bind("sender", ConversationMessageSender.USER.name)
             .bind("from", from)
             .bind("to", to)
             .map { row ->
