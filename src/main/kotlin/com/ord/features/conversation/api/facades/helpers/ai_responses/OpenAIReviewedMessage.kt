@@ -35,17 +35,19 @@ data class OpenAIReviewedMessage(
      * Converts empty strings to nulls and Lists to Sets.
      */
     fun toDomain(): ReviewedUserConversationMessage {
+        val isSabotage = sabotage.isNotEmpty()
         return ReviewedUserConversationMessage(
             sabotage = sabotage.ifEmpty { null },
-            correctedMessage = correctedMessage.ifEmpty { null },
+            isSabotage = isSabotage,
+            correctedMessage = if (isSabotage) null else correctedMessage.ifEmpty { null },
             tutorComment = tutorComment,
-            grammar = grammar,
-            vocabulary = vocabulary,
-            naturalness = naturalness,
-            coherenceWithContext = coherenceWithContext,
-            mistakes = mistakes.toSet(),
-            strengths = strengths.toSet(),
-            suggestions = suggestions.map { it.toDomain() }.toSet()
+            grammar = if (isSabotage) 0 else grammar,
+            vocabulary = if (isSabotage) 0 else vocabulary,
+            naturalness = if (isSabotage) 0 else naturalness,
+            coherenceWithContext = if (isSabotage) 0 else coherenceWithContext,
+            mistakes = if (isSabotage) emptySet() else mistakes.toSet(),
+            strengths = if (isSabotage) emptySet() else strengths.toSet(),
+            suggestions = if (isSabotage) emptySet() else suggestions.map { it.toDomain() }.toSet()
         )
     }
 }
