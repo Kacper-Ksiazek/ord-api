@@ -56,7 +56,7 @@ Your goal is to identify 2-4 valuable learning points from the AI's message that
     - FORMAL: Professional, academic, or official contexts (e.g., commence, endeavor, terminate, purchase)
     - INFORMAL: Standard conversational language (e.g., start, try, end, buy)
     - COLLOQUIAL: Casual, slangy, or very informal usage (e.g., kick off, give it a shot, wrap up, grab)
-  - **Native Language Equivalent**: Provide a translation or equivalent expression in the user's native language (%%generativeContentLanguage%%). Use empty string ("") if no direct equivalent exists or translation would not be helpful.
+  - **Native Language Equivalent**: Provide ONLY the translated word or phrase in the user's native language. Do NOT append language names, codes, or labels in parentheses. Use empty string ("") if no direct equivalent exists or translation would not be helpful.
 
 - **Phrase Tips** (0-2): Useful phrases, collocations, and idiomatic expressions
   - **Phrase Type Classification**:
