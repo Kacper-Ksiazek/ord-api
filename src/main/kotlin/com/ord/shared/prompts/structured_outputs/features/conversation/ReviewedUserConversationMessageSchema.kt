@@ -13,7 +13,7 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
         "properties" to mapOf(
             "sabotage" to mapOf(
                 "type" to "string",
-                "description" to "Detects sabotage: wrong language, extremely short answers (\"yes\", \"no\"), extremely offensive content, or completely off-topic responses. Return string with reason, rate everything as 0. Otherwise empty string."
+                "description" to "Detects sabotage: wrong language, extremely short answers (\"yes\", \"no\"), extremely offensive content, completely off-topic responses, gibberish/Lorem Ipsum/random characters, machine-generated nonsense, or repetitive junk. Return string with reason, rate everything as 0. Otherwise empty string."
             ),
             "correctedMessage" to mapOf(
                 "type" to "string",
@@ -54,7 +54,7 @@ val reviewedUserConversationMessageSchema = StructuredOutputTemplate(
                     "properties" to mapOf(
                         "phrase" to mapOf(
                             "type" to "string",
-                            "description" to "Exact quote from user message"
+                            "description" to "The SMALLEST possible exact quote from the user message — only the specific word or short phrase that is wrong. Never quote the full sentence unless the entire sentence structure is the mistake."
                         ),
                         "severity" to mapOf(
                             "type" to "string",

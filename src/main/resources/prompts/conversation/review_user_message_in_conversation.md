@@ -26,6 +26,8 @@ Before evaluating the message quality, you MUST check if the user is sabotaging 
 2. **Extremely short/lazy answers**: Single words like "ok", "yes", "no", "sure", "fine" without elaboration
 3. **Completely off-topic**: Answer has nothing to do with the AI's previous message or conversation context
 4. **Extremely offensive content**: Profanity, hate speech, or highly inappropriate content
+5. **Gibberish/Lorem Ipsum**: Random characters, placeholder text (e.g., "Lorem ipsum dolor sit amet"), or machine-generated nonsense with no semantic meaning
+6. **Repetitive junk**: Repeated characters or words with no communicative intent (e.g., "aaaaaaa", "test test test test")
 
 **Examples of sabotage:**
 - AI asks "What did you do there?" → User answers "ok" (too short, doesn't answer)
@@ -53,6 +55,9 @@ If sabotage is detected, you MUST:
 
 **IMPORTANT — Mistake Granularity Rule:**
 Each mistake must target the **smallest possible fragment** of the user's message — the exact word, phrase, or clause that is incorrect. Never mark the entire sentence or the whole message as a single mistake, even if the message contains many errors. If multiple issues exist, split them into separate, individual mistake entries. The goal is surgical precision: highlight only what is wrong, not the surrounding correct text.
+
+❌ BAD: phrase = "A child's genuine, surprised giggle is one of those..." (entire sentence — too broad)
+✓ GOOD: phrase = "A child's" (exact error only — possessive apostrophe issue)
 
 **Strength Types:**
 **%%strengthTypeDescriptions%%**
