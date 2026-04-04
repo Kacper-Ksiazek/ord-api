@@ -4,7 +4,7 @@ import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
-import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ConversationUserMessageAnalysisPayload
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetAnalysisForUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
@@ -195,7 +195,7 @@ class OngoingConversationController(
     fun generateAnalysis(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: GetAnalysisForUserConversationMessageRequest
-    ): Mono<ResponseEntity<ReviewedUserConversationMessage>> =
+    ): Mono<ResponseEntity<ConversationUserMessageAnalysisPayload>> =
         ongoingConversationFacade.generateAnalysisForUserMessage(user.id, body)
 
 }

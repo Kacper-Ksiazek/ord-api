@@ -2,7 +2,7 @@ package com.ord.features.conversation.api.facades
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
-import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ConversationUserMessageAnalysisPayload
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetAnalysisForUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
@@ -44,7 +44,7 @@ interface OngoingConversationFacade {
     fun generateAnalysisForUserMessage(
         userId: UUID,
         body: GetAnalysisForUserConversationMessageRequest
-    ): Mono<ResponseEntity<ReviewedUserConversationMessage>>
+    ): Mono<ResponseEntity<ConversationUserMessageAnalysisPayload>>
 
     /**
      * Generates learning tips for an existing AI message in a conversation.

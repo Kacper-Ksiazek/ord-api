@@ -11,6 +11,8 @@ data class ConversationUserMessageAnalysisEntity(
     @Id
     val id: UUID? = null,
 
+    val isSabotage: Boolean,
+
     val tutorComment: String,
     val correctedMessage: String?,
 

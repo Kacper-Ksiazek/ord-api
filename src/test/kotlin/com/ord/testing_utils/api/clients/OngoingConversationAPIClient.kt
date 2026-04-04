@@ -1,7 +1,7 @@
 package com.ord.testing_utils.api.clients
 
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
-import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ConversationUserMessageAnalysisPayload
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetAnalysisForUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
@@ -58,12 +58,12 @@ class OngoingConversationAPIClient(
     fun generateAnalysis(
         body: GetAnalysisForUserConversationMessageRequest,
         user: MockedAuthenticatedUser? = null
-    ): APIClientResponse<ReviewedUserConversationMessage?> {
+    ): APIClientResponse<ConversationUserMessageAnalysisPayload?> {
         return post(
             url = "$baseUrl/user/generate-analysis",
             body = body,
             user = user,
-            responseBodyType = object : ParameterizedTypeReference<ReviewedUserConversationMessage>() {}
+            responseBodyType = object : ParameterizedTypeReference<ConversationUserMessageAnalysisPayload>() {}
         )
     }
 

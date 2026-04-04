@@ -5,8 +5,14 @@ import com.ord.features.conversation.models.conversation_user_message_analysis.j
 import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageSuggestion
 import java.util.UUID
 
+/**
+ * Post-persistence representation of a user message analysis record from the database.
+ * Unlike [com.ord.features.conversation.api.facades.helpers.ai_responses.ConversationUserMessageAnalysisPayload], this includes persisted identifiers.
+ */
 data class ConversationUserMessageAnalysisDTO(
     val id: UUID,
+
+    val isSabotage: Boolean,
 
     val tutorComment: String,
 

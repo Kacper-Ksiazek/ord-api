@@ -12,7 +12,7 @@ import com.ord.features.conversation.models.conversation_user_message_analysis.j
  * Nullable fields use empty string ("") to represent null values, which are then
  * mapped to proper nulls in the domain model via `toDomain()`.
  *
- * Use `toDomain()` to convert this to `ReviewedUserConversationMessage` for application use.
+ * Use `toDomain()` to convert this to `ConversationUserMessageAnalysisPayload` for application use.
  */
 data class OpenAIReviewedMessage(
     val sabotage: String,  // Empty string if no sabotage
@@ -34,10 +34,9 @@ data class OpenAIReviewedMessage(
      * Maps OpenAI response to domain model.
      * Converts empty strings to nulls and Lists to Sets.
      */
-    fun toDomain(): ReviewedUserConversationMessage {
+    fun toDomain(): ConversationUserMessageAnalysisPayload {
         val isSabotage = sabotage.isNotEmpty()
-        return ReviewedUserConversationMessage(
-            sabotage = sabotage.ifEmpty { null },
+        return ConversationUserMessageAnalysisPayload(
             isSabotage = isSabotage,
             correctedMessage = if (isSabotage) null else correctedMessage.ifEmpty { null },
             tutorComment = tutorComment,

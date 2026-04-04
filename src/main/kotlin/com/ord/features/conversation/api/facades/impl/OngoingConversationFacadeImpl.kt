@@ -11,7 +11,7 @@ import com.ord.features.conversation.api.facades.OngoingConversationFacade
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.OpenAIAIMessageLearningTips
 import com.ord.features.conversation.api.facades.helpers.ai_responses.OpenAIReviewedMessage
-import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ConversationUserMessageAnalysisPayload
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetAnalysisForUserConversationMessageRequest
 import com.ord.features.conversation.api.requests.GetLearningTipsForAIMessageRequest
@@ -152,7 +152,7 @@ class OngoingConversationFacadeImpl(
     override fun generateAnalysisForUserMessage(
         userId: UUID,
         body: GetAnalysisForUserConversationMessageRequest
-    ): Mono<ResponseEntity<ReviewedUserConversationMessage>> {
+    ): Mono<ResponseEntity<ConversationUserMessageAnalysisPayload>> {
         return conversationService
             .findByIdOrFail(body.conversationId, userId)
             .map { conversationMapper.toDTO(it) }
