@@ -46,14 +46,14 @@ class Prompt(
             var content: String = PromptCache.loadPromptTemplate(variant)
 
             params.entries.forEach { (key, value) ->
-                val param = "**%%$key%%**"
+                val param = "{{$key}}"
                 content = content.replace(param, value)
             }
 
-            if (content.contains("**%%")) {
-                val missingParams = content.split("**%%")
-                    .filter { it.contains("%%") }
-                    .map { it.substringBefore("%%") }
+            if (content.contains("{{")) {
+                val missingParams = content.split("{{")
+                    .filter { it.contains("}}") }
+                    .map { it.substringBefore("}}") }
                     .distinct()
 
                 throw Exception("Missing prompt params: ${missingParams.joinToString(", ")}")

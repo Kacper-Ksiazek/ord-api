@@ -38,7 +38,7 @@ Clearly state what the AI needs to accomplish.
 
 **Examples:**
 - `Generate a personalized list of vocabulary suggestions for a language learner.`
-- `Generate a detailed manual entry for the following word: "**%%word%%**"`
+- `Generate a detailed manual entry for the following word: "{{word}}"`
 - `START a conversation with the user (your student) in the language of their choice.`
 
 **Best Practices:**
@@ -54,14 +54,14 @@ Provide all necessary contextual information using template variables.
 ```markdown
 ### CONTEXT:
 
-1. [Context Item 1]: **%%variable1%%**
-2. [Context Item 2]: **%%variable2%%**
-3. [Context Item 3]: **%%variable3%%**
+1. [Context Item 1]: {{variable1}}
+2. [Context Item 2]: {{variable2}}
+3. [Context Item 3]: {{variable3}}
 ```
 
 **Template Variables:**
-- Use the pattern `%%variableName%%` for all dynamic values
-- Wrap variables in bold markdown (`**%%variableName%%**`) for emphasis
+- Use the pattern `{{variableName}}` for all dynamic values
+- Wrap variables in bold markdown (`{{variableName}}`) for emphasis
 - Number context items for clarity
 - Include both required and optional context
 
@@ -140,8 +140,8 @@ interface Response {
 - Specify nullable fields with `| null`
 - Use descriptive interface names
 - Include nested interfaces when needed
-- Reference template variables in field descriptions (e.g., `Translation into **%%desiredLanguage%%**`)
-- Define enum values explicitly when applicable (e.g., `Values: **%%wordTypes%%**`)
+- Reference template variables in field descriptions (e.g., `Translation into {{desiredLanguage}}`)
+- Define enum values explicitly when applicable (e.g., `Values: {{wordTypes}}`)
 
 ---
 
@@ -167,7 +167,7 @@ Format output exactly as follows:
 ```markdown
 \`\`\`
 {"word": "lorem", "translation": "ipsum", "definition": "dolor sit amet consectetur"}
-**%%separator%%**
+{{separator}}
 {"word": "lorem", "translation": "ipsum", "definition": "dolor sit amet consectetur"}
 \`\`\`
 ```
@@ -227,23 +227,23 @@ Define how to handle error cases.
 
 ### ⚠️ CRITICAL RULE: Template Variable Formatting
 
-**ALL template variables MUST be wrapped in `**%%...%%**` (bold markdown with percent delimiters).**
+**ALL template variables MUST be wrapped in `{{...}}` (curly brace delimiters).**
 
 This is the ONLY acceptable format for template variables throughout the entire prompt file.
 
 ### ✅ Correct Format
 ```markdown
-**%%targetLanguage%%**
-**%%proficiency%%**
-**%%wordCount%%**
+{{targetLanguage}}
+{{proficiency}}
+{{wordCount}}
 ```
 
 ### ❌ Incorrect Formats
 ```markdown
-%%targetLanguage%%        ❌ Missing bold markdown
-**targetLanguage**        ❌ Missing percent delimiters
+**%%targetLanguage%%**    ❌ Wrong delimiter (old format)
+%%targetLanguage%%        ❌ Missing braces
+**targetLanguage**        ❌ Missing delimiters
 %targetLanguage%          ❌ Wrong delimiter
-{{targetLanguage}}        ❌ Wrong delimiter
 ${targetLanguage}         ❌ Wrong delimiter
 ```
 
@@ -253,7 +253,7 @@ Template variables should appear in:
 1. **CONTEXT section**: Define all variables here
 2. **GUIDELINES section**: Reference variables when needed
 3. **RESPONSE FORMAT section**: In JSDoc comments and descriptions
-4. **OUTPUT STRUCTURE section**: Show delimiter variables (e.g., `**%%separator%%**`)
+4. **OUTPUT STRUCTURE section**: Show delimiter variables (e.g., `{{separator}}`)
 5. **Throughout the prompt**: Whenever referencing dynamic values
 
 ### Examples in Context
@@ -261,38 +261,38 @@ Template variables should appear in:
 ```markdown
 ### CONTEXT:
 
-1. Target Learning Language: **%%targetLanguage%%**
-2. Learner Proficiency Level: **%%proficiency%%**
-3. Number of Words: **%%wordCount%%**
+1. Target Learning Language: {{targetLanguage}}
+2. Learner Proficiency Level: {{proficiency}}
+3. Number of Words: {{wordCount}}
 
 ### GUIDELINES:
 
-- Generate **%%wordCount%%** vocabulary suggestions
-- All words must be in **%%targetLanguage%%**
-- Appropriate for **%%proficiency%%** level
+- Generate {{wordCount}} vocabulary suggestions
+- All words must be in {{targetLanguage}}
+- Appropriate for {{proficiency}} level
 
 ### RESPONSE FORMAT:
 
 \`\`\`ts
 interface Response {
-    /** The word in **%%targetLanguage%%** */
+    /** The word in {{targetLanguage}} */
     word: string
 }
 \`\`\`
 ```
 
 ### Naming Conventions
-- Use camelCase: `%%targetLanguage%%`
-- Be descriptive: Prefer `%%generativeContentLanguage%%` over `%%gcl%%`
+- Use camelCase: `{{targetLanguage}}`
+- Be descriptive: Prefer `{{generativeContentLanguage}}` over `{{gcl}}`
 - Maintain consistency across prompts
 
 ### Common Variables
-- **Language**: `**%%targetLanguage%%**`, `**%%wordLanguage%%**`, `**%%translationLanguage%%**`
-- **Proficiency**: `**%%proficiency%%**`, `**%%level%%**`
-- **User Data**: `**%%userContext%%**`, `**%%existingWords%%**`, `**%%excludedWords%%**`
-- **Configuration**: `**%%wordCount%%**`, `**%%difficulty%%**`, `**%%separator%%**`
-- **Content**: `**%%word%%**`, `**%%words%%**`, `**%%topic%%**`, `**%%type%%**`
-- **Enums**: `**%%wordTypes%%**`, `**%%wordExtraMarks%%**`, `**%%wordGenders%%**`
+- **Language**: `{{targetLanguage}}`, `{{wordLanguage}}`, `{{translationLanguage}}`
+- **Proficiency**: `{{proficiency}}`, `{{level}}`
+- **User Data**: `{{userContext}}`, `{{existingWords}}`, `{{excludedWords}}`
+- **Configuration**: `{{wordCount}}`, `{{difficulty}}`, `{{separator}}`
+- **Content**: `{{word}}`, `{{words}}`, `{{topic}}`, `{{type}}`
+- **Enums**: `{{wordTypes}}`, `{{wordExtraMarks}}`, `{{wordGenders}}`
 
 ---
 
@@ -334,7 +334,7 @@ prompts/
 - Follow the same structure across all prompts
 - Use consistent terminology and variable names
 - Maintain consistent formatting
-- **ALWAYS use `**%%variableName%%**` format for all variables**
+- **ALWAYS use `{{variableName}}` format for all variables**
 
 ### 3. Completeness
 - Include all required sections
@@ -362,7 +362,7 @@ prompts/
 
 ### Proficiency-Based Adjustments
 ```markdown
-- Adjust depth and complexity based on **%%proficiency%%** level:
+- Adjust depth and complexity based on {{proficiency}} level:
   - **A1-A2**: [Beginner approach]
   - **B1-B2**: [Intermediate approach]
   - **C1-C2**: [Advanced approach]
@@ -374,20 +374,20 @@ prompts/
 
 The following [items] should be excluded (DO NOT [action]):
 
-**%%excludedItems%%**
+{{excludedItems}}
 ```
 
 ### Multi-Language Context
 ```markdown
-1. Target Learning Language: **%%targetLanguage%%**
-2. Translation Language: **%%translationLanguage%%**
-3. Generative Content Language: **%%generativeContentLanguage%%**
+1. Target Learning Language: {{targetLanguage}}
+2. Translation Language: {{translationLanguage}}
+3. Generative Content Language: {{generativeContentLanguage}}
 ```
 
 ### Emphasis on Specific Values
 Use bold and asterisks to emphasize critical values:
 ```markdown
-**CRITICAL**: Create the manual ONLY for the exact word "**%%word%%**" in **%%wordLanguage%%** language.
+**CRITICAL**: Create the manual ONLY for the exact word "{{word}}" in {{wordLanguage}} language.
 ```
 
 ### Optional Fields Pattern
@@ -409,7 +409,7 @@ Generate some words for the user.
 
 ### ✅ Do: Specific Instructions
 ```markdown
-Generate **%%wordCount%%** vocabulary suggestions appropriate for **%%proficiency%%** level.
+Generate {{wordCount}} vocabulary suggestions appropriate for {{proficiency}} level.
 ```
 
 ---
@@ -442,37 +442,37 @@ Generate vocabulary for the user.
 ```markdown
 ### CONTEXT:
 
-1. Target Language: **%%targetLanguage%%**
-2. Proficiency Level: **%%proficiency%%**
-3. Existing Vocabulary: **%%existingWords%%**
+1. Target Language: {{targetLanguage}}
+2. Proficiency Level: {{proficiency}}
+3. Existing Vocabulary: {{existingWords}}
 ```
 
 ---
 
 ### ❌ Don't: Inconsistent Variable Names
 ```markdown
-**%%lang%%**, **%%language%%**, **%%targetLang%%**
+{{lang}}, {{language}}, {{targetLang}}
 ```
 
 ### ✅ Do: Consistent Naming
 ```markdown
-**%%targetLanguage%%**, **%%translationLanguage%%**, **%%wordLanguage%%**
+{{targetLanguage}}, {{translationLanguage}}, {{wordLanguage}}
 ```
 
 ---
 
 ### ❌ Don't: Incorrect Variable Format
 ```markdown
-%%targetLanguage%%        ❌ Missing bold
-**targetLanguage**        ❌ Missing delimiters
-%targetLanguage%          ❌ Wrong delimiters
+**%%targetLanguage%%**    ❌ Old format with bold + percent delimiters
+{{targetLanguage}         ❌ Missing closing brace
+targetLanguage}}          ❌ Missing opening brace
 ```
 
 ### ✅ Do: Correct Variable Format
 ```markdown
-**%%targetLanguage%%**    ✅ Bold + percent delimiters
-**%%proficiency%%**       ✅ Correct format
-**%%wordCount%%**         ✅ Correct format
+{{targetLanguage}}    ✅ Curly brace delimiters
+{{proficiency}}       ✅ Correct format
+{{wordCount}}         ✅ Correct format
 ```
 
 ---
@@ -481,7 +481,7 @@ Generate vocabulary for the user.
 
 When creating or modifying prompts:
 
-1. **Verify variable format**: Ensure ALL variables use `**%%variableName%%**`
+1. **Verify variable format**: Ensure ALL variables use `{{variableName}}`
 2. **Test with edge cases**: Empty lists, unusual inputs, boundary conditions
 3. **Verify parsing**: Ensure delimiters and formats work correctly
 4. **Check consistency**: Compare with similar prompts

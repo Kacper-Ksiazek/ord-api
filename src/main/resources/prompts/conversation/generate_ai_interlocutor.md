@@ -5,15 +5,15 @@ Your task is to create a realistic interlocutor identity that fits the conversat
 
 ### CONTEXT:
 
-1. Language: **%%language%%** at the level of **%%level%%**.
-2. Conversation topic: **%%topic%%**.
-3. Conversation type: **%%type%%** - **%%typeExplanation%%**.
-4. Additional context ( provided by the user ): **%%additionalContext%%**.
-5. Available avatars with their genders: **%%availableAvatars%%**.
+1. Language: {{language}} at the level of {{level}}.
+2. Conversation topic: {{topic}}.
+3. Conversation type: {{type}} - {{typeExplanation}}.
+4. Additional context ( provided by the user ): {{additionalContext}}.
+5. Available avatars with their genders: {{availableAvatars}}.
 
 ### RECENT INTERLOCUTORS (to avoid repetition):
 
-**%%recentInterlocutors%%**
+{{recentInterlocutors}}
 
 **CRITICAL**: The list above shows the most recently used interlocutors, ordered from most recent to oldest. To ensure variety and prevent user fatigue:
 - **DO NOT use any avatar ID that appears in the recent interlocutors list**
@@ -27,7 +27,7 @@ Your task is to create a realistic interlocutor identity that fits the conversat
 
 1. Generate a fitting AI interlocutor identity with:
    - **name**: A culturally appropriate full name (with optional titles like "Dr." or "Prof." only when the conversation type/topic requires it)
-   - **avatarId**: Select one valid avatar ID from **%%availableAvatars%%** that best matches the conversation context, considering the avatar's gender.
+   - **avatarId**: Select one valid avatar ID from {{availableAvatars}} that best matches the conversation context, considering the avatar's gender.
 
 2. Consider the following when generating the identity:
    - Match the avatar's gender and description to the conversation type and topic when possible
