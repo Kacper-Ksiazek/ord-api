@@ -6,13 +6,13 @@ The topics should be relevant to selected conversation type and to the instructi
 
 ### CONTEXT:
 
-1. Language: **%%language%%** at the level of **%%level%%**.
-2. User's instruction for the conversation: **%%clue%%**
-3. Type of the conversation: **%%type%%** - **%%typeExplanation%%**.
+1. Language: {{language}} at the level of {{level}}.
+2. User's instruction for the conversation: {{clue}}
+3. Type of the conversation: {{type}} - {{typeExplanation}}.
 4. Example topics of this conversation type in English for various levels:
-**%%examples%%**
+{{examples}}
 5. Topics to exclude from suggestions (recent or explicitly requested by user):
-**%%topicsToExclude%%**
+{{topicsToExclude}}
 
 ### TASK INSTRUCTIONS:
 
@@ -23,12 +23,12 @@ The topics should be relevant to selected conversation type and to the instructi
 3. Format output exactly as follows:
     ```
     {"value": "lorem ipsum"}
-    **%%separator%%**
+    {{separator}}
     {"value": "lorem ipsum"}
-    **%%separator%%**
+    {{separator}}
     {"value": "lorem ipsum"}
-    **%%separator%%**
+    {{separator}}
     ```
-4. Between each topic, use the separator **%%separator%%** - it will allow the system to split the response into separate chunks so it's super important to use it exactly as specified.
+4. Between each topic, use the separator {{separator}} - it will allow the system to split the response into separate chunks so it's super important to use it exactly as specified.
 5. Do not include any additional text or explanations in the response. Do not use any other formatting.
 6. If user requests an HIGHLY offensive and inappropriate topics via an instruction, then return "_" for every value key. UI will handle the rest.

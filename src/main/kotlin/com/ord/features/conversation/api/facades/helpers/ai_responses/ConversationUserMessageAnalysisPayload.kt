@@ -4,8 +4,12 @@ import com.ord.features.conversation.models.conversation_user_message_analysis.j
 import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageStrength
 import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageSuggestion
 
-data class ReviewedUserConversationMessage(
-    val sabotage: String? = null,
+/**
+ * Pre-persistence AI analysis payload returned by OpenAI structured output.
+ * Contains transient fields (e.g. isSabotage) that are not persisted to the database.
+ */
+data class ConversationUserMessageAnalysisPayload(
+    val isSabotage: Boolean,
 
     val correctedMessage: String?,
     val tutorComment: String,

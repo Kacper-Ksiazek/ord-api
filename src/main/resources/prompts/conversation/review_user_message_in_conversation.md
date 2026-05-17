@@ -5,16 +5,16 @@ Your task is to review the user message in the conversation and provide detailed
 
 ### CONTEXT:
 
-1. Language: **%%language%%** at the level of **%%level%%**.
-2. Conversation topic: **%%topic%%**.
-3. Conversation type: **%%type%%** - **%%typeExplanation%%**.
-4. Additional context for the conversation: **%%additionalContext%%**.
-5. Conversation tone: **%%tone%%** - **%%toneInstruction%%**.
-6. Last AI message (second person in convo): **%%latestAIMessage%%**.
-7. Language of the content to be generated: **%%generativeContentLanguage%%** - Use this language for all auxiliary content (explanations, feedback messages, descriptions). However, learning-relevant content such as quoted mistakes, correct forms, example sentences, and any direct language material must ALWAYS remain in **%%language%%**.
+1. Language: {{language}} at the level of {{level}}.
+2. Conversation topic: {{topic}}.
+3. Conversation type: {{type}} - {{typeExplanation}}.
+4. Additional context for the conversation: {{additionalContext}}.
+5. Conversation tone: {{tone}} - {{toneInstruction}}.
+6. Last AI message (second person in convo): {{latestAIMessage}}.
+7. Language of the content to be generated: {{generativeContentLanguage}} - Use this language for all auxiliary content (explanations, feedback messages, descriptions). However, learning-relevant content such as quoted mistakes, correct forms, example sentences, and any direct language material must ALWAYS remain in {{language}}.
 
 ### USER MESSAGE TO REVIEW:
-**%%userMessage%%**
+{{userMessage}}
 
 ### TASK INSTRUCTIONS:
 
@@ -22,10 +22,12 @@ Your task is to review the user message in the conversation and provide detailed
 
 Before evaluating the message quality, you MUST check if the user is sabotaging the conversation. If ANY of these conditions are true, set `sabotage` field with the reason and rate ALL scores as 0:
 
-1. **Wrong language**: User wrote in a different language than **%%language%%**
+1. **Wrong language**: User wrote in a different language than {{language}}
 2. **Extremely short/lazy answers**: Single words like "ok", "yes", "no", "sure", "fine" without elaboration
 3. **Completely off-topic**: Answer has nothing to do with the AI's previous message or conversation context
 4. **Extremely offensive content**: Profanity, hate speech, or highly inappropriate content
+5. **Gibberish/Lorem Ipsum**: Random characters, placeholder text (e.g., "Lorem ipsum dolor sit amet"), or machine-generated nonsense with no semantic meaning
+6. **Repetitive junk**: Repeated characters or words with no communicative intent (e.g., "aaaaaaa", "test test test test")
 
 **Examples of sabotage:**
 - AI asks "What did you do there?" → User answers "ok" (too short, doesn't answer)
@@ -45,23 +47,26 @@ If sabotage is detected, you MUST:
 - Provide specific, actionable corrections rather than general advice
 - Celebrate what the user did well (positive reinforcement improves learning)
 - Prioritize mistakes by severity to help user focus on what matters most
-- Tailor feedback complexity to the user's level (**%%level%%**)
+- Tailor feedback complexity to the user's level ({{level}})
 - Keep feedback casual and useful - avoid overly meticulous suggestions like adding quotation marks for readability or minor stylistic preferences that don't affect language learning
 
 **Mistake Severity Levels:**
-**%%mistakeSeverityDescriptions%%**
+{{mistakeSeverityDescriptions}}
 
 **IMPORTANT — Mistake Granularity Rule:**
 Each mistake must target the **smallest possible fragment** of the user's message — the exact word, phrase, or clause that is incorrect. Never mark the entire sentence or the whole message as a single mistake, even if the message contains many errors. If multiple issues exist, split them into separate, individual mistake entries. The goal is surgical precision: highlight only what is wrong, not the surrounding correct text.
 
+❌ BAD: phrase = "A child's genuine, surprised giggle is one of those..." (entire sentence — too broad)
+✓ GOOD: phrase = "A child's" (exact error only — possessive apostrophe issue)
+
 **Strength Types:**
-**%%strengthTypeDescriptions%%**
+{{strengthTypeDescriptions}}
 
 **Suggestion Types:**
 
 **IMPORTANT:** The suggestions field is for learning guidance only - NOT for fixing errors. Use the `mistakes` field to correct errors. Suggestions should point the user toward better/more sophisticated alternatives when their phrasing is already correct but could be enhanced.
 
-**%%suggestionTypeDescriptions%%**
+{{suggestionTypeDescriptions}}
 
 ### LEVEL CONSIDERATIONS:
 
@@ -76,7 +81,7 @@ Provide a short, honest comment (1-2 sentences) as if you were a real language t
 **Guidelines:**
 - **Priority**: Usefulness and honesty FIRST - be supportive but realistic
 - **Length**: 1-2 sentences maximum
-- **Language**: MUST be in **%%generativeContentLanguage%%**
+- **Language**: MUST be in {{generativeContentLanguage}}
 - **Content**: Focus on the MOST ACTIONABLE takeaway. Match tone to actual performance.
 
 **Examples:**

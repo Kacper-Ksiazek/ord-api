@@ -17,6 +17,7 @@ class ConversationUserMessageAnalysisMapper(
     override fun toDTO(entity: ConversationUserMessageAnalysisEntity): ConversationUserMessageAnalysisDTO {
         return ConversationUserMessageAnalysisDTO(
             id = entity.id ?: error("ConversationUserMessageAnalysis id must not be null"),
+            isSabotage = entity.isSabotage,
             tutorComment = entity.tutorComment,
             correctedMessage = entity.correctedMessage,
             grammar = entity.grammar,
@@ -33,6 +34,7 @@ class ConversationUserMessageAnalysisMapper(
     override fun toEntity(dto: ConversationUserMessageAnalysisDTO): ConversationUserMessageAnalysisEntity {
         return ConversationUserMessageAnalysisEntity(
             id = dto.id,
+            isSabotage = dto.isSabotage,
             tutorComment = dto.tutorComment,
             correctedMessage = dto.correctedMessage,
             grammar = dto.grammar,

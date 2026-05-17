@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS conversation_user_message_analysis
 (
     id                     UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
 
+    is_sabotage            BOOLEAN NOT NULL DEFAULT FALSE,
+
     tutor_comment          TEXT  NOT NULL,
     corrected_message      TEXT,
 

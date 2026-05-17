@@ -1,7 +1,7 @@
 package com.ord.features.conversation.services
 
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
-import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ConversationUserMessageAnalysisPayload
 import com.ord.features.conversation.models.conversation_activity.DailyActivityCount
 import com.ord.features.conversation.models.conversation_message.ConversationMessageEntity
 import com.ord.features.conversation.models.conversation_message.enums.ConversationMessageSender
@@ -23,7 +23,7 @@ interface ConversationMessageService {
         conversationId: UUID,
         messageOrder: Int,
         content: String,
-        aiAnalysis: ReviewedUserConversationMessage
+        aiAnalysis: ConversationUserMessageAnalysisPayload
     ): Mono<ConversationMessageEntity>
 
     fun saveUserMessageWithId(
@@ -35,7 +35,7 @@ interface ConversationMessageService {
 
     fun saveAnalysisForExistingMessage(
         messageId: UUID,
-        aiAnalysis: ReviewedUserConversationMessage
+        aiAnalysis: ConversationUserMessageAnalysisPayload
     ): Mono<Void>
 
     fun saveLearningTipsForExistingMessage(

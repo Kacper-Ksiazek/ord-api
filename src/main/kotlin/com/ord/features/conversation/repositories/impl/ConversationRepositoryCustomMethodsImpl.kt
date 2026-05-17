@@ -110,6 +110,7 @@ class ConversationRepositoryCustomMethodsImpl(
                 m.created_at as message_created_at,
                 -- User message: Analysis
                 f.id as analysis_id,
+                f.is_sabotage as analysis_is_sabotage,
                 f.tutor_comment as analysis_tutor_comment,
                 f.corrected_message as analysis_corrected_message,
                 f.grammar as analysis_grammar,
@@ -154,6 +155,7 @@ class ConversationRepositoryCustomMethodsImpl(
                             val analysis = if (row["analysis_id"] != null) {
                                 ConversationUserMessageAnalysisDTO(
                                     id = row["analysis_id"] as UUID,
+                                    isSabotage = row["analysis_is_sabotage"] as Boolean,
                                     tutorComment = row["analysis_tutor_comment"] as String,
                                     grammar = row["analysis_grammar"] as Int,
                                     vocabulary = row["analysis_vocabulary"] as Int,

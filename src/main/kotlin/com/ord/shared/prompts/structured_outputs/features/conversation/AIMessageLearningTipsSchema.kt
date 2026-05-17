@@ -39,7 +39,7 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                         ),
                         "nativeLanguageEquivalent" to mapOf(
                             "type" to "string",
-                            "description" to "Explanation of how this grammar structure is expressed in user's native language (in generativeContentLanguage). Use empty string if not applicable. For multiple equivalents, separate with / (e.g., 'option1 / option2')."
+                            "description" to "Explanation of how this grammar structure is expressed in user's native language. Pure translation only — do NOT append language names or codes. Use empty string if not applicable. For multiple equivalents, separate with / (e.g., 'option1 / option2')."
                         )
                     ),
                     "required" to listOf("phrase", "explanation", "grammarPoint", "exampleSentences", "register", "nativeLanguageEquivalent"),
@@ -81,7 +81,7 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                         ),
                         "nativeLanguageEquivalent" to mapOf(
                             "type" to "string",
-                            "description" to "Translation or equivalent in user's native language (in generativeContentLanguage). Use empty string if no direct equivalent exists. For multiple equivalents, separate with / (e.g., 'translation1 / translation2')."
+                            "description" to "Pure translation only — do NOT append language names or codes. Use empty string if no direct equivalent exists. For multiple equivalents, separate with / (e.g., 'translation1 / translation2')."
                         )
                     ),
                     "required" to listOf(
@@ -127,7 +127,7 @@ val aiMessageLearningTipsSchema = StructuredOutputTemplate(
                         ),
                         "nativeLanguageEquivalent" to mapOf(
                             "type" to "string",
-                            "description" to "Translation or equivalent in user's native language (in generativeContentLanguage). Use empty string if no direct equivalent exists. For multiple equivalents, separate with / (e.g., 'translation1 / translation2')."
+                            "description" to "Pure translation only — do NOT append language names or codes. Use empty string if no direct equivalent exists. For multiple equivalents, separate with / (e.g., 'translation1 / translation2')."
                         )
                     ),
                     "required" to listOf("phrase", "phraseType", "meaning", "exampleSentences", "register", "nativeLanguageEquivalent"),

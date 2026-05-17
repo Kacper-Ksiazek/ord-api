@@ -1,7 +1,7 @@
 package com.ord.features.conversation.services.impl
 
 import com.ord.features.conversation.api.facades.helpers.ai_responses.AIMessageLearningTips
-import com.ord.features.conversation.api.facades.helpers.ai_responses.ReviewedUserConversationMessage
+import com.ord.features.conversation.api.facades.helpers.ai_responses.ConversationUserMessageAnalysisPayload
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsEntity
 import com.ord.features.conversation.models.conversation_ai_message_learning_tips.ConversationAIMessageLearningTipsMapper
 import com.ord.features.conversation.models.conversation_message.ConversationMessageEntity
@@ -55,7 +55,7 @@ class ConversationMessageServiceImpl(
         conversationId: UUID,
         messageOrder: Int,
         content: String,
-        aiAnalysis: ReviewedUserConversationMessage
+        aiAnalysis: ConversationUserMessageAnalysisPayload
     ): Mono<ConversationMessageEntity> {
         return conversationMessageRepository
             .save(
@@ -70,6 +70,7 @@ class ConversationMessageServiceImpl(
                 conversationUserMessageAnalysisRepository
                     .save(
                         ConversationUserMessageAnalysisEntity(
+                            isSabotage = aiAnalysis.isSabotage,
                             tutorComment = aiAnalysis.tutorComment,
                             correctedMessage = aiAnalysis.correctedMessage,
                             grammar = aiAnalysis.grammar,
@@ -123,11 +124,12 @@ class ConversationMessageServiceImpl(
 
     override fun saveAnalysisForExistingMessage(
         messageId: UUID,
-        aiAnalysis: ReviewedUserConversationMessage
+        aiAnalysis: ConversationUserMessageAnalysisPayload
     ): Mono<Void> {
         return conversationUserMessageAnalysisRepository
             .save(
                 ConversationUserMessageAnalysisEntity(
+                    isSabotage = aiAnalysis.isSabotage,
                     tutorComment = aiAnalysis.tutorComment,
                     correctedMessage = aiAnalysis.correctedMessage,
                     grammar = aiAnalysis.grammar,

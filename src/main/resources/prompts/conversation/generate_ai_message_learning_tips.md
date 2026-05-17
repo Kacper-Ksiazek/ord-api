@@ -5,25 +5,25 @@ Your task is to extract and explain useful learning points from the AI's message
 
 ### CONTEXT:
 
-1. Language: **%%language%%** at the level of **%%level%%**.
-2. Conversation topic: **%%topic%%**.
-3. Conversation type: **%%type%%** - **%%typeExplanation%%**.
-4. Additional context for the conversation: **%%additionalContext%%**.
-5. Conversation tone: **%%tone%%** - **%%toneInstruction%%**.
-6. Language of explanations: **%%generativeContentLanguage%%** - Use this language for all explanations, definitions, and notes. However, all quoted phrases, words, and examples must ALWAYS remain in **%%language%%**.
+1. Language: {{language}} at the level of {{level}}.
+2. Conversation topic: {{topic}}.
+3. Conversation type: {{type}} - {{typeExplanation}}.
+4. Additional context for the conversation: {{additionalContext}}.
+5. Conversation tone: {{tone}} - {{toneInstruction}}.
+6. Language of explanations: {{generativeContentLanguage}} - Use this language for all explanations, definitions, and notes. However, all quoted phrases, words, and examples must ALWAYS remain in {{language}}.
 
 ### USER DETAILS:
 
-1. Proficiency level: **%%level%%** - Adapt complexity and selection of tips to this level.
-2. Native language: **%%nativeLanguage%%** - use this as the target language for all `nativeLanguageEquivalent` fields
+1. Proficiency level: {{level}} - Adapt complexity and selection of tips to this level.
+2. Native language: {{nativeLanguage}} - use this as the target language for all `nativeLanguageEquivalent` fields
 
 ### AI MESSAGE TO ANALYZE:
 
-**%%aiMessage%%**
+{{aiMessage}}
 
 ### TASK INSTRUCTIONS:
 
-Your goal is to identify 2-4 valuable learning points from the AI's message that would benefit a **%%level%%** learner. Focus on elements that:
+Your goal is to identify 2-4 valuable learning points from the AI's message that would benefit a {{level}} learner. Focus on elements that:
 - Are appropriate for the user's proficiency level
 - Provide practical learning value
 - Are actually present in the AI message (use exact quotes)
@@ -52,11 +52,12 @@ Your goal is to identify 2-4 valuable learning points from the AI's message that
   - Must be appropriately challenging (not too basic, not impossibly hard)
   - Include word type to categorize the word/phrase (NOUN, VERB, ADJECTIVE, ADVERB, IDIOM, PHRASE)
   - Focus on useful, versatile words rather than ultra-specific terms
+  - **MANDATORY**: Every vocabulary tip MUST include a `nativeLanguageEquivalent` in {{nativeLanguage}}. This is essential for learning. Only omit if the term is truly untranslatable (rare).
   - **Register Classification**: Indicate the formality level of the word/phrase
     - FORMAL: Professional, academic, or official contexts (e.g., commence, endeavor, terminate, purchase)
     - INFORMAL: Standard conversational language (e.g., start, try, end, buy)
     - COLLOQUIAL: Casual, slangy, or very informal usage (e.g., kick off, give it a shot, wrap up, grab)
-  - **Native Language Equivalent**: Provide a translation or equivalent expression in the user's native language (%%generativeContentLanguage%%). Use empty string ("") if no direct equivalent exists or translation would not be helpful.
+  - **Native Language Equivalent**: ALWAYS provide a translation in the user's native language ({{nativeLanguage}}). Do NOT append language names, codes, or labels in parentheses. Include the translation even if it's approximate or requires slight adjustment in meaning. ONLY use empty string ("") in extremely rare cases where the term is language-specific (e.g., grammatical case names, language-specific cultural concepts with no equivalent). For ~95% of vocabulary tips, always include this field.
 
 - **Phrase Tips** (0-2): Useful phrases, collocations, and idiomatic expressions
   - **Phrase Type Classification**:
@@ -155,8 +156,8 @@ When assigning register to tips, consider the context in which the phrase/word/s
 
 **LANGUAGE RULES:**
 
-- ALL explanations, definitions, meanings, notes: **%%generativeContentLanguage%%**
-- ALL phrases, words, examples being taught: **%%language%%**
+- ALL explanations, definitions, meanings, notes: {{generativeContentLanguage}}
+- ALL phrases, words, examples being taught: {{language}}
 - Never mix languages within a single field
 
 **OUTPUT FORMAT:**
