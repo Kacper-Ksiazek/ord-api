@@ -6,8 +6,9 @@ import com.ord.features.quickly_added_words.api.facades.QAWFacade
 import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
 import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
+import com.ord.features.quickly_added_words.api.responses.QAWOverviewResponse
+import com.ord.features.quickly_added_words.api.responses.QAWPaginatedDataResponse
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
-import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -91,7 +92,7 @@ class QuicklyAddedWordsController(
     @GetMapping("/")
     @Operation(
         summary = "Get quickly added words with pagination",
-        description = "Retrieves a paginated list of quickly added words for the authenticated user."
+        description = "Retrieves a paginated list of quickly added words for the authenticated user. Optionally filter by approval status. When isApproved is omitted, unapprovedCount is included in the response."
     )
     @ApiResponses(
         value = [
@@ -106,12 +107,33 @@ class QuicklyAddedWordsController(
     fun getManyQAWs(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Parameter(description = "Page number (0-indexed)", example = "0") @RequestParam(required = false) page: Int?,
-        @Parameter(description = "Number of items per page", example = "20") @RequestParam(required = false) perPage: Int?
-    ): Mono<ResponseEntity<PaginatedDataResponse<QuicklyAddedWordDTO>>> = qawFacade.getManyQAWs(
+        @Parameter(description = "Number of items per page", example = "20") @RequestParam(required = false) perPage: Int?,
+        @Parameter(description = "Filter by approval status. When omitted, all words are returned and unapprovedCount is included.", example = "false") @RequestParam(required = false) isApproved: Boolean?,
+    ): Mono<ResponseEntity<QAWPaginatedDataResponse>> = qawFacade.getManyQAWs(
         userId = user.id,
         page = page,
-        perPage = perPage
+        perPage = perPage,
+        isApproved = isApproved,
     )
+
+    @GetMapping("/overview")
+    @Operation(
+        summary = "Get quickly added words overview",
+        description = "Returns total counts of quickly added words split by approval status."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Overview retrieved successfully",
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = QAWOverviewResponse::class))]
+            ),
+            ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
+        ]
+    )
+    fun getOverview(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+    ): Mono<ResponseEntity<QAWOverviewResponse>> = qawFacade.getOverview(userId = user.id)
 
     // -------
     // UPDATE

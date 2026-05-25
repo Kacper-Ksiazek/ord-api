@@ -3,6 +3,8 @@ package com.ord.features.quickly_added_words.api.facades
 import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
 import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
+import com.ord.features.quickly_added_words.api.responses.QAWOverviewResponse
+import com.ord.features.quickly_added_words.api.responses.QAWPaginatedDataResponse
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import org.springframework.http.ResponseEntity
@@ -32,8 +34,11 @@ interface QAWFacade {
     fun getManyQAWs(
         userId: UUID,
         page: Int? = 1,
-        perPage: Int? = 50
-    ): Mono<ResponseEntity<PaginatedDataResponse<QuicklyAddedWordDTO>>>
+        perPage: Int? = 50,
+        isApproved: Boolean? = null,
+    ): Mono<ResponseEntity<QAWPaginatedDataResponse>>
+
+    fun getOverview(userId: UUID): Mono<ResponseEntity<QAWOverviewResponse>>
 
 
     /*
