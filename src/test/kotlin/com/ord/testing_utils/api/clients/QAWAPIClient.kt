@@ -3,8 +3,9 @@ package com.ord.testing_utils.api.clients
 import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
 import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
+import com.ord.features.quickly_added_words.api.responses.QAWOverviewResponse
+import com.ord.features.quickly_added_words.api.responses.QAWPaginatedDataResponse
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
-import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -44,17 +45,29 @@ class QAWAPIClient(
     fun getManyQAWs(
         page: Int? = null,
         perPage: Int? = null,
+        isApproved: Boolean? = null,
         user: MockedAuthenticatedUser? = null
-    ): APIClientResponse<PaginatedDataResponse<QuicklyAddedWordDTO>?> {
+    ): APIClientResponse<QAWPaginatedDataResponse?> {
         val queryParams = mutableMapOf<String, String>()
         page?.let { queryParams["page"] = it.toString() }
         perPage?.let { queryParams["perPage"] = it.toString() }
+        isApproved?.let { queryParams["isApproved"] = it.toString() }
 
         return get(
             url = "$baseUrl/",
             user = user,
             queryParams = queryParams,
-            responseBodyType = object : ParameterizedTypeReference<PaginatedDataResponse<QuicklyAddedWordDTO>>() {}
+            responseBodyType = object : ParameterizedTypeReference<QAWPaginatedDataResponse>() {}
+        )
+    }
+
+    fun getOverview(
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<QAWOverviewResponse?> {
+        return get(
+            url = "$baseUrl/overview",
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<QAWOverviewResponse>() {}
         )
     }
 

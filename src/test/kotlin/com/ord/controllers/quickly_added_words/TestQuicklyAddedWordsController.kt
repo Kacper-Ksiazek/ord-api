@@ -395,6 +395,78 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 response.body!!.data shouldHaveSize 1
                 response.body.data[0].word shouldBe TestData.TEST_WORD_1
             }
+
+            @Test
+            fun `200 - should return unapproved count when isApproved filter is not provided`() {
+                val user = mockAuthenticatedUser()
+                val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
+
+                qawAPIClient.bulkCreate(TestData.APIRequestPayloads.createBulk, user)
+                publicClient.publicBulkCreate(
+                    com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(
+                            PublicQAWWordItem(word = "pending1"),
+                            PublicQAWWordItem(word = "pending2"),
+                        ),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                val response = qawAPIClient.getManyQAWs(user = user)
+
+                response.status shouldBe HttpStatus.OK
+                response.body!!.data shouldHaveSize 5
+                response.body.unapprovedCount shouldBe 2
+            }
+
+            @Test
+            fun `200 - should filter by isApproved=false`() {
+                val user = mockAuthenticatedUser()
+                val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
+
+                qawAPIClient.createOne(TestData.APIRequestPayloads.createOne, user)
+                publicClient.publicBulkCreate(
+                    com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(PublicQAWWordItem(word = "pending")),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                val response = qawAPIClient.getManyQAWs(isApproved = false, user = user)
+
+                response.status shouldBe HttpStatus.OK
+                response.body!!.data shouldHaveSize 1
+                response.body.data[0].word shouldBe "pending"
+                response.body.data[0].isApproved shouldBe false
+                response.body.pagination.totalResults shouldBe 1
+                response.body.unapprovedCount shouldBe null
+            }
+
+            @Test
+            fun `200 - should filter by isApproved=true`() {
+                val user = mockAuthenticatedUser()
+                val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
+
+                qawAPIClient.createOne(TestData.APIRequestPayloads.createOne, user)
+                publicClient.publicBulkCreate(
+                    com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
+                        userEmail = user.email,
+                        words = listOf(PublicQAWWordItem(word = "pending")),
+                        language = TestData.TEST_LANGUAGE
+                    )
+                )
+
+                val response = qawAPIClient.getManyQAWs(isApproved = true, user = user)
+
+                response.status shouldBe HttpStatus.OK
+                response.body!!.data shouldHaveSize 1
+                response.body.data[0].word shouldBe TestData.TEST_WORD_1
+                response.body.data[0].isApproved shouldBe true
+                response.body.pagination.totalResults shouldBe 1
+                response.body.unapprovedCount shouldBe null
+            }
         }
 
         @Nested
