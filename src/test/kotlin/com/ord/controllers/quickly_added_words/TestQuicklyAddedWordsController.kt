@@ -17,12 +17,17 @@ import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
 import com.ord.features.quickly_added_words.repositories.QAWRepository
 import com.ord.testing_utils.api.clients.QAWAPIClient
 import com.ord.testing_utils.api.dto.APIClientResponse
+import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
+import java.util.stream.Stream
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
@@ -101,6 +106,15 @@ class TestQuicklyAddedWordsController @Autowired constructor(
     @AfterEach
     fun cleanup() {
         qawRepository.deleteAll().block()
+    }
+
+    companion object {
+        @JvmStatic
+        fun isApprovedFilterCases(): Stream<Arguments> = Stream.of(
+            Arguments.of(true, 1, null as Long?, true),
+            Arguments.of(false, 1, null as Long?, false),
+            Arguments.of(null as Boolean?, 2, 1L, null as Boolean?),
+        )
     }
 
     @Nested
@@ -420,33 +434,40 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                 response.body.unapprovedCount shouldBe 2
             }
 
-            @Test
-            fun `200 - should filter by isApproved=false`() {
+            @ParameterizedTest(name = "isApproved={0}")
+            @MethodSource("com.ord.controllers.quickly_added_words.TestQuicklyAddedWordsController#isApprovedFilterCases")
+            fun `200 - should filter quickly added words by isApproved query param`(
+                isApproved: Boolean?,
+                expectedTotal: Int,
+                expectedUnapprovedCount: Long?,
+                expectedItemIsApproved: Boolean?,
+            ) {
                 val user = mockAuthenticatedUser()
-                val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
+                seedApprovedAndUnapprovedWord(user)
 
-                qawAPIClient.createOne(TestData.APIRequestPayloads.createOne, user)
-                publicClient.publicBulkCreate(
-                    com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
-                        userEmail = user.email,
-                        words = listOf(PublicQAWWordItem(word = "pending")),
-                        language = TestData.TEST_LANGUAGE
-                    )
+                val response = qawAPIClient.getManyQAWs(
+                    page = 1,
+                    perPage = 50,
+                    isApproved = isApproved,
+                    user = user,
                 )
 
-                val response = qawAPIClient.getManyQAWs(isApproved = false, user = user)
-
                 response.status shouldBe HttpStatus.OK
-                response.body!!.data shouldHaveSize 1
-                response.body.data[0].word shouldBe "pending"
-                response.body.data[0].isApproved shouldBe false
-                response.body.pagination.totalResults shouldBe 1
-                response.body.unapprovedCount shouldBe null
+                response.body shouldNotBe null
+                response.body!!.data shouldHaveSize expectedTotal
+                response.body.pagination.totalResults shouldBe expectedTotal.toLong()
+                response.body.pagination.page shouldBe 1
+                response.body.pagination.perPage shouldBe 50
+                response.body.unapprovedCount shouldBe expectedUnapprovedCount
+
+                if (expectedItemIsApproved != null) {
+                    response.body.data.forEach { it.isApproved shouldBe expectedItemIsApproved }
+                } else {
+                    response.body.data.map { it.isApproved }.toSet() shouldBe setOf(true, false)
+                }
             }
 
-            @Test
-            fun `200 - should filter by isApproved=true`() {
-                val user = mockAuthenticatedUser()
+            private fun seedApprovedAndUnapprovedWord(user: MockedAuthenticatedUser) {
                 val publicClient = com.ord.testing_utils.api.clients.PublicQAWAPIClient(webClient)
 
                 qawAPIClient.createOne(TestData.APIRequestPayloads.createOne, user)
@@ -454,18 +475,9 @@ class TestQuicklyAddedWordsController @Autowired constructor(
                     com.ord.features.quickly_added_words.api.requests.PublicQAWBulkCreateRequest(
                         userEmail = user.email,
                         words = listOf(PublicQAWWordItem(word = "pending")),
-                        language = TestData.TEST_LANGUAGE
-                    )
+                        language = TestData.TEST_LANGUAGE,
+                    ),
                 )
-
-                val response = qawAPIClient.getManyQAWs(isApproved = true, user = user)
-
-                response.status shouldBe HttpStatus.OK
-                response.body!!.data shouldHaveSize 1
-                response.body.data[0].word shouldBe TestData.TEST_WORD_1
-                response.body.data[0].isApproved shouldBe true
-                response.body.pagination.totalResults shouldBe 1
-                response.body.unapprovedCount shouldBe null
             }
         }
 
