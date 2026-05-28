@@ -57,10 +57,10 @@ class QAWRepositoryCustomMethodsImpl(
         val actualPerPage = (perPage ?: 50).coerceIn(1, 100)
         val offset = maxOf(0, (actualPage - 1) * actualPerPage)
 
-        val approvalFilterClause = if (isApproved != null) {
-            " AND is_approved = :isApproved"
-        } else {
-            ""
+        val approvalFilterClause = when (isApproved) {
+            true -> " AND is_approved = TRUE"
+            false -> " AND is_approved = FALSE"
+            null -> ""
         }
 
         // language=SQL
@@ -83,24 +83,18 @@ class QAWRepositoryCustomMethodsImpl(
         val unapprovedCountQuery = """
             SELECT COUNT(*)
             FROM quickly_added_words
-            WHERE user_id = :userId AND is_approved = false
+            WHERE user_id = :userId AND is_approved = FALSE
         """
 
         val countQueryResult: Mono<Long> = databaseClient
             .sql(countQuery)
             .bind("userId", userId)
-            .let { spec ->
-                if (isApproved != null) spec.bind("isApproved", isApproved) else spec
-            }
             .map { row -> row.get(0, Long::class.java)!! }
             .one()
 
         val selectQueryResult: Mono<List<QuicklyAddedWordEntity>> = databaseClient
             .sql(selectQuery)
             .bind("userId", userId)
-            .let { spec ->
-                if (isApproved != null) spec.bind("isApproved", isApproved) else spec
-            }
             .bind("limit", actualPerPage)
             .bind("offset", offset)
             .map { row ->
@@ -120,36 +114,36 @@ class QAWRepositoryCustomMethodsImpl(
             .all()
             .collectList()
 
-        val unapprovedCountResult: Mono<Long?> = if (isApproved == null) {
-            databaseClient
+        fun toPaginatedResult(
+            words: List<QuicklyAddedWordEntity>,
+            totalItems: Long,
+            unapprovedCount: Long?,
+        ) = QAWPaginatedResult(
+            paginated = PaginatedDataResponse(
+                data = words,
+                pagination = PaginationData(
+                    page = actualPage,
+                    perPage = actualPerPage,
+                    totalResults = totalItems,
+                    resultsOnCurrentPage = words.size
+                )
+            ),
+            unapprovedCount = unapprovedCount,
+        )
+
+        return if (isApproved == null) {
+            val unapprovedCountResult: Mono<Long> = databaseClient
                 .sql(unapprovedCountQuery)
                 .bind("userId", userId)
                 .map { row -> row.get(0, Long::class.java)!! }
                 .one()
+
+            Mono.zip(selectQueryResult, countQueryResult, unapprovedCountResult)
+                .map { t -> toPaginatedResult(t.t1, t.t2, t.t3) }
         } else {
-            Mono.just(null)
+            Mono.zip(selectQueryResult, countQueryResult)
+                .map { t -> toPaginatedResult(t.t1, t.t2, unapprovedCount = null) }
         }
-
-        return Mono
-            .zip(selectQueryResult, countQueryResult, unapprovedCountResult)
-            .map { t ->
-                val words = t.t1
-                val totalItems = t.t2
-                val unapprovedCount = t.t3
-
-                QAWPaginatedResult(
-                    paginated = PaginatedDataResponse(
-                        data = words,
-                        pagination = PaginationData(
-                            page = actualPage,
-                            perPage = actualPerPage,
-                            totalResults = totalItems,
-                            resultsOnCurrentPage = words.size
-                        )
-                    ),
-                    unapprovedCount = unapprovedCount
-                )
-            }
     }
 
     override fun approveManyByIdsAndUserId(
