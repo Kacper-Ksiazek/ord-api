@@ -737,7 +737,7 @@
                     "3. QAW: Authenticated"
                 ],
                 "summary": "Get quickly added words with pagination",
-                "description": "Retrieves a paginated list of quickly added words for the authenticated user.",
+                "description": "Retrieves a paginated list of quickly added words for the authenticated user. Optionally filter by approval status. When isApproved is omitted, unapprovedCount is included in the response.",
                 "operationId": "getManyQAWs",
                 "parameters": [
                     {
@@ -761,6 +761,16 @@
                             "format": "int32"
                         },
                         "example": 20
+                    },
+                    {
+                        "name": "isApproved",
+                        "in": "query",
+                        "description": "Filter by approval status. When omitted, all words are returned and unapprovedCount is included.",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "example": false
                     }
                 ],
                 "responses": {
@@ -777,7 +787,11 @@
                     "200": {
                         "description": "Words retrieved successfully",
                         "content": {
-                            "application/json": {}
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QAWPaginatedDataResponse"
+                                }
+                            }
                         }
                     },
                     "401": {
@@ -833,13 +847,53 @@
                 ]
             }
         },
+        "/api/v1/quickly-added-words/overview": {
+            "get": {
+                "tags": [
+                    "3. QAW: Authenticated"
+                ],
+                "summary": "Get quickly added words overview",
+                "description": "Returns total counts of quickly added words split by approval status.",
+                "operationId": "getOverview",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Overview retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QAWOverviewResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer-jwt": []
+                    }
+                ]
+            }
+        },
         "/api/v1/quickly-added-words/bulk-delete": {
             "post": {
                 "tags": [
                     "3. QAW: Authenticated"
                 ],
                 "summary": "Bulk delete quickly added words",
-                "description": "Deletes multiple words at once using a list of word IDs.",
+                "description": "Deletes multiple words at once using a list of word IDs. Returns 400 when the list is empty. On success (200), only IDs that exist and belong to the authenticated user are deleted; foreign or non-existent IDs are silently skipped.",
                 "operationId": "bulkDelete",
                 "requestBody": {
                     "content": {
@@ -860,7 +914,7 @@
                         "description": "Invalid delete data",
                         "content": {}
                     },
-                    "204": {
+                    "200": {
                         "description": "Words deleted successfully",
                         "content": {
                             "*/*": {
@@ -2223,7 +2277,7 @@
                             }
                         }
                     },
-                    "204": {
+                    "200": {
                         "description": "Word deleted successfully",
                         "content": {
                             "*/*": {
@@ -2353,7 +2407,7 @@
                     "3. QAW: Authenticated"
                 ],
                 "summary": "Approve multiple quickly added words",
-                "description": "Marks multiple words as approved, promoting them from quickly added status.",
+                "description": "Marks multiple words as approved. Returns 400 when ids is empty. On success (200), only IDs that exist and belong to the authenticated user are updated; foreign or non-existent IDs are silently skipped.",
                 "operationId": "approveMany",
                 "requestBody": {
                     "content": {
@@ -4242,6 +4296,62 @@
                     }
                 },
                 "description": "Quickly added word with all details"
+            },
+            "QAWOverviewResponse": {
+                "required": [
+                    "approvedCount",
+                    "total",
+                    "unapprovedCount"
+                ],
+                "type": "object",
+                "properties": {
+                    "total": {
+                        "type": "integer",
+                        "description": "Total number of quickly added words for the user",
+                        "format": "int64",
+                        "example": 42
+                    },
+                    "approvedCount": {
+                        "type": "integer",
+                        "description": "Number of approved quickly added words",
+                        "format": "int64",
+                        "example": 35
+                    },
+                    "unapprovedCount": {
+                        "type": "integer",
+                        "description": "Number of unapproved quickly added words",
+                        "format": "int64",
+                        "example": 7
+                    }
+                },
+                "description": "Quickly added words overview with approval status counts"
+            },
+            "QAWPaginatedDataResponse": {
+                "required": [
+                    "data",
+                    "pagination"
+                ],
+                "type": "object",
+                "properties": {
+                    "pagination": {
+                        "$ref": "#/components/schemas/PaginationData"
+                    },
+                    "data": {
+                        "type": "array",
+                        "description": "Array of quickly added words for the current page",
+                        "items": {
+                            "$ref": "#/components/schemas/QuicklyAddedWordDTO"
+                        }
+                    },
+                    "unapprovedCount": {
+                        "type": "integer",
+                        "description": "Total number of unapproved quickly added words for the user. Present when isApproved filter is not applied.",
+                        "format": "int64",
+                        "nullable": true,
+                        "example": 3
+                    }
+                },
+                "description": "Paginated quickly added words response with unapproved count metadata"
             },
             "PublicQAWBulkCreateRequest": {
                 "required": [
@@ -6383,6 +6493,7 @@
                 "type": "object",
                 "properties": {
                     "ids": {
+                        "minItems": 1,
                         "type": "array",
                         "items": {
                             "type": "string",

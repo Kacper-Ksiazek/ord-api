@@ -99,7 +99,7 @@ class QuicklyAddedWordsController(
             ApiResponse(
                 responseCode = "200",
                 description = "Words retrieved successfully",
-                content = [Content(mediaType = "application/json")]
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = QAWPaginatedDataResponse::class))]
             ),
             ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
         ]
@@ -193,7 +193,7 @@ class QuicklyAddedWordsController(
     @PatchMapping("/approve-many")
     @Operation(
         summary = "Approve multiple quickly added words",
-        description = "Marks multiple words as approved, promoting them from quickly added status."
+        description = "Marks multiple words as approved. Returns 400 when ids is empty. On success (200), only IDs that exist and belong to the authenticated user are updated; foreign or non-existent IDs are silently skipped."
     )
     @ApiResponses(
         value = [
@@ -221,7 +221,7 @@ class QuicklyAddedWordsController(
     )
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "204", description = "Word deleted successfully"),
+            ApiResponse(responseCode = "200", description = "Word deleted successfully"),
             ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()]),
             ApiResponse(responseCode = "404", description = "Word not found", content = [Content()])
         ]
@@ -237,11 +237,11 @@ class QuicklyAddedWordsController(
     @PostMapping("/bulk-delete")
     @Operation(
         summary = "Bulk delete quickly added words",
-        description = "Deletes multiple words at once using a list of word IDs."
+        description = "Deletes multiple words at once using a list of word IDs. Returns 400 when the list is empty. On success (200), only IDs that exist and belong to the authenticated user are deleted; foreign or non-existent IDs are silently skipped."
     )
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "204", description = "Words deleted successfully"),
+            ApiResponse(responseCode = "200", description = "Words deleted successfully"),
             ApiResponse(responseCode = "400", description = "Invalid delete data", content = [Content()]),
             ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
         ]
