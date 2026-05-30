@@ -33,7 +33,7 @@ interface QAWFacade {
 
     fun getManyQAWs(
         userId: UUID,
-        page: Int? = 1,
+        page: Int? = 0,
         perPage: Int? = 50,
         isApproved: Boolean? = null,
     ): Mono<ResponseEntity<QAWPaginatedDataResponse>>

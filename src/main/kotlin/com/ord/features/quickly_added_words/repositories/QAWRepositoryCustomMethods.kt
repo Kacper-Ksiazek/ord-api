@@ -11,7 +11,7 @@ interface QAWRepositoryCustomMethods {
 
     fun findManyQAWs(
         userId: UUID,
-        page: Int? = 1,
+        page: Int? = 0,
         perPage: Int? = 50,
         isApproved: Boolean? = null,
     ): Mono<QAWPaginatedResult>

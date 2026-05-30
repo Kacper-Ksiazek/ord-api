@@ -53,9 +53,9 @@ class QAWRepositoryCustomMethodsImpl(
         perPage: Int?,
         isApproved: Boolean?,
     ): Mono<QAWPaginatedResult> {
-        val actualPage = (page ?: 1).coerceAtLeast(1)
+        val actualPage = (page ?: 0).coerceAtLeast(0)
         val actualPerPage = (perPage ?: 50).coerceIn(1, 100)
-        val offset = maxOf(0, (actualPage - 1) * actualPerPage)
+        val offset = actualPage * actualPerPage
 
         val approvalFilterClause = when (isApproved) {
             true -> " AND is_approved = TRUE"
