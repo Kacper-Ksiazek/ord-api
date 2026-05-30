@@ -199,6 +199,10 @@ class QAWFacadeImpl(
         userId: UUID,
         body: List<UUID>
     ): Mono<ResponseEntity<Unit>> {
+        if (body.isEmpty()) {
+            return Mono.error(com.ord.exceptions.REST.BadRequestException("No IDs provided for deletion"))
+        }
+
         val idsToDelete = body.toSet()
 
         return qawRepository
