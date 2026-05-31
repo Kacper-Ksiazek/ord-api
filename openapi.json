@@ -217,6 +217,9 @@
                     "401": {
                         "description": "Unauthorized"
                     },
+                    "404": {
+                        "description": "Word not found"
+                    },
                     "200": {
                         "description": "Word details created successfully",
                         "content": {
@@ -226,9 +229,6 @@
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "description": "Word not found"
                     }
                 },
                 "security": [
@@ -619,9 +619,6 @@
                         "description": "Invalid request data or user does not have proficiency in the requested language",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Vocabulary suggestions stream started successfully",
                         "content": {
@@ -634,6 +631,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -832,46 +832,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/QuicklyAddedWordDTO"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer-jwt": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/quickly-added-words/overview": {
-            "get": {
-                "tags": [
-                    "3. QAW: Authenticated"
-                ],
-                "summary": "Get quickly added words overview",
-                "description": "Returns total counts of quickly added words split by approval status.",
-                "operationId": "getOverview",
-                "responses": {
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BadRequestResponse"
-                                }
-                            }
-                        }
-                    },
-                    "200": {
-                        "description": "Overview retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/QAWOverviewResponse"
                                 }
                             }
                         }
@@ -1121,12 +1081,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "404": {
-                        "description": "Language proficiency not found"
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
                     "200": {
                         "description": "Language proficiency updated successfully",
                         "content": {
@@ -1136,6 +1090,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Language proficiency not found"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
                     }
                 },
                 "security": [
@@ -1222,11 +1182,11 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "404": {
                         "description": "Game not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1303,9 +1263,6 @@
                         "description": "Invalid request data or sentence exceeds 1024 characters",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "404": {
                         "description": "Game not found"
                     },
@@ -1318,6 +1275,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1404,11 +1364,11 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "404": {
                         "description": "Game not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1460,11 +1420,11 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "404": {
                         "description": "Game not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "204": {
                         "description": "Game cancelled successfully"
@@ -1540,9 +1500,6 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Conversations retrieved successfully",
                         "content": {
@@ -1555,6 +1512,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1785,7 +1745,7 @@
                         "content": {
                             "*/*": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ReviewedUserConversationMessage"
+                                    "$ref": "#/components/schemas/ConversationUserMessageAnalysisPayload"
                                 }
                             }
                         }
@@ -1936,12 +1896,6 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Conversation not found or no AI message without learning tips exists"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Learning tips generated successfully",
                         "content": {
@@ -1951,6 +1905,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Conversation not found or no AI message without learning tips exists"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -2277,6 +2237,12 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "Word not found"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
                     "200": {
                         "description": "Word deleted successfully",
                         "content": {
@@ -2286,12 +2252,6 @@
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "description": "Word not found"
-                    },
-                    "401": {
-                        "description": "Not authenticated"
                     }
                 },
                 "security": [
@@ -2485,6 +2445,46 @@
                 ]
             }
         },
+        "/api/v1/quickly-added-words/overview": {
+            "get": {
+                "tags": [
+                    "3. QAW: Authenticated"
+                ],
+                "summary": "Get quickly added words overview",
+                "description": "Returns total counts of quickly added words split by approval status.",
+                "operationId": "getOverview",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Overview retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QAWOverviewResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer-jwt": []
+                    }
+                ]
+            }
+        },
         "/api/v1/health-check": {
             "get": {
                 "tags": [
@@ -2604,9 +2604,6 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Conversation not found"
-                    },
                     "200": {
                         "description": "Conversation deleted successfully",
                         "content": {
@@ -2616,6 +2613,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Conversation not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -2711,9 +2711,6 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Language proficiency not found"
-                    },
                     "204": {
                         "description": "Language proficiency deleted successfully",
                         "content": {
@@ -2723,6 +2720,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Language proficiency not found"
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -4297,62 +4297,6 @@
                 },
                 "description": "Quickly added word with all details"
             },
-            "QAWOverviewResponse": {
-                "required": [
-                    "approvedCount",
-                    "total",
-                    "unapprovedCount"
-                ],
-                "type": "object",
-                "properties": {
-                    "total": {
-                        "type": "integer",
-                        "description": "Total number of quickly added words for the user",
-                        "format": "int64",
-                        "example": 42
-                    },
-                    "approvedCount": {
-                        "type": "integer",
-                        "description": "Number of approved quickly added words",
-                        "format": "int64",
-                        "example": 35
-                    },
-                    "unapprovedCount": {
-                        "type": "integer",
-                        "description": "Number of unapproved quickly added words",
-                        "format": "int64",
-                        "example": 7
-                    }
-                },
-                "description": "Quickly added words overview with approval status counts"
-            },
-            "QAWPaginatedDataResponse": {
-                "required": [
-                    "data",
-                    "pagination"
-                ],
-                "type": "object",
-                "properties": {
-                    "pagination": {
-                        "$ref": "#/components/schemas/PaginationData"
-                    },
-                    "data": {
-                        "type": "array",
-                        "description": "Array of quickly added words for the current page",
-                        "items": {
-                            "$ref": "#/components/schemas/QuicklyAddedWordDTO"
-                        }
-                    },
-                    "unapprovedCount": {
-                        "type": "integer",
-                        "description": "Total number of unapproved quickly added words for the user. Present when isApproved filter is not applied.",
-                        "format": "int64",
-                        "nullable": true,
-                        "example": 3
-                    }
-                },
-                "description": "Paginated quickly added words response with unapproved count metadata"
-            },
             "PublicQAWBulkCreateRequest": {
                 "required": [
                     "language",
@@ -4731,6 +4675,9 @@
                             "$ref": "#/components/schemas/IdentifiableReviewedWordAnswer"
                         }
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4741,9 +4688,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -4890,6 +4834,9 @@
                             "$ref": "#/components/schemas/ReviewedSentencesWritingSingleTopic"
                         }
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4900,9 +4847,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -5230,6 +5174,9 @@
                     "reviewedAnswers": {
                         "$ref": "#/components/schemas/CrosswordReviewedAnswers"
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -5240,9 +5187,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -5661,27 +5605,27 @@
                 ],
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "content": {
-                        "type": "string"
-                    },
-                    "messageOrder": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
                     "sender": {
                         "type": "string",
                         "enum": [
                             "USER",
                             "AI"
                         ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "messageOrder": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "content": {
+                        "type": "string"
                     }
                 },
                 "discriminator": {
@@ -5788,6 +5732,7 @@
                     "coherenceWithContext",
                     "grammar",
                     "id",
+                    "isSabotage",
                     "messageId",
                     "mistakes",
                     "naturalness",
@@ -5801,6 +5746,9 @@
                     "id": {
                         "type": "string",
                         "format": "uuid"
+                    },
+                    "isSabotage": {
+                        "type": "boolean"
                     },
                     "tutorComment": {
                         "type": "string"
@@ -6064,10 +6012,11 @@
                     }
                 }
             },
-            "ReviewedUserConversationMessage": {
+            "ConversationUserMessageAnalysisPayload": {
                 "required": [
                     "coherenceWithContext",
                     "grammar",
+                    "isSabotage",
                     "mistakes",
                     "naturalness",
                     "strengths",
@@ -6077,8 +6026,8 @@
                 ],
                 "type": "object",
                 "properties": {
-                    "sabotage": {
-                        "type": "string"
+                    "isSabotage": {
+                        "type": "boolean"
                     },
                     "correctedMessage": {
                         "type": "string"
@@ -6493,7 +6442,6 @@
                 "type": "object",
                 "properties": {
                     "ids": {
-                        "minItems": 1,
                         "type": "array",
                         "items": {
                             "type": "string",
@@ -6663,6 +6611,61 @@
                         "$ref": "#/components/schemas/WordDetailsCompactDTO"
                     }
                 }
+            },
+            "QAWPaginatedDataResponse": {
+                "required": [
+                    "data",
+                    "pagination"
+                ],
+                "type": "object",
+                "properties": {
+                    "pagination": {
+                        "$ref": "#/components/schemas/PaginationData"
+                    },
+                    "data": {
+                        "type": "array",
+                        "description": "Array of quickly added words for the current page",
+                        "items": {
+                            "$ref": "#/components/schemas/QuicklyAddedWordDTO"
+                        }
+                    },
+                    "unapprovedCount": {
+                        "type": "integer",
+                        "description": "Total number of unapproved quickly added words for the user. Always present when isApproved filter is not applied.",
+                        "format": "int64",
+                        "example": 3
+                    }
+                },
+                "description": "Paginated quickly added words response with unapproved count metadata"
+            },
+            "QAWOverviewResponse": {
+                "required": [
+                    "approvedCount",
+                    "total",
+                    "unapprovedCount"
+                ],
+                "type": "object",
+                "properties": {
+                    "total": {
+                        "type": "integer",
+                        "description": "Total number of quickly added words for the user",
+                        "format": "int64",
+                        "example": 42
+                    },
+                    "approvedCount": {
+                        "type": "integer",
+                        "description": "Number of approved quickly added words",
+                        "format": "int64",
+                        "example": 35
+                    },
+                    "unapprovedCount": {
+                        "type": "integer",
+                        "description": "Number of unapproved quickly added words",
+                        "format": "int64",
+                        "example": 7
+                    }
+                },
+                "description": "Quickly added words overview with approval status counts"
             },
             "ConversationSummaryDTO": {
                 "required": [
@@ -6849,63 +6852,6 @@
                     }
                 }
             },
-            "WordCollocationFrequency": {
-                "type": "string",
-                "enum": [
-                    "VERY_COMMON",
-                    "COMMON",
-                    "OCCASIONAL"
-                ]
-            },
-            "WordGender": {
-                "type": "string",
-                "enum": [
-                    "MASCULINE",
-                    "FEMININE",
-                    "NEUTER"
-                ]
-            },
-            "WordType": {
-                "type": "string",
-                "description": "Type of word or expression",
-                "enum": [
-                    "NOUN",
-                    "VERB",
-                    "ADJECTIVE",
-                    "ADVERB",
-                    "IDIOM",
-                    "PHRASE"
-                ]
-            },
-            "WordExtraMark": {
-                "type": "string",
-                "description": "Extra marks or tags for word classification by register or domain",
-                "enum": [
-                    "OFFENSIVE",
-                    "SLANG",
-                    "FORMAL",
-                    "INFORMAL",
-                    "SCIENTIFIC",
-                    "TECHNICAL",
-                    "LEGAL",
-                    "MEDICAL",
-                    "COLLOQUIAL",
-                    "POETIC"
-                ]
-            },
-            "GetAllWordsSortOptions": {
-                "type": "string",
-                "enum": [
-                    "CREATED_AT",
-                    "SOURCE_WORD"
-                ]
-            },
-            "WordToggleableProperty": {
-                "type": "string",
-                "enum": [
-                    "IS_BOOKMARKED"
-                ]
-            },
             "LanguageName": {
                 "type": "string",
                 "description": "Supported languages in the platform",
@@ -6939,27 +6885,61 @@
                     "FEMALE"
                 ]
             },
-            "SortDirection": {
+            "GetAllWordsSortOptions": {
                 "type": "string",
                 "enum": [
-                    "ASC",
-                    "DESC"
+                    "CREATED_AT",
+                    "SOURCE_WORD"
                 ]
             },
-            "ConversationMessageSender": {
+            "WordToggleableProperty": {
                 "type": "string",
                 "enum": [
-                    "USER",
-                    "AI"
+                    "IS_BOOKMARKED"
                 ]
             },
-            "TipRegister": {
+            "WordExtraMark": {
                 "type": "string",
-                "description": "Formality register indicator for learning tips",
+                "description": "Extra marks or tags for word classification by register or domain",
                 "enum": [
+                    "OFFENSIVE",
+                    "SLANG",
                     "FORMAL",
-                    "NEUTRAL",
-                    "COLLOQUIAL"
+                    "INFORMAL",
+                    "SCIENTIFIC",
+                    "TECHNICAL",
+                    "LEGAL",
+                    "MEDICAL",
+                    "COLLOQUIAL",
+                    "POETIC"
+                ]
+            },
+            "WordType": {
+                "type": "string",
+                "description": "Type of word or expression",
+                "enum": [
+                    "NOUN",
+                    "VERB",
+                    "ADJECTIVE",
+                    "ADVERB",
+                    "IDIOM",
+                    "PHRASE"
+                ]
+            },
+            "WordCollocationFrequency": {
+                "type": "string",
+                "enum": [
+                    "VERY_COMMON",
+                    "COMMON",
+                    "OCCASIONAL"
+                ]
+            },
+            "WordGender": {
+                "type": "string",
+                "enum": [
+                    "MASCULINE",
+                    "FEMININE",
+                    "NEUTER"
                 ]
             },
             "PhraseType": {
@@ -6970,48 +6950,13 @@
                     "LITERAL"
                 ]
             },
-            "ConversationMessageErrorType": {
+            "TipRegister": {
                 "type": "string",
+                "description": "Formality register indicator for learning tips",
                 "enum": [
-                    "GRAMMAR",
-                    "VOCABULARY",
-                    "SPELLING",
-                    "PUNCTUATION"
-                ]
-            },
-            "ConversationMessageSuggestionType": {
-                "type": "string",
-                "enum": [
-                    "VOCABULARY",
-                    "STRUCTURE"
-                ]
-            },
-            "ConversationMessageStrengthType": {
-                "type": "string",
-                "enum": [
-                    "GRAMMAR",
-                    "VOCABULARY",
-                    "FLUENCY",
-                    "PRAGMATICS",
-                    "COMMUNICATION"
-                ]
-            },
-            "ConversationMessageMistakeSeverity": {
-                "type": "string",
-                "enum": [
-                    "MINOR",
-                    "MODERATE",
-                    "CRITICAL"
-                ]
-            },
-            "ConversationType": {
-                "type": "string",
-                "enum": [
-                    "SMALL_TALK",
-                    "SCENARIO_ROLEPLAY",
-                    "EXAM_PRACTICE",
-                    "TOPIC_EXPLORATION",
-                    "OXFORD_DEBATE"
+                    "FORMAL",
+                    "NEUTRAL",
+                    "COLLOQUIAL"
                 ]
             },
             "ConversationAIBotAvatar": {
@@ -7039,6 +6984,16 @@
                     "CHALLENGING"
                 ]
             },
+            "ConversationType": {
+                "type": "string",
+                "enum": [
+                    "SMALL_TALK",
+                    "SCENARIO_ROLEPLAY",
+                    "EXAM_PRACTICE",
+                    "TOPIC_EXPLORATION",
+                    "OXFORD_DEBATE"
+                ]
+            },
             "RecencyBucket": {
                 "type": "string",
                 "description": "Grouping bucket based on last activity (UTC)",
@@ -7050,11 +7005,53 @@
                     "LATER"
                 ]
             },
-            "GameResult": {
+            "ConversationMessageSender": {
                 "type": "string",
                 "enum": [
-                    "COMPLETED",
-                    "CANCELLED"
+                    "USER",
+                    "AI"
+                ]
+            },
+            "ConversationMessageErrorType": {
+                "type": "string",
+                "enum": [
+                    "GRAMMAR",
+                    "VOCABULARY",
+                    "SPELLING",
+                    "PUNCTUATION"
+                ]
+            },
+            "ConversationMessageMistakeSeverity": {
+                "type": "string",
+                "enum": [
+                    "MINOR",
+                    "MODERATE",
+                    "CRITICAL"
+                ]
+            },
+            "ConversationMessageStrengthType": {
+                "type": "string",
+                "enum": [
+                    "GRAMMAR",
+                    "VOCABULARY",
+                    "FLUENCY",
+                    "PRAGMATICS",
+                    "COMMUNICATION"
+                ]
+            },
+            "ConversationMessageSuggestionType": {
+                "type": "string",
+                "enum": [
+                    "VOCABULARY",
+                    "STRUCTURE"
+                ]
+            },
+            "GameDifficulty": {
+                "type": "string",
+                "enum": [
+                    "EASY",
+                    "MEDIUM",
+                    "HARD"
                 ]
             },
             "GameGrade": {
@@ -7068,6 +7065,13 @@
                     "NA"
                 ]
             },
+            "GameResult": {
+                "type": "string",
+                "enum": [
+                    "COMPLETED",
+                    "CANCELLED"
+                ]
+            },
             "GameType": {
                 "type": "string",
                 "enum": [
@@ -7076,12 +7080,11 @@
                     "SENTENCES_WRITING"
                 ]
             },
-            "GameDifficulty": {
+            "CrosswordWordDirection": {
                 "type": "string",
                 "enum": [
-                    "EASY",
-                    "MEDIUM",
-                    "HARD"
+                    "HORIZONTAL",
+                    "VERTICAL"
                 ]
             },
             "WordAnswerScore": {
@@ -7090,13 +7093,6 @@
                     "CORRECT",
                     "HALF_CORRECT",
                     "INCORRECT"
-                ]
-            },
-            "CrosswordWordDirection": {
-                "type": "string",
-                "enum": [
-                    "HORIZONTAL",
-                    "VERTICAL"
                 ]
             },
             "UserActivityFrequency": {
@@ -7123,6 +7119,13 @@
                     "WORD_COMPLETED",
                     "WORDS_COMPLETED_IN_ONE_DAY_10",
                     "WORDS_COMPLETED_IN_ONE_WEEK_30"
+                ]
+            },
+            "SortDirection": {
+                "type": "string",
+                "enum": [
+                    "ASC",
+                    "DESC"
                 ]
             }
         },
