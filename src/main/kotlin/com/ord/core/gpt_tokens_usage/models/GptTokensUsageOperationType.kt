@@ -24,6 +24,10 @@ object GptTokensUsageOperationType {
         const val SUGGEST_VOCABULARY = "WORDS_SUGGEST_VOCABULARY"
     }
 
+    object QAW {
+        const val FILL_GAPS = "QAW_FILL_GAPS"
+    }
+
     object Game {
         object Generate {
             const val SENTENCES_WRITING = "GAME_GENERATE_SENTENCES_WRITING"
