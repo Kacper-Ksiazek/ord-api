@@ -28,8 +28,8 @@ class QAWRepositoryCustomMethodsImpl(
         val query = """
             SELECT
                 COUNT(*) AS total,
-                SUM(CASE WHEN is_approved THEN 1 ELSE 0 END) AS approved_count,
-                SUM(CASE WHEN NOT is_approved THEN 1 ELSE 0 END) AS unapproved_count
+                COALESCE(SUM(CASE WHEN is_approved THEN 1 ELSE 0 END), 0) AS approved_count,
+                COALESCE(SUM(CASE WHEN NOT is_approved THEN 1 ELSE 0 END), 0) AS unapproved_count
             FROM quickly_added_words
             WHERE user_id = :userId
         """
