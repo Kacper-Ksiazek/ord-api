@@ -104,7 +104,7 @@ class TestQAWAIController @Autowired constructor(
                         items = listOf(
                             QAWFillGapsItem(word = "verbose"),
                             QAWFillGapsItem(word = "meeting"),
-                            QAWFillGapsItem(word = "run"),
+                            QAWFillGapsItem(word = "library"),
                         ),
                     ),
                     user = authenticatedUser,
@@ -113,7 +113,7 @@ class TestQAWAIController @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 val body = response.body.shouldNotBeNull()
                 body.items shouldHaveSize 3
-                body.items.map { it.inputWord } shouldBe listOf("verbose", "meeting", "run")
+                body.items.map { it.inputWord } shouldBe listOf("verbose", "meeting", "library")
                 body.items.forEach { item ->
                     item.error.shouldBeNull()
                     item.translation.shouldNotBeNull().shouldNotBeBlank()
