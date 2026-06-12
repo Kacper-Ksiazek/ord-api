@@ -6,8 +6,9 @@ import com.ord.features.quickly_added_words.api.facades.QAWFacade
 import com.ord.features.quickly_added_words.api.requests.ApproveManyQAWRequest
 import com.ord.features.quickly_added_words.api.requests.CreateQAWRequest
 import com.ord.features.quickly_added_words.api.requests.UpdateQAWRequest
+import com.ord.features.quickly_added_words.api.responses.QAWOverviewResponse
+import com.ord.features.quickly_added_words.api.responses.QAWPaginatedDataResponse
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
-import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -91,14 +92,14 @@ class QuicklyAddedWordsController(
     @GetMapping("/")
     @Operation(
         summary = "Get quickly added words with pagination",
-        description = "Retrieves a paginated list of quickly added words for the authenticated user."
+        description = "Retrieves a paginated list of quickly added words for the authenticated user. Optionally filter by approval status. When isApproved is omitted, unapprovedCount is included in the response."
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
                 description = "Words retrieved successfully",
-                content = [Content(mediaType = "application/json")]
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = QAWPaginatedDataResponse::class))]
             ),
             ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
         ]
@@ -106,12 +107,33 @@ class QuicklyAddedWordsController(
     fun getManyQAWs(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Parameter(description = "Page number (0-indexed)", example = "0") @RequestParam(required = false) page: Int?,
-        @Parameter(description = "Number of items per page", example = "20") @RequestParam(required = false) perPage: Int?
-    ): Mono<ResponseEntity<PaginatedDataResponse<QuicklyAddedWordDTO>>> = qawFacade.getManyQAWs(
+        @Parameter(description = "Number of items per page", example = "20") @RequestParam(required = false) perPage: Int?,
+        @Parameter(description = "Filter by approval status. When omitted, all words are returned and unapprovedCount is included.", example = "false") @RequestParam(required = false) isApproved: Boolean?,
+    ): Mono<ResponseEntity<QAWPaginatedDataResponse>> = qawFacade.getManyQAWs(
         userId = user.id,
         page = page,
-        perPage = perPage
+        perPage = perPage,
+        isApproved = isApproved,
     )
+
+    @GetMapping("/overview")
+    @Operation(
+        summary = "Get quickly added words overview",
+        description = "Returns total counts of quickly added words split by approval status."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Overview retrieved successfully",
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = QAWOverviewResponse::class))]
+            ),
+            ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
+        ]
+    )
+    fun getOverview(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+    ): Mono<ResponseEntity<QAWOverviewResponse>> = qawFacade.getOverview(userId = user.id)
 
     // -------
     // UPDATE
@@ -171,7 +193,7 @@ class QuicklyAddedWordsController(
     @PatchMapping("/approve-many")
     @Operation(
         summary = "Approve multiple quickly added words",
-        description = "Marks multiple words as approved, promoting them from quickly added status."
+        description = "Marks multiple words as approved. Returns 400 when ids is empty. On success (200), only IDs that exist and belong to the authenticated user are updated; foreign or non-existent IDs are silently skipped."
     )
     @ApiResponses(
         value = [
@@ -199,7 +221,7 @@ class QuicklyAddedWordsController(
     )
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "204", description = "Word deleted successfully"),
+            ApiResponse(responseCode = "200", description = "Word deleted successfully"),
             ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()]),
             ApiResponse(responseCode = "404", description = "Word not found", content = [Content()])
         ]
@@ -215,11 +237,11 @@ class QuicklyAddedWordsController(
     @PostMapping("/bulk-delete")
     @Operation(
         summary = "Bulk delete quickly added words",
-        description = "Deletes multiple words at once using a list of word IDs."
+        description = "Deletes multiple words at once using a list of word IDs. Returns 400 when the list is empty. On success (200), only IDs that exist and belong to the authenticated user are deleted; foreign or non-existent IDs are silently skipped."
     )
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "204", description = "Words deleted successfully"),
+            ApiResponse(responseCode = "200", description = "Words deleted successfully"),
             ApiResponse(responseCode = "400", description = "Invalid delete data", content = [Content()]),
             ApiResponse(responseCode = "401", description = "Not authenticated", content = [Content()])
         ]

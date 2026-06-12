@@ -8,7 +8,8 @@ import com.ord.features.quickly_added_words.model.QuicklyAddedWordDTO
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordEntity
 import com.ord.features.quickly_added_words.model.QuicklyAddedWordMapper
 import com.ord.features.quickly_added_words.repositories.QAWRepository
-import com.ord.shared.api.dto.responses.PaginatedDataResponse
+import com.ord.features.quickly_added_words.api.responses.QAWOverviewResponse
+import com.ord.features.quickly_added_words.api.responses.QAWPaginatedDataResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -80,18 +81,34 @@ class QAWFacadeImpl(
     override fun getManyQAWs(
         userId: UUID,
         page: Int?,
-        perPage: Int?
-    ): Mono<ResponseEntity<PaginatedDataResponse<QuicklyAddedWordDTO>>> {
+        perPage: Int?,
+        isApproved: Boolean?,
+    ): Mono<ResponseEntity<QAWPaginatedDataResponse>> {
         return qawRepository
             .findManyQAWs(
                 userId = userId,
                 page = page,
-                perPage = perPage
+                perPage = perPage,
+                isApproved = isApproved,
             )
-            .map { paginatedResponse ->
-                PaginatedDataResponse(
-                    pagination = paginatedResponse.pagination,
-                    data = paginatedResponse.data.map { qawMapper.toDTO(it) }
+            .map { result ->
+                QAWPaginatedDataResponse(
+                    pagination = result.paginated.pagination,
+                    data = result.paginated.data.map { qawMapper.toDTO(it) },
+                    unapprovedCount = result.unapprovedCount,
+                )
+            }
+            .map { ResponseEntity.ok(it) }
+    }
+
+    override fun getOverview(userId: UUID): Mono<ResponseEntity<QAWOverviewResponse>> {
+        return qawRepository
+            .countByApprovalStatus(userId)
+            .map { counts ->
+                QAWOverviewResponse(
+                    total = counts.total,
+                    approvedCount = counts.approvedCount,
+                    unapprovedCount = counts.unapprovedCount,
                 )
             }
             .map { ResponseEntity.ok(it) }
@@ -182,6 +199,10 @@ class QAWFacadeImpl(
         userId: UUID,
         body: List<UUID>
     ): Mono<ResponseEntity<Unit>> {
+        if (body.isEmpty()) {
+            return Mono.error(com.ord.exceptions.REST.BadRequestException("No IDs provided for deletion"))
+        }
+
         val idsToDelete = body.toSet()
 
         return qawRepository
