@@ -1,118 +1,38 @@
-name: 🔷 Publish API Types to NPM
+name: 🔷 Publish API Types to GitHub Packages
 
+# GitOps: the committed openapi.json is the contract / source of truth.
+# Changing it on main is what triggers a new types package release.
+#   make openapi  ->  git commit openapi.json  ->  push  ->  publish here.
 on:
   push:
     branches: [main]
     paths:
-      - 'src/main/kotlin/**/*.kt'
-      - 'pom.xml'
+      - 'openapi.json'
+      - 'types-package/**'
       - '.github/workflows/publish-api-types.yml'
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Required to create releases and tags
+      contents: read
+      packages: write  # Required to publish to GitHub Packages
 
     steps:
       - name: 🛎️ Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🧰 Set up JDK 24
-        uses: actions/setup-java@v4
-        with:
-          java-version: '24'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: ⚙️ Set up Maven 3.9
-        uses: stCarolas/setup-maven@v4
-        with:
-          maven-version: '3.9.6'
-
       - name: 📦 Set up Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: 🔨 Build application (skip tests)
-        run: mvn clean package -DskipTests
-
-      - name: 🚀 Start application with CI/CD profile
-        env:
-          SPRING_PROFILES_ACTIVE: cicd
-        run: |
-          java -jar target/*.jar &
-          echo "Waiting for application to start..."
-
-          # Initial wait to allow application to begin startup
-          sleep 10
-
-          # Poll health check endpoint for up to 60 seconds
-          for i in {1..30}; do
-            if curl --silent --fail http://localhost:8080/api/v1/health-check; then
-              echo "✅ Application is up and running!"
-              exit 0
-            fi
-            echo "Attempt $i/30: Application not ready yet, waiting..."
-            sleep 2
-          done
-
-          # Fail if application didn't start within 60 seconds
-          echo "❌ Application failed to start within 60 seconds"
-          exit 1
-
-      - name: 📄 Export OpenAPI specification
-        env:
-          SWAGGER_USERNAME: admin
-          SWAGGER_PASSWORD: admin
-        run: |
-          chmod +x ./export-openapi-spec.sh
-          ./export-openapi-spec.sh
-
-      - name: 📥 Download previous OpenAPI spec
-        id: prev-spec
-        run: |
-          LATEST_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
-          if [ -n "$LATEST_TAG" ]; then
-            if gh release download "$LATEST_TAG" --pattern "openapi.json" --output openapi-previous.json 2>/dev/null; then
-              echo "found=true" >> $GITHUB_OUTPUT
-              echo "Previous spec downloaded from release $LATEST_TAG"
-            else
-              echo "found=false" >> $GITHUB_OUTPUT
-              echo "No openapi.json asset in latest release"
-            fi
-          else
-            echo "found=false" >> $GITHUB_OUTPUT
-            echo "No previous releases found"
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🔍 Compare OpenAPI specs
-        id: compare
-        run: |
-          if [ -f openapi-previous.json ]; then
-            if diff -q openapi.json openapi-previous.json > /dev/null 2>&1; then
-              echo "changed=false" >> $GITHUB_OUTPUT
-              echo "OpenAPI spec unchanged - skipping publish"
-            else
-              echo "changed=true" >> $GITHUB_OUTPUT
-              echo "OpenAPI spec has changed - will publish"
-            fi
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-            echo "No previous spec found - will publish"
-          fi
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@kacper-ksiazek'
 
       - name: 🔧 Generate TypeScript types
-        if: steps.compare.outputs.changed == 'true'
-        run: |
-          npx openapi-typescript@^7.0.0 openapi.json -o types.ts
+        run: npx openapi-typescript@^7.0.0 openapi.json -o types.ts
 
       - name: 📦 Prepare NPM package
-        if: steps.compare.outputs.changed == 'true'
         run: |
           mkdir -p npm-package
           cp types.ts npm-package/
@@ -120,46 +40,14 @@ jobs:
           cp types-package/package.json npm-package/
 
       - name: 🏷️ Update package version
-        if: steps.compare.outputs.changed == 'true'
         working-directory: npm-package
         run: |
           VERSION="1.0.${{ github.run_number }}"
-          npm version $VERSION --no-git-tag-version
+          npm version "$VERSION" --no-git-tag-version
           echo "Publishing version: $VERSION"
 
-      - name: 🚀 Publish to NPM
-        if: steps.compare.outputs.changed == 'true'
+      - name: 🚀 Publish to GitHub Packages
         working-directory: npm-package
-        run: npm publish --access public
+        run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: 🎉 Create GitHub Release
-        if: steps.compare.outputs.changed == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ord-api-types-v1.0.${{ github.run_number }}
-          name: ORD API Types v1.0.${{ github.run_number }}
-          files: openapi.json
-          body: |
-            🎉 Automatically generated TypeScript types for ORD API
-
-            **NPM Package:** `@ord-api/ord-api-types@1.0.${{ github.run_number }}`
-
-            Install with npm:
-            ```bash
-            npm install @ord-api/ord-api-types@1.0.${{ github.run_number }}
-            ```
-
-            Install with pnpm:
-            ```bash
-            pnpm add @ord-api/ord-api-types@1.0.${{ github.run_number }}
-            ```
-
-            Or install the latest version:
-            ```bash
-            npm install @ord-api/ord-api-types@latest
-            pnpm add @ord-api/ord-api-types@latest
-            ```
-          draft: false
-          prerelease: false
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
