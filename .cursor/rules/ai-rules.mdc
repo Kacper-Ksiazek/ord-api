@@ -1,0 +1,33 @@
+---
+description: Pointer to the repository's AI coding rules knowledge base
+alwaysApply: true
+---
+
+# ORD API — AI Rules
+
+This repository's coding rules live in **`docs/ai-rules/`**, organized as one directory per
+category, with **one rule per `.md` file**.
+
+Before writing or changing code, consult the relevant category for established conventions —
+this project values **strict consistency with existing patterns** over novelty.
+
+- **Project concept / business context:** `docs/ai-rules/concept/project-brief.md`
+- **Knowledge snapshot & category map:** `docs/ai-rules/ROADMAP.md`
+
+## Categories (`docs/ai-rules/<category>/`)
+
+- `general` — project layout, naming, `core` vs `features` vs `shared`
+- `architecture` — Controller→Facade→Service→Repository→Entity/Mapper/DTO layering & base abstractions
+- `kotlin` — Kotlin language conventions
+- `reactive` — WebFlux + Reactor (`Mono`/`Flux`), no blocking, SSE streaming
+- `persistence` — R2DBC repositories, raw SQL custom methods, entities, Flyway migrations
+- `api-design` — REST/controller conventions, DTOs, validation, OpenAPI/Swagger contract
+- `security-auth` — OTP→JWT auth, `@AuthenticatedUser`, user-scoping
+- `ai-integration` — OpenAI client usage, token-usage logging
+- `prompts` — prompt template management & structured-output schemas
+- `error-handling` — REST exceptions & centralized `@ControllerAdvice` handling
+- `testing` — controller integration tests, Kotest, Testcontainers, test suites
+- `git-workflow` — commit policy, migration immutability, OpenAPI re-export
+
+When adding a new feature, mirror an existing comparable feature (e.g. `conversation` or
+`word`) and ensure new endpoints ship with tests.
