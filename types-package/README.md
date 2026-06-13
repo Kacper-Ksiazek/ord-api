@@ -1,18 +1,35 @@
-# @ord-api/ord-api-types
+# @kacper-ksiazek/ord-api-types
 
 TypeScript types for the ORD API, automatically generated from the OpenAPI specification.
 
+Published to **GitHub Packages**. The GitHub npm registry requires authentication
+even for public packages, so consumers must configure an `.npmrc` first.
+
 ## Installation
+
+### 1. Configure the registry
+
+Create an `.npmrc` in your project root (or `~/.npmrc`):
+
+```ini
+@kacper-ksiazek:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+`GITHUB_TOKEN` must be a Personal Access Token with the `read:packages` scope.
+In GitHub Actions you can use the built-in `${{ secrets.GITHUB_TOKEN }}`.
+
+### 2. Install
 
 ```bash
 # pnpm (recommended for SvelteKit)
-pnpm add @ord-api/ord-api-types
+pnpm add @kacper-ksiazek/ord-api-types
 
 # npm
-npm install @ord-api/ord-api-types
+npm install @kacper-ksiazek/ord-api-types
 
 # yarn
-yarn add @ord-api/ord-api-types
+yarn add @kacper-ksiazek/ord-api-types
 ```
 
 ## Setup for SvelteKit
@@ -66,7 +83,7 @@ export default defineConfig({
 
 ```typescript
 // src/lib/types/api-types.ts
-import type { components } from '@ord-api/ord-api-types';
+import type { components } from '@kacper-ksiazek/ord-api-types';
 
 // Export enums
 export type LanguageName = components['schemas']['LanguageName'];
@@ -233,7 +250,7 @@ export const createDeleteQAWMutation = () => {
 // src/lib/api/queries/auth.ts
 import { createMutation } from '@tanstack/svelte-query';
 import { api } from '$lib/api/client';
-import type { components, paths } from '@ord-api/ord-api-types';
+import type { components, paths } from '@kacper-ksiazek/ord-api-types';
 
 type OtpRequestBody = paths['/api/v1/auth/otp-request']['post']['requestBody']['content']['application/json'];
 type OtpVerifyBody = paths['/api/v1/auth/otp-verify']['post']['requestBody']['content']['application/json'];
@@ -337,7 +354,7 @@ export const createCurrentUserQuery = () => {
 ```typescript
 // src/routes/words/[id]/+page.ts
 import type { PageLoad } from './$types';
-import type { components } from '@ord-api/ord-api-types';
+import type { components } from '@kacper-ksiazek/ord-api-types';
 import { api } from '$lib/api/client';
 
 type WordDTO = components['schemas']['WordDTO'];
@@ -368,7 +385,7 @@ export const load: PageLoad = async ({ params }) => {
 
 ```typescript
 // src/lib/api/wrapper.ts
-import type { paths } from '@ord-api/ord-api-types';
+import type { paths } from '@kacper-ksiazek/ord-api-types';
 import { api } from './client';
 
 type ApiPath = keyof paths;
@@ -445,7 +462,7 @@ export const actions = {
 This package is automatically published when the backend API changes. To update:
 
 ```bash
-pnpm update @ord-api/ord-api-types
+pnpm update @kacper-ksiazek/ord-api-types
 ```
 
 ## Resources

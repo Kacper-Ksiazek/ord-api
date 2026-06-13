@@ -109,48 +109,51 @@ npx @openapitools/openapi-generator-cli generate \
 
 ## CI/CD Integration
 
-### Automated NPM Package Publishing
+### Automated Types Package Publishing (GitHub Packages)
 
-The project is configured to automatically publish TypeScript types to NPM whenever Kotlin code changes on the `main` branch.
+The project automatically publishes TypeScript types to **GitHub Packages** whenever the committed `openapi.json` changes on the `main` branch. Everything stays inside the GitHub ecosystem (GitOps) — no external NPM registry, no GitHub releases.
 
-**NPM Package**: [`@ord-api/ord-api-types`](https://www.npmjs.com/package/@ord-api/ord-api-types)
+**Package**: `@kacper-ksiazek/ord-api-types` (registry `https://npm.pkg.github.com`)
 
 #### How It Works
 
-1. **Trigger**: Workflow runs on push to `main` when Kotlin files or `pom.xml` change
-2. **Build**: Application is built and started in background
-3. **Export**: OpenAPI spec is exported via `./export-openapi-spec.sh`
-4. **Generate**: TypeScript types are generated using `openapi-typescript`
-5. **Publish**: Package is published to NPM with auto-incrementing version `1.0.X`
-6. **Release**: GitHub release is created with installation instructions
+1. **Trigger**: Workflow runs on push to `main` when `openapi.json` (the contract) changes
+2. **Generate**: TypeScript types are generated from the committed spec using `openapi-typescript`
+3. **Publish**: Package is published to GitHub Packages with auto-incrementing version `1.0.X`
+
+The contract is the source of truth: run `make openapi`, commit `openapi.json`, push — that commit triggers the release.
 
 #### Versioning
 
 - Format: `1.0.X` where X is the GitHub Actions run number
 - Example versions: `1.0.1`, `1.0.2`, `1.0.3`...
-- Each push to main creates a new version automatically
+- Each push that changes `openapi.json` creates a new version automatically
 
 #### Installation
 
-Frontend projects can install the types package:
+GitHub Packages requires authentication even for public packages. Consumers must add an `.npmrc`:
+
+```ini
+@kacper-ksiazek:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+`GITHUB_TOKEN` is a Personal Access Token with the `read:packages` scope (the built-in token in GitHub Actions also works). Then:
 
 ```bash
 # npm
-npm install @ord-api/ord-api-types
+npm install @kacper-ksiazek/ord-api-types
 
 # pnpm
-pnpm add @ord-api/ord-api-types
+pnpm add @kacper-ksiazek/ord-api-types
 
 # yarn
-yarn add @ord-api/ord-api-types
+yarn add @kacper-ksiazek/ord-api-types
 ```
 
 #### Setup Requirements
 
-To enable NPM publishing, the following secrets must be configured in GitHub:
-
-- `NPM_TOKEN`: NPM automation token (Settings → Secrets → Actions)
-- `GITHUB_TOKEN`: Automatically provided by GitHub Actions
+No extra secrets are required. Publishing uses the built-in `GITHUB_TOKEN` with `packages: write` permission (declared in the workflow). The legacy `NPM_TOKEN` secret is no longer used.
 
 #### Workflow File
 

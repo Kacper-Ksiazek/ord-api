@@ -1,5 +1,5 @@
 {
-  "name": "@ord-api/ord-api-types",
+  "name": "@kacper-ksiazek/ord-api-types",
   "version": "1.0.0",
   "description": "TypeScript types for ORD API - Auto-generated from OpenAPI specification",
   "main": "types.ts",
@@ -12,13 +12,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kacper-Ksiazek/ord-api.git"
+    "url": "git+https://github.com/Kacper-Ksiazek/ord.git"
   },
-  "homepage": "https://github.com/Kacper-Ksiazek/ord-api#readme",
+  "homepage": "https://github.com/Kacper-Ksiazek/ord#readme",
   "bugs": {
-    "url": "https://github.com/Kacper-Ksiazek/ord-api/issues"
+    "url": "https://github.com/Kacper-Ksiazek/ord/issues"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
   }
 }
