@@ -1,6 +1,6 @@
 # Re-export the OpenAPI spec after any API contract change
 
-The frontend's TypeScript types are generated from `openapi.json` and published as the `types-package` (`@ord-api/ord-api-types`). Whenever you add/rename an endpoint, change a request/response DTO, or alter an enum, re-export the spec so the contract stays accurate: start the app and run `make openapi` (which calls `export-openapi-spec.sh` against `/v3/api-docs`). Enums that should appear as standalone TS union types must be annotated with `@ExportToOpenAPI`.
+The frontend's TypeScript types are generated from `openapi.json` and published as the `types-package` (`@kacper-ksiazek/ord-api-types`, on GitHub Packages). Whenever you add/rename an endpoint, change a request/response DTO, or alter an enum, re-export the spec so the contract stays accurate: start the app and run `make openapi` (which calls `export-openapi-spec.sh` against `/v3/api-docs`). Enums that should appear as standalone TS union types must be annotated with `@ExportToOpenAPI`.
 
 ## Good
 

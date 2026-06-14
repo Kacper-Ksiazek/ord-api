@@ -1,19 +1,20 @@
-# Pushing to main publishes the API types package
+# Pushing a changed openapi.json to main publishes the API types package
 
-`.github/workflows/publish-api-types.yml` runs on every push to `main` that touches `src/main/kotlin/**/*.kt` or `pom.xml`. It boots the app, exports the OpenAPI spec, and — if the spec changed — generates TypeScript types and publishes a new `@ord-api/ord-api-types` NPM version plus a GitHub release. Treat any merge to `main` that changes Kotlin endpoints/DTOs as a public type release.
+`.github/workflows/publish-api-types.yml` runs on every push to `main` that changes the committed `openapi.json` (the contract / source of truth). It generates TypeScript types from that spec and publishes a new `@kacper-ksiazek/ord-api-types` version to **GitHub Packages** (`npm.pkg.github.com`). There is no GitHub release and no `NPM_TOKEN`; auth is the built-in `GITHUB_TOKEN`. Treat any merge to `main` that re-exports `openapi.json` as a public type release.
 
 ## Good
 
 ```text
 Before merging endpoint/DTO changes to main:
+- Re-export the spec (`make openapi`) and commit openapi.json — that commit IS the trigger.
 - Confirm the OpenAPI changes are intentional and backward-compatible for frontend consumers.
-- Expect a new @ord-api/ord-api-types@1.0.<run_number> to be published automatically.
+- Expect a new @kacper-ksiazek/ord-api-types@1.0.<run_number> on GitHub Packages.
 ```
 
 ## Bad
 
 ```bash
-# Renaming a DTO field as a "quick rename" and pushing to main,
-# unaware it auto-publishes a breaking types-package version to NPM.
+# Changing a DTO, committing openapi.json, and pushing to main,
+# unaware it auto-publishes a breaking types-package version to GitHub Packages.
 git push origin main
 ```
