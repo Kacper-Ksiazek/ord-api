@@ -15,6 +15,7 @@ import com.ord.core.security.invalidateAuthTokenCookie
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.toDTO
 import com.ord.exceptions.REST.UnauthorizedException
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
@@ -29,14 +30,18 @@ class AuthServiceImpl(
     private val emailService: EmailService,
 
     private val userRepository: UserRepository,
-    private val sessionRepositoryReactive: UserSessionRepositoryReactive
+    private val sessionRepositoryReactive: UserSessionRepositoryReactive,
+    private val env: Environment,
 ) : AuthService {
+
+    private val isLocalEnv: Boolean
+        get() = env.activeProfiles.contains("local")
 
     override fun requestOtp(email: String): Mono<Void> {
         return otpService
             .generateAndSaveOtp(email)
             .flatMap { otpCode ->
-                if (otpProperties.isEmailWhitelisted(email)) {
+                if (otpProperties.isEmailWhitelisted(email) || isLocalEnv) {
                     Mono.empty()
                 } else {
                     emailService.sendOtpEmail(email, otpCode)

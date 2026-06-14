@@ -5,6 +5,7 @@ import com.ord.core.auth.models.OtpCodeEntity
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.auth.services.OtpService
 import com.ord.exceptions.REST.UnauthorizedException
+import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -20,7 +21,9 @@ class OtpServiceImpl(
     private val env: Environment
 ) : OtpService {
 
+    private val logger = LoggerFactory.getLogger(OtpServiceImpl::class.java)
     private val isTestingEnv: Boolean = env.activeProfiles.contains("test")
+    private val isLocalEnv: Boolean = env.activeProfiles.contains("local")
 
     override fun generateAndSaveOtp(email: String): Mono<String> {
         val otpCode = generateOtpCode(email)
@@ -70,15 +73,18 @@ class OtpServiceImpl(
 
     private fun generateOtpCode(email: String): String {
         return when {
-            // For test environment, always return a fixed code for predictability
             isTestingEnv -> "000000"
 
-            // For whitelisted emails, use the configured code to skip email sending during development
+            isLocalEnv -> {
+                val code = otpProperties.codeForWhitelisted.ifBlank { "123456" }
+                logger.info("[LOCAL] OTP for {}: {} (SMTP skipped in local profile)", email, code)
+                code
+            }
+
             otpProperties.isEmailWhitelisted(email) && otpProperties.codeForWhitelisted.isNotBlank() -> {
                 otpProperties.codeForWhitelisted
             }
 
-            // For all other cases, generate a random 6-digit code (including codes with leading zeros)
             else -> Random
                 .nextInt(0, 1000000)
                 .toString()
