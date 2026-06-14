@@ -1,0 +1,30 @@
+meta {
+  name: Public Bulk Create QAW
+  type: http
+  seq: 1
+}
+
+docs {
+  Anonymous-only: must not send AUTH-TOKEN cookie.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/public/quickly-added-words/bulk-create
+  body: json
+  auth: none
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "userEmail": "{{email}}",
+  "language": "ENGLISH",
+  "words": [
+    { "word": "serendipity" }
+  ]
+}
+}

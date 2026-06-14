@@ -1,0 +1,14 @@
+meta {
+  name: QAW Approve Flow
+  type: http
+  seq: 3
+}
+
+docs {
+Run in order:
+1. 06-public-qaw/bulk-create (no cookie) OR 05-quickly-added-words/create
+2. 05-quickly-added-words/list?isApproved=false
+3. 05-quickly-added-words/ai/fill-gaps (optional)
+4. 05-quickly-added-words/approve-many
+5. 05-quickly-added-words/overview
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Update Language Proficiency
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}{{apiPrefix}}/language-proficiencies
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "language": "GERMAN",
+  "level": "B2"
+}
+}

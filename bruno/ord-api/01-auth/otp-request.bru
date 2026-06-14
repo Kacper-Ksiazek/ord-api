@@ -1,0 +1,26 @@
+meta {
+  name: OTP Request
+  type: http
+  seq: 1
+}
+
+docs {
+  Anonymous-only: must not send AUTH-TOKEN cookie.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/auth/otp-request
+  body: json
+  auth: none
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "email": "{{email}}"
+}
+}

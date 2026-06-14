@@ -1,0 +1,17 @@
+meta {
+  name: Word Lifecycle
+  type: http
+  seq: 2
+}
+
+docs {
+Run in order:
+1. Auth if needed
+2. 04-words/crud/create -> wordId
+3. 04-words/crud/get-by-id
+4. 04-words/details/create-details
+5. 04-words/ai/generate-manual (optional, needs OPEN_AI_KEY)
+6. 04-words/crud/toggle-property?property=FAVORITE
+7. 04-words/crud/get-many-words (bookmarked: true)
+8. 04-words/crud/delete
+}

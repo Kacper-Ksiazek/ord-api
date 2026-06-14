@@ -1,0 +1,29 @@
+meta {
+  name: AI Request Message (SSE)
+  type: http
+  seq: 2
+}
+
+docs {
+  SSE stream. Set messageOrder from conversation state.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/ongoing/ai/request-message
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+  Accept: text/event-stream
+}
+
+body:json {
+{
+  "conversationId": "{{conversationId}}",
+  "messageOrder": 2,
+  "latestUserMessage": "I think climate change is a serious issue."
+}
+}

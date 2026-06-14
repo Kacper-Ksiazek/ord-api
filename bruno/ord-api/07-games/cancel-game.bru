@@ -1,0 +1,22 @@
+meta {
+  name: Cancel Game
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/games/cancel/{{gameId}}
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "duration": "PT2M30S"
+}
+}

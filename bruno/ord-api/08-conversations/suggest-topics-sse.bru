@@ -1,0 +1,30 @@
+meta {
+  name: Suggest Topics (SSE)
+  type: http
+  seq: 1
+}
+
+docs {
+  SSE stream. Requires OPEN_AI_KEY.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/suggest-topics
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+  Accept: text/event-stream
+}
+
+body:json {
+{
+  "clueFromUser": "travel and holidays",
+  "conversationType": "SMALL_TALK",
+  "language": "ENGLISH",
+  "excludeTopics": []
+}
+}

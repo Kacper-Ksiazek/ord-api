@@ -1,0 +1,28 @@
+meta {
+  name: Finish Crossword
+  type: http
+  seq: 2
+}
+
+docs {
+  Paste full answers from start response. See _fixtures/bodies/crossword-finish.json.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/games/crossword/finish
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "gameId": "{{gameId}}",
+  "duration": "PT5M30S",
+  "answers": []
+}
+}

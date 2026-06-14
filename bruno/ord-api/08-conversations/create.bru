@@ -1,0 +1,35 @@
+meta {
+  name: Create Conversation
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "topic": "Discussing the weather and climate change",
+  "additionalContext": "Focus on environmental impact",
+  "language": "ENGLISH",
+  "tone": "FRIENDLY",
+  "type": "SMALL_TALK",
+  "aiInterlocutorName": "Dr. Smith",
+  "aiInterlocutorAvatarId": "AVATAR_ALPHA"
+}
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (body?.id) {
+    bru.setEnvVar("conversationId", body.id);
+  }
+}

@@ -1,0 +1,29 @@
+meta {
+  name: Generate AI Word Manual
+  type: http
+  seq: 1
+}
+
+docs {
+  Requires OPEN_AI_KEY on the API server.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/words/ai/generate-manual
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "word": "ephemeral",
+  "language": "ENGLISH",
+  "targetLanguage": "POLISH",
+  "proficiencyLevel": "B2"
+}
+}

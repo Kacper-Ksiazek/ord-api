@@ -1,0 +1,16 @@
+meta {
+  name: Conversation Session
+  type: http
+  seq: 5
+}
+
+docs {
+Run in order:
+1. 08-conversations/suggest-ai-interlocutor (optional)
+2. 08-conversations/create -> conversationId
+3. 08-conversations/ongoing/ai-initialize-sse (SSE)
+4. 08-conversations/ongoing/user-save-message
+5. 08-conversations/ongoing/ai-request-message-sse (SSE)
+6. 08-conversations/ongoing/user-generate-analysis
+7. 08-conversations/ongoing/ai-generate-learning-tips
+}

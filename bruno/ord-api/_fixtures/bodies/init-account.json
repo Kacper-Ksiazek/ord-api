@@ -1,0 +1,13 @@
+{
+  "name": "Dev User",
+  "nativeLanguage": "POLISH",
+  "selectedLearningLanguage": "ENGLISH",
+  "languageProficiencies": [
+    {
+      "language": "ENGLISH",
+      "level": "B2",
+      "translateTo": "POLISH",
+      "generativeContentLanguage": "ENGLISH"
+    }
+  ]
+}

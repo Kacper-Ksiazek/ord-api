@@ -1,0 +1,41 @@
+meta {
+  name: Get Many Words
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/words/get-many-words
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "language": "ENGLISH",
+  "page": 0,
+  "perPage": 20,
+  "searchingPhrase": null,
+  "wordType": null,
+  "wordExtraMark": null,
+  "bookmarked": null,
+  "completed": null,
+  "banksIds": null,
+  "bankGroupsIds": null,
+  "sortDirection": "DESC",
+  "sortBy": "CREATED_AT"
+}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const first = body?.data?.[0];
+  if (first?.bankId) {
+    bru.setEnvVar("bankId", first.bankId);
+  }
+}

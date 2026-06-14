@@ -1,0 +1,17 @@
+meta {
+  name: List Conversations
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/
+  body: none
+  auth: inherit
+}
+
+params:query {
+  search: 
+  recencyBucket: 
+  type: 
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Bulk Create QAW
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/quickly-added-words/bulk-create
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+[
+  { "word": "ephemeral", "language": "ENGLISH" },
+  { "word": "ubiquitous", "language": "ENGLISH" }
+]
+}

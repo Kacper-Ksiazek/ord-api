@@ -1,0 +1,13 @@
+meta {
+  name: Crossword Session
+  type: http
+  seq: 4
+}
+
+docs {
+Run in order:
+1. Auth + ensure user has words (get-many-words)
+2. 07-games/crossword/start -> gameId + full game payload
+3. 07-games/crossword/finish (paste live start response into body)
+4. Optional: 07-games/cancel-game
+}

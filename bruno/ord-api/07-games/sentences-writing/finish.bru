@@ -1,0 +1,30 @@
+meta {
+  name: Finish Sentences Writing
+  type: http
+  seq: 2
+}
+
+docs {
+  Replace keys from start response. Max 1024 chars per answer.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/games/sentences-writing/finish
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "gameId": "{{gameId}}",
+  "duration": "PT10M",
+  "answers": {
+    "00000000-0000-0000-0000-000000000001": "I enjoyed the transient nature of the trip."
+  }
+}
+}
