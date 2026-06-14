@@ -1,5 +1,6 @@
 package com.ord.core.auth.api
 
+import com.ord.config.OpenApiSecurity
 import com.ord.core.auth.api.facade.AuthFacade
 import com.ord.core.auth.api.requests.dto.OtpRequestDto
 import com.ord.core.auth.api.requests.dto.OtpVerifyDto
@@ -52,7 +53,14 @@ class AuthController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "OTP verified successfully, user authenticated",
+                description = "OTP verified; JWT stored in AUTH-TOKEN cookie",
+                headers = [
+                    io.swagger.v3.oas.annotations.headers.Header(
+                        name = "Set-Cookie",
+                        description = "AUTH-TOKEN=<jwt>; HttpOnly; Path=/",
+                        schema = Schema(type = "string")
+                    )
+                ],
                 content = [Content(mediaType = "application/json", schema = Schema(implementation = UserDTO::class))]
             ),
             ApiResponse(responseCode = "400", description = "Invalid OTP code", content = [Content()]),
@@ -70,7 +78,7 @@ class AuthController(
         summary = "Logout user",
         description = "Logs out the authenticated user by clearing the JWT token cookie."
     )
-    @SecurityRequirement(name = "bearer-jwt")
+    @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Logged out successfully"),

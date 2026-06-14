@@ -1,6 +1,7 @@
 package com.ord.core.security
 
 import com.ord.config.properties.JwtProperties
+import io.jsonwebtoken.JwtException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextImpl
@@ -38,12 +39,19 @@ class JwtSecurityContextRepository(
             .cache()
             .map<SecurityContext?> { SecurityContextImpl(it) }
             .onErrorResume { error ->
-                if (error is MissingUserSessionException) {
-                    exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
-                    // Return empty to trigger 401 Unauthorized
-                    Mono.empty()
-                } else {
-                    Mono.error(error)
+                when {
+                    error is MissingUserSessionException -> {
+                        exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
+                        Mono.empty()
+                    }
+
+                    error is JwtException || error.cause is JwtException -> {
+                        // Stale/invalid cookie (e.g. JWT_SECRET_KEY rotated) — treat as anonymous
+                        exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
+                        Mono.empty()
+                    }
+
+                    else -> Mono.error(error)
                 }
             }
     }

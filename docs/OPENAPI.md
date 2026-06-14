@@ -169,19 +169,22 @@ See `.github/workflows/publish-api-types.yml` for the complete workflow configur
 
 ## Authentication in Swagger UI
 
+Authentication uses the `AUTH-TOKEN` HttpOnly cookie (not `Authorization: Bearer`).
+
 To test authenticated endpoints in Swagger UI:
 
-1. First, call `POST /api/v1/auth/otp-request` to send an OTP
+1. Call `POST /api/v1/auth/otp-request` to send an OTP
 2. Call `POST /api/v1/auth/otp-verify` with your email and OTP code
-3. The JWT token will be automatically set in cookies
-4. All subsequent authenticated requests will work automatically
+3. The JWT is stored in the `AUTH-TOKEN` cookie automatically
+4. All subsequent authenticated requests work in the same browser session
 
-Alternatively, if you already have a JWT token:
+If you already have a JWT token:
 
-1. Click the "Authorize" button at the top of Swagger UI
-2. Enter your JWT token in the format: `Bearer <your-token>`
-3. Click "Authorize"
-4. All authenticated requests will now include your token
+1. Click the **Authorize** button at the top of Swagger UI
+2. Enter the raw JWT value for the `AUTH-TOKEN` cookie (no `Bearer` prefix)
+3. Click **Authorize**
+
+HTTP clients (Bruno, curl) should use a cookie jar: run otp-verify first, then send `AUTH-TOKEN` on subsequent requests (`curl -c cookies.txt -b cookies.txt`).
 
 ## Configuration
 

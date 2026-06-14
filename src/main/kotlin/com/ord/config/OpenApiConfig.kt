@@ -1,5 +1,6 @@
 package com.ord.config
 
+import com.ord.config.properties.JwtProperties
 import com.ord.shared.annotations.ExportToOpenAPI
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.models.Components
@@ -19,7 +20,9 @@ import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.core.type.filter.AssignableTypeFilter
 
 @Configuration
-class OpenApiConfig {
+class OpenApiConfig(
+    private val jwtProperties: JwtProperties,
+) {
 
     @Bean
     fun customOpenAPI(): OpenAPI {
@@ -55,9 +58,11 @@ class OpenApiConfig {
 
                         1. **Request OTP** → `POST /api/v1/auth/otp-request` with your email
                         2. **Verify OTP** → `POST /api/v1/auth/otp-verify` with the 6-digit code from email
-                        3. **Use API** → JWT token is automatically stored in cookies
+                        3. **Use API** → JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)
 
-                        **Alternative:** Click the **Authorize 🔒** button (top right) to manually enter your JWT token.
+                        **Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).
+
+                        **HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).
                         """.trimIndent()
                     )
                     .contact(
@@ -84,12 +89,15 @@ class OpenApiConfig {
             .components(
                 Components()
                     .addSecuritySchemes(
-                        "bearer-jwt",
+                        OpenApiSecurity.AUTH_COOKIE,
                         SecurityScheme()
-                            .type(SecurityScheme.Type.HTTP)
-                            .scheme("bearer")
-                            .bearerFormat("JWT")
-                            .description("JWT authentication token obtained via /api/v1/auth/otp-verify endpoint")
+                            .type(SecurityScheme.Type.APIKEY)
+                            .`in`(SecurityScheme.In.COOKIE)
+                            .name(jwtProperties.authCookieName)
+                            .description(
+                                "HttpOnly JWT cookie set by POST /api/v1/auth/otp-verify. " +
+                                    "Sent automatically by browsers and HTTP clients with cookie jar support."
+                            )
                     )
             )
             .tags(

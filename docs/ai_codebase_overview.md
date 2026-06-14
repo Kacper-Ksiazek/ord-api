@@ -195,7 +195,7 @@ conversation_ai_message_learning_tips
 - **Trailing slash:** GET list endpoints use trailing slash (e.g., `GET /api/v1/conversations/`)
 - **Response codes:** POST create → `201 CREATED`, GET → `200 OK`, DELETE → `204 NO_CONTENT`
 - **Swagger tags:** numbered and descriptive (e.g., `"5. Conversations: Management"`)
-- **Security:** `@SecurityRequirement(name = "bearer-jwt")` on controller class
+- **Security:** `@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)` on controller class (`AUTH-TOKEN` cookie)
 
 ---
 
