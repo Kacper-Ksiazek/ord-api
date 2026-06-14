@@ -43,6 +43,9 @@ abstract class TestcontainersConfig {
             registry.add("spring.datasource.username", container::getUsername)
             registry.add("spring.datasource.password", container::getPassword)
             registry.add("spring.datasource.driver-class-name") { "org.postgresql.Driver" }
+
+            registry.add("elevenlabs.api_key") { "dummy-key" }
+            registry.add("elevenlabs.voice_id") { "dummy-voice-id" }
         }
     }
 }
