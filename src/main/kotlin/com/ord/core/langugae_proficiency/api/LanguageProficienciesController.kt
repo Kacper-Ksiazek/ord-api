@@ -1,5 +1,7 @@
 package com.ord.core.langugae_proficiency.api
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.langugae_proficiency.api.facades.LanguageProficiencyFacade
 import com.ord.core.langugae_proficiency.api.requests.CreateLanguageProficiencyRequest
@@ -27,7 +29,7 @@ import reactor.core.publisher.Mono
     name = "1. Core: Language Proficiencies",
     description = "Manage user's language learning proficiencies and levels"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class LanguageProficienciesController(
     private val languageProficiencyFacade: LanguageProficiencyFacade
 ) {

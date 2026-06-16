@@ -1,5 +1,6 @@
 package com.ord.core.user.api
 
+import com.ord.config.OpenApiSecurity
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.api.facades.UsersFacade
 import com.ord.core.user.api.requests.InitUserAccountRequest
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController
     name = "1. Core: Users",
     description = "User profile management and account initialization"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class UsersController(
     private val userFacade: UsersFacade,
 ) {

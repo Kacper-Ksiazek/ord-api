@@ -1,5 +1,7 @@
 package com.ord.features.conversation.api
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.conversation.api.facades.OngoingConversationFacade
@@ -30,7 +32,7 @@ import java.util.*
     name = "5. Conversations: Ongoing Sessions",
     description = "Manage active conversation sessions with real-time AI message exchange and feedback"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class OngoingConversationController(
     private val ongoingConversationFacade: OngoingConversationFacade
 ) {
