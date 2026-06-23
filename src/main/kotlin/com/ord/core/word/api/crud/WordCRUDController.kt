@@ -1,5 +1,7 @@
 package com.ord.core.word.api.crud
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.crud.facades.WordBankManagementFacade
@@ -44,7 +46,7 @@ import java.util.UUID
     name = "2. Words: CRUD",
     description = "Create, read, update, and delete vocabulary words with advanced filtering and bulk operations"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class WordCRUDController(
     private val wordCRUDFacade: WordCRUDFacade,
     private val wordPropertyToggleFacade: WordPropertyToggleFacade,

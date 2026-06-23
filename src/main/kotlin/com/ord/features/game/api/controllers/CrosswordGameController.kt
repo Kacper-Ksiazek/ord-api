@@ -1,5 +1,7 @@
 package com.ord.features.game.api.controllers
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.game.variants.crossword.api.CrosswordGameFacade
@@ -28,7 +30,7 @@ import reactor.core.publisher.Mono
     name = "4. Games: Crossword",
     description = "Crossword puzzle game variant for vocabulary practice"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class CrosswordGameController(
     private val crosswordGameFacade: CrosswordGameFacade
 ) {

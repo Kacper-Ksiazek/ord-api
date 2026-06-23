@@ -2,7 +2,7 @@
     "openapi": "3.0.1",
     "info": {
         "title": "ORD API - Language Learning Platform",
-        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. QAW** | Quickly Added Words - Rapidly collect vocabulary for later processing | \u2022 **Authenticated** - Full CRUD operations for logged-in users (bulk create, update, approve, delete)<br>\u2022 **Public** - Public endpoints for quick word submission without authentication |\n| **4. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **5. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **6. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT token is automatically stored in cookies\n\n**Alternative:** Click the **Authorize \ud83d\udd12** button (top right) to manually enter your JWT token.",
+        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. QAW** | Quickly Added Words - Rapidly collect vocabulary for later processing | \u2022 **Authenticated** - Full CRUD operations for logged-in users (bulk create, update, approve, delete)<br>\u2022 **Public** - Public endpoints for quick word submission without authentication |\n| **4. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **5. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **6. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication via the `AUTH-TOKEN` HttpOnly cookie. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
         "contact": {
             "name": "ORD API Team",
             "email": "support@ord-api.com"
@@ -173,7 +173,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -233,7 +233,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             },
@@ -291,7 +291,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -360,7 +360,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -426,7 +426,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -491,7 +491,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -541,7 +541,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -591,7 +591,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -638,7 +638,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -682,7 +682,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -726,7 +726,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -800,7 +800,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             },
@@ -842,7 +842,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -890,7 +890,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -933,7 +933,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1013,7 +1013,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             },
@@ -1055,7 +1055,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             },
@@ -1100,7 +1100,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1144,7 +1144,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1191,7 +1191,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1235,7 +1235,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1282,7 +1282,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1326,7 +1326,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1373,7 +1373,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1432,7 +1432,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1519,7 +1519,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             },
@@ -1561,7 +1561,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1608,7 +1608,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1652,7 +1652,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1706,7 +1706,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1753,7 +1753,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1803,7 +1803,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1862,7 +1862,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -1915,7 +1915,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2033,7 +2033,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2089,7 +2089,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             },
@@ -2143,7 +2143,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             },
@@ -2201,7 +2201,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2256,7 +2256,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             },
@@ -2313,7 +2313,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2356,7 +2356,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2400,7 +2400,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2440,7 +2440,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2480,7 +2480,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2569,7 +2569,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             },
@@ -2623,7 +2623,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2663,7 +2663,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2730,7 +2730,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -2763,7 +2763,7 @@
                 },
                 "security": [
                     {
-                        "bearer-jwt": []
+                        "auth-cookie": []
                     }
                 ]
             }
@@ -7130,11 +7130,11 @@
             }
         },
         "securitySchemes": {
-            "bearer-jwt": {
-                "type": "http",
-                "description": "JWT authentication token obtained via /api/v1/auth/otp-verify endpoint",
-                "scheme": "bearer",
-                "bearerFormat": "JWT"
+            "auth-cookie": {
+                "type": "apiKey",
+                "in": "cookie",
+                "name": "AUTH-TOKEN",
+                "description": "HttpOnly JWT cookie set by POST /api/v1/auth/otp-verify. Sent automatically by browsers and HTTP clients with cookie jar support."
             }
         }
     }
