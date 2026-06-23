@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux
 class TtsFacadeImpl(
     private val elevenLabsTTSClientService: ElevenLabsTTSClientService,
 ) : TtsFacade {
+    @Suppress("UNUSED_PARAMETER")
     override fun speak(
         body: SpeakRequest,
         user: UserDTO,
