@@ -2,7 +2,7 @@
     "openapi": "3.0.1",
     "info": {
         "title": "ORD API - Language Learning Platform",
-        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. QAW** | Quickly Added Words - Rapidly collect vocabulary for later processing | \u2022 **Authenticated** - Full CRUD operations for logged-in users (bulk create, update, approve, delete)<br>\u2022 **Public** - Public endpoints for quick word submission without authentication |\n| **4. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **5. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **6. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication via the `AUTH-TOKEN` HttpOnly cookie. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
+        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. QAW** | Quickly Added Words - Rapidly collect vocabulary for later processing | \u2022 **Authenticated** - Full CRUD operations for logged-in users (bulk create, update, approve, delete)<br>\u2022 **Public** - Public endpoints for quick word submission without authentication |\n| **4. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **5. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **6. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
         "contact": {
             "name": "ORD API Team",
             "email": "support@ord-api.com"
@@ -79,6 +79,10 @@
         {
             "name": "2. Words: AI Generation",
             "description": "AI-powered word generation and enhancement for vocabulary learning"
+        },
+        {
+            "name": "9. TTS",
+            "description": "Text-to-speech synthesis via ElevenLabs streaming API"
         },
         {
             "name": "5. Conversations: Ongoing Sessions",
@@ -217,9 +221,6 @@
                     "401": {
                         "description": "Unauthorized"
                     },
-                    "404": {
-                        "description": "Word not found"
-                    },
                     "200": {
                         "description": "Word details created successfully",
                         "content": {
@@ -229,6 +230,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Word not found"
                     }
                 },
                 "security": [
@@ -619,6 +623,9 @@
                         "description": "Invalid request data or user does not have proficiency in the requested language",
                         "content": {}
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "200": {
                         "description": "Vocabulary suggestions stream started successfully",
                         "content": {
@@ -631,9 +638,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -722,6 +726,49 @@
                     },
                     "401": {
                         "description": "Not authenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/tts/speak": {
+            "post": {
+                "tags": [
+                    "9. TTS"
+                ],
+                "summary": "Synthesize speech from text",
+                "description": "Stream MP3 audio synthesized from the provided assistant reply text. Audio chunks are forwarded to the client as they arrive from ElevenLabs for low-latency playback.",
+                "operationId": "speak",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SpeakRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid request data",
+                        "content": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "502": {
+                        "description": "ElevenLabs TTS service unavailable"
+                    },
+                    "200": {
+                        "description": "Audio stream started successfully",
+                        "content": {
+                            "audio/mpeg": {}
+                        }
                     }
                 },
                 "security": [
@@ -938,6 +985,50 @@
                 ]
             }
         },
+        "/api/v1/quickly-added-words/ai/fill-gaps": {
+            "post": {
+                "tags": [
+                    "3. QAW: Authenticated"
+                ],
+                "summary": "AI-fill missing QAW fields",
+                "description": "Enriches a batch of words (word-only input) with translation, definition, type, and optional extra mark. Does not persist to the database \u2014 use bulk-create to save.",
+                "operationId": "fillGaps",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/QAWFillGapsRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid request or user has no proficiency in the language",
+                        "content": {}
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "200": {
+                        "description": "Fields enriched successfully (per-item errors may be present in the response)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QAWFillGapsResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
         "/api/v1/public/quickly-added-words/bulk-create": {
             "post": {
                 "tags": [
@@ -1081,6 +1172,12 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
+                    "404": {
+                        "description": "Language proficiency not found"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
                     "200": {
                         "description": "Language proficiency updated successfully",
                         "content": {
@@ -1090,12 +1187,6 @@
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "description": "Language proficiency not found"
-                    },
-                    "401": {
-                        "description": "Not authenticated"
                     }
                 },
                 "security": [
@@ -1182,11 +1273,11 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Game not found"
-                    },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Game not found"
                     }
                 },
                 "security": [
@@ -1263,6 +1354,9 @@
                         "description": "Invalid request data or sentence exceeds 1024 characters",
                         "content": {}
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "Game not found"
                     },
@@ -1275,9 +1369,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1364,11 +1455,11 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Game not found"
-                    },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Game not found"
                     }
                 },
                 "security": [
@@ -1420,11 +1511,11 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Game not found"
-                    },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Game not found"
                     },
                     "204": {
                         "description": "Game cancelled successfully"
@@ -1500,6 +1591,9 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "200": {
                         "description": "Conversations retrieved successfully",
                         "content": {
@@ -1512,9 +1606,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1896,6 +1987,9 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "200": {
                         "description": "Learning tips generated successfully",
                         "content": {
@@ -1908,9 +2002,6 @@
                     },
                     "404": {
                         "description": "Conversation not found or no AI message without learning tips exists"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1943,8 +2034,20 @@
                         "description": "Invalid OTP code",
                         "content": {}
                     },
+                    "401": {
+                        "description": "OTP expired or invalid"
+                    },
                     "200": {
-                        "description": "OTP verified successfully, user authenticated",
+                        "description": "OTP verified; JWT stored in AUTH-TOKEN cookie",
+                        "headers": {
+                            "Set-Cookie": {
+                                "description": "AUTH-TOKEN=<jwt>; HttpOnly; Path=/",
+                                "style": "simple",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1952,9 +2055,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "OTP expired or invalid"
                     }
                 }
             }
@@ -2294,6 +2394,9 @@
                         "description": "Invalid update data",
                         "content": {}
                     },
+                    "404": {
+                        "description": "Word not found"
+                    },
                     "200": {
                         "description": "Word updated successfully",
                         "content": {
@@ -2303,9 +2406,6 @@
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "description": "Word not found"
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -2604,6 +2704,9 @@
                             }
                         }
                     },
+                    "404": {
+                        "description": "Conversation not found"
+                    },
                     "200": {
                         "description": "Conversation deleted successfully",
                         "content": {
@@ -2613,9 +2716,6 @@
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "description": "Conversation not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -4114,6 +4214,22 @@
                 },
                 "description": "User profile information"
             },
+            "SpeakRequest": {
+                "required": [
+                    "text"
+                ],
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "maxLength": 5000,
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "The assistant reply text to synthesize",
+                        "example": "That's a great question! Let me explain..."
+                    }
+                },
+                "description": "Request to synthesize speech from text"
+            },
             "CreateQAWRequest": {
                 "required": [
                     "language",
@@ -4296,6 +4412,148 @@
                     }
                 },
                 "description": "Quickly added word with all details"
+            },
+            "QAWFillGapsItem": {
+                "maxLength": 20,
+                "minLength": 1,
+                "required": [
+                    "word"
+                ],
+                "type": "object",
+                "properties": {
+                    "word": {
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "The word or phrase to enrich (only required field per item)",
+                        "example": "verbose"
+                    }
+                },
+                "description": "A single word to enrich with AI-generated QAW metadata"
+            },
+            "QAWFillGapsRequest": {
+                "required": [
+                    "items",
+                    "language"
+                ],
+                "type": "object",
+                "properties": {
+                    "language": {
+                        "type": "string",
+                        "description": "Supported languages in the platform",
+                        "example": "ENGLISH",
+                        "enum": [
+                            "POLISH",
+                            "ENGLISH",
+                            "GERMAN",
+                            "FRENCH",
+                            "SPANISH",
+                            "ITALIAN",
+                            "NORWEGIAN",
+                            "RUSSIAN",
+                            "SLOVENIAN"
+                        ]
+                    },
+                    "items": {
+                        "maxLength": 20,
+                        "minLength": 1,
+                        "maxItems": 20,
+                        "minItems": 1,
+                        "type": "array",
+                        "description": "Words to enrich (only the word field is required per item)",
+                        "items": {
+                            "$ref": "#/components/schemas/QAWFillGapsItem"
+                        }
+                    }
+                },
+                "description": "Request to AI-fill missing QAW fields for a batch of words"
+            },
+            "QAWFillGapsResponse": {
+                "required": [
+                    "items"
+                ],
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "description": "Enrichment results, one per input item",
+                        "items": {
+                            "$ref": "#/components/schemas/QAWFillGapsResultItem"
+                        }
+                    }
+                },
+                "description": "AI-enriched QAW fields for each requested word, in the same order as the request"
+            },
+            "QAWFillGapsResultItem": {
+                "required": [
+                    "inputWord"
+                ],
+                "type": "object",
+                "properties": {
+                    "inputWord": {
+                        "type": "string",
+                        "description": "Original word from the request",
+                        "example": "verbose"
+                    },
+                    "word": {
+                        "type": "string",
+                        "description": "Corrected or confirmed word spelling (null when error is set)",
+                        "nullable": true,
+                        "example": "verbose"
+                    },
+                    "translation": {
+                        "type": "string",
+                        "description": "Translation into the user's translate-to language (null when error is set)",
+                        "nullable": true,
+                        "example": "rozwlek\u0142y"
+                    },
+                    "definition": {
+                        "maxLength": 2000,
+                        "type": "string",
+                        "description": "Brief definition in the user's generative content language (null when error is set)",
+                        "nullable": true,
+                        "example": "Using more words than needed; long-winded"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Type of word or expression",
+                        "nullable": true,
+                        "example": "ADJECTIVE",
+                        "enum": [
+                            "NOUN",
+                            "VERB",
+                            "ADJECTIVE",
+                            "ADVERB",
+                            "IDIOM",
+                            "PHRASE"
+                        ]
+                    },
+                    "extraMark": {
+                        "type": "string",
+                        "description": "Extra marks or tags for word classification by register or domain",
+                        "nullable": true,
+                        "example": "FORMAL",
+                        "enum": [
+                            "OFFENSIVE",
+                            "SLANG",
+                            "FORMAL",
+                            "INFORMAL",
+                            "SCIENTIFIC",
+                            "TECHNICAL",
+                            "LEGAL",
+                            "MEDICAL",
+                            "COLLOQUIAL",
+                            "POETIC"
+                        ]
+                    },
+                    "error": {
+                        "type": "string",
+                        "description": "Error code when the word could not be enriched (e.g. NON_EXISTENT_WORD)",
+                        "nullable": true,
+                        "example": "NON_EXISTENT_WORD"
+                    }
+                },
+                "description": "AI-enriched QAW fields for a single input word"
             },
             "PublicQAWBulkCreateRequest": {
                 "required": [
@@ -5605,6 +5863,10 @@
                 ],
                 "type": "object",
                 "properties": {
+                    "messageOrder": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
                     "sender": {
                         "type": "string",
                         "enum": [
@@ -5615,10 +5877,6 @@
                     "createdAt": {
                         "type": "string",
                         "format": "date-time"
-                    },
-                    "messageOrder": {
-                        "type": "integer",
-                        "format": "int32"
                     },
                     "id": {
                         "type": "string",
@@ -6852,6 +7110,13 @@
                     }
                 }
             },
+            "Gender": {
+                "type": "string",
+                "enum": [
+                    "MALE",
+                    "FEMALE"
+                ]
+            },
             "LanguageName": {
                 "type": "string",
                 "description": "Supported languages in the platform",
@@ -6878,24 +7143,20 @@
                     "C2"
                 ]
             },
-            "Gender": {
+            "WordGender": {
                 "type": "string",
                 "enum": [
-                    "MALE",
-                    "FEMALE"
+                    "MASCULINE",
+                    "FEMININE",
+                    "NEUTER"
                 ]
             },
-            "GetAllWordsSortOptions": {
+            "WordCollocationFrequency": {
                 "type": "string",
                 "enum": [
-                    "CREATED_AT",
-                    "SOURCE_WORD"
-                ]
-            },
-            "WordToggleableProperty": {
-                "type": "string",
-                "enum": [
-                    "IS_BOOKMARKED"
+                    "VERY_COMMON",
+                    "COMMON",
+                    "OCCASIONAL"
                 ]
             },
             "WordExtraMark": {
@@ -6926,124 +7187,47 @@
                     "PHRASE"
                 ]
             },
-            "WordCollocationFrequency": {
+            "GetAllWordsSortOptions": {
                 "type": "string",
                 "enum": [
-                    "VERY_COMMON",
-                    "COMMON",
-                    "OCCASIONAL"
+                    "CREATED_AT",
+                    "SOURCE_WORD"
                 ]
             },
-            "WordGender": {
+            "WordToggleableProperty": {
                 "type": "string",
                 "enum": [
-                    "MASCULINE",
-                    "FEMININE",
-                    "NEUTER"
+                    "IS_BOOKMARKED"
                 ]
             },
-            "PhraseType": {
+            "CrosswordWordDirection": {
                 "type": "string",
-                "description": "Type of phrase learning tip",
                 "enum": [
-                    "IDIOMATIC",
-                    "LITERAL"
+                    "HORIZONTAL",
+                    "VERTICAL"
                 ]
             },
-            "TipRegister": {
+            "WordAnswerScore": {
                 "type": "string",
-                "description": "Formality register indicator for learning tips",
                 "enum": [
-                    "FORMAL",
-                    "NEUTRAL",
-                    "COLLOQUIAL"
+                    "CORRECT",
+                    "HALF_CORRECT",
+                    "INCORRECT"
                 ]
             },
-            "ConversationAIBotAvatar": {
+            "GameResult": {
                 "type": "string",
                 "enum": [
-                    "AVATAR_DEFAULT",
-                    "AVATAR_ALPHA",
-                    "AVATAR_BETA",
-                    "AVATAR_GAMMA",
-                    "AVATAR_DELTA",
-                    "AVATAR_EPSILON",
-                    "AVATAR_ZETA",
-                    "AVATAR_ETA",
-                    "AVATAR_THETA"
+                    "COMPLETED",
+                    "CANCELLED"
                 ]
             },
-            "ConversationTone": {
+            "GameType": {
                 "type": "string",
                 "enum": [
-                    "FRIENDLY",
-                    "FORMAL",
-                    "HUMOROUS",
-                    "NEUTRAL",
-                    "ENCOURAGING",
-                    "CHALLENGING"
-                ]
-            },
-            "ConversationType": {
-                "type": "string",
-                "enum": [
-                    "SMALL_TALK",
-                    "SCENARIO_ROLEPLAY",
-                    "EXAM_PRACTICE",
-                    "TOPIC_EXPLORATION",
-                    "OXFORD_DEBATE"
-                ]
-            },
-            "RecencyBucket": {
-                "type": "string",
-                "description": "Grouping bucket based on last activity (UTC)",
-                "enum": [
-                    "TODAY",
-                    "YESTERDAY",
-                    "THIS_WEEK",
-                    "THIS_MONTH",
-                    "LATER"
-                ]
-            },
-            "ConversationMessageSender": {
-                "type": "string",
-                "enum": [
-                    "USER",
-                    "AI"
-                ]
-            },
-            "ConversationMessageErrorType": {
-                "type": "string",
-                "enum": [
-                    "GRAMMAR",
-                    "VOCABULARY",
-                    "SPELLING",
-                    "PUNCTUATION"
-                ]
-            },
-            "ConversationMessageMistakeSeverity": {
-                "type": "string",
-                "enum": [
-                    "MINOR",
-                    "MODERATE",
-                    "CRITICAL"
-                ]
-            },
-            "ConversationMessageStrengthType": {
-                "type": "string",
-                "enum": [
-                    "GRAMMAR",
-                    "VOCABULARY",
-                    "FLUENCY",
-                    "PRAGMATICS",
-                    "COMMUNICATION"
-                ]
-            },
-            "ConversationMessageSuggestionType": {
-                "type": "string",
-                "enum": [
-                    "VOCABULARY",
-                    "STRUCTURE"
+                    "WORDS_TYPING",
+                    "CROSSWORD",
+                    "SENTENCES_WRITING"
                 ]
             },
             "GameDifficulty": {
@@ -7063,36 +7247,6 @@
                     "C",
                     "D",
                     "NA"
-                ]
-            },
-            "GameResult": {
-                "type": "string",
-                "enum": [
-                    "COMPLETED",
-                    "CANCELLED"
-                ]
-            },
-            "GameType": {
-                "type": "string",
-                "enum": [
-                    "WORDS_TYPING",
-                    "CROSSWORD",
-                    "SENTENCES_WRITING"
-                ]
-            },
-            "CrosswordWordDirection": {
-                "type": "string",
-                "enum": [
-                    "HORIZONTAL",
-                    "VERTICAL"
-                ]
-            },
-            "WordAnswerScore": {
-                "type": "string",
-                "enum": [
-                    "CORRECT",
-                    "HALF_CORRECT",
-                    "INCORRECT"
                 ]
             },
             "UserActivityFrequency": {
@@ -7121,6 +7275,110 @@
                     "WORDS_COMPLETED_IN_ONE_WEEK_30"
                 ]
             },
+            "ConversationMessageSender": {
+                "type": "string",
+                "enum": [
+                    "USER",
+                    "AI"
+                ]
+            },
+            "RecencyBucket": {
+                "type": "string",
+                "description": "Grouping bucket based on last activity (UTC)",
+                "enum": [
+                    "TODAY",
+                    "YESTERDAY",
+                    "THIS_WEEK",
+                    "THIS_MONTH",
+                    "LATER"
+                ]
+            },
+            "ConversationType": {
+                "type": "string",
+                "enum": [
+                    "SMALL_TALK",
+                    "SCENARIO_ROLEPLAY",
+                    "EXAM_PRACTICE",
+                    "TOPIC_EXPLORATION",
+                    "OXFORD_DEBATE"
+                ]
+            },
+            "ConversationTone": {
+                "type": "string",
+                "enum": [
+                    "FRIENDLY",
+                    "FORMAL",
+                    "HUMOROUS",
+                    "NEUTRAL",
+                    "ENCOURAGING",
+                    "CHALLENGING"
+                ]
+            },
+            "ConversationAIBotAvatar": {
+                "type": "string",
+                "enum": [
+                    "AVATAR_DEFAULT",
+                    "AVATAR_ALPHA",
+                    "AVATAR_BETA",
+                    "AVATAR_GAMMA",
+                    "AVATAR_DELTA",
+                    "AVATAR_EPSILON",
+                    "AVATAR_ZETA",
+                    "AVATAR_ETA",
+                    "AVATAR_THETA"
+                ]
+            },
+            "ConversationMessageErrorType": {
+                "type": "string",
+                "enum": [
+                    "GRAMMAR",
+                    "VOCABULARY",
+                    "SPELLING",
+                    "PUNCTUATION"
+                ]
+            },
+            "ConversationMessageStrengthType": {
+                "type": "string",
+                "enum": [
+                    "GRAMMAR",
+                    "VOCABULARY",
+                    "FLUENCY",
+                    "PRAGMATICS",
+                    "COMMUNICATION"
+                ]
+            },
+            "ConversationMessageMistakeSeverity": {
+                "type": "string",
+                "enum": [
+                    "MINOR",
+                    "MODERATE",
+                    "CRITICAL"
+                ]
+            },
+            "ConversationMessageSuggestionType": {
+                "type": "string",
+                "enum": [
+                    "VOCABULARY",
+                    "STRUCTURE"
+                ]
+            },
+            "TipRegister": {
+                "type": "string",
+                "description": "Formality register indicator for learning tips",
+                "enum": [
+                    "FORMAL",
+                    "NEUTRAL",
+                    "COLLOQUIAL"
+                ]
+            },
+            "PhraseType": {
+                "type": "string",
+                "description": "Type of phrase learning tip",
+                "enum": [
+                    "IDIOMATIC",
+                    "LITERAL"
+                ]
+            },
             "SortDirection": {
                 "type": "string",
                 "enum": [
@@ -7132,9 +7390,9 @@
         "securitySchemes": {
             "auth-cookie": {
                 "type": "apiKey",
-                "in": "cookie",
+                "description": "HttpOnly JWT cookie set by POST /api/v1/auth/otp-verify. Sent automatically by browsers and HTTP clients with cookie jar support.",
                 "name": "AUTH-TOKEN",
-                "description": "HttpOnly JWT cookie set by POST /api/v1/auth/otp-verify. Sent automatically by browsers and HTTP clients with cookie jar support."
+                "in": "cookie"
             }
         }
     }
