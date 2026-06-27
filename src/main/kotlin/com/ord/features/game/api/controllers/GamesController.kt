@@ -1,5 +1,7 @@
 package com.ord.features.game.api.controllers
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
@@ -24,7 +26,7 @@ import java.util.*
     name = "4. Games: General",
     description = "General game management endpoints for all game types"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class GamesController(
     private val ongoingGameService: OngoingGameService,
 ) {

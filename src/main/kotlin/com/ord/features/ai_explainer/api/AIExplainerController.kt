@@ -1,5 +1,7 @@
 package com.ord.features.ai_explainer.api
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.ai_explainer.api.facades.AIExplainerFacade
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController
     name = "8. AI Explainer",
     description = "AI-powered explanations of words and phrases for language learning"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class AIExplainerController(
     private val aiExplainerFacade: AIExplainerFacade
 ) {

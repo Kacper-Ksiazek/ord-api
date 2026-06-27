@@ -6,6 +6,7 @@ import com.ord.controllers.conversations.AllConversationControllersTestsSuite
 import com.ord.controllers.games.AllGameControllersTestsSuite
 import com.ord.controllers.language_proficiencies.TestLanguageProficienciesController
 import com.ord.controllers.quickly_added_words.AllQAWControllersTestsSuite
+import com.ord.controllers.tts.TestTtsController
 import com.ord.controllers.users.TestUsersController
 import com.ord.controllers.words.AllWordControllersTestsSuite
 import org.junit.platform.suite.api.SelectClasses
@@ -24,6 +25,7 @@ import org.junit.platform.suite.api.SuiteDisplayName
         AllConversationControllersTestsSuite::class,
         AllQAWControllersTestsSuite::class,
         TestAIExplainerController::class,
+        TestTtsController::class,
     ]
 )
 class AllControllersTestsSuite

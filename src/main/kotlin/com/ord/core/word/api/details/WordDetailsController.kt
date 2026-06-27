@@ -1,5 +1,7 @@
 package com.ord.core.word.api.details
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.details.facades.WordDetailsFacade
@@ -25,7 +27,7 @@ import java.util.*
     name = "2. Words: Details",
     description = "Manage detailed word information including examples, usage notes, and additional context"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class WordDetailsController(
     private val wordDetailsFacade: WordDetailsFacade
 ) {

@@ -1,5 +1,7 @@
 package com.ord.core.word.api.ai
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.ai.facades.WordAIFacade
@@ -30,7 +32,7 @@ import reactor.core.publisher.Mono
     name = "2. Words: AI Generation",
     description = "AI-powered word generation and enhancement for vocabulary learning"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class WordAIController(
     private val wordAIFacade: WordAIFacade
 ) {

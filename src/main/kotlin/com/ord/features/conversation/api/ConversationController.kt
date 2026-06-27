@@ -1,5 +1,7 @@
 package com.ord.features.conversation.api
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.conversation.api.facades.ConversationActivityFacade
@@ -34,7 +36,7 @@ import java.util.*
     name = "5. Conversations: Management",
     description = "Create and manage AI-powered conversation practice sessions with customizable scenarios and interlocutors"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class ConversationController(
     val conversationTopicFacade: ConversationAuxiliaryFacade,
     val conversationCRUDFacade: ConversationCRUDFacade,

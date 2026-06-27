@@ -1,5 +1,7 @@
 package com.ord.features.game.api.controllers
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.exceptions.REST.BadRequestException
@@ -29,7 +31,7 @@ import reactor.core.publisher.Mono
     name = "4. Games: Sentences Writing",
     description = "Sentence writing game variant to practice vocabulary usage in context"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class SentencesWritingGameController(
     private val sentencesWritingGameFacade: SentencesWritingGameFacade
 ) {

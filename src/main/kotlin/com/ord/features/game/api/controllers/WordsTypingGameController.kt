@@ -1,5 +1,7 @@
 package com.ord.features.game.api.controllers
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
@@ -29,7 +31,7 @@ import reactor.core.publisher.Mono
     name = "4. Games: Words Typing",
     description = "Fast-paced word typing game to improve vocabulary recall and typing speed"
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class WordsTypingGameController(
     private val wordsTypingGameFacade: WordsTypingGameFacade
 ) {

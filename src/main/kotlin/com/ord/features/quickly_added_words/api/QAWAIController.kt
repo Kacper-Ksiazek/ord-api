@@ -1,5 +1,7 @@
 package com.ord.features.quickly_added_words.api
 
+import com.ord.config.OpenApiSecurity
+
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.quickly_added_words.api.facades.QAWAIFacade
@@ -28,7 +30,7 @@ import reactor.core.publisher.Mono
     name = "3. QAW: Authenticated",
     description = "Rapidly add and manage words for later processing and approval (requires authentication)",
 )
-@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class QAWAIController(
     private val qawAIFacade: QAWAIFacade,
 ) {
