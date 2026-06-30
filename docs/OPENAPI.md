@@ -169,7 +169,7 @@ See `.github/workflows/publish-api-types.yml` for the complete workflow configur
 
 ## Manual testing with Bruno
 
-A Bruno HTTP collection for all `/api/v1` endpoints lives in [`bruno/ord-api/`](../bruno/ord-api/). Regenerate with `python3 scripts/generate-bruno-collection.py` after large API changes.
+A Bruno collection (auth, users, conversations) lives in [`bruno/ord-api/`](../bruno/ord-api/). See `docs/ai-rules/bruno/` for organization rules.
 
 ## Authentication in Swagger UI
 

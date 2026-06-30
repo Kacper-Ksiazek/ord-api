@@ -1,65 +1,36 @@
-# ORD API — Bruno Collection
+# ORD API — Bruno
 
-Manual testing and debugging collection for all `/api/v1` endpoints.
+Manual API collection for local development and smoke testing.
 
-## Requirements
+## Setup
 
-- [Bruno](https://www.usebruno.com/) desktop app
-- Running ORD API (`DATABASE_URL`, `JWT_SECRET_KEY`, `ENV_TEST_PROPERTY=1test1`)
-- For local OTP: `OTP_WHITELISTED_EMAILS=dev@example.com` and code `123456`
+1. Open `bruno/ord-api` in [Bruno](https://www.usebruno.com/)
+2. Select the **local** environment
+3. Ensure the API is running with `OTP_WHITELISTED_EMAILS=dev@example.com`
 
-## Quick start
+## Auth flow
 
-1. Open this folder in Bruno (`bruno/ord-api`)
-2. Select **local** environment
-3. Run `00-setup/health-check`
-4. Run `01-auth/otp-request` then `01-auth/otp-verify`
-5. Run `02-users/get-me` (cookie `AUTH-TOKEN` is sent automatically)
+1. `auth/otp-request`
+2. `auth/otp-verify` — sets `AUTH-TOKEN` cookie
+3. `users/get-me` — check `isAccountInitialized`, `name`, languages, etc.
 
-## Authentication
+Clear Bruno cookies before step 1 if you need a fresh OTP session.
 
-JWT is stored in the **AUTH-TOKEN** HttpOnly cookie (not `Authorization: Bearer`).
-After `otp-verify`, Bruno stores the cookie in its cookie jar for `localhost:8080`.
+## Conversations
 
-**Anonymous-only endpoints** (must NOT send AUTH-TOKEN):
-- `POST /auth/otp-request`, `POST /auth/otp-verify`
-- `GET /health-check`
-- `POST /public/quickly-added-words/bulk-create`
+After login, use `workflows/conversation-session` as a runbook, or explore:
 
-Clear cookies or run `logout` before re-authenticating via OTP.
+- `conversations/auxiliary/` — topic & interlocutor helpers
+- `conversations/crud/` — list, create, get, delete
+- `conversations/activity/` — 90-day overview
+- `conversations/ongoing/` — live session (SSE + messages)
 
-## SSE endpoints
+`conversations/crud/create` sets `conversationId` for downstream requests.
 
-These return `text/event-stream`. Enable response streaming in Bruno and set `Accept: text/event-stream`:
+## Auth
 
-- `04-words/ai/suggest-vocabulary-sse`
-- `08-conversations/suggest-topics-sse`
-- `08-conversations/ongoing/ai-initialize-sse`
-- `08-conversations/ongoing/ai-request-message-sse`
-- `09-ai-explainer/explain-phrase-sse`
+JWT lives in the **AUTH-TOKEN** HttpOnly cookie (not `Authorization: Bearer`).
 
-Requires `OPEN_AI_KEY` on the server. AI calls may take a long time.
+## Organization
 
-Fallback: `curl -N -b cookies.txt -H "Accept: text/event-stream" ...`
-
-## Workflows
-
-See `99-workflows/` for step-by-step debug sequences.
-
-## Variables (chained via post-response scripts)
-
-| Variable | Set by |
-|----------|--------|
-| userId | otp-verify |
-| wordId, bankId | create word, get-many-words |
-| qawId | create QAW |
-| conversationId | create conversation |
-| gameId | game start endpoints |
-
-## Sync policy
-
-When API changes: update Kotlin/OpenAPI, run `make openapi`, then update matching `.bru` files.
-
-## Swagger UI
-
-`http://localhost:8080/swagger-ui.html` (Basic Auth: admin/admin)
+Folder layout follows `docs/ai-rules/bruno/` — domain folders with facade/controller subfolders.
