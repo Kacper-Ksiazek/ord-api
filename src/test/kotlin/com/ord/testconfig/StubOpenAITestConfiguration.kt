@@ -6,13 +6,13 @@ import com.ord.testconfig.stub.StubOpenAIAPIClientService
 import com.ord.testing_utils.mocks.ai.AIFixtureDynamicBuilder
 import com.ord.testing_utils.mocks.ai.AIFixtureLoader
 import com.ord.testing_utils.mocks.ai.AIFixtureRegistry
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 
 @TestConfiguration
-@ConditionalOnProperty(name = ["INTEGRATION_TESTS"], havingValue = "false", matchIfMissing = true)
+@ConditionalOnExpression("'\${INTEGRATION_TESTS:}' != 'true'")
 class StubOpenAITestConfiguration {
 
     @Bean
@@ -25,9 +25,9 @@ class StubOpenAITestConfiguration {
     @Bean
     fun aiFixtureDynamicBuilder(): AIFixtureDynamicBuilder = AIFixtureDynamicBuilder()
 
-    @Bean
+    @Bean(name = ["openAIAPIClientServiceImpl"])
     @Primary
-    fun stubOpenAIAPIClientService(
+    fun openAIAPIClientServiceImpl(
         gptTokensUsageService: GptTokensUsageService,
         fixtureLoader: AIFixtureLoader,
         dynamicBuilder: AIFixtureDynamicBuilder,

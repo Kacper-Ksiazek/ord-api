@@ -18,7 +18,7 @@ on [`TestcontainersConfig`](../../../src/test/kotlin/com/ord/controllers/bases/T
 
 | Command | Behaviour |
 |---------|-----------|
-| `make test` / `make test-smoke` | Full `AllTestsSuite` with AI stubs (no `OPEN_AI_KEY`) |
+| `make test` / `make test-smoke` | Full `AllTestsSuite` with AI stubs (no `OPEN_AI_KEY`; defaults in `src/test/resources/application.properties`) |
 | `make test-integration` | Full suite against real OpenAI (`INTEGRATION_TESTS=true`, requires `.env.test` with `OPEN_AI_KEY`) |
 
 CI uses `make test-smoke` and does not pass `OPEN_AI_KEY`.
