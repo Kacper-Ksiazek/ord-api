@@ -1,0 +1,25 @@
+{
+  "sabotage": "",
+  "correctedMessage": "I went to the park yesterday and it was absolutely beautiful.",
+  "tutorComment": "Great descriptive language and natural flow.",
+  "grammar": 8,
+  "vocabulary": 8,
+  "naturalness": 9,
+  "coherenceWithContext": 9,
+  "mistakes": [],
+  "strengths": [
+    {
+      "phrase": "absolutely beautiful",
+      "strengthType": "VOCABULARY",
+      "explanation": "Strong adjective choice that adds emphasis."
+    }
+  ],
+  "suggestions": [
+    {
+      "original": "went to the park",
+      "suggestionType": "VOCABULARY",
+      "alternatives": ["visited the park", "spent time at the park"],
+      "explanation": "These alternatives sound slightly more varied."
+    }
+  ]
+}

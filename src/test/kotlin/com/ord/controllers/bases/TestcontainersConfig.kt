@@ -1,8 +1,10 @@
 package com.ord.controllers.bases
 
 import com.ord.controllers.bases.containers.PostgresTestContainer
+import com.ord.testconfig.StubOpenAITestConfiguration
 import org.flywaydb.core.Flyway
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -10,6 +12,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
 @SpringBootTest
+@Import(StubOpenAITestConfiguration::class)
 abstract class TestcontainersConfig {
 
     companion object {

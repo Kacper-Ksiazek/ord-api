@@ -25,16 +25,10 @@ jobs:
           maven-version: '3.9.6'
 
       - name: 🧪 Run tests with Maven
-        run: |
-          mvn -Dtest=com.ord.AllTestsSuite \
-              -Dsurefire.parallel=none \
-              -DforkCount=1 \
-              -DreuseForks=false \
-              test
+        run: make test-smoke
         env:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           JWT_EXPIRATION_TIME: ${{ secrets.JWT_EXPIRATION_TIME }}
-          OPEN_AI_KEY: ${{ secrets.OPEN_AI_KEY }}
           SPRING_PROFILES_ACTIVE: 'test'
           ENV_TEST_PROPERTY: '1test1'
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}

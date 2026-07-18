@@ -1,0 +1,9 @@
+{
+  "chunks": [
+    "Hello! ",
+    "It's great to talk with you about weekend plans. ",
+    "What are you most looking forward to?"
+  ],
+  "inputTokens": 48,
+  "outputTokens": 22
+}

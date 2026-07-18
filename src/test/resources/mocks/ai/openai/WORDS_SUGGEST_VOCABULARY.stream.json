@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "word": "reunión",
+      "translation": "meeting",
+      "definition": "A formal gathering of people for discussion or decision-making."
+    },
+    {
+      "word": "biblioteca",
+      "translation": "library",
+      "definition": "A building or room containing collections of books for reading or borrowing."
+    },
+    {
+      "word": "aprovechar",
+      "translation": "to take advantage of",
+      "definition": "To make good use of an opportunity or resource."
+    }
+  ],
+  "inputTokens": 60,
+  "outputTokens": 30
+}
