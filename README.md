@@ -144,7 +144,8 @@ make openapi   # requires a running API; writes openapi.json
 
 | Workflow | Trigger | What it does |
 |----------|---------|-------------|
-| **Build, Test & Deploy** | Push to `main` | Runs `AllTestsSuite`, builds Docker image, deploys to Heroku |
+| **Smoke tests** | Pull request → `main` | Runs `make test-smoke` (required check — blocks merge on failure) |
+| **Build, Test & Deploy** | Push to `main` | Smoke tests, then builds Docker image and deploys to Heroku |
 | **Publish API Types** | Push to `main` when `openapi.json` changes | Generates TypeScript types and publishes to GitHub Packages |
 
 ## Testing
