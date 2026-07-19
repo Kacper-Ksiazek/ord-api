@@ -4,6 +4,7 @@ import com.ord.exceptions.REST.*
 import com.ord.exceptions.dto.api_responses.HTTPErrorResponse
 import com.ord.shared.utils.Console
 import org.slf4j.LoggerFactory
+import org.springframework.core.env.Environment
 import org.springframework.core.codec.DecodingException
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.HttpStatus
@@ -16,8 +17,24 @@ import org.springframework.web.server.ResponseStatusException
 
 
 @ControllerAdvice
-class RESTExceptionHandler {
+class RESTExceptionHandler(
+    private val environment: Environment,
+) {
     val logger = LoggerFactory.getLogger(RESTExceptionHandler::class.java)
+
+    private fun printClientError(message: String) {
+        if (!environment.matchesProfiles("test")) {
+            Console.printRed(message)
+        }
+    }
+
+    private fun logClientError(message: String, e: Exception) {
+        if (environment.matchesProfiles("test")) {
+            logger.debug("{}: {}", message, e.message)
+        } else {
+            logger.error(message, e)
+        }
+    }
 
     @ExceptionHandler(
         BadRequestException::class,
@@ -92,8 +109,8 @@ class RESTExceptionHandler {
             status = status
         )
 
-        Console.printRed("\n🚨 [$status] Bad Request: $message")
-        logger.error("Request parsing error: $message", e)
+        printClientError("\n🚨 [$status] Bad Request: $message")
+        logClientError("Request parsing error: $message", e)
 
         return ResponseEntity.status(status).body(errorResponse)
     }
@@ -122,8 +139,8 @@ class RESTExceptionHandler {
             status = status
         )
 
-        Console.printRed("\n🚨 [$status] JSON Decoding Error: $message")
-        logger.error("JSON decoding error: $message", e)
+        printClientError("\n🚨 [$status] JSON Decoding Error: $message")
+        logClientError("JSON decoding error: $message", e)
 
         return ResponseEntity.status(status).body(errorResponse)
     }
@@ -139,8 +156,8 @@ class RESTExceptionHandler {
             status = status
         )
 
-        Console.printRed("\n🚨 [$status] Method Not Allowed: $message")
-        logger.error("Method not allowed: $message", e)
+        printClientError("\n🚨 [$status] Method Not Allowed: $message")
+        logClientError("Method not allowed: $message", e)
 
         return ResponseEntity.status(status).body(errorResponse)
     }
@@ -155,8 +172,8 @@ class RESTExceptionHandler {
             status = status
         )
 
-        Console.printRed("\n🚨 [$status] ${e.statusCode}: $message")
-        logger.error("Response status exception: $message", e)
+        printClientError("\n🚨 [$status] ${e.statusCode}: $message")
+        logClientError("Response status exception: $message", e)
 
         return ResponseEntity.status(status).body(errorResponse)
     }
@@ -178,8 +195,8 @@ class RESTExceptionHandler {
             status = status
         )
 
-        Console.printRed("\n🚨 [$status] Duplicate Key: $message")
-        logger.error("Duplicate key violation: $message", e)
+        printClientError("\n🚨 [$status] Duplicate Key: $message")
+        logClientError("Duplicate key violation: $message", e)
 
         return ResponseEntity.status(status).body(errorResponse)
     }

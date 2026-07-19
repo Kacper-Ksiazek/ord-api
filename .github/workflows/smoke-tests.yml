@@ -1,0 +1,14 @@
+name: Smoke tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: smoke-tests-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  smoke-tests:
+    uses: ./.github/workflows/smoke-tests-reusable.yml

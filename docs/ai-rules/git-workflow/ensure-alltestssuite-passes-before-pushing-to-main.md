@@ -1,19 +1,20 @@
-# Ensure `AllTestsSuite` passes before pushing to main
+# Ensure smoke tests pass before merging to main
 
-A push to `main` triggers `.github/workflows/deploy.yml`, which runs `com.ord.AllTestsSuite` and then builds and deploys the Docker image to Heroku. A red suite blocks the deploy, so run the full suite locally with `make test` before pushing to `main`.
+Pull requests targeting `main` run `.github/workflows/smoke-tests.yml` (`make test-smoke` with AI stubs, no OpenAI key). A failed run blocks merge once **Smoke tests** is marked as a required check in GitHub branch protection.
+
+Pushes to `main` run the same suite first via `.github/workflows/deploy.yml` — deploy only proceeds when smoke tests pass.
 
 ## Good
 
 ```bash
-# Run the same suite CI runs, using .env.test, before pushing to main.
-make test          # mvn -Dtest=com.ord.AllTestsSuite ... test
-# Only push once it is green:
-git push origin main
+# Run the same suite CI runs before opening / updating a PR.
+make test-smoke
+# Merge only when the GitHub "Smoke tests" check is green.
 ```
 
 ## Bad
 
 ```bash
-# Pushing to main without running the suite — risks a failed Heroku deploy.
-git push origin main   # CI runs AllTestsSuite for the first time and fails
+# Merging with a red or skipped "Smoke tests" check.
+git push origin main   # deploy is also blocked until smoke tests pass
 ```

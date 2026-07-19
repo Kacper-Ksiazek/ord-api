@@ -1,0 +1,106 @@
+{
+  "items": [
+    {
+      "word": "reunión",
+      "translation": "meeting",
+      "definition": "A formal gathering of people for discussion or decision-making."
+    },
+    {
+      "word": "biblioteca",
+      "translation": "library",
+      "definition": "A building or room containing collections of books for reading or borrowing."
+    },
+    {
+      "word": "aprovechar",
+      "translation": "to take advantage of",
+      "definition": "To make good use of an opportunity or resource."
+    },
+    {
+      "word": "empresa",
+      "translation": "company",
+      "definition": "An organization engaged in commercial or industrial activities."
+    },
+    {
+      "word": "contrato",
+      "translation": "contract",
+      "definition": "A written agreement that is legally binding."
+    },
+    {
+      "word": "presupuesto",
+      "translation": "budget",
+      "definition": "A plan for spending money over a specific period."
+    },
+    {
+      "word": "cliente",
+      "translation": "client",
+      "definition": "A person or organization that buys goods or services."
+    },
+    {
+      "word": "negociación",
+      "translation": "negotiation",
+      "definition": "Discussion aimed at reaching an agreement."
+    },
+    {
+      "word": "presentación",
+      "translation": "presentation",
+      "definition": "A formal talk or display of information to an audience."
+    },
+    {
+      "word": "deadline",
+      "translation": "deadline",
+      "definition": "The latest time by which something must be completed."
+    },
+    {
+      "word": "colaboración",
+      "translation": "collaboration",
+      "definition": "Working jointly with others toward a shared goal."
+    },
+    {
+      "word": "prioridad",
+      "translation": "priority",
+      "definition": "Something regarded as more important than other matters."
+    },
+    {
+      "word": "estrategia",
+      "translation": "strategy",
+      "definition": "A plan designed to achieve a long-term objective."
+    },
+    {
+      "word": "feedback",
+      "translation": "feedback",
+      "definition": "Information about reactions to a product or performance, used as a basis for improvement."
+    },
+    {
+      "word": "agenda",
+      "translation": "agenda",
+      "definition": "A list of items to be discussed at a formal meeting."
+    },
+    {
+      "word": "seguimiento",
+      "translation": "follow-up",
+      "definition": "An action carried out to monitor or continue a previous task."
+    },
+    {
+      "word": "objetivo",
+      "translation": "objective",
+      "definition": "A specific result that a person or team aims to achieve."
+    },
+    {
+      "word": "propuesta",
+      "translation": "proposal",
+      "definition": "A plan or suggestion put forward for consideration."
+    },
+    {
+      "word": "revisión",
+      "translation": "review",
+      "definition": "A formal assessment or examination of something."
+    },
+    {
+      "word": "implementación",
+      "translation": "implementation",
+      "definition": "The process of putting a plan or system into effect."
+    }
+  ],
+  "inputTokens": 60,
+  "outputTokens": 30
+}

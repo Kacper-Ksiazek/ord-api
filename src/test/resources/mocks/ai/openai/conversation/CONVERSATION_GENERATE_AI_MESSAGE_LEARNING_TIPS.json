@@ -1,0 +1,24 @@
+{
+  "grammarTips": [
+    {
+      "phrase": "What did you do there?",
+      "explanation": "Past simple question form.",
+      "grammarPoint": "Past Simple Questions",
+      "exampleSentences": ["What did you eat?", "Where did you go?"],
+      "register": "NEUTRAL",
+      "nativeLanguageEquivalent": "Equivalent past tense question in your native language."
+    }
+  ],
+  "vocabularyTips": [
+    {
+      "word": "lovely",
+      "definition": "Very pleasant or enjoyable.",
+      "usageNote": "Common in friendly conversation.",
+      "wordType": "ADJECTIVE",
+      "exampleSentences": ["That sounds lovely.", "We had a lovely evening."],
+      "register": "NEUTRAL",
+      "nativeLanguageEquivalent": "pleasant / nice"
+    }
+  ],
+  "phraseTips": []
+}

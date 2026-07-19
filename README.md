@@ -131,7 +131,8 @@ curl http://localhost:8080/api/v1/health-check
 ### Run tests
 
 ```bash
-make test   # sources .env.test, runs AllTestsSuite with Testcontainers
+make test-smoke        # full suite with AI stubs (no OPEN_AI_KEY)
+make test-integration  # full suite against real OpenAI (requires .env.test with OPEN_AI_KEY)
 ```
 
 ### Export OpenAPI spec
@@ -144,7 +145,9 @@ make openapi   # requires a running API; writes openapi.json
 
 | Workflow | Trigger | What it does |
 |----------|---------|-------------|
-| **Build, Test & Deploy** | Push to `main` | Runs `AllTestsSuite`, builds Docker image, deploys to Heroku |
+| **Smoke tests** | Pull request → `main` | Runs `make test-smoke` (required check — blocks merge on failure) |
+| **Integration tests** | Push to `main`; manual (`workflow_dispatch`, branch default `main`) | Runs `make test-integration` against real OpenAI (`OPEN_AI_KEY` secret) |
+| **Build, Test & Deploy** | Push to `main` | Smoke tests, then builds Docker image and deploys to Heroku |
 | **Publish API Types** | Push to `main` when `openapi.json` changes | Generates TypeScript types and publishes to GitHub Packages |
 
 ## Testing

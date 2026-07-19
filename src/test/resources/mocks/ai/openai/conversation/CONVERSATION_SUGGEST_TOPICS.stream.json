@@ -1,0 +1,9 @@
+{
+  "items": [
+    { "value": "Planning a weekend trip to the mountains" },
+    { "value": "Trying a new recipe at home" },
+    { "value": "Catching up with an old friend" }
+  ],
+  "inputTokens": 55,
+  "outputTokens": 22
+}

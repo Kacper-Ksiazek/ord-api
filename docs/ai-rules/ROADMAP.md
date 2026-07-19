@@ -38,7 +38,7 @@ Strict vertical slicing under `com.ord`: `config/`, `core/`, `features/`, `excep
 | `ai-integration` | `OpenAIAPIClientService` request/streaming APIs, GPT token-usage logging per operation key, response parsing/validation callbacks, `BadGatewayException` handling for AI failures | [x] (8) |
 | `prompts` | Prompt management: file-based `.md` templates under `resources/prompts/` (+ `guidelines.md`), `AvailablePrompts` enum registry, `Prompt`/`PromptCache` loading & `{{param}}` substitution, structured-output schemas (`StructuredOutputTemplate` + `structured_outputs/features/**`), wiring a prompt to its schema and operation key | [x] (9) |
 | `error-handling` | `exceptions/REST/*` hierarchy, `RESTExceptionHandler` `@ControllerAdvice`, error response DTO, switchIfEmpty→NotFound pattern | [x] (7) |
-| `testing` | Controller integration tests, `ControllerTestBase`, `*APIClient` wrappers, seeders/factories, Kotest matchers, Testcontainers, `AllTestsSuite` registration | [x] (11) |
+| `testing` | Controller integration tests, `ControllerTestBase`, `*APIClient` wrappers, seeders/factories, Kotest matchers, Testcontainers, `AllTestsSuite` registration, AI smoke stubs | [x] (12) |
 | `git-workflow` | Commit policy (never self-commit; ask + push), migration immutability, OpenAPI re-export discipline | [x] (7) |
 
 ## Progress
