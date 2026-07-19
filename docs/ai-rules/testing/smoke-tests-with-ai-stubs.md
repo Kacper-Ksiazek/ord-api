@@ -10,7 +10,7 @@ on [`TestcontainersConfig`](../../../src/test/kotlin/com/ord/controllers/bases/T
 - `StubOpenAITestConfiguration` registers `@Primary OpenAIAPIClientService` →
   `StubOpenAIAPIClientService` (disabled when `INTEGRATION_TESTS=true`).
 - `StubMailTestConfiguration` always provides a no-op `JavaMailSender` in tests.
-- Responses come from JSON fixtures in `src/test/resources/mocks/ai/openai/` or from
+- Responses come from JSON fixtures in `src/test/resources/mocks/ai/openai/<controller>/` or from
   `AIFixtureDynamicBuilder` when the response must match prompt input (games, QAW, word manual).
 - Fixtures are keyed by `gptTokensUsageLogKey` (`GptTokensUsageOperationType` constants).
 - Token usage is still persisted so positive tests keep using `assertGptTokensLogCreated`.
@@ -29,8 +29,8 @@ CI runs `make test-smoke` on pull requests to `main` and before deploy — no `O
 1. Add a stable key in `GptTokensUsageOperationType` (if not already present).
 2. Register the operation in [`AIFixtureRegistry`](../../../src/test/kotlin/com/ord/testing_utils/mocks/ai/AIFixtureRegistry.kt)
    with `STRUCTURED`, `STRING_STREAM`, or `ARRAY_STREAM`.
-3. If the response is static, add JSON under `src/test/resources/mocks/ai/openai/<KEY>.json`
-   or `<KEY>.stream.json`.
+3. If the response is static, add JSON under `src/test/resources/mocks/ai/openai/<controller>/<KEY>.json`
+   or `<KEY>.stream.json` (e.g. `conversation/CONVERSATION_INITIALIZE.stream.json`).
 4. If the response must mirror words/IDs from the prompt (e.g. game generation), implement
    logic in [`AIFixtureDynamicBuilder`](../../../src/test/kotlin/com/ord/testing_utils/mocks/ai/AIFixtureDynamicBuilder.kt)
    and mark the registry entry `isDynamic = true`.

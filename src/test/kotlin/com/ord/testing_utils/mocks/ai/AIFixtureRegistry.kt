@@ -13,43 +13,43 @@ class AIFixtureRegistry {
         AIFixtureEntry(
             operationKey = GptTokensUsageOperationType.Conversation.INITIALIZE,
             type = AIFixtureType.STRING_STREAM,
-            resourcePath = "mocks/ai/openai/CONVERSATION_INITIALIZE.stream.json",
+            resourcePath = "mocks/ai/openai/conversation/CONVERSATION_INITIALIZE.stream.json",
         ),
         AIFixtureEntry(
             operationKey = GptTokensUsageOperationType.Conversation.AI_RESPONSE,
             type = AIFixtureType.STRING_STREAM,
-            resourcePath = "mocks/ai/openai/CONVERSATION_AI_RESPONSE.stream.json",
+            resourcePath = "mocks/ai/openai/conversation/CONVERSATION_AI_RESPONSE.stream.json",
         ),
         AIFixtureEntry(
             operationKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
             type = AIFixtureType.STRUCTURED,
-            resourcePath = "mocks/ai/openai/CONVERSATION_REVIEW_USER_MESSAGE.json",
+            resourcePath = "mocks/ai/openai/conversation/CONVERSATION_REVIEW_USER_MESSAGE.json",
         ),
         AIFixtureEntry(
             operationKey = GptTokensUsageOperationType.Conversation.GENERATE_AI_MESSAGE_LEARNING_TIPS,
             type = AIFixtureType.STRUCTURED,
-            resourcePath = "mocks/ai/openai/CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS.json",
+            resourcePath = "mocks/ai/openai/conversation/CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS.json",
         ),
         AIFixtureEntry(
             operationKey = GptTokensUsageOperationType.Conversation.SUGGEST_TOPICS,
             type = AIFixtureType.ARRAY_STREAM,
-            resourcePath = "mocks/ai/openai/CONVERSATION_SUGGEST_TOPICS.stream.json",
+            resourcePath = "mocks/ai/openai/conversation/CONVERSATION_SUGGEST_TOPICS.stream.json",
         ),
         AIFixtureEntry(
             operationKey = GptTokensUsageOperationType.Conversation.GENERATE_INTERLOCUTOR,
             type = AIFixtureType.STRUCTURED,
-            resourcePath = "mocks/ai/openai/CONVERSATION_GENERATE_INTERLOCUTOR.json",
+            resourcePath = "mocks/ai/openai/conversation/CONVERSATION_GENERATE_INTERLOCUTOR.json",
         ),
         AIFixtureEntry(
             operationKey = GptTokensUsageOperationType.AIExplainer.EXPLAIN_PHRASE,
             type = AIFixtureType.STRING_STREAM,
-            resourcePath = "mocks/ai/openai/AI_EXPLAINER_EXPLAIN_PHRASE.stream.json",
+            resourcePath = "mocks/ai/openai/ai_explainer/AI_EXPLAINER_EXPLAIN_PHRASE.stream.json",
         ),
         AIFixtureEntry(
             operationKey = GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY,
             type = AIFixtureType.ARRAY_STREAM,
             isDynamic = true,
-            resourcePath = "mocks/ai/openai/WORDS_SUGGEST_VOCABULARY.stream.json",
+            resourcePath = "mocks/ai/openai/words/WORDS_SUGGEST_VOCABULARY.stream.json",
         ),
         AIFixtureEntry(
             operationKey = GptTokensUsageOperationType.Words.GENERATE_MANUAL,
