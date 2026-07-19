@@ -19,7 +19,7 @@ on [`TestcontainersConfig`](../../../src/test/kotlin/com/ord/controllers/bases/T
 
 | Command | Behaviour |
 |---------|-----------|
-| `make test` / `make test-smoke` | Full `AllTestsSuite` with AI stubs (no `OPEN_AI_KEY`; defaults in `src/test/resources/application.properties`) |
+| `make test-smoke` | Full `AllTestsSuite` with AI stubs (no `OPEN_AI_KEY`; defaults in `src/test/resources/application.properties`) |
 | `make test-integration` | Full suite against real OpenAI (`INTEGRATION_TESTS=true`, requires `.env.test` with `OPEN_AI_KEY` locally) |
 
 CI runs `make test-smoke` on pull requests to `main` and before deploy — no `OPEN_AI_KEY` required. After merge to `main`, `.github/workflows/integration-tests.yml` runs `make test-integration` (requires `OPEN_AI_KEY` repository secret). Manual runs use **Actions → Integration tests → Run workflow** and are restricted to `Kacper-Ksiazek` via a workflow guard (others see a failed authorization job).

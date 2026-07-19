@@ -131,7 +131,8 @@ curl http://localhost:8080/api/v1/health-check
 ### Run tests
 
 ```bash
-make test   # sources .env.test, runs AllTestsSuite with Testcontainers
+make test-smoke        # full suite with AI stubs (no OPEN_AI_KEY)
+make test-integration  # full suite against real OpenAI (requires .env.test with OPEN_AI_KEY)
 ```
 
 ### Export OpenAPI spec
