@@ -38,7 +38,7 @@ abstract class ControllerTestBase(
     val faker = Faker()
 
     fun mockAuthenticatedUser(
-        email: String = faker.internet().emailAddress(),
+        email: String = "test-${UUID.randomUUID()}@example.com",
         nativeLanguage: LanguageName = LanguageName.ENGLISH,
         languages: Map<LanguageName, LanguageProficiencyLevel> = mapOf(
             LanguageName.ENGLISH to LanguageProficiencyLevel.C1
@@ -110,7 +110,7 @@ abstract class ControllerTestBase(
     }
 
     fun mockAuthenticatedUserWithUninitializedAccount(
-        email: String = faker.internet().emailAddress()
+        email: String = "test-${UUID.randomUUID()}@example.com"
     ): MockedAuthenticatedUser {
         // Step 1: Create user in database with uninitialized account
         userRepository.save(

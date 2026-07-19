@@ -6,6 +6,7 @@ import com.ord.seeders.factories.bases.FactoryBase
 import com.ord.shared.utils.EnumUtils.getRandomValue
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 class UserFactory(
@@ -13,7 +14,7 @@ class UserFactory(
 ) : FactoryBase() {
     fun mockEntity(
         name: String = faker.name().fullName(),
-        email: String = faker.internet().emailAddress(),
+        email: String = "test-${UUID.randomUUID()}@example.com",
         password: String = faker.internet().password(),
     ): UserEntity {
         return UserEntity(

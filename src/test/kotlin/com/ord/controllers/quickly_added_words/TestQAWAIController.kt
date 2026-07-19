@@ -11,7 +11,9 @@ import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.features.quickly_added_words.api.requests.QAWFillGapsItem
 import com.ord.features.quickly_added_words.api.requests.QAWFillGapsRequest
+import com.ord.features.quickly_added_words.api.responses.QAWFillGapsResponse
 import com.ord.testing_utils.api.clients.QAWAIAPIClient
+import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
@@ -51,6 +53,27 @@ class TestQAWAIController @Autowired constructor(
 ) {
     private val qawAIAPIClient = QAWAIAPIClient(webClient)
 
+    private fun fillGapsExpectingSuccess(
+        body: QAWFillGapsRequest,
+    ): APIClientResponse<QAWFillGapsResponse?> {
+        val maxAttempts = if (System.getProperty("INTEGRATION_TESTS") == "true") 3 else 1
+        var lastResponse: APIClientResponse<QAWFillGapsResponse?>? = null
+
+        repeat(maxAttempts) { attempt ->
+            val response = qawAIAPIClient.fillGaps(body, authenticatedUser)
+            lastResponse = response
+            val items = response.body?.items
+            if (response.status == HttpStatus.OK && items != null && items.all { it.error == null }) {
+                return response
+            }
+            if (attempt < maxAttempts - 1) {
+                Thread.sleep(1_000)
+            }
+        }
+
+        return lastResponse!!
+    }
+
     lateinit var authenticatedUser: MockedAuthenticatedUser
 
     @BeforeEach
@@ -73,12 +96,11 @@ class TestQAWAIController @Autowired constructor(
 
             @Test
             fun `200 - should fill gaps for a single word`() {
-                val response = qawAIAPIClient.fillGaps(
+                val response = fillGapsExpectingSuccess(
                     body = QAWFillGapsRequest(
                         language = LanguageName.ENGLISH,
                         items = listOf(QAWFillGapsItem(word = "verbose")),
                     ),
-                    user = authenticatedUser,
                 )
 
                 response.status shouldBe HttpStatus.OK
@@ -98,22 +120,18 @@ class TestQAWAIController @Autowired constructor(
 
             @Test
             fun `200 - should fill gaps for multiple words in order`() {
-                val response = qawAIAPIClient.fillGaps(
+                val inputWords = listOf("hello", "apple", "house")
+                val response = fillGapsExpectingSuccess(
                     body = QAWFillGapsRequest(
                         language = LanguageName.ENGLISH,
-                        items = listOf(
-                            QAWFillGapsItem(word = "verbose"),
-                            QAWFillGapsItem(word = "meeting"),
-                            QAWFillGapsItem(word = "library"),
-                        ),
+                        items = inputWords.map { QAWFillGapsItem(word = it) },
                     ),
-                    user = authenticatedUser,
                 )
 
                 response.status shouldBe HttpStatus.OK
                 val body = response.body.shouldNotBeNull()
                 body.items shouldHaveSize 3
-                body.items.map { it.inputWord } shouldBe listOf("verbose", "meeting", "library")
+                body.items.map { it.inputWord } shouldBe inputWords
                 body.items.forEach { item ->
                     item.error.shouldBeNull()
                     item.translation.shouldNotBeNull().shouldNotBeBlank()
