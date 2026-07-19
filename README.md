@@ -145,6 +145,7 @@ make openapi   # requires a running API; writes openapi.json
 | Workflow | Trigger | What it does |
 |----------|---------|-------------|
 | **Smoke tests** | Pull request → `main` | Runs `make test-smoke` (required check — blocks merge on failure) |
+| **Integration tests** | Push to `main`; manual (`workflow_dispatch`, branch default `main`) | Runs `make test-integration` against real OpenAI (`OPEN_AI_KEY` secret) |
 | **Build, Test & Deploy** | Push to `main` | Smoke tests, then builds Docker image and deploys to Heroku |
 | **Publish API Types** | Push to `main` when `openapi.json` changes | Generates TypeScript types and publishes to GitHub Packages |
 

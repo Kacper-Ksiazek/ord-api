@@ -21,8 +21,8 @@ case "$MODE" in
     ;;
   integration)
     LABEL="Integration tests"
-    if [[ ! -f "$ROOT/.env.test" ]]; then
-      echo "ERROR: integration mode requires .env.test" >&2
+    if [[ ! -f "$ROOT/.env.test" ]] && [[ -z "${OPEN_AI_KEY:-}" ]]; then
+      echo "ERROR: integration mode requires .env.test or OPEN_AI_KEY in the environment" >&2
       exit 1
     fi
     ;;

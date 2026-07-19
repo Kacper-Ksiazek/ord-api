@@ -1,0 +1,48 @@
+name: Integration tests
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag, or SHA to run integration tests against
+        required: true
+        default: main
+        type: string
+
+concurrency:
+  group: integration-tests-${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  authorize-manual-run:
+    if: github.event_name == 'workflow_dispatch'
+    name: Authorize manual run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restrict manual trigger
+        env:
+          ALLOWED_MANUAL_ACTORS: Kacper-Ksiazek
+        run: |
+          case ",${ALLOWED_MANUAL_ACTORS}," in
+            *,"${GITHUB_ACTOR}",*)
+              echo "Manual run authorized for ${GITHUB_ACTOR}."
+              ;;
+            *)
+              echo "::error::Manual integration tests can only be started by: ${ALLOWED_MANUAL_ACTORS}."
+              exit 1
+              ;;
+          esac
+
+  integration-tests:
+    needs: authorize-manual-run
+    if: |
+      always() &&
+      (github.event_name == 'push' ||
+        (github.event_name == 'workflow_dispatch' && needs.authorize-manual-run.result == 'success'))
+    uses: ./.github/workflows/integration-tests-reusable.yml
+    secrets: inherit
+    with:
+      ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref_name }}
