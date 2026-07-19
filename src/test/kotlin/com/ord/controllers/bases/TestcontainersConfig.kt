@@ -1,6 +1,7 @@
 package com.ord.controllers.bases
 
 import com.ord.controllers.bases.containers.PostgresTestContainer
+import com.ord.testconfig.StubMailTestConfiguration
 import com.ord.testconfig.StubOpenAITestConfiguration
 import org.flywaydb.core.Flyway
 import org.springframework.boot.test.context.SpringBootTest
@@ -12,7 +13,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
 @SpringBootTest
-@Import(StubOpenAITestConfiguration::class)
+@Import(StubOpenAITestConfiguration::class, StubMailTestConfiguration::class)
 abstract class TestcontainersConfig {
 
     companion object {
@@ -54,7 +55,10 @@ abstract class TestcontainersConfig {
             registry.add("jwt.secret_key") {
                 "test-jwt-secret-key-with-sufficient-length-for-hs256-algorithm"
             }
-            registry.add("openai.api_key") { "dummy-key" }
+            registry.add("jwt.auth_cookie_name") { "AUTH-TOKEN" }
+            registry.add("jwt.user_id_claim_name") { "user_id" }
+            registry.add("openai.api_key") { System.getenv("OPEN_AI_KEY") ?: "dummy-key" }
+            registry.add("openai.api_url") { "https://api.openai.com/v1/responses" }
         }
     }
 }

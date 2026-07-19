@@ -18,7 +18,21 @@ import com.ord.features.game.variants.words_typing.ai.dto.openai.OpenAIWordPair
 import com.ord.features.game.variants.words_typing.ai.dto.openai.OpenAIWordsTyping
 import com.ord.features.quickly_added_words.api.ai.responses.openai.OpenAIQAWFillGapsBatch
 import com.ord.features.quickly_added_words.api.ai.responses.openai.OpenAIQAWFillGapsItem
-class AIFixtureDynamicBuilder {
+import com.ord.testing_utils.mocks.ai.dto.ArrayStreamFixture
+class AIFixtureDynamicBuilder(
+    private val fixtureLoader: AIFixtureLoader,
+) {
+    fun buildArrayStream(operationKey: String, prompt: String): ArrayStreamFixture? {
+        if (!AIFixtureRegistryDynamicKeys.isDynamic(operationKey)) return null
+
+        return when (operationKey) {
+            GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY ->
+                buildSuggestVocabulary(prompt)
+
+            else -> null
+        }
+    }
+
     fun buildStructured(
         operationKey: String,
         prompt: String,
@@ -47,6 +61,28 @@ class AIFixtureDynamicBuilder {
 
             else -> null
         }
+    }
+
+    private fun buildSuggestVocabulary(prompt: String): ArrayStreamFixture {
+        val wordCount = AIPromptParsingUtils.parseWordCount(prompt)
+        val blockedWords = (
+            AIPromptParsingUtils.parseExistingWords(prompt) +
+                AIPromptParsingUtils.parseExcludedWords(prompt)
+            ).map { it.lowercase() }.toSet()
+
+        val pool = fixtureLoader.loadArrayStream(GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY).items
+        val selectedItems = pool
+            .filter { item ->
+                val word = item.get("word")?.asText()?.lowercase().orEmpty()
+                word.isNotBlank() && word !in blockedWords
+            }
+            .take(wordCount)
+
+        require(selectedItems.size == wordCount) {
+            "Suggest vocabulary stub needs at least $wordCount unblocked words, found ${selectedItems.size}"
+        }
+
+        return ArrayStreamFixture(items = selectedItems)
     }
 
     private fun buildWordManual(prompt: String): OpenAIGeneratedWordManual {
@@ -87,7 +123,7 @@ class AIFixtureDynamicBuilder {
     }
 
     private fun buildQAWFillGaps(prompt: String): OpenAIQAWFillGapsBatch {
-        val words = AIPromptParsingUtils.parseNumberedWords(prompt)
+        val words = AIPromptParsingUtils.parseQAWInputWords(prompt)
         require(words.isNotEmpty()) { "Could not parse input words from QAW fill-gaps prompt" }
 
         return OpenAIQAWFillGapsBatch(
@@ -183,6 +219,7 @@ class AIFixtureDynamicBuilder {
 
 private object AIFixtureRegistryDynamicKeys {
     private val dynamicKeys = setOf(
+        GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY,
         GptTokensUsageOperationType.Words.GENERATE_MANUAL,
         GptTokensUsageOperationType.QAW.FILL_GAPS,
         GptTokensUsageOperationType.Game.Generate.CROSSWORD,

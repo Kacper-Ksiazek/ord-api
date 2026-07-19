@@ -1,8 +1,8 @@
 package com.ord.testing_utils.api
 
-import com.ord.shared.utils.Console
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
+import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -11,6 +11,7 @@ import org.springframework.test.web.reactive.server.returnResult
 abstract class APITestClient(
     val webClient: WebTestClient
 ) {
+    private val logger = LoggerFactory.getLogger(javaClass)
     fun <TResponseBody> get(
         url: String,
         user: MockedAuthenticatedUser?,
@@ -142,28 +143,12 @@ abstract class APITestClient(
                     .responseBody
             }
         } catch (ex: Exception) {
-            Console.printRed("\uD83D\uDEA8 [e2e] Failed to convert response body")
-            Console.printRed("Exception type: ${ex::class.simpleName}")
-            Console.printRed("Exception message: ${ex.message}")
-            Console.printRed("HTTP Status: ${result.status}")
-            Console.printRed("Expected response type: ${responseBodyType?.type}")
-            Console.printRed("Response headers: ${result.responseHeaders}")
-            Console.printRed("Raw response body:")
-
-            val rawBody = try {
-                // Try to get the raw response as string for debugging
-                this.expectBody(String::class.java)
-                    .returnResult()
-                    .responseBody ?: "Empty response body"
-            } catch (bodyEx: Exception) {
-                "Failed to read raw body: ${bodyEx.message}"
-            }
-
-            Console.printRed("  $rawBody")
-            Console.printRed("Stack trace:")
-            ex.printStackTrace()
-            Console.printRed("--- End of error details ---")
-
+            logger.debug(
+                "Failed to decode {} response as {}: {}",
+                result.status,
+                responseBodyType?.type?.typeName,
+                ex.message,
+            )
             null
         }
 

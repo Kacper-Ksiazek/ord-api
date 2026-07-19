@@ -17,6 +17,10 @@ class Application(
 ) : CommandLineRunner {
 
     override fun run(vararg args: String) {
+        if (environment.matchesProfiles("test")) {
+            return
+        }
+
         Console.printCyan("\nThe main application is booting up...")
         Console.addBreakLine(1)
 

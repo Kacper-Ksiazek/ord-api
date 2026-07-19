@@ -8,7 +8,8 @@ on [`TestcontainersConfig`](../../../src/test/kotlin/com/ord/controllers/bases/T
 
 - Production code is unchanged — stub lives only under `src/test`.
 - `StubOpenAITestConfiguration` registers `@Primary OpenAIAPIClientService` →
-  `StubOpenAIAPIClientService`.
+  `StubOpenAIAPIClientService` (disabled when `INTEGRATION_TESTS=true`).
+- `StubMailTestConfiguration` always provides a no-op `JavaMailSender` in tests.
 - Responses come from JSON fixtures in `src/test/resources/mocks/ai/openai/` or from
   `AIFixtureDynamicBuilder` when the response must match prompt input (games, QAW, word manual).
 - Fixtures are keyed by `gptTokensUsageLogKey` (`GptTokensUsageOperationType` constants).

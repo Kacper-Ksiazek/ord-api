@@ -48,6 +48,7 @@ class AIFixtureRegistry {
         AIFixtureEntry(
             operationKey = GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY,
             type = AIFixtureType.ARRAY_STREAM,
+            isDynamic = true,
             resourcePath = "mocks/ai/openai/WORDS_SUGGEST_VOCABULARY.stream.json",
         ),
         AIFixtureEntry(

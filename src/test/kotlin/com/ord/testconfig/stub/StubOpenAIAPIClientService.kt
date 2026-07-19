@@ -111,7 +111,8 @@ class StubOpenAIAPIClientService(
         onError: (Throwable) -> Unit,
         onComplete: (() -> Unit)?,
     ): Flux<String> {
-        val fixture = fixtureLoader.loadArrayStream(gptTokensUsageLogKey)
+        val fixture = dynamicBuilder.buildArrayStream(gptTokensUsageLogKey, prompt)
+            ?: fixtureLoader.loadArrayStream(gptTokensUsageLogKey)
         val emitter: Emitter = Sinks.many().unicast().onBackpressureBuffer<String>()
 
         fixture.items.forEach { itemNode ->

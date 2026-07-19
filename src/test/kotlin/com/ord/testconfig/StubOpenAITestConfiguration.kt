@@ -23,7 +23,8 @@ class StubOpenAITestConfiguration {
         AIFixtureLoader(fixtureRegistry)
 
     @Bean
-    fun aiFixtureDynamicBuilder(): AIFixtureDynamicBuilder = AIFixtureDynamicBuilder()
+    fun aiFixtureDynamicBuilder(fixtureLoader: AIFixtureLoader): AIFixtureDynamicBuilder =
+        AIFixtureDynamicBuilder(fixtureLoader)
 
     @Bean(name = ["openAIAPIClientServiceImpl"])
     @Primary
