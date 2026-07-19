@@ -21,7 +21,7 @@ jobs:
           cache: maven
 
       - name: Set up Maven 3.9
-        uses: stCarolas/setup-maven@v7
+        uses: stCarolas/setup-maven@v4
         with:
           maven-version: '3.9.6'
 
