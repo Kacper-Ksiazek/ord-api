@@ -1,11 +1,12 @@
-package com.ord.testing_utils.mocks.ai
+package com.ord.stubs.ai
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ord.testing_utils.mocks.ai.dto.ArrayStreamFixture
-import com.ord.testing_utils.mocks.ai.dto.StringStreamFixture
+import com.ord.stubs.ai.dto.ArrayStreamFixture
+import com.ord.stubs.ai.dto.StringStreamFixture
+
 class AIFixtureLoader(
     private val fixtureRegistry: AIFixtureRegistry,
 ) {

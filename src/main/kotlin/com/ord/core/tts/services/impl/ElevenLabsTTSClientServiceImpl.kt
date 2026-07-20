@@ -6,6 +6,7 @@ import com.ord.core.tts.services.ElevenLabsTTSClientService
 import com.ord.exceptions.REST.BadGatewayException
 import com.ord.shared.utils.Console
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.context.annotation.Profile
 import org.springframework.core.env.Environment
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DefaultDataBufferFactory
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Service
+@Profile("!e2e")
 class ElevenLabsTTSClientServiceImpl(
     private val elevenLabsProperties: ElevenLabsProperties,
     @Qualifier("elevenLabsWebClient")

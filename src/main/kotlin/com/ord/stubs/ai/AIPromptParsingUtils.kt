@@ -1,4 +1,4 @@
-package com.ord.testing_utils.mocks.ai
+package com.ord.stubs.ai
 
 import java.util.UUID
 

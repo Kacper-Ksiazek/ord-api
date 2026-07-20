@@ -1,4 +1,4 @@
-package com.ord.testing_utils.mocks.ai
+package com.ord.stubs.ai
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
@@ -18,7 +18,8 @@ import com.ord.features.game.variants.words_typing.ai.dto.openai.OpenAIWordPair
 import com.ord.features.game.variants.words_typing.ai.dto.openai.OpenAIWordsTyping
 import com.ord.features.quickly_added_words.api.ai.responses.openai.OpenAIQAWFillGapsBatch
 import com.ord.features.quickly_added_words.api.ai.responses.openai.OpenAIQAWFillGapsItem
-import com.ord.testing_utils.mocks.ai.dto.ArrayStreamFixture
+import com.ord.stubs.ai.dto.ArrayStreamFixture
+
 class AIFixtureDynamicBuilder(
     private val fixtureLoader: AIFixtureLoader,
 ) {
