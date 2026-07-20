@@ -21,22 +21,72 @@ export SPRING_PROFILES_ACTIVE=e2e
 
 ## Architecture
 
-```
-SPRING_PROFILES_ACTIVE=e2e
-        │
-        ▼
-E2eStubConfiguration (@Profile e2e)
-        │
-        ▼
-AiStubBeansConfiguration
-        ├── StubOpenAIAPIClientService   (@Primary, fixtures from src/main/resources/stubs/ai/)
-        └── StubElevenLabsTTSClientService (@Primary, minimal fake MP3 bytes)
+```mermaid
+flowchart TB
+  subgraph activation [Activation]
+    Env["SPRING_PROFILES_ACTIVE=e2e"]
+    Compose["docker-compose.e2e.yml"]
+    Compose --> Env
+  end
 
-OpenAIAPIClientServiceImpl      @Profile("!e2e")  → not loaded
-ElevenLabsTTSClientServiceImpl  @Profile("!e2e")  → not loaded
+  subgraph e2eProfile [Profile e2e]
+    E2eCfg["E2eStubConfiguration"]
+    StubCfg["AiStubBeansConfiguration"]
+    Env --> E2eCfg
+    E2eCfg --> StubCfg
+  end
+
+  subgraph stubBeans [Stub beans loaded]
+    OpenAIStub["StubOpenAIAPIClientService\n@Primary"]
+    TtsStub["StubElevenLabsTTSClientService\n@Primary"]
+    Fixtures["src/main/resources/stubs/ai/openai/"]
+    StubCfg --> OpenAIStub
+    StubCfg --> TtsStub
+    OpenAIStub --> Fixtures
+  end
+
+  subgraph excluded [Not loaded in e2e]
+    OpenAIReal["OpenAIAPIClientServiceImpl\n@Profile !e2e"]
+    TtsReal["ElevenLabsTTSClientServiceImpl\n@Profile !e2e"]
+  end
+
+  subgraph data [Real infrastructure]
+    Postgres[("PostgreSQL 16")]
+    App["ord-api JAR"]
+    App --> Postgres
+    OpenAIStub --> App
+    TtsStub --> App
+  end
 ```
 
-Smoke tests import the **same** `AiStubBeansConfiguration` via `StubOpenAITestConfiguration` — one implementation, two activation paths.
+### Shared stub implementation
+
+Smoke tests reuse the same beans — one implementation, two activation paths:
+
+```mermaid
+flowchart LR
+  subgraph shared [src/main]
+    AiStubCfg["AiStubBeansConfiguration"]
+    StubOpenAI["StubOpenAIAPIClientService"]
+    StubTts["StubElevenLabsTTSClientService"]
+    AiStubCfg --> StubOpenAI
+    AiStubCfg --> StubTts
+  end
+
+  subgraph e2ePath [E2E runtime]
+    E2eCfg2["E2eStubConfiguration\n@Profile e2e"]
+    Docker["docker-compose.e2e.yml"]
+    Docker --> E2eCfg2
+    E2eCfg2 --> AiStubCfg
+  end
+
+  subgraph testPath [Smoke tests]
+    TestCfg["StubOpenAITestConfiguration\n@TestConfiguration"]
+    Maven["make test-smoke"]
+    Maven --> TestCfg
+    TestCfg --> AiStubCfg
+  end
+```
 
 ## Health check contract
 
