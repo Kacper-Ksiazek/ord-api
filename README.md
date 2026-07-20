@@ -149,6 +149,19 @@ make openapi   # requires a running API; writes openapi.json
 | **Integration tests** | Push to `main`; manual (`workflow_dispatch`, branch default `main`) | Runs `make test-integration` against real OpenAI (`OPEN_AI_KEY` secret) |
 | **Build, Test & Deploy** | Push to `main` | Smoke tests, then builds Docker image and deploys to Heroku |
 | **Publish API Types** | Push to `main` when `openapi.json` changes | Generates TypeScript types and publishes to GitHub Packages |
+| **Publish GHCR image** | Push to `main` | Builds and pushes `ghcr.io/kacper-ksiazek/ord-api` (`latest` + `sha-<commit>`) for E2E CI |
+
+### E2E stack (CI / local)
+
+The `docker-compose.e2e.yml` file starts a self-contained backend for Playwright E2E tests — no local `.env` required. It uses a pre-built image from GHCR (or override with `ORD_API_IMAGE`).
+
+```bash
+docker compose -f docker-compose.e2e.yml up -d --wait
+curl http://localhost:8080/api/v1/health-check
+docker compose -f docker-compose.e2e.yml down -v
+```
+
+OTP whitelist for E2E: `e2e-ci@ord.test` / `123456`.
 
 ## Testing
 
