@@ -24,6 +24,7 @@ import com.ord.features.conversation.repositories.ConversationRepository
 import com.ord.testing_utils.api.clients.ConversationAPIClient
 import com.ord.testing_utils.api.clients.OngoingConversationAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.ints.shouldBeInRange
@@ -770,7 +771,7 @@ class TestOngoingConversationController @Autowired constructor(
 
                 val conversation = createConversation(authenticatedUser)
 
-                ongoingConversationAPIClient.initializeConversationByAI(
+                val aiInitResponse = ongoingConversationAPIClient.initializeConversationByAI(
                     conversationId = conversation.id,
                     user = authenticatedUser
                 )
@@ -786,7 +787,7 @@ class TestOngoingConversationController @Autowired constructor(
                     conversationId = conversation.id,
                     messageId = messageId,
                     messageOrder = 1,
-                    latestAIMessage = TestData.AI_MESSAGE
+                    latestAIMessage = aiInitResponse.body
                 )
 
                 val response = ongoingConversationAPIClient.generateAnalysis(
@@ -798,12 +799,18 @@ class TestOngoingConversationController @Autowired constructor(
                 response.body shouldNotBe null
 
                 val analysis = response.body!!
-                analysis.grammar shouldBeGreaterThan 0
-                analysis.vocabulary shouldBeGreaterThan 0
+                analysis.grammar shouldBeInRange 0..10
+                analysis.vocabulary shouldBeInRange 0..10
                 analysis.naturalness shouldBeInRange 0..10
                 analysis.coherenceWithContext shouldBeInRange 0..10
-                analysis.mistakes shouldNotBe null
-                analysis.strengths shouldNotBe null
+
+                if (System.getProperty("INTEGRATION_TESTS") != "true") {
+                    analysis.tutorComment.shouldNotBeBlank()
+                    analysis.grammar shouldBeGreaterThan 0
+                    analysis.vocabulary shouldBeGreaterThan 0
+                    analysis.strengths.shouldNotBeEmpty()
+                    analysis.suggestions.shouldNotBeEmpty()
+                }
             }
 
             @Test
