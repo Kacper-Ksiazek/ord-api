@@ -14,7 +14,10 @@ import org.springframework.context.annotation.Primary
 
 /**
  * Shared bean definitions for AI/TTS stubs.
- * Imported by the `e2e` runtime profile and by smoke-test `@TestConfiguration`.
+ *
+ * Loaded only via explicit `@Import` — never component-scanned (see [Application] exclude filter):
+ * - [E2eStubConfiguration] for `e2e` runtime / Playwright CI
+ * - [com.ord.testconfig.StubOpenAITestConfiguration] for smoke tests
  */
 @Configuration
 class AiStubBeansConfiguration {

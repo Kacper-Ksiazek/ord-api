@@ -61,7 +61,7 @@ flowchart TB
 
 ### Shared stub implementation
 
-Smoke tests reuse the same beans — one implementation, two activation paths:
+Smoke tests reuse the same beans — one implementation, two explicit `@Import` paths (never auto-scanned):
 
 ```mermaid
 flowchart LR

@@ -1,9 +1,12 @@
 package com.ord
 
+import com.ord.config.e2e.AiStubBeansConfiguration
 import com.ord.shared.utils.Console
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.FilterType
 import org.springframework.core.env.Environment
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.transaction.annotation.EnableTransactionManagement
@@ -11,6 +14,15 @@ import java.net.URI
 
 @SpringBootApplication
 @EnableTransactionManagement
+@ComponentScan(
+    basePackages = ["com.ord"],
+    excludeFilters = [
+        ComponentScan.Filter(
+            type = FilterType.ASSIGNABLE_TYPE,
+            classes = [AiStubBeansConfiguration::class],
+        ),
+    ],
+)
 class Application(
     private val environment: Environment,
     private val dbClient: DatabaseClient,

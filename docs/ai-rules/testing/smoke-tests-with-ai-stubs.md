@@ -9,7 +9,7 @@ The same stub implementation powers the **`e2e` runtime profile** used by Playwr
 ## How it works
 
 - Stub implementations live in `src/main/kotlin/com/ord/stubs/ai/` (shared by tests and E2E runtime).
-- [`AiStubBeansConfiguration`](../../../src/main/kotlin/com/ord/config/e2e/AiStubBeansConfiguration.kt) registers `@Primary` beans for OpenAI and ElevenLabs.
+- [`AiStubBeansConfiguration`](../../../src/main/kotlin/com/ord/config/e2e/AiStubBeansConfiguration.kt) registers `@Primary` beans for OpenAI and ElevenLabs. It is **not** component-scanned — only loaded via `@Import` (see `Application.kt` exclude filter).
 - **Smoke tests:** `StubOpenAITestConfiguration` imports `AiStubBeansConfiguration` when `INTEGRATION_TESTS != true`.
 - **E2E runtime:** `E2eStubConfiguration` (`@Profile("e2e")`) imports the same beans; real HTTP clients are excluded via `@Profile("!e2e")`.
 - `StubMailTestConfiguration` always provides a no-op `JavaMailSender` in tests.
