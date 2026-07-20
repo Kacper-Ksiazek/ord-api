@@ -32,11 +32,9 @@ class HealthCheckController(
     @GetMapping
     @Operation(
         summary = "Check application health",
-        description = """
-            Returns the health status of the application and database connection.
-            In the `e2e` profile, `ai` and `tts` are reported as `STUB` (fixture-based clients, no external API calls).
-            No authentication required.
-        """.trimIndent()
+        description = "Returns the health status of the application and database connection. " +
+            "In the e2e profile, ai and tts are reported as STUB (fixture-based clients, no external API calls). " +
+            "No authentication required.",
     )
     @ApiResponses(
         value = [
