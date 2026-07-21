@@ -19,6 +19,7 @@ import com.ord.shared.utils.Console
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
@@ -35,6 +36,7 @@ import java.util.*
 import java.util.concurrent.TimeoutException
 
 @Service
+@Profile("!e2e")
 class OpenAIAPIClientServiceImpl(
     private val openAIRequestFactory: OpenAIRequestFactory,
     private val openAIProperties: OpenAIProperties,

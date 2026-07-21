@@ -1,4 +1,4 @@
-package com.ord.testing_utils.mocks.ai.dto
+package com.ord.stubs.ai.dto
 
 import com.fasterxml.jackson.databind.JsonNode
 

@@ -18,6 +18,8 @@ FROM eclipse-temurin:24.0.1_9-jre-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache curl
+
 # Copy the fat JAR from the builder stage
 COPY --from=builder /app/target/*.jar app.jar
 

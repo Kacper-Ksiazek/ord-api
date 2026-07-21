@@ -1,4 +1,4 @@
-package com.ord.testconfig.stub
+package com.ord.stubs.ai
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.dto.MessageOutput
@@ -12,14 +12,16 @@ import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.exceptions.REST.BadGatewayException
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
-import com.ord.testing_utils.mocks.ai.AIFixtureDynamicBuilder
-import com.ord.testing_utils.mocks.ai.AIFixtureLoader
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 import reactor.core.scheduler.Schedulers
 import java.util.UUID
 
+/**
+ * Fixture-driven OpenAI client used in smoke tests and the `e2e` runtime profile.
+ * Never calls the real OpenAI HTTP API.
+ */
 class StubOpenAIAPIClientService(
     private val gptTokensUsageService: GptTokensUsageService,
     private val fixtureLoader: AIFixtureLoader,
@@ -32,7 +34,7 @@ class StubOpenAIAPIClientService(
         userId: UUID,
         gptTokensUsageLogKey: String,
         structuredOutput: StructuredOutputTemplate?,
-        saveLog: (com.ord.core.ai_provider.dto.OpenAIResponse) -> Unit,
+        saveLog: (OpenAIResponse) -> Unit,
         validateResponseBody: (parsedResponseBody: T?) -> Boolean,
         parseResponseBody: (responseBody: T) -> T,
     ): Mono<T> {
@@ -57,7 +59,7 @@ class StubOpenAIAPIClientService(
         prompt: Prompt,
         userId: UUID,
         gptTokensUsageLogKey: String,
-        saveLog: (com.ord.core.ai_provider.dto.OpenAIResponse) -> Unit,
+        saveLog: (OpenAIResponse) -> Unit,
         validateResponseBody: (T?) -> Boolean,
         parseResponseBody: (T) -> T,
     ): Mono<T> {

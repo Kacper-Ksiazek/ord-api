@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16.3
+    environment:
+      POSTGRES_DB: ord
+      POSTGRES_USER: ord
+      POSTGRES_PASSWORD: ord
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ord -d ord']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  app:
+    image: ${ORD_API_IMAGE:-ghcr.io/kacper-ksiazek/ord-api:latest}
+    ports:
+      - '8080:8080'
+    environment:
+      PORT: '8080'
+      SPRING_PROFILES_ACTIVE: e2e
+      DATABASE_URL: postgres://ord:ord@db:5432/ord
+      JWT_SECRET_KEY: e2e-ci-jwt-secret-key-with-sufficient-length
+      ENV_TEST_PROPERTY: 1test1
+      CORS_ALLOWED_ORIGINS: http://localhost:5173
+      OTP_WHITELISTED_EMAILS: e2e-ci@ord.test
+      OTP_CODE_FOR_WHITELISTED_EMAILS: '123456'
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'curl -sf http://localhost:8080/api/v1/health-check | grep -q ''"database":"UP"'' && curl -sf http://localhost:8080/api/v1/health-check | grep -q ''"ai":"STUB"'''
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s

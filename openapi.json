@@ -2591,7 +2591,7 @@
                     "6. Utility: Health Check"
                 ],
                 "summary": "Check application health",
-                "description": "Returns the health status of the application and database connection. No authentication required.",
+                "description": "Returns the health status of the application and database connection. In the `e2e` profile, `ai` and `tts` are reported as `STUB` (fixture-based clients, no external API calls). No authentication required.",
                 "operationId": "healthCheck",
                 "responses": {
                     "400": {
@@ -2608,9 +2608,26 @@
                         "description": "Health status retrieved successfully",
                         "content": {
                             "application/json": {
-                                "example": {
-                                    "application": "UP",
-                                    "database": "UP"
+                                "schema": {
+                                    "$ref": "#/components/schemas/HealthCheckResponse"
+                                },
+                                "examples": {
+                                    "production": {
+                                        "value": {
+                                            "application": "UP",
+                                            "database": "UP",
+                                            "ai": "LIVE",
+                                            "tts": "LIVE"
+                                        }
+                                    },
+                                    "e2e": {
+                                        "value": {
+                                            "application": "UP",
+                                            "database": "UP",
+                                            "ai": "STUB",
+                                            "tts": "STUB"
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -2893,6 +2910,46 @@
                         }
                     }
                 }
+            },
+            "HealthCheckResponse": {
+                "required": [
+                    "ai",
+                    "application",
+                    "database",
+                    "tts"
+                ],
+                "type": "object",
+                "properties": {
+                    "application": {
+                        "$ref": "#/components/schemas/HealthStatus"
+                    },
+                    "database": {
+                        "$ref": "#/components/schemas/HealthStatus"
+                    },
+                    "ai": {
+                        "$ref": "#/components/schemas/AiIntegrationMode"
+                    },
+                    "tts": {
+                        "$ref": "#/components/schemas/AiIntegrationMode"
+                    }
+                },
+                "description": "Application health snapshot"
+            },
+            "HealthStatus": {
+                "type": "string",
+                "description": "Component health status",
+                "enum": [
+                    "UP",
+                    "DOWN"
+                ]
+            },
+            "AiIntegrationMode": {
+                "type": "string",
+                "description": "External integration mode — STUB means fixture-based clients with no outbound HTTP calls",
+                "enum": [
+                    "STUB",
+                    "LIVE"
+                ]
             },
             "FieldError": {
                 "required": [

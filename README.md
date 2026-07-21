@@ -149,6 +149,32 @@ make openapi   # requires a running API; writes openapi.json
 | **Integration tests** | Push to `main`; manual (`workflow_dispatch`, branch default `main`) | Runs `make test-integration` against real OpenAI (`OPEN_AI_KEY` secret) |
 | **Build, Test & Deploy** | Push to `main` | Smoke tests, then builds Docker image and deploys to Heroku |
 | **Publish API Types** | Push to `main` when `openapi.json` changes | Generates TypeScript types and publishes to GitHub Packages |
+| **Publish GHCR image** | Push to `main` | Builds and pushes `ghcr.io/kacper-ksiazek/ord-api` (`latest` + `sha-<commit>`) for E2E CI |
+
+### E2E stack (CI / local)
+
+The `docker-compose.e2e.yml` file starts a self-contained backend for Playwright E2E tests — no local `.env` required. It uses a pre-built image from GHCR (or override with `ORD_API_IMAGE`).
+
+**Runtime profile `e2e`** (`SPRING_PROFILES_ACTIVE=e2e`):
+
+- OpenAI and ElevenLabs clients use **fixture-based stubs** — no outbound calls to external AI APIs.
+- OTP whitelist for deterministic auth (see below).
+- Health check reports integration mode: `GET /api/v1/health-check` → `"ai": "STUB", "tts": "STUB"`.
+
+```bash
+docker compose -f docker-compose.e2e.yml up -d --wait
+curl http://localhost:8080/api/v1/health-check
+# {"application":"UP","database":"UP","ai":"STUB","tts":"STUB"}
+docker compose -f docker-compose.e2e.yml down -v
+```
+
+| Variable | E2E value |
+|----------|-----------|
+| `SPRING_PROFILES_ACTIVE` | `e2e` |
+| `OTP_WHITELISTED_EMAILS` | `e2e-ci@ord.test` |
+| `OTP_CODE_FOR_WHITELISTED_EMAILS` | `123456` |
+
+Stub fixtures live in `src/main/resources/stubs/ai/openai/`. Registry and dynamic builders: `src/main/kotlin/com/ord/stubs/ai/`. See [`docs/ai-rules/testing/smoke-tests-with-ai-stubs.md`](docs/ai-rules/testing/smoke-tests-with-ai-stubs.md) and [`docs/e2e-runtime-profile.md`](docs/e2e-runtime-profile.md).
 
 ## Testing
 
