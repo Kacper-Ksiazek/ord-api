@@ -1,0 +1,6 @@
+---
+description: Jira project configuration for ord-api
+alwaysApply: true
+---
+
+Jira config lives in `docs/jira/`. Before any Atlassian MCP **write** on Jira issues, use skill `jira-manage-tasks`.
