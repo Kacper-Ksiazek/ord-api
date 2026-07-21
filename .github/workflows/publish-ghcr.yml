@@ -9,7 +9,11 @@ permissions:
   packages: write
 
 jobs:
+  smoke-tests:
+    uses: ./.github/workflows/smoke-tests-reusable.yml
+
   publish:
+    needs: smoke-tests
     runs-on: ubuntu-latest
 
     steps:
