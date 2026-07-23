@@ -8,7 +8,6 @@ import com.ord.core.user.model.UserDTO
 import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.exceptions.REST.BadRequestException
-import com.ord.exceptions.REST.InternalServerError
 import com.ord.features.quickly_added_words.api.ai.responses.openai.OpenAIQAWFillGapsBatch
 import com.ord.features.quickly_added_words.api.facades.QAWAIFacade
 import com.ord.features.quickly_added_words.api.requests.QAWFillGapsRequest
@@ -50,21 +49,27 @@ class QAWAIFacadeImpl(
                     ),
                 )
 
+                val expectedItemCount = body.items.size
+
                 openAIAPIClientService
                     .makeRequest(
                         aiResponseType = object : TypeReference<OpenAIQAWFillGapsBatch>() {},
                         prompt = prompt,
                         userId = user.id,
                         gptTokensUsageLogKey = GptTokensUsageOperationType.QAW.FILL_GAPS,
+                        validateResponseBody = { batch ->
+                            if (batch == null || batch.items.size != expectedItemCount) {
+                                return@makeRequest false
+                            }
+                            try {
+                                batch.toDomain()
+                                true
+                            } catch (_: IllegalArgumentException) {
+                                false
+                            }
+                        },
                     )
-                    .map { batch ->
-                        if (batch.items.size != body.items.size) {
-                            throw InternalServerError(
-                                "AI returned ${batch.items.size} items but ${body.items.size} were requested.",
-                            )
-                        }
-                        batch.toDomain()
-                    }
+                    .map { it.toDomain() }
             }
     }
 }
