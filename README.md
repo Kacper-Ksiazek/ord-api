@@ -110,6 +110,7 @@ SMTP_PORT=587
 SMTP_USERNAME=...
 SMTP_PASSWORD=...
 OTP_WHITELISTED_EMAILS=you@example.com
+OTP_CODE_FOR_WHITELISTED_EMAILS=123456
 ```
 
 2. Start the stack:
@@ -120,13 +121,31 @@ make docker-restart   # rebuild + start app + Postgres
 docker compose up -d --build
 ```
 
-3. Verify:
+### Production E2E setup
+
+E2E worker accounts exist in production after the first deploy that includes Flyway V22. OTP login uses a shared secret — not a user password.
+
+**One-time checklist:**
+
+1. Deploy ord-api with migration V22 (creates `e2e-ci-w0@ord.test` … `e2e-ci-w3@ord.test`).
+2. Set host env vars:
+   - `OTP_WHITELISTED_EMAILS=e2e-ci-w0@ord.test,e2e-ci-w1@ord.test,e2e-ci-w2@ord.test,e2e-ci-w3@ord.test`
+   - `OTP_CODE_FOR_WHITELISTED_EMAILS=<random 6-digit>` — generate once:
+     ```bash
+     python3 -c "import random; print(f'{random.randint(0, 999999):06d}')"
+     ```
+3. Add the same OTP secret to GitHub Actions as `E2E_OTP_CODE` (ord-frontend follow-up).
+4. Verify login: request OTP for `e2e-ci-w0@ord.test`, enter the secret code.
+
+Keep `E2E_SEEDER_ENABLED=false` on production — Flyway is sufficient. Enable only if you need boot-time repair.
+
+### Verify local API
 
 ```bash
 curl http://localhost:8080/api/v1/health-check
 ```
 
-4. Explore the API — Swagger UI at `http://localhost:8080/swagger-ui.html` (basic auth; defaults `admin` / `admin`, override via `SWAGGER_USERNAME` / `SWAGGER_PASSWORD`).
+Explore the API — Swagger UI at `http://localhost:8080/swagger-ui.html` (basic auth; defaults `admin` / `admin`, override via `SWAGGER_USERNAME` / `SWAGGER_PASSWORD`).
 
 ### Run tests
 
@@ -162,17 +181,19 @@ The `docker-compose.e2e.yml` file starts a self-contained backend for Playwright
 - Health check reports integration mode: `GET /api/v1/health-check` → `"ai": "STUB", "tts": "STUB"`.
 
 ```bash
-docker compose -f docker-compose.e2e.yml up -d --wait
+make docker-e2e-up    # or: docker compose -f docker-compose.e2e.yml up -d --wait
 curl http://localhost:8080/api/v1/health-check
 # {"application":"UP","database":"UP","ai":"STUB","tts":"STUB"}
-docker compose -f docker-compose.e2e.yml down -v
+make docker-e2e-down  # or: docker compose -f docker-compose.e2e.yml down -v
 ```
 
 | Variable | E2E value |
 |----------|-----------|
 | `SPRING_PROFILES_ACTIVE` | `e2e` |
-| `OTP_WHITELISTED_EMAILS` | `e2e-ci@ord.test` |
+| `OTP_WHITELISTED_EMAILS` | `e2e-ci-w0@ord.test` … `e2e-ci-w3@ord.test` |
 | `OTP_CODE_FOR_WHITELISTED_EMAILS` | `123456` |
+
+Worker accounts are created by **Flyway V22** on first boot. Optional runtime repair: `E2E_SEEDER_ENABLED=true`.
 
 Stub fixtures live in `src/main/resources/stubs/ai/openai/`. Registry and dynamic builders: `src/main/kotlin/com/ord/stubs/ai/`. See [`docs/ai-rules/testing/smoke-tests-with-ai-stubs.md`](docs/ai-rules/testing/smoke-tests-with-ai-stubs.md) and [`docs/e2e-runtime-profile.md`](docs/e2e-runtime-profile.md).
 
