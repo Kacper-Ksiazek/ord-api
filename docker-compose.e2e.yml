@@ -23,7 +23,7 @@ services:
       JWT_SECRET_KEY: e2e-ci-jwt-secret-key-with-sufficient-length
       ENV_TEST_PROPERTY: 1test1
       CORS_ALLOWED_ORIGINS: http://localhost:5173
-      OTP_WHITELISTED_EMAILS: e2e-ci@ord.test
+      OTP_WHITELISTED_EMAILS: e2e-ci-w0@ord.test,e2e-ci-w1@ord.test,e2e-ci-w2@ord.test,e2e-ci-w3@ord.test
       OTP_CODE_FOR_WHITELISTED_EMAILS: '123456'
     depends_on:
       db:
