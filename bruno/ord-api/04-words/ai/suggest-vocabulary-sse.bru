@@ -1,0 +1,28 @@
+meta {
+  name: Suggest Vocabulary (SSE)
+  type: http
+  seq: 2
+}
+
+docs {
+  SSE stream. Enable streaming in Bruno. Requires OPEN_AI_KEY.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/words/ai/suggest-vocabulary
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+  Accept: text/event-stream
+}
+
+body:json {
+{
+  "language": "ENGLISH",
+  "context": "business meetings"
+}
+}

@@ -1,0 +1,30 @@
+meta {
+  name: QAW AI Fill Gaps
+  type: http
+  seq: 1
+}
+
+docs {
+  Requires OPEN_AI_KEY. Does not persist results.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/quickly-added-words/ai/fill-gaps
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "language": "ENGLISH",
+  "items": [
+    { "word": "ephemeral" },
+    { "word": "ubiquitous" }
+  ]
+}
+}

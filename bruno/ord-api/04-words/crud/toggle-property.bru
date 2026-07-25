@@ -1,0 +1,15 @@
+meta {
+  name: Toggle Word Property
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/words/{{wordId}}/toggle-property
+  body: none
+  auth: inherit
+}
+
+params:query {
+  property: FAVORITE
+}

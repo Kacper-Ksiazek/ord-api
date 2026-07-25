@@ -1,0 +1,26 @@
+meta {
+  name: Suggest AI Interlocutor
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/suggest-ai-interlocutor
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "topic": "Discussing the weather and climate change",
+  "additionalContext": "Focus on environmental impact",
+  "conversationType": "SMALL_TALK",
+  "language": "ENGLISH",
+  "recentInterlocutors": []
+}
+}

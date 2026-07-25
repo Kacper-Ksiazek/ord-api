@@ -1,0 +1,30 @@
+meta {
+  name: Start Words Typing
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/games/words-typing/start
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "difficulty": "MEDIUM",
+  "language": "ENGLISH"
+}
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (body?.gameId) {
+    bru.setEnvVar("gameId", body.gameId);
+  }
+}

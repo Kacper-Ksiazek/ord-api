@@ -1,0 +1,39 @@
+meta {
+  name: Create Word
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/words/
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "type": "NOUN",
+  "sourceWord": "ephemeral",
+  "translation": "przemijajacy",
+  "definition": "Lasting for a very short time",
+  "language": "ENGLISH",
+  "extraMark": null,
+  "bankId": null,
+  "bankToCreate": null
+}
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (body?.id) {
+    bru.setEnvVar("wordId", body.id);
+  }
+  if (body?.bankId) {
+    bru.setEnvVar("bankId", body.bankId);
+  }
+}

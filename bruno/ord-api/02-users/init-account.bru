@@ -1,0 +1,32 @@
+meta {
+  name: Init Account
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/users/init-account
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "name": "Dev User",
+  "nativeLanguage": "POLISH",
+  "selectedLearningLanguage": "ENGLISH",
+  "languageProficiencies": [
+    {
+      "language": "ENGLISH",
+      "level": "B2",
+      "translateTo": "POLISH",
+      "generativeContentLanguage": "ENGLISH"
+    }
+  ]
+}
+}

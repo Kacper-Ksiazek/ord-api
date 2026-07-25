@@ -1,0 +1,25 @@
+meta {
+  name: Save User Message
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/ongoing/user/save-message
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "conversationId": "{{conversationId}}",
+  "messageId": "00000000-0000-0000-0000-000000000001",
+  "content": "Hello! I think climate change is a serious issue.",
+  "messageOrder": 1
+}
+}

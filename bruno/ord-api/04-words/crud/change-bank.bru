@@ -1,0 +1,22 @@
+meta {
+  name: Change Word Bank
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/words/{{wordId}}/change-bank
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "bankId": "{{bankId}}"
+}
+}

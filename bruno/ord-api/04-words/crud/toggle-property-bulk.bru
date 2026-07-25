@@ -1,0 +1,25 @@
+meta {
+  name: Toggle Property For Multiple Words
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/words/toggle-property-for-multiple-words
+  body: json
+  auth: inherit
+}
+
+params:query {
+  property: FAVORITE
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "wordIds": ["{{wordId}}"]
+}
+}

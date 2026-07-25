@@ -1,0 +1,11 @@
+meta {
+  name: Delete Conversation
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/{{conversationId}}
+  body: none
+  auth: inherit
+}

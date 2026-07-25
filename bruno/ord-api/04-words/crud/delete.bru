@@ -1,0 +1,11 @@
+meta {
+  name: Delete Word
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}{{apiPrefix}}/words/{{wordId}}
+  body: none
+  auth: inherit
+}

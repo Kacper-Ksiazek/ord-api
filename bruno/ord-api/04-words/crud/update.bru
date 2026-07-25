@@ -1,0 +1,22 @@
+meta {
+  name: Update Word
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}{{apiPrefix}}/words/{{wordId}}
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "translation": "przemijajacy (updated)"
+}
+}

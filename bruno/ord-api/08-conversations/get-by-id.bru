@@ -1,0 +1,11 @@
+meta {
+  name: Get Conversation By ID
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/{{conversationId}}
+  body: none
+  auth: inherit
+}

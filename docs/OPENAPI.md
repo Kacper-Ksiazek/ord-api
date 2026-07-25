@@ -167,6 +167,10 @@ See `.github/workflows/publish-api-types.yml` for the complete workflow configur
 
 ## API Structure
 
+## Manual testing with Bruno
+
+A Bruno HTTP collection for all `/api/v1` endpoints lives in [`bruno/ord-api/`](../bruno/ord-api/). Regenerate with `python3 scripts/generate-bruno-collection.py` after large API changes.
+
 ## Authentication in Swagger UI
 
 Authentication uses the `AUTH-TOKEN` HttpOnly cookie (not `Authorization: Bearer`).

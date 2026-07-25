@@ -1,0 +1,25 @@
+meta {
+  name: Generate User Message Analysis
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/ongoing/user/generate-analysis
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "conversationId": "{{conversationId}}",
+  "messageId": "00000000-0000-0000-0000-000000000001",
+  "messageOrder": 1,
+  "latestAIMessage": null
+}
+}

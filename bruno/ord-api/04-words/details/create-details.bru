@@ -1,0 +1,43 @@
+meta {
+  name: Create Word Details
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/words/{{wordId}}/details
+  body: json
+  auth: inherit
+}
+
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+{
+  "useCases": ["greeting", "informal"],
+  "synonyms": ["hi", "hey"],
+  "antonyms": ["goodbye"],
+  "commonMistakes": ["Avoid in formal writing"],
+  "exampleSentences": [
+    {
+      "context": "Meeting a friend",
+      "sentence": "Hello! How are you?",
+      "translation": "Czesc! Jak sie masz?"
+    }
+  ],
+  "collocations": [
+    {
+      "phrase": "say hello",
+      "translation": "przywitac sie",
+      "frequency": "VERY_COMMON"
+    }
+  ],
+  "pronunciation": null,
+  "grammar": null,
+  "culturalNotes": "Common greeting",
+  "learningTips": "Stress on the second syllable"
+}
+}

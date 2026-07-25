@@ -1,0 +1,15 @@
+meta {
+  name: New User Onboarding
+  type: http
+  seq: 1
+}
+
+docs {
+Run in order:
+1. 00-setup/health-check
+2. 01-auth/otp-request -> otp-verify
+3. 02-users/get-me (isAccountInitialized: false)
+4. 02-users/init-account
+5. 02-users/get-me (isAccountInitialized: true)
+6. 03-language-proficiencies/list
+}

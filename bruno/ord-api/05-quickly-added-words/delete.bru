@@ -1,0 +1,11 @@
+meta {
+  name: Delete QAW
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}{{apiPrefix}}/quickly-added-words/{{qawId}}
+  body: none
+  auth: inherit
+}

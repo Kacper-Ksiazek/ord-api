@@ -1,0 +1,11 @@
+meta {
+  name: Delete Language Proficiency
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}{{apiPrefix}}/language-proficiencies/{{language}}
+  body: none
+  auth: inherit
+}
