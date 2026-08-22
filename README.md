@@ -121,6 +121,12 @@ make docker-restart   # rebuild + start app + Postgres
 docker compose up -d --build
 ```
 
+Check what's running locally:
+
+```bash
+make status   # docker, api, front, storybook
+```
+
 ### Production E2E setup
 
 E2E worker accounts exist in production after the first deploy that includes Flyway V22. OTP login uses a shared secret — not a user password.
@@ -159,6 +165,22 @@ make test-integration  # full suite against real OpenAI (requires .env.test with
 ```bash
 make openapi   # requires a running API; writes openapi.json
 ```
+
+### Makefile targets
+
+Run `make help` for the full list.
+
+| Target | Description |
+|--------|-------------|
+| `make status` | Show docker / api / front / storybook status |
+| `make docker-restart` | Rebuild and start app + Postgres (wipes DB volume) |
+| `make docker-e2e-up` | Start ephemeral E2E stack |
+| `make docker-e2e-down` | Stop E2E stack |
+| `make openapi` | Export OpenAPI spec from a running API |
+| `make test-smoke` | Run full suite with AI stubs (no external OpenAI calls) |
+| `make test-integration` | Run full suite against real OpenAI (requires `OPEN_AI_KEY` in `.env.test`) |
+
+Override frontend path: `make status ORD_FRONTEND_DIR=/path/to/ord-frontend`.
 
 ## CI / CD
 
