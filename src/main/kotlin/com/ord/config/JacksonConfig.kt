@@ -10,6 +10,6 @@ class JacksonConfig {
     @Bean
     fun kotlinJacksonCustomizer(): JsonMapperBuilderCustomizer =
         JsonMapperBuilderCustomizer { builder ->
-            OrdJsonMapper.configureKotlinModule(builder)
+            OrdJsonMapper.configureHttpKotlinModule(builder)
         }
 }
