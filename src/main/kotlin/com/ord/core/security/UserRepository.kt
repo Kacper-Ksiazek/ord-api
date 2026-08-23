@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 interface UserRepository : ReactiveCrudRepository<UserEntity, UUID> {
-    fun findByEmail(email: String): Mono<UserEntity?>
+    fun findByEmail(email: String): Mono<UserEntity>
 
     fun deleteByEmail(email: String): Mono<Void>
 }

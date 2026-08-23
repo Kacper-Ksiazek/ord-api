@@ -1,12 +1,12 @@
 package com.ord.controllers.bases.containers
 
 import org.slf4j.LoggerFactory
-import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
 
 object PostgresTestContainer {
     private val logger = LoggerFactory.getLogger(PostgresTestContainer::class.java)
 
-    val container: PostgreSQLContainer<*> by lazy {
+    val container: PostgreSQLContainer by lazy {
         PostgreSQLContainer("postgres:16").apply {
             withDatabaseName("test_db")
             withUsername("test_user")

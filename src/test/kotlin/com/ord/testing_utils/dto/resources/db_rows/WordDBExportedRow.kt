@@ -1,6 +1,6 @@
 package com.ord.testing_utils.dto.resources.db_rows
+import com.ord.shared.utils.OrdJsonMapper
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
@@ -13,12 +13,12 @@ data class WordDBExportedRow(
     val sourceWord: String,
     val translation: String,
     val definition: String,
-    val isCompleted: Boolean,
-    val isBookmarked: Boolean,
-    val points: Int,
+    val isCompleted: Boolean = false,
+    val isBookmarked: Boolean = false,
+    val points: Int = 0,
     val language: LanguageName
 ) {
-    private val objectMapper = jacksonObjectMapper()
+    private val objectMapper = OrdJsonMapper.instance
 
     fun convertIntoWordEntity(userId: UUID): WordEntity {
         return WordEntity(

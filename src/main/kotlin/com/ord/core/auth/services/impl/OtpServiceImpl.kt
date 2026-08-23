@@ -24,7 +24,7 @@ class OtpServiceImpl(
 
     override fun generateAndSaveOtp(email: String): Mono<String> {
         val otpCode = generateOtpCode(email)
-        val hashedCode = encoder.encode(otpCode)
+        val hashedCode = encoder.encode(otpCode)!!
         val expiresAt = Instant.now().plusSeconds(otpProperties.expirationMinutes * 60)
 
         return otpCodeRepository

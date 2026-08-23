@@ -21,7 +21,7 @@ abstract class TestcontainersConfig {
 
         init {
             Flyway.configure()
-                .dataSource(container.jdbcUrl, container.username, container.password)
+                .dataSource(container.getJdbcUrl(), container.getUsername(), container.getPassword())
                 .load()
                 .migrate()
         }
@@ -31,7 +31,7 @@ abstract class TestcontainersConfig {
         fun configureDatasource(registry: DynamicPropertyRegistry) {
             // Configure R2DBC properties for reactive database access
             registry.add("spring.r2dbc.url") {
-                container.jdbcUrl.replace("jdbc:postgresql://", "r2dbc:postgresql://")
+                container.getJdbcUrl().replace("jdbc:postgresql://", "r2dbc:postgresql://")
             }
             registry.add("spring.r2dbc.username", container::getUsername)
             registry.add("spring.r2dbc.password", container::getPassword)

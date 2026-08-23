@@ -1,6 +1,6 @@
 package com.ord.features.game.variants.shared.ai
 
-import com.fasterxml.jackson.core.type.TypeReference
+import tools.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
@@ -22,7 +22,7 @@ abstract class AIGameServiceBase {
 
     private val logger = LoggerFactory.getLogger(AIGameServiceBase::class.java)
 
-    fun <T> makeGameAIRequest(
+    fun <T : Any> makeGameAIRequest(
         userId: UUID,
         operationType: String,
         aiResponseTypeReference: TypeReference<T>,

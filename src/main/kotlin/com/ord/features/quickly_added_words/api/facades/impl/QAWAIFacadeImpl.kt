@@ -1,6 +1,6 @@
 package com.ord.features.quickly_added_words.api.facades.impl
 
-import com.fasterxml.jackson.core.type.TypeReference
+import tools.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService

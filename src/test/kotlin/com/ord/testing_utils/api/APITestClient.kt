@@ -12,7 +12,7 @@ abstract class APITestClient(
     val webClient: WebTestClient
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
-    fun <TResponseBody> get(
+    fun <TResponseBody : Any> get(
         url: String,
         user: MockedAuthenticatedUser?,
         queryParams: Map<String, String>? = null,
@@ -36,7 +36,7 @@ abstract class APITestClient(
     }
 
 
-    fun <TResponseBody> post(
+    fun <TResponseBody : Any> post(
         url: String,
         body: Any?,
         user: MockedAuthenticatedUser?,
@@ -58,7 +58,7 @@ abstract class APITestClient(
     }
 
 
-    fun <TResponseBody> put(
+    fun <TResponseBody : Any> put(
         url: String,
         body: Any?,
         user: MockedAuthenticatedUser?,
@@ -80,7 +80,7 @@ abstract class APITestClient(
     }
 
 
-    fun <TResponseBody> patch(
+    fun <TResponseBody : Any> patch(
         url: String,
         body: Any?,
         user: MockedAuthenticatedUser?,
@@ -102,7 +102,7 @@ abstract class APITestClient(
     }
 
 
-    fun <TResponseBody> delete(
+    fun <TResponseBody : Any> delete(
         url: String,
         user: MockedAuthenticatedUser?,
         responseBodyType: ParameterizedTypeReference<TResponseBody>? = null,
@@ -129,7 +129,7 @@ abstract class APITestClient(
     }
 
 
-    private fun <TResponseBody> WebTestClient.ResponseSpec.toAPIClientResponse(
+    private fun <TResponseBody : Any> WebTestClient.ResponseSpec.toAPIClientResponse(
         responseBodyType: ParameterizedTypeReference<TResponseBody>? = null
     ): APIClientResponse<TResponseBody?> {
         val result = this.returnResult<Unit>()

@@ -1,6 +1,6 @@
 package com.ord.stubs.ai
 
-import com.fasterxml.jackson.core.type.TypeReference
+import tools.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.dto.MessageOutput
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.OpenAIResponseOutputContent
@@ -28,7 +28,7 @@ class StubOpenAIAPIClientService(
     private val dynamicBuilder: AIFixtureDynamicBuilder,
 ) : OpenAIAPIClientService {
 
-    override fun <T> makeRequest(
+    override fun <T : Any> makeRequest(
         aiResponseType: TypeReference<T>,
         prompt: String,
         userId: UUID,
@@ -54,7 +54,7 @@ class StubOpenAIAPIClientService(
         return Mono.just(parsedBody)
     }
 
-    override fun <T> makeRequest(
+    override fun <T : Any> makeRequest(
         aiResponseType: TypeReference<T>,
         prompt: Prompt,
         userId: UUID,

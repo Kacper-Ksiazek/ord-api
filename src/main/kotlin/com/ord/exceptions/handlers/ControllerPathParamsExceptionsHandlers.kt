@@ -25,7 +25,7 @@ class HandlerMethodValidationExceptionHandler {
     fun handeValidationException(
         exception: HandlerMethodValidationException
     ): ResponseEntity<BadRequestResponse> {
-        exception.allValidationResults.map { issue ->
+        exception.parameterValidationResults.map { issue ->
             val receivedValue = issue.argument
             val failedParameterName =
                 (issue.resolvableErrors.first().arguments?.first() as DefaultMessageSourceResolvable).defaultMessage
@@ -38,7 +38,7 @@ class HandlerMethodValidationExceptionHandler {
             BadRequestResponse(
                 status = HttpStatus.BAD_REQUEST.value(),
                 message = "Validation failed",
-                errors = exception.allValidationResults.map { issue ->
+                errors = exception.parameterValidationResults.map { issue ->
                     val receivedValue = issue.argument
                     val failedParameterName =
                         (issue.resolvableErrors.first().arguments?.first() as DefaultMessageSourceResolvable).defaultMessage!!
@@ -95,7 +95,7 @@ class HandlerMethodValidationExceptionHandler {
                 listOf(
                     InvalidTypeFieldError(
                         field = exception.name,
-                        expectedType = exception.requiredType.name,
+                        expectedType = exception.requiredType?.name ?: "unknown",
                         receivedValue = exception.value!!.toString(),
                         errorMessage = exception.message!!
                     )

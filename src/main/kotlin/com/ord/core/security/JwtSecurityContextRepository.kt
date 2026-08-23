@@ -15,7 +15,7 @@ class JwtSecurityContextRepository(
     private val authManager: JwtReactiveAuthenticationManager,
     private val jwtProperties: JwtProperties
 ) : ServerSecurityContextRepository {
-    override fun load(exchange: ServerWebExchange): Mono<SecurityContext?>? {
+    override fun load(exchange: ServerWebExchange): Mono<SecurityContext> {
         val token = exchange.getCookieValue(jwtProperties.authCookieName) ?: return Mono.empty()
 
         val preAuth = UsernamePasswordAuthenticationToken(null, token)
@@ -37,7 +37,7 @@ class JwtSecurityContextRepository(
                 }
             }
             .cache()
-            .map<SecurityContext?> { SecurityContextImpl(it) }
+            .map<SecurityContext> { SecurityContextImpl(it) }
             .onErrorResume { error ->
                 when {
                     error is MissingUserSessionException -> {
@@ -46,7 +46,6 @@ class JwtSecurityContextRepository(
                     }
 
                     error is JwtException || error.cause is JwtException -> {
-                        // Stale/invalid cookie (e.g. JWT_SECRET_KEY rotated) — treat as anonymous
                         exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
                         Mono.empty()
                     }
@@ -56,5 +55,5 @@ class JwtSecurityContextRepository(
             }
     }
 
-    override fun save(exchange: ServerWebExchange?, context: SecurityContext?): Mono<Void?>? = Mono.empty()
+    override fun save(exchange: ServerWebExchange, context: SecurityContext?): Mono<Void> = Mono.empty()
 }

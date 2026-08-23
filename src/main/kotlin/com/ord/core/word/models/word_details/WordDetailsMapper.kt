@@ -1,7 +1,7 @@
 package com.ord.core.word.models.word_details
+import com.ord.shared.utils.OrdJsonMapper
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.core.type.TypeReference
 import com.ord.core.word.models.word_details.jsonb.ExampleSentence
 import com.ord.core.word.models.word_details.jsonb.WordCollocation
 import com.ord.core.word.models.word_details.jsonb.WordGrammar
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class WordDetailsMapper : BidirectionalEntityMapper<WordDetailsEntity, WordDetailsDTO> {
-    val jsonObjectMapper = jacksonObjectMapper()
+    val jsonObjectMapper = OrdJsonMapper.instance
 
     override fun toEntity(dto: WordDetailsDTO): WordDetailsEntity {
         return WordDetailsEntity(

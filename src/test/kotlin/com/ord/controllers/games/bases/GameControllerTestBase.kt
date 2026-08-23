@@ -11,13 +11,13 @@ import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.repositories.FinishedGameRepository
 import com.ord.features.game.repositories.OngoingGameRepository
 import com.ord.testing_utils.api_requests_factories.GameRequestFactory
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.test.web.servlet.MockMvc
 
 @AutoConfigureMockMvc
 abstract class GameControllerTestBase(
-    objectMapper: ObjectMapper,
+    objectMapper: JsonMapper,
     mockMvc: MockMvc,
     userMapper: UserMapper,
     jwtProperties: JwtProperties,

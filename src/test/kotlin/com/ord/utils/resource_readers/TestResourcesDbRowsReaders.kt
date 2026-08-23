@@ -4,7 +4,7 @@ import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.repositories.WordRepository
 import com.ord.shared.utils.JsonReader
 import com.ord.testing_utils.dto.resources.db_rows.WordDBExportedRow
-import com.fasterxml.jackson.core.type.TypeReference
+import tools.jackson.core.type.TypeReference
 import java.util.UUID
 
 private const val ROOT = "./src/test/resources/db_rows"

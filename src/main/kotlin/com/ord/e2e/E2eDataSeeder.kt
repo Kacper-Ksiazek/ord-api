@@ -16,7 +16,7 @@ class E2eDataSeeder(
 
     private val log = LoggerFactory.getLogger(E2eDataSeeder::class.java)
 
-    override fun run(vararg args: String?) {
+    override fun run(vararg args: String) {
         warnIfWorkersNotWhitelisted()
 
         e2eUserProvisioner.provisionAllWorkers()

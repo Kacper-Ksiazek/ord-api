@@ -1,6 +1,6 @@
 package com.ord.seeders.factories
+import com.ord.shared.utils.OrdJsonMapper
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
@@ -16,7 +16,7 @@ import java.util.*
 class WordFactory(
     private val userSeeder: UserSeeder,
 ) : FactoryBase() {
-    private val objectMapper = jacksonObjectMapper()
+    private val objectMapper = OrdJsonMapper.instance
 
     fun mockEntity(
         sourceWord: String = UUID.randomUUID().toString(),

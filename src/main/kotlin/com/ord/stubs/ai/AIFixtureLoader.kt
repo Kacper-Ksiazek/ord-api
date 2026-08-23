@@ -1,16 +1,16 @@
 package com.ord.stubs.ai
+import com.ord.shared.utils.OrdJsonMapper
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.json.JsonMapper
 import com.ord.stubs.ai.dto.ArrayStreamFixture
 import com.ord.stubs.ai.dto.StringStreamFixture
 
 class AIFixtureLoader(
     private val fixtureRegistry: AIFixtureRegistry,
 ) {
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
+    private val objectMapper: JsonMapper = OrdJsonMapper.instance
 
     fun <T> loadStructured(operationKey: String, typeReference: TypeReference<T>): T {
         val entry = fixtureRegistry.get(operationKey)

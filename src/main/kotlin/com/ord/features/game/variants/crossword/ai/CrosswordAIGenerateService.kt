@@ -1,6 +1,6 @@
 package com.ord.features.game.variants.crossword.ai
 
-import com.fasterxml.jackson.core.type.TypeReference
+import tools.jackson.core.type.TypeReference
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.ord.features.game.variants.crossword.ai.dto.GeneratedCrosswordGame

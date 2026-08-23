@@ -14,5 +14,5 @@ interface BankService : UserResourceService<BankEntity> {
         bankId: UUID?,
         bankToCreate: CreateBankRequest?,
         userId: UUID
-    ): Mono<BankEntity?>
+    ): Mono<BankEntity>
 }

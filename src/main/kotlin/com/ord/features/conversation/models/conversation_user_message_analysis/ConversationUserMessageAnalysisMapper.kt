@@ -1,7 +1,7 @@
 package com.ord.features.conversation.models.conversation_user_message_analysis
+import com.ord.shared.utils.OrdJsonMapper
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.core.type.TypeReference
 import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageMistake
 import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageStrength
 import com.ord.features.conversation.models.conversation_user_message_analysis.jsonb.ConversationMessageSuggestion
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 @Component
 class ConversationUserMessageAnalysisMapper(
 ) : BidirectionalEntityMapper<ConversationUserMessageAnalysisEntity, ConversationUserMessageAnalysisDTO> {
-    val jsonObjectMapper = jacksonObjectMapper()
+    val jsonObjectMapper = OrdJsonMapper.instance
 
     override fun toDTO(entity: ConversationUserMessageAnalysisEntity): ConversationUserMessageAnalysisDTO {
         return ConversationUserMessageAnalysisDTO(

@@ -1,6 +1,6 @@
 package com.ord.controllers.bases
 
-import com.github.javafaker.Faker
+import net.datafaker.Faker
 import com.ord.config.properties.JwtProperties
 import com.ord.core.auth.api.requests.dto.OtpVerifyDto
 import com.ord.core.auth.models.OtpCodeEntity
@@ -58,7 +58,7 @@ abstract class ControllerTestBase(
         // Step 2: Mock OTP code directly in database (faster than requesting)
         otpCodeRepository.save(
             OtpCodeEntity(
-                code = passwordEncoder.encode("000000"),
+                code = passwordEncoder.encode("000000")!!,
                 expiresAt = Instant.now().plusSeconds(600), // 10 minutes
                 userEmail = email
             )
@@ -126,7 +126,7 @@ abstract class ControllerTestBase(
         // Step 2: Mock OTP code directly in database (faster than requesting)
         otpCodeRepository.save(
             OtpCodeEntity(
-                code = passwordEncoder.encode("000000"),
+                code = passwordEncoder.encode("000000")!!,
                 expiresAt = Instant.now().plusSeconds(600), // 10 minutes
                 userEmail = email
             )

@@ -20,6 +20,6 @@ interface LanguageProficiencyRepository : UserResourceRepository<LanguageProfici
     fun findUserProficiencyInLanguage(
         userId: UUID,
         languageName: String
-    ): Mono<LanguageProficiencyEntity?>
+    ): Mono<LanguageProficiencyEntity>
 }
 

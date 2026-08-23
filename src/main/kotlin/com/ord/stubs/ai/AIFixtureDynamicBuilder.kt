@@ -1,6 +1,6 @@
 package com.ord.stubs.ai
 
-import com.fasterxml.jackson.core.type.TypeReference
+import tools.jackson.core.type.TypeReference
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.word.api.ai.responses.openai.OpenAIGeneratedWordManual
 import com.ord.core.word.api.ai.responses.openai.OpenAIGrammar

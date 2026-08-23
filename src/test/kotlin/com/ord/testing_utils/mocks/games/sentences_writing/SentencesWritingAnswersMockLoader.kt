@@ -1,7 +1,8 @@
 package com.ord.testing_utils.mocks.games.sentences_writing
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.json.JsonMapper
+import com.ord.shared.utils.OrdJsonMapper
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
 import com.ord.features.game.variants.sentences_writing.dto.api_requests.FinishSentencesWritingGameAnswers
 import java.io.File
@@ -10,7 +11,7 @@ import java.util.UUID
 class SentencesWritingAnswersMockLoader(
     private val filePath: String = "src/test/resources/mocks/games/sentences_writing_answers.json"
 ) {
-    private val objectMapper = ObjectMapper()
+    private val objectMapper = OrdJsonMapper.instance
 
     fun mockAnswers(difficulty: GameDifficulty): FinishSentencesWritingGameAnswers {
         val file = File(filePath)

@@ -1,6 +1,6 @@
 package com.ord.core.ai_provider.enums
 
-import com.fasterxml.jackson.databind.JsonNode
+import tools.jackson.databind.JsonNode
 
 /**
  * Represents the possible response types returned by the OpenAI streamed `/v1/responses` endpoint.

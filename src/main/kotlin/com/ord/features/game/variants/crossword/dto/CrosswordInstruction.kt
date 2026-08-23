@@ -36,7 +36,7 @@ data class CrosswordInstruction(
     val questions: Set<CrosswordQuestion>,
     val board: CrosswordBoard,
 
-    @JsonIgnore
+    @field:JsonIgnore
     val lettersAreHidden: Boolean = false
 ) {
     private lateinit var finalWordUnmatchedIndexes: Set<Int>
