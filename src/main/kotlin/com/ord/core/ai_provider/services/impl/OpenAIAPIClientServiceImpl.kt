@@ -200,7 +200,20 @@ class OpenAIAPIClientServiceImpl(
                     )
                 }
             }
+            .onErrorMap(::mapOpenAIClientError)
     }
+
+    private fun mapOpenAIClientError(throwable: Throwable): BadGatewayException =
+        when (throwable) {
+            is BadGatewayException -> throwable
+            is WebClientResponseException -> BadGatewayException(
+                "OpenAI request failed with status ${throwable.statusCode.value()}: ${throwable.responseBodyAsString.ifBlank { throwable.message }}"
+            )
+
+            else -> BadGatewayException(
+                "OpenAI request failed: ${throwable.message ?: throwable::class.simpleName}"
+            )
+        }
 
     override fun openSimpleStringStream(
         prompt: String,
@@ -365,9 +378,10 @@ class OpenAIAPIClientServiceImpl(
                     }
             )
             .doOnError { error ->
-                emitter.tryEmitError(error)
+                val mappedError = mapOpenAIClientError(error)
+                emitter.tryEmitError(mappedError)
                 emitter.tryEmitComplete()
-                onError(error)
+                onError(mappedError)
             }
             .doOnNext { chunk ->
                 try {
@@ -424,10 +438,10 @@ class OpenAIAPIClientServiceImpl(
                     .subscribeOn(Schedulers.boundedElastic())
                     .map { list -> list ?: emptyList() }
                     .flatMapMany { Flux.fromIterable(it) }
-            }
+            }.onErrorMap(::mapOpenAIClientError)
         } else {
             // For production: stream each chunk
-            flux
+            flux.onErrorMap(::mapOpenAIClientError)
         }
 
     }
