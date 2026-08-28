@@ -1,6 +1,6 @@
 package com.ord.stubs.ai.dto
 
-import com.fasterxml.jackson.databind.JsonNode
+import tools.jackson.databind.JsonNode
 
 data class ArrayStreamFixture(
     val items: List<JsonNode>,

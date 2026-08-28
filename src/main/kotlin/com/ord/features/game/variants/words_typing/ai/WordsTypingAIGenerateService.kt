@@ -1,6 +1,6 @@
 package com.ord.features.game.variants.words_typing.ai
 
-import com.fasterxml.jackson.core.type.TypeReference
+import tools.jackson.core.type.TypeReference
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.variants.shared.ai.AIGenerateGameServiceBase

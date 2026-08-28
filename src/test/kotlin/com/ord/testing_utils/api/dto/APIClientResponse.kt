@@ -9,5 +9,5 @@ data class APIClientResponse<TResponseBody> (
     val body: TResponseBody? = null,
     val status: HttpStatusCode,
     val headers: HttpHeaders,
-    val cookies: MultiValueMap<String?, ResponseCookie?>
+    val cookies: MultiValueMap<String, ResponseCookie>
 )

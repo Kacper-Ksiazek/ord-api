@@ -1,15 +1,11 @@
 package com.ord.shared.utils
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.core.type.TypeReference
 import java.io.File
 import java.io.FileNotFoundException
 
 object JsonReader {
-    val objectMapper = jacksonObjectMapper().apply {
-        registerModule(JavaTimeModule())
-    }
+    val objectMapper = OrdJsonMapper.instance
 
     fun <T> readJsonFile(
         pathToJSONFile: String,

@@ -20,7 +20,7 @@ class BankServiceImpl(
         bankId: UUID?,
         bankToCreate: CreateBankRequest?,
         userId: UUID
-    ): Mono<BankEntity?> {
+    ): Mono<BankEntity> {
         return when {
             bankId != null -> {
                 bankRepository

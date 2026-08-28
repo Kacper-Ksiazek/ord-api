@@ -1,7 +1,7 @@
 package com.ord.features.game.variants.shared.api
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.databind.json.JsonMapper
+import com.ord.shared.utils.OrdJsonMapper
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.services.GameReviewService
 import com.ord.features.game.services.OngoingGameService
@@ -11,7 +11,11 @@ import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Mono
 import java.util.*
 
-abstract class GameFacadeBase<TCreatedGameResponse, TFinishGameRequest, TFinishedGameResponse> {
+abstract class GameFacadeBase<
+    TCreatedGameResponse : Any,
+    TFinishGameRequest : Any,
+    TFinishedGameResponse : Any,
+> {
     /**
      * Starts a new game.
      *
@@ -45,5 +49,5 @@ abstract class GameFacadeBase<TCreatedGameResponse, TFinishGameRequest, TFinishe
     @Autowired
     protected lateinit var gameReviewService: GameReviewService
 
-    protected val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
+    protected val jsonObjectMapper: JsonMapper = OrdJsonMapper.instance
 }

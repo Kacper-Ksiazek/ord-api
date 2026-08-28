@@ -5,7 +5,6 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.springframework.stereotype.Service
 import java.nio.charset.StandardCharsets
@@ -28,29 +27,28 @@ class JwtService(private val jwtProperties: JwtProperties) {
         val expiration = issuedAt.plusSeconds(jwtProperties.expirationTime)
 
         return Jwts.builder()
-            .setSubject(subject)
-            .setId(jti)
-            .setIssuer(jwtProperties.issuer)
-            .setIssuedAt(Date.from(issuedAt))
-            .setExpiration(Date.from(expiration))
-            .signWith(key, SignatureAlgorithm.HS256)
+            .subject(subject)
+            .id(jti)
+            .issuer(jwtProperties.issuer)
+            .issuedAt(Date.from(issuedAt))
+            .expiration(Date.from(expiration))
+            .signWith(key, Jwts.SIG.HS256)
             .compact()
     }
 
 
     fun parseAndValidate(token: String): Jws<Claims> {
-        return Jwts
-            .parserBuilder()
-            .setSigningKey(key)
+        return Jwts.parser()
+            .verifyWith(key)
             .requireIssuer(jwtProperties.issuer)
             .build()
-            .parseClaimsJws(token)
+            .parseSignedClaims(token)
     }
 
 
     fun parseAllowExpired(token: String): Claims =
         try {
-            parseAndValidate(token).body
+            parseAndValidate(token).payload
         } catch (ex: ExpiredJwtException) {
             ex.claims
         }

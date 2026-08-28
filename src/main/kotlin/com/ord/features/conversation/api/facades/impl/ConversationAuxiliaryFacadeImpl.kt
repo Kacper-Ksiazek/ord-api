@@ -1,9 +1,9 @@
 package com.ord.features.conversation.api.facades.impl
+import com.ord.shared.utils.OrdJsonMapper
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.core.json.JsonReadFeature
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.json.JsonMapper
 import com.ord.core.ai_provider.dto.helpers.StreamSimpleItem
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
@@ -33,8 +33,9 @@ class ConversationAuxiliaryFacadeImpl(
     private val gptTokensUsageService: GptTokensUsageService,
 ) : ConversationAuxiliaryFacade {
     private val logger = LoggerFactory.getLogger(ConversationAuxiliaryFacadeImpl::class.java)
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
-        .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
+    private val objectMapper: JsonMapper = OrdJsonMapper.instance.rebuild()
+        .enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
+        .build()
 
     override fun suggestTopics(
         userId: UUID,

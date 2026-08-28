@@ -10,7 +10,7 @@ interface LanguageProficiencyService : UserResourceService<LanguageProficiencyEn
     fun findUserProficiencyInLanguage(
         userId: UUID,
         languageName: LanguageName
-    ): Mono<LanguageProficiencyEntity?>
+    ): Mono<LanguageProficiencyEntity>
 
 
     fun findUserProficiencyInLanguageOrThrow(

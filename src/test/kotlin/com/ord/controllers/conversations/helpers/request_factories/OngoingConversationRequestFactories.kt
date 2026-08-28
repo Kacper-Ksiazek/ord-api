@@ -2,7 +2,7 @@ package com.ord.controllers.conversations.helpers.request_factories
 
 /*
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
@@ -11,7 +11,7 @@ import java.util.*
 
 class OngoingConversationRequestFactories(
     private val baseUrl: String,
-    private val objectMapper: ObjectMapper,
+    private val objectMapper: JsonMapper,
 ) {
     fun getInitConversationByAIRequest(
         conversationId: UUID?,

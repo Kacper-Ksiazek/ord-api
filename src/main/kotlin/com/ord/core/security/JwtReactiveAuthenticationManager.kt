@@ -20,12 +20,12 @@ class JwtReactiveAuthenticationManager(
     private val userRepository: UserRepository,
     private val jwtProperties: JwtProperties
 ) : ReactiveAuthenticationManager {
-    override fun authenticate(authentication: Authentication?): Mono<Authentication> {
-        val token = (authentication?.credentials as? String)?.takeIf { it.isNotBlank() } ?: return Mono.empty()
+    override fun authenticate(authentication: Authentication): Mono<Authentication> {
+        val token = (authentication.credentials as? String)?.takeIf { it.isNotBlank() } ?: return Mono.empty()
 
         return Mono
             .defer {
-                Mono.fromCallable { jwtService.parseAndValidate(token).body }
+                Mono.fromCallable { jwtService.parseAndValidate(token).payload }
             }
             .flatMap { claims: Claims ->
                 authenticateWithValidToken(token, claims)

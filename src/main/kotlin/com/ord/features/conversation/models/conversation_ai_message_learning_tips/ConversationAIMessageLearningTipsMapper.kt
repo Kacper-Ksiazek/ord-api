@@ -1,7 +1,7 @@
 package com.ord.features.conversation.models.conversation_ai_message_learning_tips
+import com.ord.shared.utils.OrdJsonMapper
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.core.type.TypeReference
 import com.ord.features.conversation.models.ai_message_tips.enums.TipRegister
 import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedGrammarTip
 import com.ord.features.conversation.models.ai_message_tips.jsonb.AnnotatedPhraseTip
@@ -15,7 +15,7 @@ class ConversationAIMessageLearningTipsMapper :
     BidirectionalEntityMapper<ConversationAIMessageLearningTipsEntity, ConversationAIMessageLearningTipsDTO> {
 
     companion object {
-        private val jsonObjectMapper = jacksonObjectMapper()
+        private val jsonObjectMapper = OrdJsonMapper.instance
     }
 
     override fun toDTO(entity: ConversationAIMessageLearningTipsEntity): ConversationAIMessageLearningTipsDTO {

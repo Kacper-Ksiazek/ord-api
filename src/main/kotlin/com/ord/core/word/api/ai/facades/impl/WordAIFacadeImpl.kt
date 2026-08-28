@@ -1,8 +1,8 @@
 package com.ord.core.word.api.ai.facades.impl
+import com.ord.shared.utils.OrdJsonMapper
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.json.JsonMapper
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
@@ -40,7 +40,7 @@ class WordAIFacadeImpl(
     private val gptTokensUsageService: GptTokensUsageService,
 ) : WordAIFacade {
     private val logger = LoggerFactory.getLogger(WordAIFacadeImpl::class.java)
-    private val jsonObjectMapper: ObjectMapper = jacksonObjectMapper()
+    private val jsonObjectMapper: JsonMapper = OrdJsonMapper.instance
 
     override fun generateWordManual(
         body: GenerateWordManualRequest,

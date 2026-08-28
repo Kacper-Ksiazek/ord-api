@@ -10,9 +10,9 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import java.util.*
 
 abstract class GameAPIClient<
-        TStartedGameResponseBody,
-        TFinishGameRequestBody,
-        TFinishedGameResponseBody
+        TStartedGameResponseBody : Any,
+        TFinishGameRequestBody : Any,
+        TFinishedGameResponseBody : Any,
         >(
     webClient: WebTestClient,
     private val gameSlugName: String,

@@ -1,6 +1,6 @@
 package com.ord.core.security
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import tools.jackson.databind.json.JsonMapper
 import com.ord.exceptions.dto.api_responses.HTTPErrorResponse
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.HttpStatus
@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 
 @Component
 class ApiAuthenticationEntryPoint(
-    private val objectMapper: ObjectMapper
+    private val objectMapper: JsonMapper
 ) : ServerAuthenticationEntryPoint {
 
     override fun commence(

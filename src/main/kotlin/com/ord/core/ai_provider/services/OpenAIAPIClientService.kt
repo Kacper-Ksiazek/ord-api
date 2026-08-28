@@ -1,6 +1,6 @@
 package com.ord.core.ai_provider.services
 
-import com.fasterxml.jackson.core.type.TypeReference
+import tools.jackson.core.type.TypeReference
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
@@ -17,7 +17,7 @@ interface OpenAIAPIClientService {
         const val STREAMING_CONTENT_SEPARATOR: String = "[[BREAK]]"
     }
 
-    fun <T> makeRequest(
+    fun <T : Any> makeRequest(
         aiResponseType: TypeReference<T>,
 
         prompt: String,
@@ -31,7 +31,7 @@ interface OpenAIAPIClientService {
         parseResponseBody: (responseBody: T) -> T = { it }
     ): Mono<T>
 
-    fun <T> makeRequest(
+    fun <T : Any> makeRequest(
         aiResponseType: TypeReference<T>,
 
         prompt: Prompt,

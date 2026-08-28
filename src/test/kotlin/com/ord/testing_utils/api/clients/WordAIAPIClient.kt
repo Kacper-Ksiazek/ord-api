@@ -1,7 +1,7 @@
 package com.ord.testing_utils.api.clients
+import com.ord.shared.utils.OrdJsonMapper
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.databind.json.JsonMapper
 import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
@@ -19,7 +19,7 @@ class WordAIAPIClient(
     webClient: WebTestClient
 ) : APITestClient(webClient) {
     val baseUrl = "/api/v1/words/ai"
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
+    private val objectMapper: JsonMapper = OrdJsonMapper.instance
 
     fun generateManual(
         body: GenerateWordManualRequest,

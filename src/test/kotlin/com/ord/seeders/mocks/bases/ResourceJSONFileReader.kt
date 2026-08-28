@@ -1,7 +1,7 @@
 package com.ord.seeders.mocks.bases
 
 import com.ord.shared.utils.JsonReader
-import com.fasterxml.jackson.core.type.TypeReference
+import tools.jackson.core.type.TypeReference
 
 enum class RootDir(val path: String) {
     MAIN_APP(path = "./src/main/resources/"),

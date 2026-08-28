@@ -1,9 +1,9 @@
 package com.ord.core.ai_provider.services.impl
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.core.json.JsonReadFeature
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.json.JsonMapper
+import com.ord.shared.utils.OrdJsonMapper
 import com.ord.config.properties.OpenAIProperties
 import com.ord.core.ai_provider.dto.OpenAIResponse
 import com.ord.core.ai_provider.dto.factories.OpenAIRequestFactory
@@ -44,12 +44,13 @@ class OpenAIAPIClientServiceImpl(
     private val env: Environment,
     private val gptTokensUsageService: GptTokensUsageService
 ) : OpenAIAPIClientService {
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
-        .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true)
+    private val objectMapper: JsonMapper = OrdJsonMapper.instance.rebuild()
+        .enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
+        .build()
 
     val isTestingEnv: Boolean = env.activeProfiles.contains("test")
 
-    override fun <T> makeRequest(
+    override fun <T : Any> makeRequest(
         aiResponseType: TypeReference<T>,
 
         prompt: String,
@@ -85,7 +86,7 @@ class OpenAIAPIClientServiceImpl(
         )
     }
 
-    override fun <T> makeRequest(
+    override fun <T : Any> makeRequest(
         aiResponseType: TypeReference<T>,
         prompt: Prompt,
         userId: UUID,
@@ -105,7 +106,7 @@ class OpenAIAPIClientServiceImpl(
         )
     }
 
-    private fun <T> attemptRequest(
+    private fun <T : Any> attemptRequest(
         openAIRequest: Any,
         aiResponseType: TypeReference<T>,
         saveLog: (openAIResponse: OpenAIResponse) -> Unit,
@@ -199,7 +200,20 @@ class OpenAIAPIClientServiceImpl(
                     )
                 }
             }
+            .onErrorMap(::mapOpenAIClientError)
     }
+
+    private fun mapOpenAIClientError(throwable: Throwable): BadGatewayException =
+        when (throwable) {
+            is BadGatewayException -> throwable
+            is WebClientResponseException -> BadGatewayException(
+                "OpenAI request failed with status ${throwable.statusCode.value()}: ${throwable.responseBodyAsString.ifBlank { throwable.message }}"
+            )
+
+            else -> BadGatewayException(
+                "OpenAI request failed: ${throwable.message ?: throwable::class.simpleName}"
+            )
+        }
 
     override fun openSimpleStringStream(
         prompt: String,
@@ -364,9 +378,10 @@ class OpenAIAPIClientServiceImpl(
                     }
             )
             .doOnError { error ->
-                emitter.tryEmitError(error)
+                val mappedError = mapOpenAIClientError(error)
+                emitter.tryEmitError(mappedError)
                 emitter.tryEmitComplete()
-                onError(error)
+                onError(mappedError)
             }
             .doOnNext { chunk ->
                 try {
@@ -423,10 +438,10 @@ class OpenAIAPIClientServiceImpl(
                     .subscribeOn(Schedulers.boundedElastic())
                     .map { list -> list ?: emptyList() }
                     .flatMapMany { Flux.fromIterable(it) }
-            }
+            }.onErrorMap(::mapOpenAIClientError)
         } else {
             // For production: stream each chunk
-            flux
+            flux.onErrorMap(::mapOpenAIClientError)
         }
 
     }

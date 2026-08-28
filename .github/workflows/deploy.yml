@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: 🛎️ Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🧰 Set up JDK 24
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '24'
           distribution: 'temurin'
@@ -27,7 +27,7 @@ jobs:
       - name: ⚙️ Set up Maven 3.9
         uses: stCarolas/setup-maven@v4
         with:
-          maven-version: '3.9.6'
+          maven-version: '3.9.16'
 
       - name: 🔨 Package app
         run: mvn clean package -DskipTests

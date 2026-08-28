@@ -14,7 +14,7 @@ interface UserResourceRepository<TEntity : Any> : ReactiveCrudRepository<TEntity
     fun findAllByIdInAndUserId(ids: Set<UUID>, userId: UUID): Flux<TEntity>
 
 
-    fun findByIdAndUserId(id: UUID, userId: UUID): Mono<TEntity?>
+    fun findByIdAndUserId(id: UUID, userId: UUID): Mono<TEntity>
 
 
     fun deleteByIdAndUserId(id: UUID, userId: UUID): Mono<Void>

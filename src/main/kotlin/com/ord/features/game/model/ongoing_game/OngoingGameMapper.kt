@@ -1,11 +1,11 @@
 package com.ord.features.game.model.ongoing_game
+import com.ord.shared.utils.OrdJsonMapper
 
 import com.ord.core.user.model.UserMapper
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.model.ongoing_game.json.CrosswordProperAnswers
 import com.ord.features.game.model.ongoing_game.json.WordsTypingProperAnswers
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.core.type.TypeReference
 import com.ord.features.game.model.ongoing_game.json.SentencesWritingProperAnswers
 import io.r2dbc.postgresql.codec.Json
 import org.springframework.stereotype.Component
@@ -22,7 +22,7 @@ fun OngoingGameEntity.toSentencesWritingDTO(ongoingGameMapper: OngoingGameMapper
 class OngoingGameMapper(
     private val userMapper: UserMapper,
 ) {
-    val jsonObjectMapper = jacksonObjectMapper()
+    val jsonObjectMapper = OrdJsonMapper.instance
 
     fun toCrosswordDTO(entity: OngoingGameEntity): OngoingCrosswordGameDTO {
         return entity.convertToCertainDTO(object : TypeReference<CrosswordProperAnswers>() {})

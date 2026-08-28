@@ -23,7 +23,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -154,7 +154,7 @@ class TestAuthController @Autowired constructor(
             otpCodeRepository
                 .save(
                     OtpCodeEntity(
-                        code = passwordEncoder.encode(TestData.OTP_CODE),
+                        code = passwordEncoder.encode(TestData.OTP_CODE)!!,
                         expiresAt = Instant.now().plusSeconds(600),
                         userEmail = TestData.TEST_EMAIL
                     )
@@ -303,7 +303,7 @@ class TestAuthController @Autowired constructor(
 
                 otpCodeRepository.save(
                     OtpCodeEntity(
-                        code = passwordEncoder.encode(TestData.OTP_CODE),
+                        code = passwordEncoder.encode(TestData.OTP_CODE)!!,
                         expiresAt = Instant.now().minusSeconds(1), // Expired 1 second ago
                         userEmail = TestData.TEST_EMAIL
                     )

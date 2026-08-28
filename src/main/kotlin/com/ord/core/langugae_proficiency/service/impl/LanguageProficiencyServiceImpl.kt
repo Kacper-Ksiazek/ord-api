@@ -20,7 +20,7 @@ class LanguageProficiencyServiceImpl(
     override fun findUserProficiencyInLanguage(
         userId: UUID,
         languageName: LanguageName
-    ): Mono<LanguageProficiencyEntity?> {
+    ): Mono<LanguageProficiencyEntity> {
         return repository.findUserProficiencyInLanguage(
             userId = userId,
             languageName = languageName.name

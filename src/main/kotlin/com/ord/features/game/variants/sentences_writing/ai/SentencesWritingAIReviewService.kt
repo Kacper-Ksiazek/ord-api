@@ -1,6 +1,6 @@
 package com.ord.features.game.variants.sentences_writing.ai
 
-import com.fasterxml.jackson.core.type.TypeReference
+import tools.jackson.core.type.TypeReference
 import com.ord.config.GamesConfig
 import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
