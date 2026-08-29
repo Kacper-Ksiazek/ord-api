@@ -10,6 +10,8 @@ import com.ord.core.word.models.word_details.toCompact
 import com.ord.core.word.repositories.WordDetailsRepository
 import com.ord.core.word.repositories.WordRepository
 import com.ord.core.word.services.WordDetailsService
+import com.ord.core.word.models.word.enums.WordStatus
+import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.REST.ConflictException
 import com.ord.exceptions.REST.NotFoundException
 import io.r2dbc.postgresql.codec.Json
@@ -40,11 +42,12 @@ class WordDetailsFacadeImpl(
             .switchIfEmpty(
                 Mono.error(NotFoundException("Word with id $wordId not found"))
             )
-            .flatMap {
-                wordDetailsRepository.existsByWordIdAndUserId(
-                    wordId = wordId,
-                    userId = userId
-                )
+            .flatMap { word ->
+                if (word!!.status != WordStatus.ACTIVE) {
+                    Mono.error(BadRequestException("Word details can only be created for active words"))
+                } else {
+                    wordDetailsRepository.existsByWordIdAndUserId(wordId = wordId, userId = userId)
+                }
             }
             .flatMap { exists ->
                 if (exists) {

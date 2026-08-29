@@ -8,7 +8,9 @@ import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
+import com.ord.seeders.factories.WordProgressFactory
 import com.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
@@ -63,6 +65,8 @@ class TestCrosswordGameController @Autowired constructor(
     private val userSeeder: UserSeeder,
     private val wordMockFactory: WordFactory,
     private val wordRepository: WordRepository,
+    private val wordProgressRepository: WordProgressRepository,
+    private val wordProgressFactory: WordProgressFactory,
     private val ongoingGameMapper: OngoingGameMapper,
     private val ongoingGameRepository: OngoingGameRepository,
     private val finishedGameRepository: FinishedGameRepository,
@@ -89,7 +93,9 @@ class TestCrosswordGameController @Autowired constructor(
         ongoingGameMapper = ongoingGameMapper,
         ongoingGameRepository = ongoingGameRepository,
         wordMockFactory = wordMockFactory,
-        wordRepository = wordRepository
+        wordRepository = wordRepository,
+        wordProgressRepository = wordProgressRepository,
+        wordProgressFactory = wordProgressFactory,
     )
 
     @Nested
@@ -406,6 +412,8 @@ class TestCrosswordGameController @Autowired constructor(
                 loadWordsFromResourceFile(
                     userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository,
+                    wordProgressRepository = wordProgressRepository,
+                    wordProgressFactory = wordProgressFactory,
                     numberOfWordsToLoad = requiredNumberOfWords - 1
                 )
 
@@ -424,9 +432,11 @@ class TestCrosswordGameController @Autowired constructor(
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
-                    userId = authenticatedUser.userInfo.id,
-                    wordsRepository = wordRepository
-                )
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
+            )
 
                 val response = crosswordGameAPIClient.startGame(
                     body = StartGameRequest(language = unknownForUserLanguage, difficulty = GameDifficulty.HARD),
@@ -441,9 +451,11 @@ class TestCrosswordGameController @Autowired constructor(
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
-                    userId = authenticatedUser.userInfo.id,
-                    wordsRepository = wordRepository
-                )
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
+            )
 
                 val response = crosswordGameAPIClient.startGame(
                     body = UnsafeStartGameRequestData(language = LanguageName.ENGLISH, difficulty = null),
@@ -458,9 +470,11 @@ class TestCrosswordGameController @Autowired constructor(
                 val authenticatedUser: MockedAuthenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
-                    userId = authenticatedUser.userInfo.id,
-                    wordsRepository = wordRepository
-                )
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
+            )
 
                 val response = crosswordGameAPIClient.startGame(
                     body = UnsafeStartGameRequestData(language = null, difficulty = GameDifficulty.HARD),
@@ -548,6 +562,7 @@ class TestCrosswordGameController @Autowired constructor(
                 alteredAnswers: Set<AlteredWordProperAnswer> = emptySet()
             ) {
                 wordRepository.assertDBPointsWereUpdatedProperly(
+                    wordProgressRepository = wordProgressRepository,
                     words = crosswordSavedInDb.properAnswers.questions.values.toSet(),
                     language = crosswordSavedInDb.language,
                     userId = authenticatedUser.userInfo.id,
@@ -732,15 +747,17 @@ class TestCrosswordGameController @Autowired constructor(
                     difficulty = GameDifficulty.MEDIUM
                 ).first
 
-                wordRepository.findAllByUserId(authenticatedUser.userInfo.id).collectList().block()!!.let { words ->
-                    wordRepository.saveAll(
-                        words.map {
-                            it.copy(
-                                points = GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD - 1
-                            )
-                        }
-                    ).collectList().block()
-                }
+                val words = wordRepository.findAllByUserId(authenticatedUser.userInfo.id).collectList().block()!!
+                val progressRecords = wordProgressRepository
+                    .findAllByWordIdInAndUserId(words.map { it.id!! }.toSet(), authenticatedUser.userInfo.id)
+                    .collectList()
+                    .block()!!
+
+                wordProgressRepository.saveAll(
+                    progressRecords.map {
+                        it.apply { points = GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD - 1 }
+                    },
+                ).collectList().block()
 
                 val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
 
@@ -755,16 +772,23 @@ class TestCrosswordGameController @Autowired constructor(
                 )
 
                 val wordsUsedInGame = perfectAnswers.map { it.answer }
-
-                wordRepository
+                val gameWords = wordRepository
                     .findAllByUserId(authenticatedUser.userInfo.id)
                     .collectList()
                     .block()!!
                     .filter { it.sourceWord in wordsUsedInGame }
-                    .forEach {
-                        it.points shouldBeGreaterThanOrEqual GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
-                        it.isCompleted shouldBe true
-                    }
+
+                val progressByWordId = wordProgressRepository
+                    .findAllByWordIdInAndUserId(gameWords.map { it.id!! }.toSet(), authenticatedUser.userInfo.id)
+                    .collectList()
+                    .block()!!
+                    .associateBy { it.wordId }
+
+                gameWords.forEach { word ->
+                    val progress = progressByWordId[word.id!!]!!
+                    progress.points shouldBeGreaterThanOrEqual GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
+                    progress.completedAt shouldNotBe null
+                }
             }
         }
 

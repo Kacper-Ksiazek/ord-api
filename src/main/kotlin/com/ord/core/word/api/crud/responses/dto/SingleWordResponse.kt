@@ -2,8 +2,10 @@ package com.ord.core.word.api.crud.responses.dto
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.models.word_details.WordDetailsCompactDTO
+import com.ord.core.word.models.word_progress.WordProgressDTO
 import com.ord.features.bank.dto.BankCompact
 import java.time.Instant
 import java.util.*
@@ -11,18 +13,17 @@ import java.util.*
 data class SingleWordResponse(
     val id: UUID,
 
-    var type: WordType,
+    var status: WordStatus,
+    var type: WordType?,
     var sourceWord: String,
-    var translation: String,
-    var definition: String,
+    var translation: String?,
+    var definition: String?,
     var extraMark: WordExtraMark?,
 
     var language: LanguageName,
 
-    var isCompleted: Boolean,
     var isBookmarked: Boolean,
-
-    var points: Int,
+    var progress: WordProgressDTO?,
 
     var bank: BankCompact?,
 
@@ -34,17 +35,16 @@ data class SingleWordResponse(
     companion object {
         val fields = setOf(
             "id",
+            "status",
             "type",
             "source_word",
             "translation",
             "definition",
             "extra_mark",
             "language",
-            "is_completed",
             "is_bookmarked",
-            "points",
             "created_at",
-            "updated_at"
+            "updated_at",
         )
     }
 }

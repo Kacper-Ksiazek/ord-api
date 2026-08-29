@@ -44,8 +44,7 @@ class OpenApiConfig(
                         | Domain | Description | Endpoints & Features |
                         |--------|-------------|----------------------|
                         | **1. Core** | Foundation services for user management and authentication | • **Authentication** - OTP-based email authentication with JWT tokens<br>• **Users** - User profile management and account initialization<br>• **Language Proficiencies** - Multi-language support with proficiency tracking |
-                        | **2. Words** | Comprehensive vocabulary management with AI assistance | • **CRUD** - Create, read, update, and delete vocabulary words<br>• **AI Generation** - AI-powered word generation and enhancement<br>• **Details** - Detailed word information including examples and usage |
-                        | **3. QAW** | Quickly Added Words - Rapidly collect vocabulary for later processing | • **Authenticated** - Full CRUD operations for logged-in users (bulk create, update, approve, delete)<br>• **Public** - Public endpoints for quick word submission without authentication |
+                        | **2. Words** | Comprehensive vocabulary management with AI assistance | • **CRUD** - Create, read, update, and delete vocabulary words<br>• **Capture** - Quick capture, overview, and activation workflow<br>• **AI Generation** - AI-powered word generation and enhancement<br>• **Details** - Detailed word information including examples and usage |
                         | **4. Games** | Interactive learning games with various difficulty levels | • **General** - Start, cancel, and manage game sessions<br>• **Words Typing** - Type words quickly to improve recall and speed<br>• **Crossword** - Solve crossword puzzles with learned vocabulary<br>• **Sentences Writing** - Practice writing sentences using target words |
                         | **5. Conversations** | AI-powered conversation practice with various scenarios | • **Management** - Create conversations, suggest topics, generate AI interlocutors<br>• **Ongoing Sessions** - Send messages, get AI responses, review user messages |
                         | **6. Utility** | System utilities and health monitoring | • **Health Check** - Monitor application and database health status<br>• **AI Demo** - Test and demonstrate AI provider functionality |
@@ -124,15 +123,14 @@ class OpenApiConfig(
                         .name("2. Words: Details")
                         .description("Detailed word information including examples and usage"),
 
-                    // 3. Quickly Added Words (QAW) Domain
                     Tag()
-                        .name("3. QAW: Authenticated")
-                        .description("Rapidly add and manage words for later processing and approval (requires authentication)"),
+                        .name("2. Words: Capture")
+                        .description("Quick capture, overview, and activation workflow"),
                     Tag()
-                        .name("3. QAW: Public")
-                        .description("Public endpoints for quickly added words (no authentication required)"),
+                        .name("2. Words: Public Capture")
+                        .description("Anonymous bulk word capture by user email"),
 
-                    // 4. Games Domain
+                    // 3. Games Domain
                     Tag()
                         .name("4. Games: General")
                         .description("General game management endpoints"),

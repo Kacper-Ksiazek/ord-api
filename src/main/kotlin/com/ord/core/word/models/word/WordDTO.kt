@@ -2,7 +2,9 @@ package com.ord.core.word.models.word
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
+import com.ord.core.word.models.word_progress.WordProgressDTO
 import com.ord.features.bank.model.BankDTO
 import java.time.Instant
 import java.util.*
@@ -10,18 +12,16 @@ import java.util.*
 class WordDTO(
     val id: UUID = UUID.randomUUID(),
 
-    var type: WordType,
+    var status: WordStatus,
+    var type: WordType? = null,
     var sourceWord: String,
-    var translation: String,
-    var definition: String,
+    var translation: String? = null,
+    var definition: String? = null,
     var extraMark: WordExtraMark? = null,
 
     var language: LanguageName,
 
-    var isCompleted: Boolean = false,
     var isBookmarked: Boolean = false,
-
-    var points: Int = 0,
 
     val userId: UUID,
 
@@ -29,7 +29,8 @@ class WordDTO(
     var bankId: UUID? = bank?.id,
     var bankGroupId: UUID? = bank?.groupId,
 
-    var completedAt: Instant? = null,
+    var progress: WordProgressDTO? = null,
+
     val createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),
 )

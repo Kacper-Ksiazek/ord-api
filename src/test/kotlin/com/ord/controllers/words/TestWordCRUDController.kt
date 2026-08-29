@@ -26,7 +26,10 @@ import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
+import com.ord.core.word.models.word.enums.WordStatus
+import com.ord.config.GamesConfig
 import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.repository.BankRepository
 import com.ord.features.bank.service.BankService
@@ -66,6 +69,7 @@ import java.util.*
 @DisplayName("- WordCRUDController")
 class TestWordCRUDController @Autowired constructor(
     private val wordRepository: WordRepository,
+    private val wordProgressRepository: WordProgressRepository,
     private val bankRepository: BankRepository,
     private val bankSeeder: BankSeeder,
     private val bankService: BankService,
@@ -305,7 +309,7 @@ class TestWordCRUDController @Autowired constructor(
                 )
 
                 body.data.forEach { t ->
-                    assert(t.sourceWord.contains(expectedWordMark) || t.translation.contains(expectedWordMark))
+                    assert(t.sourceWord.contains(expectedWordMark) || (t.translation?.contains(expectedWordMark) == true))
                 }
             }
 
@@ -346,13 +350,25 @@ class TestWordCRUDController @Autowired constructor(
             @ParameterizedTest
             @ValueSource(booleans = [true, false])
             fun `200 - Words can be fetched with filtering - by completed status `(completed: Boolean) {
-                val wordsToAdd = List(10) {
-                    wordMockFactory.mockEntity(
-                        userId = authenticatedUser.userInfo.id,
-                    ).apply { isCompleted = completed }
-                }
+                val wordsToAdd = wordRepository.saveAll(
+                    List(10) {
+                        wordMockFactory.mockEntity(
+                            userId = authenticatedUser.userInfo.id,
+                            status = WordStatus.ACTIVE,
+                        )
+                    },
+                ).collectList().block()!!
 
-                wordRepository.saveAll(wordsToAdd).collectList().block()
+                val progressEntities = wordsToAdd.map { word ->
+                    com.ord.core.word.models.word_progress.WordProgressEntity(
+                        wordId = word.id!!,
+                        userId = word.userId,
+                        points = if (completed) GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD else 0,
+                        completedAt = if (completed) java.time.Instant.now() else null,
+                        firstCompletedAt = if (completed) java.time.Instant.now() else null,
+                    )
+                }
+                wordProgressRepository.saveAll(progressEntities).collectList().block()
 
                 val body: PaginatedDataResponse<WordListItem> = makeManyWordsRequest(
                     completed = completed,
@@ -360,7 +376,7 @@ class TestWordCRUDController @Autowired constructor(
                 )
 
                 body.data.forEach {
-                    it.isCompleted shouldBe completed
+                    it.progress?.isCompleted shouldBe completed
                 }
             }
 

@@ -6,6 +6,7 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.security.UserRepository
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
 import com.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
@@ -15,6 +16,7 @@ import com.ord.features.game.repositories.OngoingGameRepository
 import com.ord.features.user_activity_log.model.enums.UserActivityType
 import com.ord.features.user_activity_log.repository.UserActivityLogRepository
 import com.ord.seeders.factories.WordFactory
+import com.ord.seeders.factories.WordProgressFactory
 import com.ord.testing_utils.api.clients.games.CrosswordGameAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import com.ord.testing_utils.mocks.games.CrosswordGameMocker
@@ -37,6 +39,8 @@ class TestGameController @Autowired constructor(
     private val userActivityLogRepository: UserActivityLogRepository,
     private val wordMockFactory: WordFactory,
     private val wordRepository: WordRepository,
+    private val wordProgressRepository: WordProgressRepository,
+    private val wordProgressFactory: WordProgressFactory,
     private val ongoingGameMapper: OngoingGameMapper,
     private val ongoingGameRepository: OngoingGameRepository,
     private val finishedGameRepository: FinishedGameRepository,
@@ -63,7 +67,9 @@ class TestGameController @Autowired constructor(
         ongoingGameMapper = ongoingGameMapper,
         ongoingGameRepository = ongoingGameRepository,
         wordMockFactory = wordMockFactory,
-        wordRepository = wordRepository
+        wordRepository = wordRepository,
+        wordProgressRepository = wordProgressRepository,
+        wordProgressFactory = wordProgressFactory,
     )
 
     @Nested

@@ -1,50 +1,85 @@
 CREATE TABLE IF NOT EXISTS words
 (
-    id              UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-    type            word_type     NOT NULL,                 -- Describes word's kind, such as `noun` or `verb`
-    source_word     varchar(255)  NOT NULL,                 -- The word being learned in the source language | example: `book`
-    translation     VARCHAR(255)  NOT NULL,                 -- This is the word translated into desired language | example: `książka`
-    definition      TEXT          NOT NULL,                 -- Short and concise one or two sentences long definition of the word
-    extra_mark      word_extra_mark          DEFAULT NULL,  -- Describes the word's extra mark, such as `offensive` or `slang`
+    id            UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+    status        word_status   NOT NULL   DEFAULT 'CAPTURED',
+    type          word_type                DEFAULT NULL,
+    source_word   varchar(255)  NOT NULL,
+    translation   VARCHAR(255)             DEFAULT NULL,
+    definition    TEXT                     DEFAULT NULL,
+    extra_mark    word_extra_mark          DEFAULT NULL,
 
-    language        language_name NOT NULL,                 -- The language of the source word being learned | example: `ENGLISH`
+    language      language_name NOT NULL,
 
-    is_completed    BOOLEAN       NOT NULL   DEFAULT FALSE, -- If set to true, the word is not used in games, exercises, etc.
-    is_bookmarked   BOOLEAN       NOT NULL   DEFAULT FALSE, -- If set to true, the word is marked as bookmarked and therefore can be access more easily
+    is_bookmarked BOOLEAN       NOT NULL   DEFAULT FALSE,
 
-    points          INTEGER       NOT NULL   DEFAULT 0,     -- The number of points gathered by the user during participating in different exercises
+    user_id       UUID          NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    bank_id       UUID                     DEFAULT NULL REFERENCES banks (id) ON DELETE SET NULL,
+    bank_group_id UUID                     DEFAULT NULL,
 
-    user_id         UUID          NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    bank_id         UUID                     DEFAULT NULL REFERENCES banks (id) ON DELETE SET NULL,
-    bank_group_id   UUID                     DEFAULT NULL,  -- This property is not a FK, because it is only used to streamline the process of fetching words from the same bank group
+    created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    completed_at    TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT unique_source_word_per_user_language_and_type UNIQUE (user_id, language, source_word, type)
+    CONSTRAINT chk_words_active_fields CHECK (
+        (status = 'CAPTURED')
+            OR (
+            status = 'ACTIVE'
+                AND type IS NOT NULL
+                AND translation IS NOT NULL
+                AND definition IS NOT NULL
+            )
+        )
 );
+
+CREATE UNIQUE INDEX uq_words_active_per_user_language_type
+    ON words (user_id, language, lower(source_word), type)
+    WHERE status = 'ACTIVE'::word_status;
+
+CREATE UNIQUE INDEX uq_words_captured_per_user_language_source
+    ON words (user_id, language, lower(source_word))
+    WHERE status = 'CAPTURED'::word_status;
 
 CREATE INDEX idx_words_id_user_id ON words (id, user_id);
 CREATE INDEX idx_words_user_language ON words (user_id, language);
+CREATE INDEX idx_words_user_status_created_at ON words (user_id, status, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS word_progress
+(
+    id                 UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+    word_id            UUID          NOT NULL REFERENCES words (id) ON DELETE CASCADE,
+    user_id            UUID          NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+
+    points             INTEGER       NOT NULL   DEFAULT 0,
+    completed_at       TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    first_completed_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+
+    created_at         TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at         TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_word_progress_word_user UNIQUE (word_id, user_id),
+    CONSTRAINT chk_word_progress_points_non_negative CHECK (points >= 0)
+);
+
+CREATE INDEX idx_word_progress_word_id ON word_progress (word_id);
+CREATE INDEX idx_word_progress_user_points ON word_progress (user_id, points);
+CREATE INDEX idx_word_progress_user_first_completed_at ON word_progress (user_id, first_completed_at);
 
 CREATE TABLE IF NOT EXISTS word_details
 (
     id                UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     word_id           UUID  NOT NULL REFERENCES words (id) ON DELETE CASCADE,
 
-    use_cases         JSONB NOT NULL,                        -- Set<String>
-    synonyms          JSONB NOT NULL,                        -- Set<String>
-    antonyms          JSONB NOT NULL,                        -- Set<String>
-    common_mistakes   JSONB NOT NULL,                        -- Set<String>
+    use_cases         JSONB NOT NULL,
+    synonyms          JSONB NOT NULL,
+    antonyms          JSONB NOT NULL,
+    common_mistakes   JSONB NOT NULL,
 
-    example_sentences JSONB NOT NULL,                        -- Set<ExampleSentence>
-    collocations      JSONB NOT NULL,                        -- Set<WordCollocation>
-    pronunciation     JSONB                    DEFAULT NULL, -- WordPronunciation
-    grammar           JSONB                    DEFAULT NULL, -- WordGrammar
+    example_sentences JSONB NOT NULL,
+    collocations      JSONB NOT NULL,
+    pronunciation     JSONB                    DEFAULT NULL,
+    grammar           JSONB                    DEFAULT NULL,
 
-    cultural_notes    TEXT                     DEFAULT NULL, -- Additional cultural notes about the word
-    learning_tips     TEXT                     DEFAULT NULL, -- Tips to help remember or learn the word more effectively
+    cultural_notes    TEXT                     DEFAULT NULL,
+    learning_tips     TEXT                     DEFAULT NULL,
 
     user_id           UUID  NOT NULL REFERENCES users (id) ON DELETE CASCADE,
 
@@ -54,4 +89,4 @@ CREATE TABLE IF NOT EXISTS word_details
     CONSTRAINT uq_word_details_word_user UNIQUE (word_id, user_id)
 );
 
-CREATE INDEX idx_word_details_word_id ON word_details (word_id)
+CREATE INDEX idx_word_details_word_id ON word_details (word_id);

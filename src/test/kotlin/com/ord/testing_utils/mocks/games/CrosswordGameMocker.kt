@@ -1,6 +1,7 @@
 package com.ord.testing_utils.mocks.games
 
 import tools.jackson.core.type.TypeReference
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
 import com.ord.features.game.model.ongoing_game.OngoingCrosswordGameDTO
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
@@ -10,6 +11,7 @@ import com.ord.features.game.repositories.OngoingGameRepository
 import com.ord.features.game.variants.crossword.dto.CrosswordInstruction
 import com.ord.features.game.variants.crossword.dto.api_responses.StartedCrosswordGameResponse
 import com.ord.seeders.factories.WordFactory
+import com.ord.seeders.factories.WordProgressFactory
 import com.ord.testing_utils.api.clients.games.bases.GameAPIClient
 import com.ord.testing_utils.dto.resources.mocks.games.CrosswordInJson
 import java.util.*
@@ -20,6 +22,8 @@ class CrosswordGameMocker(
     val ongoingGameRepository: OngoingGameRepository,
     val wordMockFactory: WordFactory,
     val wordRepository: WordRepository,
+    val wordProgressRepository: WordProgressRepository,
+    val wordProgressFactory: WordProgressFactory,
 ) : GameMockerBase<
         CrosswordInJson,
         OngoingCrosswordGameDTO,
@@ -30,6 +34,8 @@ class CrosswordGameMocker(
     ongoingGameRepository = ongoingGameRepository,
     wordMockFactory = wordMockFactory,
     wordRepository = wordRepository,
+    wordProgressRepository = wordProgressRepository,
+    wordProgressFactory = wordProgressFactory,
     apiClient = apiClient,
 ) {
     override val pathToJsonFile: String = "mocks/games/crosswords.json"

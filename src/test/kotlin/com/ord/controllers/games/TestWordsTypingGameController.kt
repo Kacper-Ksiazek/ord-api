@@ -10,7 +10,9 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.security.UserRepository
 import com.ord.core.user.model.UserMapper
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
+import com.ord.seeders.factories.WordProgressFactory
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
 import com.ord.features.game.model.ongoing_game.OngoingWordsTypingGameDTO
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
@@ -60,6 +62,8 @@ class TestWordsTypingGameController @Autowired constructor(
     private val wordMockFactory: WordFactory,
     private val userMapper: UserMapper,
     private val wordRepository: WordRepository,
+    private val wordProgressRepository: WordProgressRepository,
+    private val wordProgressFactory: WordProgressFactory,
     private val ongoingGameMapper: OngoingGameMapper,
     private val ongoingGameRepository: OngoingGameRepository,
     private val finishedGameRepository: FinishedGameRepository,
@@ -86,7 +90,9 @@ class TestWordsTypingGameController @Autowired constructor(
         ongoingGameMapper = ongoingGameMapper,
         ongoingGameRepository = ongoingGameRepository,
         wordMockFactory = wordMockFactory,
-        wordRepository = wordRepository
+        wordRepository = wordRepository,
+        wordProgressRepository = wordProgressRepository,
+        wordProgressFactory = wordProgressFactory,
     )
 
     @Nested
@@ -100,7 +106,9 @@ class TestWordsTypingGameController @Autowired constructor(
 
             loadWordsFromResourceFile(
                 userId = authenticatedUser.userInfo.id,
-                wordsRepository = wordRepository
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
             )
 
             val gameResponse = wordsTypingGameAPIClient.startGame(
@@ -157,9 +165,11 @@ class TestWordsTypingGameController @Autowired constructor(
             @BeforeAll
             fun beforeAll() {
                 loadWordsFromResourceFile(
-                    userId = authenticatedUser.userInfo.id,
-                    wordsRepository = wordRepository
-                )
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
+            )
 
                 val gameResponse = wordsTypingGameAPIClient.startGame(
                     body = StartGameRequest(
@@ -254,6 +264,8 @@ class TestWordsTypingGameController @Autowired constructor(
                 loadWordsFromResourceFile(
                     userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository,
+                    wordProgressRepository = wordProgressRepository,
+                    wordProgressFactory = wordProgressFactory,
                     numberOfWordsToLoad = requiredNumberOfWords - 1
                 )
 
@@ -279,9 +291,11 @@ class TestWordsTypingGameController @Autowired constructor(
                 )
 
                 loadWordsFromResourceFile(
-                    userId = authenticatedUser.userInfo.id,
-                    wordsRepository = wordRepository
-                )
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
+            )
 
                 val response = wordsTypingGameAPIClient.startGame(
                     body = StartGameRequest(
@@ -303,9 +317,11 @@ class TestWordsTypingGameController @Autowired constructor(
                 )
 
                 loadWordsFromResourceFile(
-                    userId = authenticatedUser.userInfo.id,
-                    wordsRepository = wordRepository
-                )
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
+            )
 
                 val response = wordsTypingGameAPIClient.post(
                     url = "/api/v1/games/words-typing/start",
@@ -330,9 +346,11 @@ class TestWordsTypingGameController @Autowired constructor(
                 )
 
                 loadWordsFromResourceFile(
-                    userId = authenticatedUser.userInfo.id,
-                    wordsRepository = wordRepository
-                )
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
+            )
 
                 val response = wordsTypingGameAPIClient.post(
                     url = "/api/v1/games/words-typing/start",
@@ -428,6 +446,7 @@ class TestWordsTypingGameController @Autowired constructor(
                 alteredAnswers: Set<AlteredWordProperAnswer> = emptySet()
             ) {
                 wordRepository.assertDBPointsWereUpdatedProperly(
+                    wordProgressRepository = wordProgressRepository,
                     words = gameSavedInDb.properAnswers.values.toSet(),
                     language = gameSavedInDb.language,
                     userId = authenticatedUser.userInfo.id,
@@ -613,20 +632,21 @@ class TestWordsTypingGameController @Autowired constructor(
                     )
                     .first
 
-                wordRepository
-                    .saveAll(
-                        wordRepository
-                            .findAllByUserId(authenticatedUser.userInfo.id)
-                            .collectList()
-                            .block()!!
-                            .map {
-                                it.copy(
-                                    points = GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD - 1
-                                )
-                            }
-                    )
+                val words = wordRepository
+                    .findAllByUserId(authenticatedUser.userInfo.id)
                     .collectList()
                     .block()!!
+
+                val progressRecords = wordProgressRepository
+                    .findAllByWordIdInAndUserId(words.map { it.id!! }.toSet(), authenticatedUser.userInfo.id)
+                    .collectList()
+                    .block()!!
+
+                wordProgressRepository.saveAll(
+                    progressRecords.map {
+                        it.apply { points = GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD - 1 }
+                    },
+                ).collectList().block()
 
                 val perfectAnswers: Set<WordUserAnswer> = getPerfectAnswersForQuestions()
                 val alteredAnswers: Set<AlteredWordProperAnswer> = perfectAnswers.mockAnswersWithMistakes(
@@ -645,15 +665,27 @@ class TestWordsTypingGameController @Autowired constructor(
                 )
 
                 val wordsUsedInGame = perfectAnswers.map { it.answer }
+                val progressByWordId = wordProgressRepository
+                    .findAllByWordIdInAndUserId(
+                        wordRepository.findAllByUserId(authenticatedUser.userInfo.id).collectList().block()!!
+                            .filter { it.sourceWord in wordsUsedInGame }
+                            .map { it.id!! }
+                            .toSet(),
+                        authenticatedUser.userInfo.id,
+                    )
+                    .collectList()
+                    .block()!!
+                    .associateBy { it.wordId }
 
                 wordRepository
                     .findAllByUserId(authenticatedUser.userInfo.id)
                     .collectList()
                     .block()!!
                     .filter { it.sourceWord in wordsUsedInGame }
-                    .forEach {
-                        it.points shouldBeGreaterThanOrEqual GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
-                        it.isCompleted shouldBe true
+                    .forEach { word ->
+                        val progress = progressByWordId[word.id!!]!!
+                        progress.points shouldBeGreaterThanOrEqual GamesConfig.WordPoints.COMPLETE_WORD_THRESHOLD
+                        progress.completedAt shouldNotBe null
                     }
             }
         }

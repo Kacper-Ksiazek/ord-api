@@ -1,5 +1,5 @@
 {
-    "openapi": "3.0.1",
+    "openapi": "3.1.0",
     "info": {
         "title": "ORD API - Language Learning Platform",
         "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. QAW** | Quickly Added Words - Rapidly collect vocabulary for later processing | \u2022 **Authenticated** - Full CRUD operations for logged-in users (bulk create, update, approve, delete)<br>\u2022 **Public** - Public endpoints for quick word submission without authentication |\n| **4. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **5. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **6. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
@@ -161,9 +161,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Word created successfully",
                         "content": {
@@ -173,6 +170,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -218,9 +218,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Word details created successfully",
                         "content": {
@@ -233,6 +230,9 @@
                     },
                     "404": {
                         "description": "Word not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -276,12 +276,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "description": "Word or details not found"
-                    },
                     "200": {
                         "description": "Word details updated successfully",
                         "content": {
@@ -291,6 +285,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Word or details not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -345,21 +345,15 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
+                    "200": {
+                        "description": "Property toggled successfully",
+                        "content": {}
                     },
                     "404": {
                         "description": "Word not found"
                     },
-                    "200": {
-                        "description": "Property toggled successfully",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unit"
-                                }
-                            }
-                        }
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -411,21 +405,15 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Word bank changed successfully",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unit"
-                                }
-                            }
-                        }
+                        "content": {}
                     },
                     "404": {
                         "description": "Word not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -481,13 +469,7 @@
                     },
                     "200": {
                         "description": "Property toggled successfully for all words",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unit"
-                                }
-                            }
-                        }
+                        "content": {}
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -529,9 +511,6 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Words retrieved successfully",
                         "content": {
@@ -541,6 +520,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -579,18 +561,12 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Words bank changed successfully",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unit"
-                                }
-                            }
-                        }
+                        "content": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -623,9 +599,6 @@
                         "description": "Invalid request data or user does not have proficiency in the requested language",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Vocabulary suggestions stream started successfully",
                         "content": {
@@ -638,6 +611,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -670,9 +646,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Word manual generated successfully",
                         "content": {
@@ -682,6 +655,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -758,17 +734,17 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "502": {
-                        "description": "ElevenLabs TTS service unavailable"
-                    },
                     "200": {
                         "description": "Audio stream started successfully",
                         "content": {
                             "audio/mpeg": {}
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "502": {
+                        "description": "ElevenLabs TTS service unavailable"
                     }
                 },
                 "security": [
@@ -923,13 +899,7 @@
                     },
                     "200": {
                         "description": "Words deleted successfully",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unit"
-                                }
-                            }
-                        }
+                        "content": {}
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -1008,9 +978,6 @@
                         "description": "Invalid request or user has no proficiency in the language",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
                     "200": {
                         "description": "Fields enriched successfully (per-item errors may be present in the response)",
                         "content": {
@@ -1020,6 +987,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
                     }
                 },
                 "security": [
@@ -1172,12 +1142,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "404": {
-                        "description": "Language proficiency not found"
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
                     "200": {
                         "description": "Language proficiency updated successfully",
                         "content": {
@@ -1187,6 +1151,12 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Language proficiency not found"
                     }
                 },
                 "security": [
@@ -1219,9 +1189,6 @@
                         "description": "Invalid request data or insufficient words for game",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Words typing game started successfully",
                         "content": {
@@ -1231,6 +1198,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1273,11 +1243,11 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "404": {
                         "description": "Game not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1310,9 +1280,6 @@
                         "description": "Invalid request data or insufficient words for game",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Sentences writing game started successfully",
                         "content": {
@@ -1322,6 +1289,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1354,12 +1324,6 @@
                         "description": "Invalid request data or sentence exceeds 1024 characters",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "description": "Game not found"
-                    },
                     "200": {
                         "description": "Sentences writing game finished successfully",
                         "content": {
@@ -1369,6 +1333,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Game not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1455,11 +1425,11 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "404": {
                         "description": "Game not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1511,14 +1481,14 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
+                    "204": {
+                        "description": "Game cancelled successfully"
                     },
                     "404": {
                         "description": "Game not found"
                     },
-                    "204": {
-                        "description": "Game cancelled successfully"
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1591,9 +1561,6 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Conversations retrieved successfully",
                         "content": {
@@ -1606,6 +1573,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1636,9 +1606,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Conversation created successfully",
                         "content": {
@@ -1648,6 +1615,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1680,9 +1650,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Topic suggestions stream started successfully",
                         "content": {
@@ -1695,6 +1662,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1727,9 +1697,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "AI interlocutor generated successfully",
                         "content": {
@@ -1739,6 +1706,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1771,12 +1741,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "404": {
-                        "description": "Conversation not found"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "User message saved successfully",
                         "content": {
@@ -1793,6 +1757,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Conversation not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1825,12 +1795,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "description": "Conversation or message not found"
-                    },
                     "200": {
                         "description": "Analysis generated successfully",
                         "content": {
@@ -1840,6 +1804,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Conversation or message not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1872,12 +1842,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "404": {
-                        "description": "Conversation not found"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "AI message stream started successfully",
                         "content": {
@@ -1890,6 +1854,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Conversation not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1931,12 +1901,6 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Conversation not found"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Conversation initialization stream started successfully",
                         "content": {
@@ -1949,6 +1913,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Conversation not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -1987,9 +1957,6 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Learning tips generated successfully",
                         "content": {
@@ -2002,6 +1969,9 @@
                     },
                     "404": {
                         "description": "Conversation not found or no AI message without learning tips exists"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -2034,9 +2004,6 @@
                         "description": "Invalid OTP code",
                         "content": {}
                     },
-                    "401": {
-                        "description": "OTP expired or invalid"
-                    },
                     "200": {
                         "description": "OTP verified; JWT stored in AUTH-TOKEN cookie",
                         "headers": {
@@ -2055,6 +2022,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "OTP expired or invalid"
                     }
                 }
             }
@@ -2082,11 +2052,11 @@
                         "description": "Invalid email format",
                         "content": {}
                     },
-                    "429": {
-                        "description": "Too many requests"
-                    },
                     "200": {
                         "description": "OTP sent successfully"
+                    },
+                    "429": {
+                        "description": "Too many requests"
                     }
                 }
             }
@@ -2114,9 +2084,6 @@
                         "description": "Invalid request data or user does not have proficiency in the requested language",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Word/phrase explanation stream started successfully",
                         "content": {
@@ -2129,6 +2096,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -2170,12 +2140,6 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "description": "Word not found"
-                    },
                     "200": {
                         "description": "Word retrieved successfully",
                         "content": {
@@ -2185,6 +2149,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Word not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -2224,21 +2194,15 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
+                    "200": {
+                        "description": "Word deleted successfully",
+                        "content": {}
                     },
                     "404": {
                         "description": "Word not found"
                     },
-                    "200": {
-                        "description": "Word deleted successfully",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unit"
-                                }
-                            }
-                        }
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -2282,9 +2246,6 @@
                         "description": "Invalid request data",
                         "content": {}
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Word updated successfully",
                         "content": {
@@ -2297,6 +2258,9 @@
                     },
                     "404": {
                         "description": "Word not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -2337,21 +2301,15 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Word not found"
+                    "200": {
+                        "description": "Word deleted successfully",
+                        "content": {}
                     },
                     "401": {
                         "description": "Not authenticated"
                     },
-                    "200": {
-                        "description": "Word deleted successfully",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unit"
-                                }
-                            }
-                        }
+                    "404": {
+                        "description": "Word not found"
                     }
                 },
                 "security": [
@@ -2394,9 +2352,6 @@
                         "description": "Invalid update data",
                         "content": {}
                     },
-                    "404": {
-                        "description": "Word not found"
-                    },
                     "200": {
                         "description": "Word updated successfully",
                         "content": {
@@ -2409,6 +2364,9 @@
                     },
                     "401": {
                         "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Word not found"
                     }
                 },
                 "security": [
@@ -2486,13 +2444,7 @@
                     },
                     "200": {
                         "description": "Words approved successfully",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unit"
-                                }
-                            }
-                        }
+                        "content": {}
                     },
                     "401": {
                         "description": "Not authenticated"
@@ -2591,7 +2543,7 @@
                     "6. Utility: Health Check"
                 ],
                 "summary": "Check application health",
-                "description": "Returns the health status of the application and database connection. In the `e2e` profile, `ai` and `tts` are reported as `STUB` (fixture-based clients, no external API calls). No authentication required.",
+                "description": "Returns the health status of the application and database connection. In the e2e profile, ai and tts are reported as STUB (fixture-based clients, no external API calls). No authentication required.",
                 "operationId": "healthCheck",
                 "responses": {
                     "400": {
@@ -2612,7 +2564,8 @@
                                     "$ref": "#/components/schemas/HealthCheckResponse"
                                 },
                                 "examples": {
-                                    "production": {
+                                    "Production": {
+                                        "description": "Production",
                                         "value": {
                                             "application": "UP",
                                             "database": "UP",
@@ -2620,7 +2573,8 @@
                                             "tts": "LIVE"
                                         }
                                     },
-                                    "e2e": {
+                                    "E2E profile": {
+                                        "description": "E2E profile",
                                         "value": {
                                             "application": "UP",
                                             "database": "UP",
@@ -2667,12 +2621,6 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Conversation not found"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Conversation retrieved successfully",
                         "content": {
@@ -2682,6 +2630,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Conversation not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -2721,18 +2675,12 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Conversation not found"
-                    },
                     "200": {
                         "description": "Conversation deleted successfully",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unit"
-                                }
-                            }
-                        }
+                        "content": {}
+                    },
+                    "404": {
+                        "description": "Conversation not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -2764,9 +2712,6 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "200": {
                         "description": "Activity overview retrieved successfully",
                         "content": {
@@ -2776,6 +2721,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -2830,19 +2778,13 @@
                     },
                     "204": {
                         "description": "Language proficiency deleted successfully",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unit"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Language proficiency not found"
+                        "content": {}
                     },
                     "401": {
                         "description": "Not authenticated"
+                    },
+                    "404": {
+                        "description": "Language proficiency not found"
                     }
                 },
                 "security": [
@@ -2871,11 +2813,11 @@
                             }
                         }
                     },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
                     "200": {
                         "description": "Logged out successfully"
+                    },
+                    "401": {
+                        "description": "Not authenticated"
                     }
                 },
                 "security": [
@@ -2889,11 +2831,6 @@
     "components": {
         "schemas": {
             "BadRequestResponse": {
-                "required": [
-                    "errors",
-                    "message",
-                    "status"
-                ],
                 "type": "object",
                 "properties": {
                     "status": {
@@ -2911,51 +2848,7 @@
                     }
                 }
             },
-            "HealthCheckResponse": {
-                "required": [
-                    "ai",
-                    "application",
-                    "database",
-                    "tts"
-                ],
-                "type": "object",
-                "properties": {
-                    "application": {
-                        "$ref": "#/components/schemas/HealthStatus"
-                    },
-                    "database": {
-                        "$ref": "#/components/schemas/HealthStatus"
-                    },
-                    "ai": {
-                        "$ref": "#/components/schemas/AiIntegrationMode"
-                    },
-                    "tts": {
-                        "$ref": "#/components/schemas/AiIntegrationMode"
-                    }
-                },
-                "description": "Application health snapshot"
-            },
-            "HealthStatus": {
-                "type": "string",
-                "description": "Component health status",
-                "enum": [
-                    "UP",
-                    "DOWN"
-                ]
-            },
-            "AiIntegrationMode": {
-                "type": "string",
-                "description": "External integration mode — STUB means fixture-based clients with no outbound HTTP calls",
-                "enum": [
-                    "STUB",
-                    "LIVE"
-                ]
-            },
             "FieldError": {
-                "required": [
-                    "errorMessage",
-                    "field"
-                ],
                 "type": "object",
                 "properties": {
                     "field": {
@@ -2967,36 +2860,32 @@
                 }
             },
             "CreateBankRequest": {
-                "required": [
-                    "description",
-                    "name"
-                ],
                 "type": "object",
                 "properties": {
                     "name": {
+                        "type": "string",
                         "maxLength": 165,
-                        "minLength": 2,
-                        "type": "string"
+                        "minLength": 2
                     },
                     "description": {
+                        "type": "string",
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "groupId": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid"
                     }
-                }
+                },
+                "required": [
+                    "description",
+                    "name"
+                ]
             },
             "CreateWordRequest": {
-                "required": [
-                    "definition",
-                    "language",
-                    "sourceWord",
-                    "translation",
-                    "type"
-                ],
                 "type": "object",
                 "properties": {
                     "type": {
@@ -3012,22 +2901,25 @@
                         ]
                     },
                     "sourceWord": {
+                        "type": "string",
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "translation": {
+                        "type": "string",
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "definition": {
+                        "type": "string",
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "extraMark": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Extra marks or tags for word classification by register or domain",
                         "enum": [
                             "OFFENSIVE",
@@ -3058,23 +2950,32 @@
                         ]
                     },
                     "bankId": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid"
                     },
                     "bankToCreate": {
-                        "$ref": "#/components/schemas/CreateBankRequest"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/CreateBankRequest"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
-                }
+                },
+                "required": [
+                    "definition",
+                    "language",
+                    "sourceWord",
+                    "translation",
+                    "type"
+                ]
             },
             "BankDTO": {
-                "required": [
-                    "createdAt",
-                    "description",
-                    "id",
-                    "name",
-                    "updatedAt",
-                    "userId"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -3092,10 +2993,20 @@
                         "format": "uuid"
                     },
                     "group": {
-                        "$ref": "#/components/schemas/BankGroupDTO"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/BankGroupDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "groupId": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid"
                     },
                     "createdAt": {
@@ -3109,14 +3020,6 @@
                 }
             },
             "BankGroupDTO": {
-                "required": [
-                    "color",
-                    "createdAt",
-                    "id",
-                    "name",
-                    "updatedAt",
-                    "userId"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -3144,20 +3047,6 @@
                 }
             },
             "WordDTO": {
-                "required": [
-                    "createdAt",
-                    "definition",
-                    "id",
-                    "isBookmarked",
-                    "isCompleted",
-                    "language",
-                    "points",
-                    "sourceWord",
-                    "translation",
-                    "type",
-                    "updatedAt",
-                    "userId"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -3186,7 +3075,10 @@
                         "type": "string"
                     },
                     "extraMark": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Extra marks or tags for word classification by register or domain",
                         "enum": [
                             "OFFENSIVE",
@@ -3216,12 +3108,6 @@
                             "SLOVENIAN"
                         ]
                     },
-                    "isCompleted": {
-                        "type": "boolean"
-                    },
-                    "isBookmarked": {
-                        "type": "boolean"
-                    },
                     "points": {
                         "type": "integer",
                         "format": "int32"
@@ -3231,18 +3117,34 @@
                         "format": "uuid"
                     },
                     "bank": {
-                        "$ref": "#/components/schemas/BankDTO"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/BankDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "bankId": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid"
                     },
                     "bankGroupId": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid"
                     },
                     "completedAt": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "date-time"
                     },
                     "createdAt": {
@@ -3252,117 +3154,133 @@
                     "updatedAt": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "completed": {
+                        "type": "boolean"
+                    },
+                    "bookmarked": {
+                        "type": "boolean"
                     }
                 }
             },
             "CreateWordDetailsRequest": {
-                "required": [
-                    "antonyms",
-                    "collocations",
-                    "commonMistakes",
-                    "exampleSentences",
-                    "synonyms",
-                    "useCases"
-                ],
                 "type": "object",
                 "properties": {
                     "useCases": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "synonyms": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "antonyms": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "commonMistakes": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "exampleSentences": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ExampleSentence"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "collocations": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/WordCollocation"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "pronunciation": {
-                        "$ref": "#/components/schemas/WordPronunciation"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/WordPronunciation"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "grammar": {
-                        "$ref": "#/components/schemas/WordGrammar"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/WordGrammar"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "culturalNotes": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "learningTips": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     }
                 }
             },
             "ExampleSentence": {
-                "required": [
-                    "sentence",
-                    "translation"
-                ],
                 "type": "object",
                 "properties": {
                     "context": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 128,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "sentence": {
+                        "type": "string",
                         "maxLength": 512,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "translation": {
+                        "type": "string",
                         "maxLength": 512,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     }
-                }
+                },
+                "required": [
+                    "sentence",
+                    "translation"
+                ]
             },
             "WordCollocation": {
-                "required": [
-                    "frequency",
-                    "phrase",
-                    "translation"
-                ],
                 "type": "object",
                 "properties": {
                     "phrase": {
+                        "type": "string",
                         "maxLength": 128,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "translation": {
+                        "type": "string",
                         "maxLength": 128,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "frequency": {
                         "type": "string",
@@ -3372,19 +3290,20 @@
                             "OCCASIONAL"
                         ]
                     }
-                }
+                },
+                "required": [
+                    "frequency",
+                    "phrase",
+                    "translation"
+                ]
             },
             "WordConjugation": {
-                "required": [
-                    "forms",
-                    "tense"
-                ],
                 "type": "object",
                 "properties": {
                     "tense": {
+                        "type": "string",
                         "maxLength": 32,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "forms": {
                         "type": "object",
@@ -3392,13 +3311,20 @@
                             "type": "string"
                         }
                     }
-                }
+                },
+                "required": [
+                    "forms",
+                    "tense"
+                ]
             },
             "WordGrammar": {
                 "type": "object",
                 "properties": {
                     "gender": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "enum": [
                             "MASCULINE",
                             "FEMININE",
@@ -3406,33 +3332,51 @@
                         ]
                     },
                     "definiteArticle": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 16,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "pluralForm": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 64,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "comparativeForm": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 64,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "superlativeForm": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 64,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "irregularForms": {
-                        "type": "object",
+                        "type": [
+                            "object",
+                            "null"
+                        ],
                         "additionalProperties": {
                             "type": "string"
                         }
                     },
                     "conjugations": {
-                        "type": "array",
+                        "type": [
+                            "array",
+                            "null"
+                        ],
                         "items": {
                             "$ref": "#/components/schemas/WordConjugation"
                         }
@@ -3440,132 +3384,154 @@
                 }
             },
             "WordPronunciation": {
-                "required": [
-                    "ipa"
-                ],
                 "type": "object",
                 "properties": {
                     "ipa": {
+                        "type": "string",
                         "maxLength": 64,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "syllables": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 64,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "stress": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
                         "maximum": 20,
-                        "minimum": 1,
-                        "type": "integer",
-                        "format": "int32"
+                        "minimum": 1
                     }
-                }
+                },
+                "required": [
+                    "ipa"
+                ]
             },
             "WordDetailsCompactDTO": {
-                "required": [
-                    "antonyms",
-                    "collocations",
-                    "commonMistakes",
-                    "exampleSentences",
-                    "synonyms",
-                    "useCases"
-                ],
                 "type": "object",
                 "properties": {
                     "useCases": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "synonyms": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "antonyms": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "commonMistakes": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "exampleSentences": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ExampleSentence"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "collocations": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/WordCollocation"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "pronunciation": {
-                        "$ref": "#/components/schemas/WordPronunciation"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/WordPronunciation"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "grammar": {
-                        "$ref": "#/components/schemas/WordGrammar"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/WordGrammar"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "culturalNotes": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "learningTips": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     }
                 }
-            },
-            "Unit": {
-                "type": "object"
             },
             "ChangeBankForSingleWordRequest": {
                 "type": "object",
                 "properties": {
                     "bankId": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid"
                     },
                     "bankToCreate": {
-                        "$ref": "#/components/schemas/CreateBankRequest"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/CreateBankRequest"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 }
             },
             "WordBulkActionRequest": {
-                "required": [
-                    "ids"
-                ],
                 "type": "object",
                 "properties": {
                     "ids": {
-                        "maxItems": 2147483647,
-                        "minItems": 1,
                         "type": "array",
                         "items": {
                             "type": "string",
                             "format": "uuid"
-                        }
+                        },
+                        "maxItems": 2147483647,
+                        "minItems": 1
                     }
-                }
+                },
+                "required": [
+                    "ids"
+                ]
             },
             "GetManyWordsRequest": {
-                "required": [
-                    "language"
-                ],
                 "type": "object",
                 "properties": {
                     "language": {
@@ -3584,23 +3550,35 @@
                         ]
                     },
                     "page": {
-                        "minimum": 0,
-                        "type": "integer",
-                        "format": "int32"
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
+                        "minimum": 0
                     },
                     "perPage": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
                         "maximum": 500,
-                        "minimum": 1,
-                        "type": "integer",
-                        "format": "int32"
+                        "minimum": 1
                     },
                     "searchingPhrase": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 64,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "wordType": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -3612,7 +3590,10 @@
                         ]
                     },
                     "wordExtraMark": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Extra marks or tags for word classification by register or domain",
                         "enum": [
                             "OFFENSIVE",
@@ -3628,60 +3609,81 @@
                         ]
                     },
                     "bookmarked": {
-                        "type": "boolean"
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
                     },
                     "completed": {
-                        "type": "boolean"
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
                     },
                     "banksIds": {
-                        "type": "array",
+                        "type": [
+                            "array",
+                            "null"
+                        ],
                         "items": {
                             "type": "string",
                             "format": "uuid"
                         }
                     },
                     "bankGroupsIds": {
-                        "type": "array",
+                        "type": [
+                            "array",
+                            "null"
+                        ],
                         "items": {
                             "type": "string",
                             "format": "uuid"
                         }
                     },
                     "sortDirection": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "enum": [
                             "ASC",
                             "DESC"
                         ]
                     },
                     "sortBy": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "enum": [
                             "CREATED_AT",
                             "SOURCE_WORD"
                         ]
                     }
-                }
+                },
+                "required": [
+                    "language"
+                ]
             },
             "BankCompact": {
-                "required": [
-                    "name"
-                ],
                 "type": "object",
                 "properties": {
                     "name": {
                         "type": "string"
                     },
                     "bankGroup": {
-                        "$ref": "#/components/schemas/BankGroupCompact"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/BankGroupCompact"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 }
             },
             "BankGroupCompact": {
-                "required": [
-                    "color",
-                    "name"
-                ],
                 "type": "object",
                 "properties": {
                     "name": {
@@ -3693,14 +3695,12 @@
                 }
             },
             "PaginatedDataResponseWordListItem": {
-                "required": [
-                    "data",
-                    "pagination"
-                ],
                 "type": "object",
+                "description": "Generic paginated response wrapper for list endpoints",
                 "properties": {
                     "pagination": {
-                        "$ref": "#/components/schemas/PaginationData"
+                        "$ref": "#/components/schemas/PaginationData",
+                        "description": "Pagination metadata"
                     },
                     "data": {
                         "type": "array",
@@ -3709,63 +3709,45 @@
                             "$ref": "#/components/schemas/WordListItem"
                         }
                     }
-                },
-                "description": "Generic paginated response wrapper for list endpoints"
+                }
             },
             "PaginationData": {
-                "required": [
-                    "page",
-                    "perPage",
-                    "resultsOnCurrentPage",
-                    "totalPages",
-                    "totalResults"
-                ],
                 "type": "object",
+                "description": "Pagination metadata for paginated responses",
                 "properties": {
                     "page": {
                         "type": "integer",
-                        "description": "Current page number (0-indexed)",
                         "format": "int32",
+                        "description": "Current page number (0-indexed)",
                         "example": 0
                     },
                     "perPage": {
                         "type": "integer",
-                        "description": "Number of items per page",
                         "format": "int32",
+                        "description": "Number of items per page",
                         "example": 20
                     },
                     "totalResults": {
                         "type": "integer",
-                        "description": "Total number of results across all pages",
                         "format": "int64",
+                        "description": "Total number of results across all pages",
                         "example": 150
                     },
                     "resultsOnCurrentPage": {
                         "type": "integer",
-                        "description": "Number of results on the current page",
                         "format": "int32",
+                        "description": "Number of results on the current page",
                         "example": 20
                     },
                     "totalPages": {
                         "type": "integer",
-                        "description": "Total number of pages",
                         "format": "int32",
+                        "description": "Total number of pages",
                         "example": 8
                     }
-                },
-                "description": "Pagination metadata for paginated responses"
+                }
             },
             "WordListItem": {
-                "required": [
-                    "id",
-                    "isBookmarked",
-                    "isCompleted",
-                    "language",
-                    "points",
-                    "sourceWord",
-                    "translation",
-                    "type"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -3782,12 +3764,6 @@
                     "translation": {
                         "type": "string"
                     },
-                    "isCompleted": {
-                        "type": "boolean"
-                    },
-                    "isBookmarked": {
-                        "type": "boolean"
-                    },
                     "type": {
                         "type": "string",
                         "description": "Type of word or expression",
@@ -3801,7 +3777,10 @@
                         ]
                     },
                     "extraMark": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Extra marks or tags for word classification by register or domain",
                         "enum": [
                             "OFFENSIVE",
@@ -3832,19 +3811,31 @@
                         ]
                     },
                     "bank": {
-                        "$ref": "#/components/schemas/BankCompact"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/BankCompact"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "completed": {
+                        "type": "boolean"
+                    },
+                    "bookmarked": {
+                        "type": "boolean"
                     }
-                },
-                "description": "Array of results for the current page"
+                }
             },
             "ChangeBankForMultipleWordsRequest": {
-                "required": [
-                    "wordIds"
-                ],
                 "type": "object",
                 "properties": {
                     "bankId": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid"
                     },
                     "wordIds": {
@@ -3855,20 +3846,24 @@
                         }
                     },
                     "bankToCreate": {
-                        "$ref": "#/components/schemas/CreateBankRequest"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/CreateBankRequest"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 }
             },
             "SuggestVocabularyRequest": {
-                "required": [
-                    "language"
-                ],
                 "type": "object",
+                "description": "Request to generate AI-powered vocabulary suggestions",
                 "properties": {
                     "language": {
                         "type": "string",
-                        "description": "Supported languages in the platform",
-                        "example": "SPANISH",
+                        "description": "Target language for vocabulary suggestions",
                         "enum": [
                             "POLISH",
                             "ENGLISH",
@@ -3879,50 +3874,49 @@
                             "NORWEGIAN",
                             "RUSSIAN",
                             "SLOVENIAN"
-                        ]
+                        ],
+                        "example": "SPANISH"
                     },
                     "context": {
-                        "maxLength": 500,
-                        "minLength": 0,
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Optional context or scenario for vocabulary suggestions (e.g., 'for daily conversation in a grocery store')",
-                        "nullable": true,
-                        "example": "for business meetings and professional emails"
+                        "example": "for business meetings and professional emails",
+                        "maxLength": 500,
+                        "minLength": 0
                     },
                     "excludedWords": {
-                        "maxLength": 1000,
-                        "maxItems": 1000,
-                        "minItems": 0,
-                        "type": "array",
+                        "type": [
+                            "array",
+                            "null"
+                        ],
                         "description": "Optional list of words to exclude from suggestions (e.g., already suggested words in previous requests)",
-                        "nullable": true,
                         "example": [
                             "hola",
                             "adi\u00f3s",
                             "gracias"
                         ],
                         "items": {
-                            "maxLength": 1000,
-                            "type": "string",
-                            "description": "Optional list of words to exclude from suggestions (e.g., already suggested words in previous requests)",
-                            "nullable": true,
-                            "example": "[\"hola\",\"adi\u00f3s\",\"gracias\"]"
-                        }
+                            "type": "string"
+                        },
+                        "maxItems": 1000,
+                        "maxLength": 1000,
+                        "minItems": 0
                     }
                 },
-                "description": "Request to generate AI-powered vocabulary suggestions"
+                "required": [
+                    "language"
+                ]
             },
             "GenerateWordManualRequest": {
-                "required": [
-                    "language",
-                    "word"
-                ],
                 "type": "object",
                 "properties": {
                     "word": {
+                        "type": "string",
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "language": {
                         "type": "string",
@@ -3940,7 +3934,10 @@
                         ]
                     },
                     "targetLanguage": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Supported languages in the platform",
                         "enum": [
                             "POLISH",
@@ -3955,7 +3952,10 @@
                         ]
                     },
                     "proficiencyLevel": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "enum": [
                             "A1",
                             "A2",
@@ -3965,22 +3965,13 @@
                             "C2"
                         ]
                     }
-                }
+                },
+                "required": [
+                    "language",
+                    "word"
+                ]
             },
             "AIGeneratedWordManual": {
-                "required": [
-                    "antonyms",
-                    "collocations",
-                    "commonMistakes",
-                    "definition",
-                    "exampleSentences",
-                    "originalWord",
-                    "synonyms",
-                    "translation",
-                    "type",
-                    "useCases",
-                    "word"
-                ],
                 "type": "object",
                 "properties": {
                     "originalWord": {
@@ -4008,7 +3999,10 @@
                         ]
                     },
                     "extraMark": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Extra marks or tags for word classification by register or domain",
                         "enum": [
                             "OFFENSIVE",
@@ -4042,10 +4036,24 @@
                         }
                     },
                     "pronunciation": {
-                        "$ref": "#/components/schemas/WordPronunciation"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/WordPronunciation"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "grammar": {
-                        "$ref": "#/components/schemas/WordGrammar"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/WordGrammar"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "synonyms": {
                         "type": "array",
@@ -4066,20 +4074,20 @@
                         }
                     },
                     "culturalNotes": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "learningTips": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     }
                 }
             },
             "InitUserAccountRequest": {
-                "required": [
-                    "languageProficiencies",
-                    "name",
-                    "nativeLanguage",
-                    "selectedLearningLanguage"
-                ],
                 "type": "object",
                 "properties": {
                     "name": {
@@ -4124,12 +4132,6 @@
                 }
             },
             "LanguageProficiencyCompactDTO": {
-                "required": [
-                    "generativeContentLanguage",
-                    "language",
-                    "level",
-                    "translateTo"
-                ],
                 "type": "object",
                 "properties": {
                     "language": {
@@ -4191,20 +4193,13 @@
                 }
             },
             "UserDTO": {
-                "required": [
-                    "createdAt",
-                    "email",
-                    "id",
-                    "isAccountInitialized",
-                    "name",
-                    "updatedAt"
-                ],
                 "type": "object",
+                "description": "User profile information",
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "Unique user identifier",
                         "format": "uuid",
+                        "description": "Unique user identifier",
                         "example": "550e8400-e29b-41d4-a716-446655440000"
                     },
                     "name": {
@@ -4218,10 +4213,11 @@
                         "example": "john.doe@example.com"
                     },
                     "nativeLanguage": {
-                        "type": "string",
-                        "description": "Supported languages in the platform",
-                        "nullable": true,
-                        "example": "ENGLISH",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "User's native language",
                         "enum": [
                             "POLISH",
                             "ENGLISH",
@@ -4232,13 +4228,15 @@
                             "NORWEGIAN",
                             "RUSSIAN",
                             "SLOVENIAN"
-                        ]
+                        ],
+                        "example": "ENGLISH"
                     },
                     "selectedLearningLanguage": {
-                        "type": "string",
-                        "description": "Supported languages in the platform",
-                        "nullable": true,
-                        "example": "SPANISH",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Currently selected language for learning",
                         "enum": [
                             "POLISH",
                             "ENGLISH",
@@ -4249,62 +4247,56 @@
                             "NORWEGIAN",
                             "RUSSIAN",
                             "SLOVENIAN"
-                        ]
-                    },
-                    "isAccountInitialized": {
-                        "type": "boolean",
-                        "description": "Whether the user has completed account initialization",
-                        "example": true
+                        ],
+                        "example": "SPANISH"
                     },
                     "createdAt": {
                         "type": "string",
-                        "description": "Timestamp when the user account was created",
                         "format": "date-time",
+                        "description": "Timestamp when the user account was created",
                         "example": "2024-01-15T10:30:00Z"
                     },
                     "updatedAt": {
                         "type": "string",
-                        "description": "Timestamp when the user account was last updated",
                         "format": "date-time",
+                        "description": "Timestamp when the user account was last updated",
                         "example": "2024-01-20T15:45:00Z"
+                    },
+                    "accountInitialized": {
+                        "type": "boolean"
                     }
-                },
-                "description": "User profile information"
+                }
             },
             "SpeakRequest": {
-                "required": [
-                    "text"
-                ],
                 "type": "object",
+                "description": "Request to synthesize speech from text",
                 "properties": {
                     "text": {
-                        "maxLength": 5000,
-                        "minLength": 1,
                         "type": "string",
                         "description": "The assistant reply text to synthesize",
-                        "example": "That's a great question! Let me explain..."
+                        "example": "That's a great question! Let me explain...",
+                        "maxLength": 5000,
+                        "minLength": 1
                     }
                 },
-                "description": "Request to synthesize speech from text"
+                "required": [
+                    "text"
+                ]
             },
             "CreateQAWRequest": {
-                "required": [
-                    "language",
-                    "word"
-                ],
                 "type": "object",
+                "description": "Request to create a new quickly added word",
                 "properties": {
                     "word": {
-                        "maxLength": 255,
-                        "minLength": 1,
                         "type": "string",
                         "description": "The word or phrase to add",
-                        "example": "comprehensive"
+                        "example": "comprehensive",
+                        "maxLength": 255,
+                        "minLength": 1
                     },
                     "language": {
                         "type": "string",
-                        "description": "Supported languages in the platform",
-                        "example": "ENGLISH",
+                        "description": "Language of the word",
                         "enum": [
                             "POLISH",
                             "ENGLISH",
@@ -4315,29 +4307,35 @@
                             "NORWEGIAN",
                             "RUSSIAN",
                             "SLOVENIAN"
-                        ]
+                        ],
+                        "example": "ENGLISH"
                     },
                     "translation": {
-                        "maxLength": 255,
-                        "minLength": 0,
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Optional translation of the word",
-                        "nullable": true,
-                        "example": "comprensivo"
+                        "example": "comprensivo",
+                        "maxLength": 255,
+                        "minLength": 0
                     },
                     "definition": {
-                        "maxLength": 2000,
-                        "minLength": 0,
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Optional definition or notes about the word",
-                        "nullable": true,
-                        "example": "Complete; including all or nearly all elements or aspects"
+                        "example": "Complete; including all or nearly all elements or aspects",
+                        "maxLength": 2000,
+                        "minLength": 0
                     },
                     "extraMark": {
-                        "type": "string",
-                        "description": "Extra marks or tags for word classification by register or domain",
-                        "nullable": true,
-                        "example": "SLANG",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Optional extra mark or tag for the word",
                         "enum": [
                             "OFFENSIVE",
                             "SLANG",
@@ -4349,13 +4347,15 @@
                             "MEDICAL",
                             "COLLOQUIAL",
                             "POETIC"
-                        ]
+                        ],
+                        "example": "SLANG"
                     },
                     "type": {
-                        "type": "string",
-                        "description": "Type of word or expression",
-                        "nullable": true,
-                        "example": "ADJECTIVE",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Optional word type classification",
                         "enum": [
                             "NOUN",
                             "VERB",
@@ -4363,26 +4363,23 @@
                             "ADVERB",
                             "IDIOM",
                             "PHRASE"
-                        ]
+                        ],
+                        "example": "ADJECTIVE"
                     }
                 },
-                "description": "Request to create a new quickly added word"
+                "required": [
+                    "language",
+                    "word"
+                ]
             },
             "QuicklyAddedWordDTO": {
-                "required": [
-                    "createdAt",
-                    "id",
-                    "isApproved",
-                    "language",
-                    "userId",
-                    "word"
-                ],
                 "type": "object",
+                "description": "Quickly added word with all details",
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "Unique word identifier",
                         "format": "uuid",
+                        "description": "Unique word identifier",
                         "example": "650e8400-e29b-41d4-a716-446655440000"
                     },
                     "word": {
@@ -4392,8 +4389,7 @@
                     },
                     "language": {
                         "type": "string",
-                        "description": "Supported languages in the platform",
-                        "example": "ENGLISH",
+                        "description": "Language of the word",
                         "enum": [
                             "POLISH",
                             "ENGLISH",
@@ -4404,25 +4400,31 @@
                             "NORWEGIAN",
                             "RUSSIAN",
                             "SLOVENIAN"
-                        ]
+                        ],
+                        "example": "ENGLISH"
                     },
                     "translation": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Translation of the word",
-                        "nullable": true,
                         "example": "comprensivo"
                     },
                     "definition": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Definition or notes about the word",
-                        "nullable": true,
                         "example": "Complete; including all elements"
                     },
                     "extraMark": {
-                        "type": "string",
-                        "description": "Extra marks or tags for word classification by register or domain",
-                        "nullable": true,
-                        "example": "SLANG",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Extra mark or tag for the word",
                         "enum": [
                             "OFFENSIVE",
                             "SLANG",
@@ -4434,13 +4436,15 @@
                             "MEDICAL",
                             "COLLOQUIAL",
                             "POETIC"
-                        ]
+                        ],
+                        "example": "SLANG"
                     },
                     "type": {
-                        "type": "string",
-                        "description": "Type of word or expression",
-                        "nullable": true,
-                        "example": "ADJECTIVE",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Word type classification",
                         "enum": [
                             "NOUN",
                             "VERB",
@@ -4448,57 +4452,49 @@
                             "ADVERB",
                             "IDIOM",
                             "PHRASE"
-                        ]
-                    },
-                    "isApproved": {
-                        "type": "boolean",
-                        "description": "Whether the word has been approved for full word status",
-                        "example": false
+                        ],
+                        "example": "ADJECTIVE"
                     },
                     "userId": {
                         "type": "string",
-                        "description": "ID of the user who added this word",
                         "format": "uuid",
+                        "description": "ID of the user who added this word",
                         "example": "550e8400-e29b-41d4-a716-446655440000"
                     },
                     "createdAt": {
                         "type": "string",
-                        "description": "Timestamp when the word was added",
                         "format": "date-time",
+                        "description": "Timestamp when the word was added",
                         "example": "2024-01-15T10:30:00Z"
+                    },
+                    "approved": {
+                        "type": "boolean"
                     }
-                },
-                "description": "Quickly added word with all details"
+                }
             },
             "QAWFillGapsItem": {
-                "maxLength": 20,
-                "minLength": 1,
-                "required": [
-                    "word"
-                ],
                 "type": "object",
+                "description": "A single word to enrich with AI-generated QAW metadata",
                 "properties": {
                     "word": {
-                        "maxLength": 255,
-                        "minLength": 1,
                         "type": "string",
                         "description": "The word or phrase to enrich (only required field per item)",
-                        "example": "verbose"
+                        "example": "verbose",
+                        "maxLength": 255,
+                        "minLength": 1
                     }
                 },
-                "description": "A single word to enrich with AI-generated QAW metadata"
+                "required": [
+                    "word"
+                ]
             },
             "QAWFillGapsRequest": {
-                "required": [
-                    "items",
-                    "language"
-                ],
                 "type": "object",
+                "description": "Request to AI-fill missing QAW fields for a batch of words",
                 "properties": {
                     "language": {
                         "type": "string",
-                        "description": "Supported languages in the platform",
-                        "example": "ENGLISH",
+                        "description": "Language of the words being enriched",
                         "enum": [
                             "POLISH",
                             "ENGLISH",
@@ -4509,27 +4505,29 @@
                             "NORWEGIAN",
                             "RUSSIAN",
                             "SLOVENIAN"
-                        ]
+                        ],
+                        "example": "ENGLISH"
                     },
                     "items": {
-                        "maxLength": 20,
-                        "minLength": 1,
-                        "maxItems": 20,
-                        "minItems": 1,
                         "type": "array",
                         "description": "Words to enrich (only the word field is required per item)",
                         "items": {
                             "$ref": "#/components/schemas/QAWFillGapsItem"
-                        }
+                        },
+                        "maxItems": 20,
+                        "maxLength": 20,
+                        "minItems": 1,
+                        "minLength": 1
                     }
                 },
-                "description": "Request to AI-fill missing QAW fields for a batch of words"
+                "required": [
+                    "items",
+                    "language"
+                ]
             },
             "QAWFillGapsResponse": {
-                "required": [
-                    "items"
-                ],
                 "type": "object",
+                "description": "AI-enriched QAW fields for each requested word, in the same order as the request",
                 "properties": {
                     "items": {
                         "type": "array",
@@ -4538,14 +4536,11 @@
                             "$ref": "#/components/schemas/QAWFillGapsResultItem"
                         }
                     }
-                },
-                "description": "AI-enriched QAW fields for each requested word, in the same order as the request"
+                }
             },
             "QAWFillGapsResultItem": {
-                "required": [
-                    "inputWord"
-                ],
                 "type": "object",
+                "description": "AI-enriched QAW fields for a single input word",
                 "properties": {
                     "inputWord": {
                         "type": "string",
@@ -4553,29 +4548,36 @@
                         "example": "verbose"
                     },
                     "word": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Corrected or confirmed word spelling (null when error is set)",
-                        "nullable": true,
                         "example": "verbose"
                     },
                     "translation": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Translation into the user's translate-to language (null when error is set)",
-                        "nullable": true,
                         "example": "rozwlek\u0142y"
                     },
                     "definition": {
-                        "maxLength": 2000,
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Brief definition in the user's generative content language (null when error is set)",
-                        "nullable": true,
-                        "example": "Using more words than needed; long-winded"
+                        "example": "Using more words than needed; long-winded",
+                        "maxLength": 2000
                     },
                     "type": {
-                        "type": "string",
-                        "description": "Type of word or expression",
-                        "nullable": true,
-                        "example": "ADJECTIVE",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Word type classification (null when error is set)",
                         "enum": [
                             "NOUN",
                             "VERB",
@@ -4583,13 +4585,15 @@
                             "ADVERB",
                             "IDIOM",
                             "PHRASE"
-                        ]
+                        ],
+                        "example": "ADJECTIVE"
                     },
                     "extraMark": {
-                        "type": "string",
-                        "description": "Extra marks or tags for word classification by register or domain",
-                        "nullable": true,
-                        "example": "FORMAL",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Optional register or domain mark (null when not applicable or on error)",
                         "enum": [
                             "OFFENSIVE",
                             "SLANG",
@@ -4601,35 +4605,35 @@
                             "MEDICAL",
                             "COLLOQUIAL",
                             "POETIC"
-                        ]
+                        ],
+                        "example": "FORMAL"
                     },
                     "error": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Error code when the word could not be enriched (e.g. NON_EXISTENT_WORD)",
-                        "nullable": true,
                         "example": "NON_EXISTENT_WORD"
                     }
-                },
-                "description": "AI-enriched QAW fields for a single input word"
+                }
             },
             "PublicQAWBulkCreateRequest": {
-                "required": [
-                    "language",
-                    "userEmail",
-                    "words"
-                ],
                 "type": "object",
                 "properties": {
                     "userEmail": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255,
+                        "minLength": 1
                     },
                     "words": {
-                        "maxItems": 100,
-                        "minItems": 1,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/PublicQAWWordItem"
-                        }
+                        },
+                        "maxItems": 100,
+                        "minItems": 1
                     },
                     "language": {
                         "type": "string",
@@ -4646,29 +4650,41 @@
                             "SLOVENIAN"
                         ]
                     }
-                }
+                },
+                "required": [
+                    "userEmail",
+                    "words"
+                ]
             },
             "PublicQAWWordItem": {
-                "required": [
-                    "word"
-                ],
                 "type": "object",
                 "properties": {
                     "word": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1
                     },
                     "translation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 255,
-                        "minLength": 0,
-                        "type": "string"
+                        "minLength": 0
                     },
                     "definition": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 2000,
-                        "minLength": 0,
-                        "type": "string"
+                        "minLength": 0
                     },
                     "extraMark": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Extra marks or tags for word classification by register or domain",
                         "enum": [
                             "OFFENSIVE",
@@ -4684,7 +4700,10 @@
                         ]
                     },
                     "type": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -4695,14 +4714,12 @@
                             "PHRASE"
                         ]
                     }
-                }
+                },
+                "required": [
+                    "word"
+                ]
             },
             "CreateLanguageProficiencyRequest": {
-                "required": [
-                    "language",
-                    "level",
-                    "translateTo"
-                ],
                 "type": "object",
                 "properties": {
                     "language": {
@@ -4747,7 +4764,10 @@
                         ]
                     },
                     "generativeContentLanguage": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Supported languages in the platform",
                         "enum": [
                             "POLISH",
@@ -4761,18 +4781,14 @@
                             "SLOVENIAN"
                         ]
                     }
-                }
-            },
-            "LanguageProficiencyDTO": {
+                },
                 "required": [
-                    "createdAt",
-                    "generativeContentLanguage",
-                    "id",
                     "language",
                     "level",
-                    "translateTo",
-                    "userId"
-                ],
+                    "translateTo"
+                ]
+            },
+            "LanguageProficiencyDTO": {
                 "type": "object",
                 "properties": {
                     "id": {
@@ -4846,10 +4862,6 @@
                 }
             },
             "StartGameRequest": {
-                "required": [
-                    "difficulty",
-                    "language"
-                ],
                 "type": "object",
                 "properties": {
                     "difficulty": {
@@ -4875,14 +4887,13 @@
                             "SLOVENIAN"
                         ]
                     }
-                }
+                },
+                "required": [
+                    "difficulty",
+                    "language"
+                ]
             },
             "StartedWordsTypingGameResponse": {
-                "required": [
-                    "gameId",
-                    "instruction",
-                    "properAnswers"
-                ],
                 "type": "object",
                 "properties": {
                     "gameId": {
@@ -4904,11 +4915,6 @@
                 }
             },
             "WordsTypingQuestion": {
-                "required": [
-                    "clue",
-                    "id",
-                    "word"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -4924,11 +4930,6 @@
                 }
             },
             "FinishWordsTypingGameRequest": {
-                "required": [
-                    "answers",
-                    "duration",
-                    "gameId"
-                ],
                 "type": "object",
                 "properties": {
                     "gameId": {
@@ -4939,19 +4940,15 @@
                         "type": "string"
                     },
                     "answers": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/WordUserAnswer"
-                        }
+                        },
+                        "uniqueItems": true
                     }
                 }
             },
             "WordUserAnswer": {
-                "required": [
-                    "answer",
-                    "id"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -4959,20 +4956,13 @@
                         "format": "uuid"
                     },
                     "answer": {
+                        "type": "string",
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     }
                 }
             },
             "FinishedGameResponseSetIdentifiableReviewedWordAnswer": {
-                "required": [
-                    "accuracy",
-                    "grade",
-                    "maxScore",
-                    "reviewedAnswers",
-                    "score"
-                ],
                 "type": "object",
                 "properties": {
                     "score": {
@@ -4984,14 +4974,11 @@
                         "format": "int32"
                     },
                     "reviewedAnswers": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/IdentifiableReviewedWordAnswer"
-                        }
-                    },
-                    "accuracy": {
-                        "type": "string"
+                        },
+                        "uniqueItems": true
                     },
                     "grade": {
                         "type": "string",
@@ -5003,15 +4990,13 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
             "IdentifiableReviewedWordAnswer": {
-                "required": [
-                    "expectedAnswer",
-                    "id",
-                    "score"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -5022,7 +5007,10 @@
                         "type": "string"
                     },
                     "userAnswer": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "score": {
                         "type": "string",
@@ -5035,11 +5023,6 @@
                 }
             },
             "SentencesWritingSingleTopicProperAnswer": {
-                "required": [
-                    "id",
-                    "topic",
-                    "word"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -5055,11 +5038,6 @@
                 }
             },
             "SentencesWritingTopic": {
-                "required": [
-                    "id",
-                    "topic",
-                    "word"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -5075,11 +5053,6 @@
                 }
             },
             "StartedSentencesWritingGameResponse": {
-                "required": [
-                    "gameId",
-                    "instruction",
-                    "properAnswers"
-                ],
                 "type": "object",
                 "properties": {
                     "gameId": {
@@ -5093,20 +5066,15 @@
                         }
                     },
                     "properAnswers": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/SentencesWritingSingleTopicProperAnswer"
-                        }
+                        },
+                        "uniqueItems": true
                     }
                 }
             },
             "FinishSentencesWritingGameRequest": {
-                "required": [
-                    "answers",
-                    "duration",
-                    "gameId"
-                ],
                 "type": "object",
                 "properties": {
                     "gameId": {
@@ -5125,13 +5093,6 @@
                 }
             },
             "FinishedGameResponseSetReviewedSentencesWritingSingleTopic": {
-                "required": [
-                    "accuracy",
-                    "grade",
-                    "maxScore",
-                    "reviewedAnswers",
-                    "score"
-                ],
                 "type": "object",
                 "properties": {
                     "score": {
@@ -5143,14 +5104,11 @@
                         "format": "int32"
                     },
                     "reviewedAnswers": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ReviewedSentencesWritingSingleTopic"
-                        }
-                    },
-                    "accuracy": {
-                        "type": "string"
+                        },
+                        "uniqueItems": true
                     },
                     "grade": {
                         "type": "string",
@@ -5162,18 +5120,13 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
             "ReviewedSentencesWritingSingleTopic": {
-                "required": [
-                    "evaluationCriteria",
-                    "id",
-                    "maxScore",
-                    "score",
-                    "topic",
-                    "word"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -5195,7 +5148,10 @@
                         "format": "int32"
                     },
                     "suggestedCorrectAnswer": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "evaluationCriteria": {
                         "$ref": "#/components/schemas/SentencesWritingEvaluationCriteria"
@@ -5203,29 +5159,23 @@
                 }
             },
             "ScoringCriteria": {
-                "required": [
-                    "score"
-                ],
                 "type": "object",
                 "properties": {
                     "score": {
-                        "maximum": 10,
-                        "minimum": 0,
                         "type": "integer",
-                        "format": "int32"
+                        "format": "int32",
+                        "maximum": 10,
+                        "minimum": 0
                     },
                     "comment": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     }
                 }
             },
             "SentencesWritingEvaluationCriteria": {
-                "required": [
-                    "answerLength",
-                    "correctWordUsage",
-                    "fitsTopic",
-                    "vocabulary"
-                ],
                 "type": "object",
                 "properties": {
                     "fitsTopic": {
@@ -5243,10 +5193,6 @@
                 }
             },
             "Coordinates": {
-                "required": [
-                    "x",
-                    "y"
-                ],
                 "type": "object",
                 "properties": {
                     "x": {
@@ -5260,12 +5206,6 @@
                 }
             },
             "CrosswordInstruction": {
-                "required": [
-                    "answer",
-                    "answerExplanation",
-                    "board",
-                    "questions"
-                ],
                 "type": "object",
                 "properties": {
                     "answerExplanation": {
@@ -5275,11 +5215,11 @@
                         "type": "string"
                     },
                     "questions": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/CrosswordQuestion"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "board": {
                         "type": "array",
@@ -5293,10 +5233,6 @@
                 }
             },
             "CrosswordProperAnswers": {
-                "required": [
-                    "finalWord",
-                    "questions"
-                ],
                 "type": "object",
                 "properties": {
                     "finalWord": {
@@ -5311,11 +5247,6 @@
                 }
             },
             "CrosswordQuestion": {
-                "required": [
-                    "clue",
-                    "id",
-                    "word"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -5329,21 +5260,27 @@
                         "type": "string"
                     },
                     "lettersInAnswer": {
-                        "type": "array",
+                        "type": [
+                            "array",
+                            "null"
+                        ],
                         "items": {
                             "$ref": "#/components/schemas/LetterInCrosswordAnswer"
                         }
                     },
                     "position": {
-                        "$ref": "#/components/schemas/QuestionBoardPosition"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/QuestionBoardPosition"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 }
             },
             "LetterInCrosswordAnswer": {
-                "required": [
-                    "indexInPassword",
-                    "indexInWord"
-                ],
                 "type": "object",
                 "properties": {
                     "indexInWord": {
@@ -5357,10 +5294,6 @@
                 }
             },
             "QuestionBoardPosition": {
-                "required": [
-                    "coordinates",
-                    "direction"
-                ],
                 "type": "object",
                 "properties": {
                     "coordinates": {
@@ -5376,11 +5309,6 @@
                 }
             },
             "StartedCrosswordGameResponse": {
-                "required": [
-                    "gameId",
-                    "instruction",
-                    "properAnswers"
-                ],
                 "type": "object",
                 "properties": {
                     "gameId": {
@@ -5396,10 +5324,6 @@
                 }
             },
             "WordPlacementRange": {
-                "required": [
-                    "end",
-                    "start"
-                ],
                 "type": "object",
                 "properties": {
                     "start": {
@@ -5411,30 +5335,21 @@
                 }
             },
             "CrosswordUserAnswers": {
-                "required": [
-                    "finalWord",
-                    "questions"
-                ],
                 "type": "object",
                 "properties": {
                     "finalWord": {
                         "type": "string"
                     },
                     "questions": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/WordUserAnswer"
-                        }
+                        },
+                        "uniqueItems": true
                     }
                 }
             },
             "FinishCrosswordGameRequest": {
-                "required": [
-                    "answers",
-                    "duration",
-                    "gameId"
-                ],
                 "type": "object",
                 "properties": {
                     "gameId": {
@@ -5450,32 +5365,21 @@
                 }
             },
             "CrosswordReviewedAnswers": {
-                "required": [
-                    "finalWord",
-                    "questions"
-                ],
                 "type": "object",
                 "properties": {
                     "finalWord": {
                         "$ref": "#/components/schemas/ReviewedWordAnswer"
                     },
                     "questions": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/IdentifiableReviewedWordAnswer"
-                        }
+                        },
+                        "uniqueItems": true
                     }
                 }
             },
             "FinishedGameResponseCrosswordReviewedAnswers": {
-                "required": [
-                    "accuracy",
-                    "grade",
-                    "maxScore",
-                    "reviewedAnswers",
-                    "score"
-                ],
                 "type": "object",
                 "properties": {
                     "score": {
@@ -5489,9 +5393,6 @@
                     "reviewedAnswers": {
                         "$ref": "#/components/schemas/CrosswordReviewedAnswers"
                     },
-                    "accuracy": {
-                        "type": "string"
-                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -5502,21 +5403,23 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
             "ReviewedWordAnswer": {
-                "required": [
-                    "expectedAnswer",
-                    "score"
-                ],
                 "type": "object",
                 "properties": {
                     "expectedAnswer": {
                         "type": "string"
                     },
                     "userAnswer": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "score": {
                         "type": "string",
@@ -5529,9 +5432,6 @@
                 }
             },
             "CancelGameRequest": {
-                "required": [
-                    "duration"
-                ],
                 "type": "object",
                 "properties": {
                     "duration": {
@@ -5540,25 +5440,20 @@
                 }
             },
             "CreateConversationRequest": {
-                "required": [
-                    "aiInterlocutorAvatarId",
-                    "aiInterlocutorName",
-                    "language",
-                    "tone",
-                    "topic",
-                    "type"
-                ],
                 "type": "object",
                 "properties": {
                     "topic": {
+                        "type": "string",
                         "maxLength": 500,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "additionalContext": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 5000,
-                        "minLength": 0,
-                        "type": "string"
+                        "minLength": 0
                     },
                     "language": {
                         "type": "string",
@@ -5597,24 +5492,22 @@
                         ]
                     },
                     "aiInterlocutorName": {
+                        "type": "string",
                         "maxLength": 200,
-                        "minLength": 0,
-                        "type": "string"
+                        "minLength": 0
                     },
                     "aiInterlocutorAvatarId": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1
                     }
-                }
+                },
+                "required": [
+                    "aiInterlocutorAvatarId",
+                    "aiInterlocutorName",
+                    "topic"
+                ]
             },
             "AnnotatedGrammarTip": {
-                "required": [
-                    "exampleSentences",
-                    "explanation",
-                    "grammarPoint",
-                    "nativeLanguageEquivalent",
-                    "phrase",
-                    "register"
-                ],
                 "type": "object",
                 "properties": {
                     "phrase": {
@@ -5647,14 +5540,6 @@
                 }
             },
             "AnnotatedPhraseTip": {
-                "required": [
-                    "exampleSentences",
-                    "meaning",
-                    "nativeLanguageEquivalent",
-                    "phrase",
-                    "phraseType",
-                    "register"
-                ],
                 "type": "object",
                 "properties": {
                     "phrase": {
@@ -5692,15 +5577,6 @@
                 }
             },
             "AnnotatedVocabularyTip": {
-                "required": [
-                    "definition",
-                    "exampleSentences",
-                    "nativeLanguageEquivalent",
-                    "register",
-                    "usageNote",
-                    "word",
-                    "wordType"
-                ],
                 "type": "object",
                 "properties": {
                     "word": {
@@ -5745,14 +5621,6 @@
                 }
             },
             "ConversationAIMessageDTO": {
-                "required": [
-                    "content",
-                    "createdAt",
-                    "id",
-                    "messageOrder",
-                    "sender"
-                ],
-                "type": "object",
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/ConversationMessageDTO"
@@ -5761,20 +5629,20 @@
                         "type": "object",
                         "properties": {
                             "learningTips": {
-                                "$ref": "#/components/schemas/ConversationAIMessageLearningTipsDTO"
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/components/schemas/ConversationAIMessageLearningTipsDTO"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
                             }
                         }
                     }
                 ]
             },
             "ConversationAIMessageLearningTipsDTO": {
-                "required": [
-                    "grammarTips",
-                    "id",
-                    "messageId",
-                    "phraseTips",
-                    "vocabularyTips"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -5782,25 +5650,25 @@
                         "format": "uuid"
                     },
                     "grammarTips": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/AnnotatedGrammarTip"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "vocabularyTips": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/AnnotatedVocabularyTip"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "phraseTips": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/AnnotatedPhraseTip"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "messageId": {
                         "type": "string",
@@ -5809,19 +5677,6 @@
                 }
             },
             "ConversationDTO": {
-                "required": [
-                    "aiInterlocutorAvatarId",
-                    "aiInterlocutorName",
-                    "aiTone",
-                    "createdAt",
-                    "id",
-                    "language",
-                    "messages",
-                    "proficiencyLevel",
-                    "topic",
-                    "type",
-                    "updatedAt"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -5885,7 +5740,10 @@
                         "type": "string"
                     },
                     "additionalContext": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "messages": {
                         "type": "array",
@@ -5911,15 +5769,22 @@
                 }
             },
             "ConversationMessageDTO": {
-                "required": [
-                    "content",
-                    "createdAt",
-                    "id",
-                    "messageOrder",
-                    "sender"
-                ],
                 "type": "object",
+                "discriminator": {
+                    "propertyName": "sender"
+                },
                 "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
                     "messageOrder": {
                         "type": "integer",
                         "format": "int32"
@@ -5930,31 +5795,10 @@
                             "USER",
                             "AI"
                         ]
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "id": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "content": {
-                        "type": "string"
                     }
-                },
-                "discriminator": {
-                    "propertyName": "sender"
                 }
             },
             "ConversationMessageMistake": {
-                "required": [
-                    "correctForm",
-                    "errorType",
-                    "explanation",
-                    "phrase",
-                    "severity"
-                ],
                 "type": "object",
                 "properties": {
                     "phrase": {
@@ -5986,11 +5830,6 @@
                 }
             },
             "ConversationMessageStrength": {
-                "required": [
-                    "explanation",
-                    "phrase",
-                    "strengthType"
-                ],
                 "type": "object",
                 "properties": {
                     "phrase": {
@@ -6012,12 +5851,6 @@
                 }
             },
             "ConversationMessageSuggestion": {
-                "required": [
-                    "alternatives",
-                    "explanation",
-                    "original",
-                    "suggestionType"
-                ],
                 "type": "object",
                 "properties": {
                     "original": {
@@ -6031,11 +5864,11 @@
                         ]
                     },
                     "alternatives": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "explanation": {
                         "type": "string"
@@ -6043,27 +5876,11 @@
                 }
             },
             "ConversationUserMessageAnalysisDTO": {
-                "required": [
-                    "coherenceWithContext",
-                    "grammar",
-                    "id",
-                    "isSabotage",
-                    "messageId",
-                    "mistakes",
-                    "naturalness",
-                    "strengths",
-                    "suggestions",
-                    "tutorComment",
-                    "vocabulary"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
                         "type": "string",
                         "format": "uuid"
-                    },
-                    "isSabotage": {
-                        "type": "boolean"
                     },
                     "tutorComment": {
                         "type": "string"
@@ -6085,44 +5902,42 @@
                         "format": "int32"
                     },
                     "mistakes": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ConversationMessageMistake"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "strengths": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ConversationMessageStrength"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "suggestions": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ConversationMessageSuggestion"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "messageId": {
                         "type": "string",
                         "format": "uuid"
                     },
                     "correctedMessage": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "sabotage": {
+                        "type": "boolean"
                     }
                 }
             },
             "ConversationUserMessageDTO": {
-                "required": [
-                    "content",
-                    "createdAt",
-                    "id",
-                    "messageOrder",
-                    "sender"
-                ],
-                "type": "object",
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/ConversationMessageDTO"
@@ -6131,23 +5946,29 @@
                         "type": "object",
                         "properties": {
                             "analysis": {
-                                "$ref": "#/components/schemas/ConversationUserMessageAnalysisDTO"
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/components/schemas/ConversationUserMessageAnalysisDTO"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
                             }
                         }
                     }
                 ]
             },
             "SuggestConversationTopicRequest": {
-                "required": [
-                    "conversationType",
-                    "language"
-                ],
                 "type": "object",
                 "properties": {
                     "clueFromUser": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "conversationType": {
                         "type": "string",
@@ -6175,30 +5996,34 @@
                         ]
                     },
                     "excludeTopics": {
-                        "type": "array",
+                        "type": [
+                            "array",
+                            "null"
+                        ],
                         "items": {
                             "type": "string"
                         }
                     }
-                }
+                },
+                "required": [
+                    "language"
+                ]
             },
             "GenerateAIInterlocutorDataRequest": {
-                "required": [
-                    "conversationType",
-                    "language",
-                    "topic"
-                ],
                 "type": "object",
                 "properties": {
                     "topic": {
+                        "type": "string",
                         "maxLength": 500,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "additionalContext": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 1000,
-                        "minLength": 0,
-                        "type": "string"
+                        "minLength": 0
                     },
                     "conversationType": {
                         "type": "string",
@@ -6226,35 +6051,38 @@
                         ]
                     },
                     "recentInterlocutors": {
-                        "type": "array",
+                        "type": [
+                            "array",
+                            "null"
+                        ],
                         "items": {
                             "$ref": "#/components/schemas/RecentInterlocutorInfo"
                         }
                     }
-                }
+                },
+                "required": [
+                    "language"
+                ]
             },
             "RecentInterlocutorInfo": {
-                "required": [
-                    "avatarId",
-                    "name"
-                ],
                 "type": "object",
                 "properties": {
                     "avatarId": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1
                     },
                     "name": {
+                        "type": "string",
                         "maxLength": 200,
-                        "minLength": 0,
-                        "type": "string"
+                        "minLength": 0
                     }
-                }
-            },
-            "GeneratedAIInterlocutorData": {
+                },
                 "required": [
                     "avatarId",
                     "name"
-                ],
+                ]
+            },
+            "GeneratedAIInterlocutorData": {
                 "type": "object",
                 "properties": {
                     "name": {
@@ -6277,12 +6105,6 @@
                 }
             },
             "SaveUserConversationMessageRequest": {
-                "required": [
-                    "content",
-                    "conversationId",
-                    "messageId",
-                    "messageOrder"
-                ],
                 "type": "object",
                 "properties": {
                     "conversationId": {
@@ -6303,11 +6125,6 @@
                 }
             },
             "GetAnalysisForUserConversationMessageRequest": {
-                "required": [
-                    "conversationId",
-                    "messageId",
-                    "messageOrder"
-                ],
                 "type": "object",
                 "properties": {
                     "conversationId": {
@@ -6323,29 +6140,21 @@
                         "format": "int32"
                     },
                     "latestAIMessage": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     }
                 }
             },
             "ConversationUserMessageAnalysisPayload": {
-                "required": [
-                    "coherenceWithContext",
-                    "grammar",
-                    "isSabotage",
-                    "mistakes",
-                    "naturalness",
-                    "strengths",
-                    "suggestions",
-                    "tutorComment",
-                    "vocabulary"
-                ],
                 "type": "object",
                 "properties": {
-                    "isSabotage": {
-                        "type": "boolean"
-                    },
                     "correctedMessage": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "tutorComment": {
                         "type": "string"
@@ -6367,34 +6176,32 @@
                         "format": "int32"
                     },
                     "mistakes": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ConversationMessageMistake"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "strengths": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ConversationMessageStrength"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "suggestions": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ConversationMessageSuggestion"
-                        }
+                        },
+                        "uniqueItems": true
+                    },
+                    "sabotage": {
+                        "type": "boolean"
                     }
                 }
             },
             "CreateAIConversationMessageRequest": {
-                "required": [
-                    "conversationId",
-                    "latestUserMessage",
-                    "messageOrder"
-                ],
                 "type": "object",
                 "properties": {
                     "conversationId": {
@@ -6411,9 +6218,6 @@
                 }
             },
             "GetLearningTipsForAIMessageRequest": {
-                "required": [
-                    "conversationId"
-                ],
                 "type": "object",
                 "properties": {
                     "conversationId": {
@@ -6423,89 +6227,88 @@
                 }
             },
             "AIMessageLearningTips": {
-                "required": [
-                    "grammarTips",
-                    "phraseTips",
-                    "vocabularyTips"
-                ],
                 "type": "object",
                 "properties": {
                     "grammarTips": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/AnnotatedGrammarTip"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "vocabularyTips": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/AnnotatedVocabularyTip"
-                        }
+                        },
+                        "uniqueItems": true
                     },
                     "phraseTips": {
-                        "uniqueItems": true,
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/AnnotatedPhraseTip"
-                        }
+                        },
+                        "uniqueItems": true
                     }
                 }
             },
             "OtpVerifyDto": {
+                "type": "object",
+                "description": "Request to verify OTP code and authenticate user",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Email address associated with the OTP code",
+                        "example": "user@example.com",
+                        "maxLength": 255,
+                        "minLength": 1
+                    },
+                    "code": {
+                        "type": "string",
+                        "description": "6-digit OTP code sent to the email address",
+                        "example": "123456",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "pattern": "^[0-9]{6}$"
+                    }
+                },
                 "required": [
                     "code",
                     "email"
-                ],
-                "type": "object",
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "description": "Email address associated with the OTP code",
-                        "example": "user@example.com"
-                    },
-                    "code": {
-                        "pattern": "^[0-9]{6}$",
-                        "type": "string",
-                        "description": "6-digit OTP code sent to the email address",
-                        "example": "123456"
-                    }
-                },
-                "description": "Request to verify OTP code and authenticate user"
+                ]
             },
             "OtpRequestDto": {
-                "required": [
-                    "email"
-                ],
                 "type": "object",
+                "description": "Request to send OTP code to email address",
                 "properties": {
                     "email": {
                         "type": "string",
+                        "format": "email",
                         "description": "Email address to send OTP code to",
-                        "example": "user@example.com"
+                        "example": "user@example.com",
+                        "maxLength": 255,
+                        "minLength": 1
                     }
                 },
-                "description": "Request to send OTP code to email address"
+                "required": [
+                    "email"
+                ]
             },
             "ExplainPhraseRequest": {
-                "required": [
-                    "language",
-                    "phrase"
-                ],
                 "type": "object",
+                "description": "Request to get an AI-powered explanation of a word or phrase",
                 "properties": {
                     "phrase": {
-                        "maxLength": 255,
-                        "minLength": 1,
                         "type": "string",
                         "description": "The word or phrase to explain",
-                        "example": "hund"
+                        "example": "hund",
+                        "maxLength": 255,
+                        "minLength": 1
                     },
                     "language": {
                         "type": "string",
-                        "description": "Supported languages in the platform",
-                        "example": "NORWEGIAN",
+                        "description": "Language of the word/phrase",
                         "enum": [
                             "POLISH",
                             "ENGLISH",
@@ -6516,31 +6319,42 @@
                             "NORWEGIAN",
                             "RUSSIAN",
                             "SLOVENIAN"
-                        ]
+                        ],
+                        "example": "NORWEGIAN"
                     },
                     "context": {
-                        "maxLength": 2000,
-                        "minLength": 0,
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Optional context where the phrase is used (e.g., a paragraph or sentence containing the phrase)",
-                        "nullable": true,
-                        "example": "I was reading a book and came across this phrase: 'break the ice'. The context was about meeting new people at a party."
+                        "example": "I was reading a book and came across this phrase: 'break the ice'. The context was about meeting new people at a party.",
+                        "maxLength": 2000,
+                        "minLength": 0
                     },
                     "customInstruction": {
-                        "maxLength": 500,
-                        "minLength": 0,
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Optional custom instruction in any language to guide the explanation (e.g., 'Focus on informal usage', 'Explain like I'm 5', 'Include etymology')",
-                        "nullable": true,
-                        "example": "Please focus on how this is used in everyday conversation"
+                        "example": "Please focus on how this is used in everyday conversation",
+                        "maxLength": 500,
+                        "minLength": 0
                     }
                 },
-                "description": "Request to get an AI-powered explanation of a word or phrase"
+                "required": [
+                    "language",
+                    "phrase"
+                ]
             },
             "JsonNullableSetExampleSentence": {
                 "type": "object",
                 "properties": {
                     "present": {
+                        "type": "boolean"
+                    },
+                    "undefined": {
                         "type": "boolean"
                     }
                 }
@@ -6550,6 +6364,9 @@
                 "properties": {
                     "present": {
                         "type": "boolean"
+                    },
+                    "undefined": {
+                        "type": "boolean"
                     }
                 }
             },
@@ -6557,6 +6374,9 @@
                 "type": "object",
                 "properties": {
                     "present": {
+                        "type": "boolean"
+                    },
+                    "undefined": {
                         "type": "boolean"
                     }
                 }
@@ -6566,6 +6386,9 @@
                 "properties": {
                     "present": {
                         "type": "boolean"
+                    },
+                    "undefined": {
+                        "type": "boolean"
                     }
                 }
             },
@@ -6573,6 +6396,9 @@
                 "type": "object",
                 "properties": {
                     "present": {
+                        "type": "boolean"
+                    },
+                    "undefined": {
                         "type": "boolean"
                     }
                 }
@@ -6582,22 +6408,13 @@
                 "properties": {
                     "present": {
                         "type": "boolean"
+                    },
+                    "undefined": {
+                        "type": "boolean"
                     }
                 }
             },
             "UpdateWordDetailsRequest": {
-                "required": [
-                    "antonyms",
-                    "collocations",
-                    "commonMistakes",
-                    "culturalNotes",
-                    "exampleSentences",
-                    "grammar",
-                    "learningTips",
-                    "pronunciation",
-                    "synonyms",
-                    "useCases"
-                ],
                 "type": "object",
                 "properties": {
                     "useCases": {
@@ -6636,7 +6453,10 @@
                 "type": "object",
                 "properties": {
                     "type": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -6648,22 +6468,34 @@
                         ]
                     },
                     "sourceWord": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "translation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "definition": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "extraMark": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Extra marks or tags for word classification by register or domain",
                         "enum": [
                             "OFFENSIVE",
@@ -6679,7 +6511,10 @@
                         ]
                     },
                     "language": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Supported languages in the platform",
                         "enum": [
                             "POLISH",
@@ -6694,11 +6529,21 @@
                         ]
                     },
                     "bankId": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid"
                     },
                     "bankToCreate": {
-                        "$ref": "#/components/schemas/CreateBankRequest"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/CreateBankRequest"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 }
             },
@@ -6706,22 +6551,34 @@
                 "type": "object",
                 "properties": {
                     "updatedWord": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 255,
-                        "minLength": 1,
-                        "type": "string"
+                        "minLength": 1
                     },
                     "translation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 255,
-                        "minLength": 0,
-                        "type": "string"
+                        "minLength": 0
                     },
                     "definition": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "maxLength": 2000,
-                        "minLength": 0,
-                        "type": "string"
+                        "minLength": 0
                     },
                     "extraMark": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Extra marks or tags for word classification by register or domain",
                         "enum": [
                             "OFFENSIVE",
@@ -6737,7 +6594,10 @@
                         ]
                     },
                     "type": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -6751,9 +6611,6 @@
                 }
             },
             "ApproveManyQAWRequest": {
-                "required": [
-                    "ids"
-                ],
                 "type": "object",
                 "properties": {
                     "ids": {
@@ -6761,14 +6618,15 @@
                         "items": {
                             "type": "string",
                             "format": "uuid"
-                        }
+                        },
+                        "minItems": 1
                     }
-                }
+                },
+                "required": [
+                    "ids"
+                ]
             },
             "UpdateLanguageProficiencyRequest": {
-                "required": [
-                    "language"
-                ],
                 "type": "object",
                 "properties": {
                     "language": {
@@ -6787,7 +6645,10 @@
                         ]
                     },
                     "level": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "enum": [
                             "A1",
                             "A2",
@@ -6798,7 +6659,10 @@
                         ]
                     },
                     "translateTo": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Supported languages in the platform",
                         "enum": [
                             "POLISH",
@@ -6813,7 +6677,10 @@
                         ]
                     },
                     "generativeContentLanguage": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Supported languages in the platform",
                         "enum": [
                             "POLISH",
@@ -6827,22 +6694,12 @@
                             "SLOVENIAN"
                         ]
                     }
-                }
+                },
+                "required": [
+                    "language"
+                ]
             },
             "SingleWordResponse": {
-                "required": [
-                    "createdAt",
-                    "definition",
-                    "id",
-                    "isBookmarked",
-                    "isCompleted",
-                    "language",
-                    "points",
-                    "sourceWord",
-                    "translation",
-                    "type",
-                    "updatedAt"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -6871,7 +6728,10 @@
                         "type": "string"
                     },
                     "extraMark": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Extra marks or tags for word classification by register or domain",
                         "enum": [
                             "OFFENSIVE",
@@ -6901,18 +6761,19 @@
                             "SLOVENIAN"
                         ]
                     },
-                    "isCompleted": {
-                        "type": "boolean"
-                    },
-                    "isBookmarked": {
-                        "type": "boolean"
-                    },
                     "points": {
                         "type": "integer",
                         "format": "int32"
                     },
                     "bank": {
-                        "$ref": "#/components/schemas/BankCompact"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/BankCompact"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "createdAt": {
                         "type": "string",
@@ -6923,19 +6784,30 @@
                         "format": "date-time"
                     },
                     "details": {
-                        "$ref": "#/components/schemas/WordDetailsCompactDTO"
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/WordDetailsCompactDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "completed": {
+                        "type": "boolean"
+                    },
+                    "bookmarked": {
+                        "type": "boolean"
                     }
                 }
             },
             "QAWPaginatedDataResponse": {
-                "required": [
-                    "data",
-                    "pagination"
-                ],
                 "type": "object",
+                "description": "Paginated quickly added words response with unapproved count metadata",
                 "properties": {
                     "pagination": {
-                        "$ref": "#/components/schemas/PaginationData"
+                        "$ref": "#/components/schemas/PaginationData",
+                        "description": "Pagination metadata"
                     },
                     "data": {
                         "type": "array",
@@ -6945,57 +6817,83 @@
                         }
                     },
                     "unapprovedCount": {
-                        "type": "integer",
-                        "description": "Total number of unapproved quickly added words for the user. Always present when isApproved filter is not applied.",
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
                         "format": "int64",
+                        "description": "Total number of unapproved quickly added words for the user. Always present when isApproved filter is not applied.",
                         "example": 3
                     }
-                },
-                "description": "Paginated quickly added words response with unapproved count metadata"
+                }
             },
             "QAWOverviewResponse": {
-                "required": [
-                    "approvedCount",
-                    "total",
-                    "unapprovedCount"
-                ],
                 "type": "object",
+                "description": "Quickly added words overview with approval status counts",
                 "properties": {
                     "total": {
                         "type": "integer",
-                        "description": "Total number of quickly added words for the user",
                         "format": "int64",
+                        "description": "Total number of quickly added words for the user",
                         "example": 42
                     },
                     "approvedCount": {
                         "type": "integer",
-                        "description": "Number of approved quickly added words",
                         "format": "int64",
+                        "description": "Number of approved quickly added words",
                         "example": 35
                     },
                     "unapprovedCount": {
                         "type": "integer",
-                        "description": "Number of unapproved quickly added words",
                         "format": "int64",
+                        "description": "Number of unapproved quickly added words",
                         "example": 7
                     }
-                },
-                "description": "Quickly added words overview with approval status counts"
+                }
+            },
+            "HealthCheckResponse": {
+                "type": "object",
+                "description": "Application health snapshot",
+                "properties": {
+                    "application": {
+                        "type": "string",
+                        "description": "Component health status",
+                        "enum": [
+                            "UP",
+                            "DOWN"
+                        ],
+                        "example": "UP"
+                    },
+                    "database": {
+                        "type": "string",
+                        "description": "Component health status",
+                        "enum": [
+                            "UP",
+                            "DOWN"
+                        ],
+                        "example": "UP"
+                    },
+                    "ai": {
+                        "type": "string",
+                        "description": "OpenAI client mode",
+                        "enum": [
+                            "STUB",
+                            "LIVE"
+                        ],
+                        "example": "LIVE"
+                    },
+                    "tts": {
+                        "type": "string",
+                        "description": "ElevenLabs TTS client mode",
+                        "enum": [
+                            "STUB",
+                            "LIVE"
+                        ],
+                        "example": "LIVE"
+                    }
+                }
             },
             "ConversationSummaryDTO": {
-                "required": [
-                    "aiInterlocutorAvatarId",
-                    "aiInterlocutorName",
-                    "aiTone",
-                    "createdAt",
-                    "id",
-                    "language",
-                    "proficiencyLevel",
-                    "recencyBucket",
-                    "topic",
-                    "type",
-                    "updatedAt"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -7059,7 +6957,10 @@
                         "type": "string"
                     },
                     "additionalContext": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "createdAt": {
                         "type": "string",
@@ -7083,10 +6984,6 @@
                 }
             },
             "ActivityWeekPointDTO": {
-                "required": [
-                    "count",
-                    "weekRange"
-                ],
                 "type": "object",
                 "properties": {
                     "weekRange": {
@@ -7099,14 +6996,6 @@
                 }
             },
             "ConversationActivityOverviewDTO": {
-                "required": [
-                    "conversationsByWeek",
-                    "conversationsTotal",
-                    "heatmap",
-                    "messagesByWeek",
-                    "messagesTotal",
-                    "periodLabel"
-                ],
                 "type": "object",
                 "properties": {
                     "periodLabel": {
@@ -7141,11 +7030,6 @@
                 }
             },
             "HeatmapDayDTO": {
-                "required": [
-                    "count",
-                    "date",
-                    "percentile"
-                ],
                 "type": "object",
                 "properties": {
                     "count": {
@@ -7167,11 +7051,20 @@
                     }
                 }
             },
-            "Gender": {
+            "AiIntegrationMode": {
                 "type": "string",
+                "description": "External integration mode \u2014 `STUB` means fixture-based clients with no outbound HTTP calls",
                 "enum": [
-                    "MALE",
-                    "FEMALE"
+                    "STUB",
+                    "LIVE"
+                ]
+            },
+            "HealthStatus": {
+                "type": "string",
+                "description": "Component health status",
+                "enum": [
+                    "UP",
+                    "DOWN"
                 ]
             },
             "LanguageName": {
@@ -7200,20 +7093,24 @@
                     "C2"
                 ]
             },
-            "WordGender": {
+            "Gender": {
                 "type": "string",
                 "enum": [
-                    "MASCULINE",
-                    "FEMININE",
-                    "NEUTER"
+                    "MALE",
+                    "FEMALE"
                 ]
             },
-            "WordCollocationFrequency": {
+            "GetAllWordsSortOptions": {
                 "type": "string",
                 "enum": [
-                    "VERY_COMMON",
-                    "COMMON",
-                    "OCCASIONAL"
+                    "CREATED_AT",
+                    "SOURCE_WORD"
+                ]
+            },
+            "WordToggleableProperty": {
+                "type": "string",
+                "enum": [
+                    "IS_BOOKMARKED"
                 ]
             },
             "WordExtraMark": {
@@ -7244,47 +7141,124 @@
                     "PHRASE"
                 ]
             },
-            "GetAllWordsSortOptions": {
+            "WordCollocationFrequency": {
                 "type": "string",
                 "enum": [
-                    "CREATED_AT",
-                    "SOURCE_WORD"
+                    "VERY_COMMON",
+                    "COMMON",
+                    "OCCASIONAL"
                 ]
             },
-            "WordToggleableProperty": {
+            "WordGender": {
                 "type": "string",
                 "enum": [
-                    "IS_BOOKMARKED"
+                    "MASCULINE",
+                    "FEMININE",
+                    "NEUTER"
                 ]
             },
-            "CrosswordWordDirection": {
+            "PhraseType": {
                 "type": "string",
+                "description": "Type of phrase learning tip",
                 "enum": [
-                    "HORIZONTAL",
-                    "VERTICAL"
+                    "IDIOMATIC",
+                    "LITERAL"
                 ]
             },
-            "WordAnswerScore": {
+            "TipRegister": {
                 "type": "string",
+                "description": "Formality register indicator for learning tips",
                 "enum": [
-                    "CORRECT",
-                    "HALF_CORRECT",
-                    "INCORRECT"
+                    "FORMAL",
+                    "NEUTRAL",
+                    "COLLOQUIAL"
                 ]
             },
-            "GameResult": {
+            "ConversationAIBotAvatar": {
                 "type": "string",
                 "enum": [
-                    "COMPLETED",
-                    "CANCELLED"
+                    "AVATAR_DEFAULT",
+                    "AVATAR_ALPHA",
+                    "AVATAR_BETA",
+                    "AVATAR_GAMMA",
+                    "AVATAR_DELTA",
+                    "AVATAR_EPSILON",
+                    "AVATAR_ZETA",
+                    "AVATAR_ETA",
+                    "AVATAR_THETA"
                 ]
             },
-            "GameType": {
+            "ConversationTone": {
                 "type": "string",
                 "enum": [
-                    "WORDS_TYPING",
-                    "CROSSWORD",
-                    "SENTENCES_WRITING"
+                    "FRIENDLY",
+                    "FORMAL",
+                    "HUMOROUS",
+                    "NEUTRAL",
+                    "ENCOURAGING",
+                    "CHALLENGING"
+                ]
+            },
+            "ConversationType": {
+                "type": "string",
+                "enum": [
+                    "SMALL_TALK",
+                    "SCENARIO_ROLEPLAY",
+                    "EXAM_PRACTICE",
+                    "TOPIC_EXPLORATION",
+                    "OXFORD_DEBATE"
+                ]
+            },
+            "RecencyBucket": {
+                "type": "string",
+                "description": "Grouping bucket based on last activity (UTC)",
+                "enum": [
+                    "TODAY",
+                    "YESTERDAY",
+                    "THIS_WEEK",
+                    "THIS_MONTH",
+                    "LATER"
+                ]
+            },
+            "ConversationMessageSender": {
+                "type": "string",
+                "enum": [
+                    "USER",
+                    "AI"
+                ]
+            },
+            "ConversationMessageErrorType": {
+                "type": "string",
+                "enum": [
+                    "GRAMMAR",
+                    "VOCABULARY",
+                    "SPELLING",
+                    "PUNCTUATION"
+                ]
+            },
+            "ConversationMessageMistakeSeverity": {
+                "type": "string",
+                "enum": [
+                    "MINOR",
+                    "MODERATE",
+                    "CRITICAL"
+                ]
+            },
+            "ConversationMessageStrengthType": {
+                "type": "string",
+                "enum": [
+                    "GRAMMAR",
+                    "VOCABULARY",
+                    "FLUENCY",
+                    "PRAGMATICS",
+                    "COMMUNICATION"
+                ]
+            },
+            "ConversationMessageSuggestionType": {
+                "type": "string",
+                "enum": [
+                    "VOCABULARY",
+                    "STRUCTURE"
                 ]
             },
             "GameDifficulty": {
@@ -7304,6 +7278,36 @@
                     "C",
                     "D",
                     "NA"
+                ]
+            },
+            "GameResult": {
+                "type": "string",
+                "enum": [
+                    "COMPLETED",
+                    "CANCELLED"
+                ]
+            },
+            "GameType": {
+                "type": "string",
+                "enum": [
+                    "WORDS_TYPING",
+                    "CROSSWORD",
+                    "SENTENCES_WRITING"
+                ]
+            },
+            "CrosswordWordDirection": {
+                "type": "string",
+                "enum": [
+                    "HORIZONTAL",
+                    "VERTICAL"
+                ]
+            },
+            "WordAnswerScore": {
+                "type": "string",
+                "enum": [
+                    "CORRECT",
+                    "HALF_CORRECT",
+                    "INCORRECT"
                 ]
             },
             "UserActivityFrequency": {
@@ -7330,110 +7334,6 @@
                     "WORD_COMPLETED",
                     "WORDS_COMPLETED_IN_ONE_DAY_10",
                     "WORDS_COMPLETED_IN_ONE_WEEK_30"
-                ]
-            },
-            "ConversationMessageSender": {
-                "type": "string",
-                "enum": [
-                    "USER",
-                    "AI"
-                ]
-            },
-            "RecencyBucket": {
-                "type": "string",
-                "description": "Grouping bucket based on last activity (UTC)",
-                "enum": [
-                    "TODAY",
-                    "YESTERDAY",
-                    "THIS_WEEK",
-                    "THIS_MONTH",
-                    "LATER"
-                ]
-            },
-            "ConversationType": {
-                "type": "string",
-                "enum": [
-                    "SMALL_TALK",
-                    "SCENARIO_ROLEPLAY",
-                    "EXAM_PRACTICE",
-                    "TOPIC_EXPLORATION",
-                    "OXFORD_DEBATE"
-                ]
-            },
-            "ConversationTone": {
-                "type": "string",
-                "enum": [
-                    "FRIENDLY",
-                    "FORMAL",
-                    "HUMOROUS",
-                    "NEUTRAL",
-                    "ENCOURAGING",
-                    "CHALLENGING"
-                ]
-            },
-            "ConversationAIBotAvatar": {
-                "type": "string",
-                "enum": [
-                    "AVATAR_DEFAULT",
-                    "AVATAR_ALPHA",
-                    "AVATAR_BETA",
-                    "AVATAR_GAMMA",
-                    "AVATAR_DELTA",
-                    "AVATAR_EPSILON",
-                    "AVATAR_ZETA",
-                    "AVATAR_ETA",
-                    "AVATAR_THETA"
-                ]
-            },
-            "ConversationMessageErrorType": {
-                "type": "string",
-                "enum": [
-                    "GRAMMAR",
-                    "VOCABULARY",
-                    "SPELLING",
-                    "PUNCTUATION"
-                ]
-            },
-            "ConversationMessageStrengthType": {
-                "type": "string",
-                "enum": [
-                    "GRAMMAR",
-                    "VOCABULARY",
-                    "FLUENCY",
-                    "PRAGMATICS",
-                    "COMMUNICATION"
-                ]
-            },
-            "ConversationMessageMistakeSeverity": {
-                "type": "string",
-                "enum": [
-                    "MINOR",
-                    "MODERATE",
-                    "CRITICAL"
-                ]
-            },
-            "ConversationMessageSuggestionType": {
-                "type": "string",
-                "enum": [
-                    "VOCABULARY",
-                    "STRUCTURE"
-                ]
-            },
-            "TipRegister": {
-                "type": "string",
-                "description": "Formality register indicator for learning tips",
-                "enum": [
-                    "FORMAL",
-                    "NEUTRAL",
-                    "COLLOQUIAL"
-                ]
-            },
-            "PhraseType": {
-                "type": "string",
-                "description": "Type of phrase learning tip",
-                "enum": [
-                    "IDIOMATIC",
-                    "LITERAL"
                 ]
             },
             "SortDirection": {

@@ -59,7 +59,7 @@ class AIFixtureRegistry {
             resourcePath = "",
         ),
         AIFixtureEntry(
-            operationKey = GptTokensUsageOperationType.QAW.FILL_GAPS,
+            operationKey = GptTokensUsageOperationType.Words.FILL_GAPS,
             type = AIFixtureType.STRUCTURED,
             isDynamic = true,
             resourcePath = "",

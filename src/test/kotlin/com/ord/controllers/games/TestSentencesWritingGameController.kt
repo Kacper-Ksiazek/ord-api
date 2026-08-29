@@ -8,7 +8,9 @@ import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
 import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
+import com.ord.seeders.factories.WordProgressFactory
 import com.ord.features.game.model.finished_game.FinishedGameDTO
 import com.ord.features.game.model.finished_game.FinishedGameMapper
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
@@ -57,6 +59,8 @@ class TestSentencesWritingGameController @Autowired constructor(
     private val wordMockFactory: WordFactory,
     private val finishedGameMapper: FinishedGameMapper,
     private val wordRepository: WordRepository,
+    private val wordProgressRepository: WordProgressRepository,
+    private val wordProgressFactory: WordProgressFactory,
     private val ongoingGameMapper: OngoingGameMapper,
     private val ongoingGameRepository: OngoingGameRepository,
     private val finishedGameRepository: FinishedGameRepository,
@@ -83,7 +87,9 @@ class TestSentencesWritingGameController @Autowired constructor(
         ongoingGameMapper = ongoingGameMapper,
         ongoingGameRepository = ongoingGameRepository,
         wordMockFactory = wordMockFactory,
-        wordRepository = wordRepository
+        wordRepository = wordRepository,
+        wordProgressRepository = wordProgressRepository,
+        wordProgressFactory = wordProgressFactory,
     )
 
     @Nested
@@ -169,6 +175,8 @@ class TestSentencesWritingGameController @Autowired constructor(
                 loadWordsFromResourceFile(
                     userId = authenticatedUser.userInfo.id,
                     wordsRepository = wordRepository,
+                    wordProgressRepository = wordProgressRepository,
+                    wordProgressFactory = wordProgressFactory,
                     numberOfWordsToLoad = requiredNumberOfWords - 1
                 )
 
@@ -186,9 +194,11 @@ class TestSentencesWritingGameController @Autowired constructor(
                 val authenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
-                    userId = authenticatedUser.userInfo.id,
-                    wordsRepository = wordRepository
-                )
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
+            )
 
                 val response = sentencesWritingGameAPIClient.startGame(
                     body = StartGameRequest(language = unknownForUserLanguage, difficulty = GameDifficulty.HARD),
@@ -202,9 +212,11 @@ class TestSentencesWritingGameController @Autowired constructor(
             fun `400 - Cannot start a game without providing difficulty`() {
                 val authenticatedUser = mockAuthenticatedUser()
                 loadWordsFromResourceFile(
-                    userId = authenticatedUser.userInfo.id,
-                    wordsRepository = wordRepository
-                )
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
+            )
 
                 val response = sentencesWritingGameAPIClient.startGame(
                     body = UnsafeStartGameRequestData(language = LanguageName.ENGLISH, difficulty = null),
@@ -219,9 +231,11 @@ class TestSentencesWritingGameController @Autowired constructor(
                 val authenticatedUser = mockAuthenticatedUser()
 
                 loadWordsFromResourceFile(
-                    userId = authenticatedUser.userInfo.id,
-                    wordsRepository = wordRepository
-                )
+                userId = authenticatedUser.userInfo.id,
+                wordsRepository = wordRepository,
+                wordProgressRepository = wordProgressRepository,
+                wordProgressFactory = wordProgressFactory,
+            )
 
                 val response = sentencesWritingGameAPIClient.startGame(
                     body = UnsafeStartGameRequestData(language = null, difficulty = GameDifficulty.HARD),
@@ -320,6 +334,12 @@ class TestSentencesWritingGameController @Autowired constructor(
                 val usedWordEntities: List<WordEntity> =
                     words.filter { it.language == finishedGameInDb?.language && it.sourceWord in wordsUsedInGame }
 
+                val progressByWordId = wordProgressRepository
+                    .findAllByWordIdInAndUserId(usedWordEntities.map { it.id!! }.toSet(), authenticatedUser.userInfo.id)
+                    .collectList()
+                    .block()!!
+                    .associateBy { it.wordId }
+
                 finishedGameResponse.reviewedAnswers.forEach { reviewedTopic ->
                     val wordEntity = usedWordEntities.firstOrNull { it.sourceWord == reviewedTopic.word }
                     wordEntity shouldNotBe null
@@ -327,7 +347,7 @@ class TestSentencesWritingGameController @Autowired constructor(
                     val accuracy = reviewedTopic.score.toDouble() / reviewedTopic.maxScore.toDouble()
                     val expectedGrade = WordAnswerScore.fromDouble(accuracy)
 
-                    wordEntity?.points shouldBe expectedGrade.dbPoints
+                    progressByWordId[wordEntity!!.id!!]!!.points shouldBe expectedGrade.dbPoints
                 }
             }
 

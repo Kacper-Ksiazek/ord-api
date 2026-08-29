@@ -1,15 +1,18 @@
 package com.ord.core.word.services
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.word.api.capture.requests.dto.CaptureWordRequest
+import com.ord.core.word.api.capture.requests.dto.UpdateCapturedWordRequest
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
-import com.ord.core.word.api.crud.responses.dto.WordListItem
 import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
-import com.ord.shared.api.dto.responses.PaginatedDataResponse
+import com.ord.core.word.repositories.WordStatusCounts
+import com.ord.core.word.repositories.WordsPaginatedResult
 import com.ord.shared.domain.dto.CountingSummary
 import com.ord.shared.domain.enums.SortDirection
 import com.ord.shared.services.UserResourceService
@@ -18,31 +21,15 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 interface WordService : UserResourceService<WordEntity> {
-    fun changeBankForSingleWord(
-        wordId: UUID,
-        bankId: UUID?,
-        userId: UUID
-    ): Mono<Int>
-
-    fun changeBankForMultipleWords(
-        wordIds: List<UUID>,
-        bankId: UUID?,
-        userId: UUID
-    ): Mono<Int>
-
+    fun changeBankForSingleWord(wordId: UUID, bankId: UUID?, userId: UUID): Mono<Int>
+    fun changeBankForMultipleWords(wordIds: List<UUID>, bankId: UUID?, userId: UUID): Mono<Int>
     fun getWordsForPromptGeneration(
         userId: UUID,
         language: LanguageName,
         amountOfLatestWord: Int = 10,
-        amountOfProblematicWord: Int = 10
+        amountOfProblematicWord: Int = 10,
     ): Mono<Set<String>>
-
-    fun getWordsForPromptGeneration(
-        userId: UUID,
-        language: LanguageName,
-        banksIds: List<UUID>
-    ): Mono<Set<String>>
-
+    fun getWordsForPromptGeneration(userId: UUID, language: LanguageName, banksIds: List<UUID>): Mono<Set<String>>
     fun getWordsForGame(
         userId: UUID,
         language: LanguageName,
@@ -50,56 +37,32 @@ interface WordService : UserResourceService<WordEntity> {
         banksIds: Set<UUID>? = null,
         bankGroupsIds: Set<UUID>? = null,
     ): Mono<Set<String>>
-
     fun findManyWords(
+        status: WordStatus? = null,
         completed: Boolean? = null,
         searchingPhrase: String? = null,
         bookmarked: Boolean? = null,
-
         banksIds: Set<UUID>? = null,
         bankGroupsIds: Set<UUID>? = null,
-
         wordType: WordType? = null,
-        language: LanguageName,
+        language: LanguageName? = null,
         sortDirection: SortDirection? = null,
         wordExtraMark: WordExtraMark? = null,
         sortBy: GetAllWordsSortOptions? = null,
-
         userId: UUID,
-
         page: Int = 0,
-        perPage: Int = 10
-    ): Mono<PaginatedDataResponse<WordListItem>>
-
-    fun findOneWord(
-        wordId: UUID,
-        userId: UUID
-    ): Mono<SingleWordResponse>
-
-    fun toggleProperty(
-        wordId: UUID,
-        userId: UUID,
-        property: WordToggleableProperty
-    ): Mono<WordEntity>
-
-    fun togglePropertyForManyWords(
-        wordIds: Set<UUID>,
-        userId: UUID,
-        property: WordToggleableProperty
-    ): Flux<WordEntity>
-
-    fun saveNewWord(
-        word: WordEntity,
-        userId: UUID,
-    ): Mono<WordDTO>
-
-    fun countCreated(
-        language: LanguageName,
-        userId: UUID
-    ): Mono<CountingSummary>
-
-    fun countCompleted(
-        language: LanguageName,
-        userId: UUID
-    ): Mono<CountingSummary>
+        perPage: Int = 10,
+    ): Mono<WordsPaginatedResult>
+    fun findOneWord(wordId: UUID, userId: UUID): Mono<SingleWordResponse>
+    fun toggleProperty(wordId: UUID, userId: UUID, property: WordToggleableProperty): Mono<WordEntity>
+    fun togglePropertyForManyWords(wordIds: Set<UUID>, userId: UUID, property: WordToggleableProperty): Flux<WordEntity>
+    fun saveNewActiveWord(word: WordEntity, userId: UUID): Mono<WordDTO>
+    fun captureWord(request: CaptureWordRequest, userId: UUID, status: WordStatus = WordStatus.CAPTURED): Mono<WordDTO>
+    fun bulkCaptureWords(requests: List<CaptureWordRequest>, userId: UUID, status: WordStatus = WordStatus.CAPTURED): Mono<List<WordDTO>>
+    fun updateCapturedWord(wordId: UUID, userId: UUID, body: UpdateCapturedWordRequest): Mono<WordDTO>
+    fun bulkUpdateSourceWords(userId: UUID, updates: List<Pair<UUID, String>>): Mono<List<WordDTO>>
+    fun activateWord(wordId: UUID, userId: UUID): Mono<WordDTO>
+    fun activateManyWords(wordIds: Set<UUID>, userId: UUID): Mono<Unit>
+    fun countByStatus(userId: UUID): Mono<WordStatusCounts>
+    fun countCreated(language: LanguageName, userId: UUID): Mono<CountingSummary>
 }
