@@ -807,6 +807,24 @@ class TestWordCaptureController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.BAD_REQUEST
             }
+
+            @Test
+            fun `400 - should reject updating an active word`() {
+                val user = mockAuthenticatedUser()
+                val created = wordCaptureAPIClient.captureOne(TestData.APIRequestPayloads.createOneWithAllFields, user)
+                wordCaptureAPIClient.activateMany(
+                    ActivateManyWordsRequest(ids = listOf(created.body!!.id)),
+                    user,
+                )
+
+                val response = wordCaptureAPIClient.updateCaptured(
+                    id = created.body!!.id,
+                    body = TestData.APIRequestPayloads.updateOne,
+                    user = user,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
         }
     }
 
@@ -841,6 +859,32 @@ class TestWordCaptureController @Autowired constructor(
             fun `401 - should require authentication`() {
                 val response = wordCaptureAPIClient.bulkUpdateSource(mapOf())
                 response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `400 - should reject bulk update when any word is active`() {
+                val user = mockAuthenticatedUser()
+                val created = wordCaptureAPIClient.capture(
+                    listOf(
+                        TestData.APIRequestPayloads.createOneWithAllFields,
+                        CaptureWordRequest(sourceWord = TestData.TEST_WORD_2, language = TestData.TEST_LANGUAGE),
+                    ),
+                    user,
+                )
+                wordCaptureAPIClient.activateMany(
+                    ActivateManyWordsRequest(ids = listOf(created.body!![0].id)),
+                    user,
+                )
+
+                val response = wordCaptureAPIClient.bulkUpdateSource(
+                    mapOf(
+                        created.body!![0].id to "updated1",
+                        created.body!![1].id to "updated2",
+                    ),
+                    user,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }

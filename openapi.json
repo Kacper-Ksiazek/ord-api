@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "ORD API - Language Learning Platform",
-        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. QAW** | Quickly Added Words - Rapidly collect vocabulary for later processing | \u2022 **Authenticated** - Full CRUD operations for logged-in users (bulk create, update, approve, delete)<br>\u2022 **Public** - Public endpoints for quick word submission without authentication |\n| **3. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **4. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **5. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
+        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **Capture** - Quick capture, overview, and activation workflow<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **4. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **5. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
         "contact": {
             "name": "ORD API Team",
             "email": "support@ord-api.com"
@@ -37,40 +37,28 @@
             "description": "AI-powered explanations of words and phrases for language learning"
         },
         {
-            "name": "5. Utility: AI Demo",
-            "description": "AI provider testing and demonstration endpoints"
-        },
-        {
-            "name": "5. Utility: Health Check",
-            "description": "Application health and status monitoring"
-        },
-        {
-            "name": "3. Games: Words Typing",
-            "description": "Word typing game variant endpoints"
-        },
-        {
             "name": "3. Games: General",
             "description": "General game management endpoints for all game types"
         },
         {
-            "name": "3. QAW: Public",
-            "description": "Public endpoints for quickly adding words without authentication - ideal for browser extensions and quick capture tools"
+            "name": "2. Words: Capture",
+            "description": "Quick capture, overview, and activation workflow"
         },
         {
-            "name": "4. Conversations: Management",
-            "description": "Create and manage AI-powered conversation practice sessions with customizable scenarios and interlocutors"
+            "name": "4. Conversations: Ongoing Sessions",
+            "description": "Manage ongoing conversation sessions and messages"
         },
         {
             "name": "2. Words: CRUD",
             "description": "Create, read, update, and delete vocabulary words with advanced filtering and bulk operations"
         },
         {
-            "name": "3. Games: Words Typing",
-            "description": "Fast-paced word typing game to improve vocabulary recall and typing speed"
+            "name": "3. Games: Crossword",
+            "description": "Crossword puzzle game variant endpoints"
         },
         {
-            "name": "3. Games: General",
-            "description": "General game management endpoints"
+            "name": "3. Games: Crossword",
+            "description": "Crossword puzzle game variant for vocabulary practice"
         },
         {
             "name": "1. Core: Authentication",
@@ -85,20 +73,12 @@
             "description": "Text-to-speech synthesis via ElevenLabs streaming API"
         },
         {
-            "name": "4. Conversations: Ongoing Sessions",
-            "description": "Manage active conversation sessions with real-time AI message exchange and feedback"
+            "name": "3. Games: Words Typing",
+            "description": "Fast-paced word typing game to improve vocabulary recall and typing speed"
         },
         {
-            "name": "3. Games: Sentences Writing",
-            "description": "Sentence writing game variant to practice vocabulary usage in context"
-        },
-        {
-            "name": "4. Conversations: Management",
-            "description": "AI-powered conversation practice with various scenarios and tones"
-        },
-        {
-            "name": "4. Conversations: Ongoing Sessions",
-            "description": "Manage ongoing conversation sessions and messages"
+            "name": "2. Words: Public Capture",
+            "description": "Anonymous bulk word capture by user email"
         },
         {
             "name": "1. Core: Language Proficiencies",
@@ -109,32 +89,48 @@
             "description": "AI-powered word generation and enhancement"
         },
         {
+            "name": "3. Games: Sentences Writing",
+            "description": "Sentence writing game variant endpoints"
+        },
+        {
             "name": "2. Words: Details",
             "description": "Detailed word information including examples and usage"
         },
         {
-            "name": "3. Games: Crossword",
-            "description": "Crossword puzzle game variant endpoints"
+            "name": "5. Utility: AI Demo",
+            "description": "AI provider testing and demonstration endpoints"
         },
         {
-            "name": "3. Games: Crossword",
-            "description": "Crossword puzzle game variant for vocabulary practice"
+            "name": "3. Games: General",
+            "description": "General game management endpoints"
+        },
+        {
+            "name": "4. Conversations: Management",
+            "description": "Create and manage AI-powered conversation practice sessions with customizable scenarios and interlocutors"
         },
         {
             "name": "2. Words: CRUD",
             "description": "Create, read, update, and delete vocabulary words"
         },
         {
+            "name": "3. Games: Words Typing",
+            "description": "Word typing game variant endpoints"
+        },
+        {
             "name": "3. Games: Sentences Writing",
-            "description": "Sentence writing game variant endpoints"
+            "description": "Sentence writing game variant to practice vocabulary usage in context"
         },
         {
-            "name": "3. QAW: Public",
-            "description": "Public endpoints for quickly added words (no authentication required)"
+            "name": "5. Utility: Health Check",
+            "description": "Application health and status monitoring"
         },
         {
-            "name": "3. QAW: Authenticated",
-            "description": "Rapidly add and manage words for later processing and approval (requires authentication)"
+            "name": "4. Conversations: Ongoing Sessions",
+            "description": "Manage active conversation sessions with real-time AI message exchange and feedback"
+        },
+        {
+            "name": "4. Conversations: Management",
+            "description": "AI-powered conversation practice with various scenarios and tones"
         }
     ],
     "paths": {
@@ -516,7 +512,7 @@
                         "content": {
                             "*/*": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/PaginatedDataResponseWordListItem"
+                                    "$ref": "#/components/schemas/WordsPaginatedDataResponse"
                                 }
                             }
                         }
@@ -567,6 +563,57 @@
                     },
                     "401": {
                         "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/words/capture": {
+            "post": {
+                "tags": [
+                    "2. Words: Capture"
+                ],
+                "operationId": "capture",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/CaptureWordRequest"
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/WordDTO"
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -667,6 +714,51 @@
                 ]
             }
         },
+        "/api/v1/words/ai/fill-gaps": {
+            "post": {
+                "tags": [
+                    "2. Words: AI Generation"
+                ],
+                "operationId": "fillGaps",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WordFillGapsRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WordFillGapsResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
         "/api/v1/users/init-account": {
             "post": {
                 "tags": [
@@ -754,48 +846,23 @@
                 ]
             }
         },
-        "/api/v1/quickly-added-words/": {
-            "get": {
+        "/api/v1/public/words/bulk-create": {
+            "post": {
                 "tags": [
-                    "3. QAW: Authenticated"
+                    "2. Words: Public Capture"
                 ],
-                "summary": "Get quickly added words with pagination",
-                "description": "Retrieves a paginated list of quickly added words for the authenticated user. Optionally filter by approval status. When isApproved is omitted, unapprovedCount is included in the response.",
-                "operationId": "getManyQAWs",
-                "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Page number (0-indexed)",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int32"
-                        },
-                        "example": 0
+                "summary": "Public bulk capture words for a user identified by email",
+                "operationId": "publicBulkCreate",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PublicWordsBulkCaptureRequest"
+                            }
+                        }
                     },
-                    {
-                        "name": "perPage",
-                        "in": "query",
-                        "description": "Number of items per page",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int32"
-                        },
-                        "example": 20
-                    },
-                    {
-                        "name": "isApproved",
-                        "in": "query",
-                        "description": "Filter by approval status. When omitted, all words are returned and unapprovedCount is included.",
-                        "required": false,
-                        "schema": {
-                            "type": "boolean"
-                        },
-                        "example": false
-                    }
-                ],
+                    "required": true
+                },
                 "responses": {
                     "400": {
                         "description": "Bad Request",
@@ -808,222 +875,8 @@
                         }
                     },
                     "200": {
-                        "description": "Words retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/QAWPaginatedDataResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                },
-                "security": [
-                    {
-                        "auth-cookie": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "3. QAW: Authenticated"
-                ],
-                "summary": "Create a quickly added word",
-                "description": "Rapidly adds a new word with minimal details for later processing.",
-                "operationId": "createOne",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateQAWRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "400": {
-                        "description": "Invalid word data",
+                        "description": "OK",
                         "content": {}
-                    },
-                    "201": {
-                        "description": "Word created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/QuicklyAddedWordDTO"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                },
-                "security": [
-                    {
-                        "auth-cookie": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/quickly-added-words/bulk-delete": {
-            "post": {
-                "tags": [
-                    "3. QAW: Authenticated"
-                ],
-                "summary": "Bulk delete quickly added words",
-                "description": "Deletes multiple words at once using a list of word IDs. Returns 400 when the list is empty. On success (200), only IDs that exist and belong to the authenticated user are deleted; foreign or non-existent IDs are silently skipped.",
-                "operationId": "bulkDelete",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "format": "uuid"
-                                }
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "400": {
-                        "description": "Invalid delete data",
-                        "content": {}
-                    },
-                    "200": {
-                        "description": "Words deleted successfully",
-                        "content": {}
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                },
-                "security": [
-                    {
-                        "auth-cookie": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/quickly-added-words/bulk-create": {
-            "post": {
-                "tags": [
-                    "3. QAW: Authenticated"
-                ],
-                "summary": "Bulk create quickly added words",
-                "description": "Creates multiple words at once for rapid vocabulary collection.",
-                "operationId": "bulkCreate",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/components/schemas/CreateQAWRequest"
-                                }
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "400": {
-                        "description": "Invalid word data",
-                        "content": {}
-                    },
-                    "201": {
-                        "description": "Words created successfully",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                },
-                "security": [
-                    {
-                        "auth-cookie": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/quickly-added-words/ai/fill-gaps": {
-            "post": {
-                "tags": [
-                    "3. QAW: Authenticated"
-                ],
-                "summary": "AI-fill missing QAW fields",
-                "description": "Enriches a batch of words (word-only input) with translation, definition, type, and optional extra mark. Does not persist to the database \u2014 use bulk-create to save.",
-                "operationId": "fillGaps",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/QAWFillGapsRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "400": {
-                        "description": "Invalid request or user has no proficiency in the language",
-                        "content": {}
-                    },
-                    "200": {
-                        "description": "Fields enriched successfully (per-item errors may be present in the response)",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/QAWFillGapsResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                },
-                "security": [
-                    {
-                        "auth-cookie": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/public/quickly-added-words/bulk-create": {
-            "post": {
-                "tags": [
-                    "3. QAW: Public"
-                ],
-                "summary": "Bulk create words (public)",
-                "description": "Rapidly add multiple words to the database without authentication using a shared secret key",
-                "operationId": "publicBulkCreate",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PublicQAWBulkCreateRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "400": {
-                        "description": "Invalid request data or authentication failed",
-                        "content": {}
-                    },
-                    "204": {
-                        "description": "Words created successfully"
                     }
                 }
             }
@@ -2270,19 +2123,16 @@
                 ]
             }
         },
-        "/api/v1/quickly-added-words/{id}": {
-            "delete": {
+        "/api/v1/words/{id}/capture": {
+            "patch": {
                 "tags": [
-                    "3. QAW: Authenticated"
+                    "2. Words: Capture"
                 ],
-                "summary": "Delete a quickly added word",
-                "description": "Permanently removes a quickly added word from the user's collection.",
-                "operationId": "deleteOne",
+                "operationId": "updateCaptured",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Word ID to delete",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -2290,6 +2140,16 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateCapturedWordRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
                 "responses": {
                     "400": {
                         "description": "Bad Request",
@@ -2302,71 +2162,14 @@
                         }
                     },
                     "200": {
-                        "description": "Word deleted successfully",
-                        "content": {}
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
-                    "404": {
-                        "description": "Word not found"
-                    }
-                },
-                "security": [
-                    {
-                        "auth-cookie": []
-                    }
-                ]
-            },
-            "patch": {
-                "tags": [
-                    "3. QAW: Authenticated"
-                ],
-                "summary": "Update a quickly added word",
-                "description": "Updates the content of a specific quickly added word.",
-                "operationId": "updateOne",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Word ID to update",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UpdateQAWRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "400": {
-                        "description": "Invalid update data",
-                        "content": {}
-                    },
-                    "200": {
-                        "description": "Word updated successfully",
+                        "description": "OK",
                         "content": {
-                            "application/json": {
+                            "*/*": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/QuicklyAddedWordDTO"
+                                    "$ref": "#/components/schemas/WordDTO"
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    },
-                    "404": {
-                        "description": "Word not found"
                     }
                 },
                 "security": [
@@ -2376,14 +2179,12 @@
                 ]
             }
         },
-        "/api/v1/quickly-added-words/bulk-update": {
+        "/api/v1/words/bulk-update-source": {
             "patch": {
                 "tags": [
-                    "3. QAW: Authenticated"
+                    "2. Words: Capture"
                 ],
-                "summary": "Bulk update quickly added words",
-                "description": "Updates multiple words at once using a map of word IDs to new word values.",
-                "operationId": "bulkUpdate",
+                "operationId": "bulkUpdateSourceWords",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -2399,17 +2200,27 @@
                 },
                 "responses": {
                     "400": {
-                        "description": "Invalid update data",
-                        "content": {}
-                    },
-                    "200": {
-                        "description": "Words updated successfully",
+                        "description": "Bad Request",
                         "content": {
-                            "application/json": {}
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
                         }
                     },
-                    "401": {
-                        "description": "Not authenticated"
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/WordDTO"
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -2419,19 +2230,17 @@
                 ]
             }
         },
-        "/api/v1/quickly-added-words/approve-many": {
+        "/api/v1/words/activate-many": {
             "patch": {
                 "tags": [
-                    "3. QAW: Authenticated"
+                    "2. Words: Capture"
                 ],
-                "summary": "Approve multiple quickly added words",
-                "description": "Marks multiple words as approved. Returns 400 when ids is empty. On success (200), only IDs that exist and belong to the authenticated user are updated; foreign or non-existent IDs are silently skipped.",
-                "operationId": "approveMany",
+                "operationId": "activateMany",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ApproveManyQAWRequest"
+                                "$ref": "#/components/schemas/ActivateManyWordsRequest"
                             }
                         }
                     },
@@ -2439,15 +2248,142 @@
                 },
                 "responses": {
                     "400": {
-                        "description": "Invalid approval data",
-                        "content": {}
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
                     },
                     "200": {
-                        "description": "Words approved successfully",
+                        "description": "OK",
                         "content": {}
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/words/overview": {
+            "get": {
+                "tags": [
+                    "2. Words: Capture"
+                ],
+                "operationId": "getOverview",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
                     },
-                    "401": {
-                        "description": "Not authenticated"
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WordOverviewResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/words/captured": {
+            "get": {
+                "tags": [
+                    "2. Words: Capture"
+                ],
+                "summary": "List captured/active words for inbox workflow",
+                "operationId": "getCapturedWords",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Supported languages in the platform",
+                            "enum": [
+                                "POLISH",
+                                "ENGLISH",
+                                "GERMAN",
+                                "FRENCH",
+                                "SPANISH",
+                                "ITALIAN",
+                                "NORWEGIAN",
+                                "RUSSIAN",
+                                "SLOVENIAN"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "description": "Lifecycle status of a vocabulary word",
+                            "enum": [
+                                "CAPTURED",
+                                "ACTIVE"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WordsPaginatedDataResponse"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -2482,46 +2418,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/UserDTO"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Not authenticated"
-                    }
-                },
-                "security": [
-                    {
-                        "auth-cookie": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/quickly-added-words/overview": {
-            "get": {
-                "tags": [
-                    "3. QAW: Authenticated"
-                ],
-                "summary": "Get quickly added words overview",
-                "description": "Returns total counts of quickly added words split by approval status.",
-                "operationId": "getOverview",
-                "responses": {
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BadRequestResponse"
-                                }
-                            }
-                        }
-                    },
-                    "200": {
-                        "description": "Overview retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/QAWOverviewResponse"
                                 }
                             }
                         }
@@ -3053,8 +2949,19 @@
                         "type": "string",
                         "format": "uuid"
                     },
-                    "type": {
+                    "status": {
                         "type": "string",
+                        "description": "Lifecycle status of a vocabulary word",
+                        "enum": [
+                            "CAPTURED",
+                            "ACTIVE"
+                        ]
+                    },
+                    "type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -3069,10 +2976,16 @@
                         "type": "string"
                     },
                     "translation": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "definition": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "extraMark": {
                         "type": [
@@ -3108,10 +3021,6 @@
                             "SLOVENIAN"
                         ]
                     },
-                    "points": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
                     "userId": {
                         "type": "string",
                         "format": "uuid"
@@ -3140,12 +3049,15 @@
                         ],
                         "format": "uuid"
                     },
-                    "completedAt": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
+                    "progress": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/WordProgressDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "createdAt": {
                         "type": "string",
@@ -3155,10 +3067,38 @@
                         "type": "string",
                         "format": "date-time"
                     },
-                    "completed": {
-                        "type": "boolean"
-                    },
                     "bookmarked": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "WordProgressDTO": {
+                "type": "object",
+                "description": "Learning progress for an active word",
+                "properties": {
+                    "points": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Accumulated mastery points from games",
+                        "example": 3
+                    },
+                    "completedAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time",
+                        "description": "Timestamp of the current completion state"
+                    },
+                    "firstCompletedAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time",
+                        "description": "Timestamp of the first time the word was completed"
+                    },
+                    "completed": {
                         "type": "boolean"
                     }
                 }
@@ -3589,6 +3529,17 @@
                             "PHRASE"
                         ]
                     },
+                    "status": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Lifecycle status of a vocabulary word",
+                        "enum": [
+                            "CAPTURED",
+                            "ACTIVE"
+                        ]
+                    },
                     "wordExtraMark": {
                         "type": [
                             "string",
@@ -3694,23 +3645,6 @@
                     }
                 }
             },
-            "PaginatedDataResponseWordListItem": {
-                "type": "object",
-                "description": "Generic paginated response wrapper for list endpoints",
-                "properties": {
-                    "pagination": {
-                        "$ref": "#/components/schemas/PaginationData",
-                        "description": "Pagination metadata"
-                    },
-                    "data": {
-                        "type": "array",
-                        "description": "Array of results for the current page",
-                        "items": {
-                            "$ref": "#/components/schemas/WordListItem"
-                        }
-                    }
-                }
-            },
             "PaginationData": {
                 "type": "object",
                 "description": "Pagination metadata for paginated responses",
@@ -3754,18 +3688,38 @@
                         "type": "string",
                         "format": "uuid"
                     },
-                    "points": {
-                        "type": "integer",
-                        "format": "int32"
+                    "status": {
+                        "type": "string",
+                        "description": "Lifecycle status of a vocabulary word",
+                        "enum": [
+                            "CAPTURED",
+                            "ACTIVE"
+                        ]
                     },
                     "sourceWord": {
                         "type": "string"
                     },
                     "translation": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "progress": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/WordProgressDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "type": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -3820,11 +3774,32 @@
                             }
                         ]
                     },
-                    "completed": {
-                        "type": "boolean"
-                    },
                     "bookmarked": {
                         "type": "boolean"
+                    }
+                }
+            },
+            "WordsPaginatedDataResponse": {
+                "type": "object",
+                "description": "Paginated words response with optional captured count",
+                "properties": {
+                    "pagination": {
+                        "$ref": "#/components/schemas/PaginationData"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WordListItem"
+                        }
+                    },
+                    "capturedCount": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Count of captured words when status filter is omitted",
+                        "example": 12
                     }
                 }
             },
@@ -3856,6 +3831,89 @@
                         ]
                     }
                 }
+            },
+            "CaptureWordRequest": {
+                "type": "object",
+                "description": "Request to quickly capture a word for later activation",
+                "properties": {
+                    "sourceWord": {
+                        "type": "string",
+                        "description": "The word or phrase to capture",
+                        "example": "comprehensive",
+                        "maxLength": 255,
+                        "minLength": 1
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Language of the word",
+                        "enum": [
+                            "POLISH",
+                            "ENGLISH",
+                            "GERMAN",
+                            "FRENCH",
+                            "SPANISH",
+                            "ITALIAN",
+                            "NORWEGIAN",
+                            "RUSSIAN",
+                            "SLOVENIAN"
+                        ],
+                        "example": "ENGLISH"
+                    },
+                    "translation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255,
+                        "minLength": 0
+                    },
+                    "definition": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000,
+                        "minLength": 0
+                    },
+                    "extraMark": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Extra marks or tags for word classification by register or domain",
+                        "enum": [
+                            "OFFENSIVE",
+                            "SLANG",
+                            "FORMAL",
+                            "INFORMAL",
+                            "SCIENTIFIC",
+                            "TECHNICAL",
+                            "LEGAL",
+                            "MEDICAL",
+                            "COLLOQUIAL",
+                            "POETIC"
+                        ]
+                    },
+                    "type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Type of word or expression",
+                        "enum": [
+                            "NOUN",
+                            "VERB",
+                            "ADJECTIVE",
+                            "ADVERB",
+                            "IDIOM",
+                            "PHRASE"
+                        ]
+                    }
+                },
+                "required": [
+                    "language",
+                    "sourceWord"
+                ]
             },
             "SuggestVocabularyRequest": {
                 "type": "object",
@@ -4087,6 +4145,128 @@
                     }
                 }
             },
+            "WordFillGapsItem": {
+                "type": "object",
+                "description": "A single word to enrich with AI-generated metadata",
+                "properties": {
+                    "sourceWord": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1
+                    }
+                },
+                "required": [
+                    "sourceWord"
+                ]
+            },
+            "WordFillGapsRequest": {
+                "type": "object",
+                "description": "Request to AI-fill missing fields for captured words",
+                "properties": {
+                    "language": {
+                        "type": "string",
+                        "description": "Supported languages in the platform",
+                        "enum": [
+                            "POLISH",
+                            "ENGLISH",
+                            "GERMAN",
+                            "FRENCH",
+                            "SPANISH",
+                            "ITALIAN",
+                            "NORWEGIAN",
+                            "RUSSIAN",
+                            "SLOVENIAN"
+                        ]
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WordFillGapsItem"
+                        },
+                        "maxItems": 20,
+                        "minItems": 1
+                    }
+                }
+            },
+            "WordFillGapsResponse": {
+                "type": "object",
+                "description": "AI-enriched fields for each requested word",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WordFillGapsResultItem"
+                        }
+                    }
+                }
+            },
+            "WordFillGapsResultItem": {
+                "type": "object",
+                "description": "AI-enriched fields for a single input word",
+                "properties": {
+                    "inputSourceWord": {
+                        "type": "string"
+                    },
+                    "sourceWord": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "translation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "definition": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Type of word or expression",
+                        "enum": [
+                            "NOUN",
+                            "VERB",
+                            "ADJECTIVE",
+                            "ADVERB",
+                            "IDIOM",
+                            "PHRASE"
+                        ]
+                    },
+                    "extraMark": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Extra marks or tags for word classification by register or domain",
+                        "enum": [
+                            "OFFENSIVE",
+                            "SLANG",
+                            "FORMAL",
+                            "INFORMAL",
+                            "SCIENTIFIC",
+                            "TECHNICAL",
+                            "LEGAL",
+                            "MEDICAL",
+                            "COLLOQUIAL",
+                            "POETIC"
+                        ]
+                    },
+                    "error": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
             "InitUserAccountRequest": {
                 "type": "object",
                 "properties": {
@@ -4283,357 +4463,14 @@
                     "text"
                 ]
             },
-            "CreateQAWRequest": {
+            "PublicCaptureWordItem": {
                 "type": "object",
-                "description": "Request to create a new quickly added word",
+                "description": "Single word item for public bulk capture",
                 "properties": {
-                    "word": {
+                    "sourceWord": {
                         "type": "string",
-                        "description": "The word or phrase to add",
-                        "example": "comprehensive",
                         "maxLength": 255,
                         "minLength": 1
-                    },
-                    "language": {
-                        "type": "string",
-                        "description": "Language of the word",
-                        "enum": [
-                            "POLISH",
-                            "ENGLISH",
-                            "GERMAN",
-                            "FRENCH",
-                            "SPANISH",
-                            "ITALIAN",
-                            "NORWEGIAN",
-                            "RUSSIAN",
-                            "SLOVENIAN"
-                        ],
-                        "example": "ENGLISH"
-                    },
-                    "translation": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Optional translation of the word",
-                        "example": "comprensivo",
-                        "maxLength": 255,
-                        "minLength": 0
-                    },
-                    "definition": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Optional definition or notes about the word",
-                        "example": "Complete; including all or nearly all elements or aspects",
-                        "maxLength": 2000,
-                        "minLength": 0
-                    },
-                    "extraMark": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Optional extra mark or tag for the word",
-                        "enum": [
-                            "OFFENSIVE",
-                            "SLANG",
-                            "FORMAL",
-                            "INFORMAL",
-                            "SCIENTIFIC",
-                            "TECHNICAL",
-                            "LEGAL",
-                            "MEDICAL",
-                            "COLLOQUIAL",
-                            "POETIC"
-                        ],
-                        "example": "SLANG"
-                    },
-                    "type": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Optional word type classification",
-                        "enum": [
-                            "NOUN",
-                            "VERB",
-                            "ADJECTIVE",
-                            "ADVERB",
-                            "IDIOM",
-                            "PHRASE"
-                        ],
-                        "example": "ADJECTIVE"
-                    }
-                },
-                "required": [
-                    "language",
-                    "word"
-                ]
-            },
-            "QuicklyAddedWordDTO": {
-                "type": "object",
-                "description": "Quickly added word with all details",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "Unique word identifier",
-                        "example": "650e8400-e29b-41d4-a716-446655440000"
-                    },
-                    "word": {
-                        "type": "string",
-                        "description": "The word or phrase",
-                        "example": "comprehensive"
-                    },
-                    "language": {
-                        "type": "string",
-                        "description": "Language of the word",
-                        "enum": [
-                            "POLISH",
-                            "ENGLISH",
-                            "GERMAN",
-                            "FRENCH",
-                            "SPANISH",
-                            "ITALIAN",
-                            "NORWEGIAN",
-                            "RUSSIAN",
-                            "SLOVENIAN"
-                        ],
-                        "example": "ENGLISH"
-                    },
-                    "translation": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Translation of the word",
-                        "example": "comprensivo"
-                    },
-                    "definition": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Definition or notes about the word",
-                        "example": "Complete; including all elements"
-                    },
-                    "extraMark": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Extra mark or tag for the word",
-                        "enum": [
-                            "OFFENSIVE",
-                            "SLANG",
-                            "FORMAL",
-                            "INFORMAL",
-                            "SCIENTIFIC",
-                            "TECHNICAL",
-                            "LEGAL",
-                            "MEDICAL",
-                            "COLLOQUIAL",
-                            "POETIC"
-                        ],
-                        "example": "SLANG"
-                    },
-                    "type": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Word type classification",
-                        "enum": [
-                            "NOUN",
-                            "VERB",
-                            "ADJECTIVE",
-                            "ADVERB",
-                            "IDIOM",
-                            "PHRASE"
-                        ],
-                        "example": "ADJECTIVE"
-                    },
-                    "userId": {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "ID of the user who added this word",
-                        "example": "550e8400-e29b-41d4-a716-446655440000"
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "description": "Timestamp when the word was added",
-                        "example": "2024-01-15T10:30:00Z"
-                    },
-                    "approved": {
-                        "type": "boolean"
-                    }
-                }
-            },
-            "QAWFillGapsItem": {
-                "type": "object",
-                "description": "A single word to enrich with AI-generated QAW metadata",
-                "properties": {
-                    "word": {
-                        "type": "string",
-                        "description": "The word or phrase to enrich (only required field per item)",
-                        "example": "verbose",
-                        "maxLength": 255,
-                        "minLength": 1
-                    }
-                },
-                "required": [
-                    "word"
-                ]
-            },
-            "QAWFillGapsRequest": {
-                "type": "object",
-                "description": "Request to AI-fill missing QAW fields for a batch of words",
-                "properties": {
-                    "language": {
-                        "type": "string",
-                        "description": "Language of the words being enriched",
-                        "enum": [
-                            "POLISH",
-                            "ENGLISH",
-                            "GERMAN",
-                            "FRENCH",
-                            "SPANISH",
-                            "ITALIAN",
-                            "NORWEGIAN",
-                            "RUSSIAN",
-                            "SLOVENIAN"
-                        ],
-                        "example": "ENGLISH"
-                    },
-                    "items": {
-                        "type": "array",
-                        "description": "Words to enrich (only the word field is required per item)",
-                        "items": {
-                            "$ref": "#/components/schemas/QAWFillGapsItem"
-                        },
-                        "maxItems": 20,
-                        "maxLength": 20,
-                        "minItems": 1,
-                        "minLength": 1
-                    }
-                },
-                "required": [
-                    "items",
-                    "language"
-                ]
-            },
-            "QAWFillGapsResponse": {
-                "type": "object",
-                "description": "AI-enriched QAW fields for each requested word, in the same order as the request",
-                "properties": {
-                    "items": {
-                        "type": "array",
-                        "description": "Enrichment results, one per input item",
-                        "items": {
-                            "$ref": "#/components/schemas/QAWFillGapsResultItem"
-                        }
-                    }
-                }
-            },
-            "QAWFillGapsResultItem": {
-                "type": "object",
-                "description": "AI-enriched QAW fields for a single input word",
-                "properties": {
-                    "inputWord": {
-                        "type": "string",
-                        "description": "Original word from the request",
-                        "example": "verbose"
-                    },
-                    "word": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Corrected or confirmed word spelling (null when error is set)",
-                        "example": "verbose"
-                    },
-                    "translation": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Translation into the user's translate-to language (null when error is set)",
-                        "example": "rozwlek\u0142y"
-                    },
-                    "definition": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Brief definition in the user's generative content language (null when error is set)",
-                        "example": "Using more words than needed; long-winded",
-                        "maxLength": 2000
-                    },
-                    "type": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Word type classification (null when error is set)",
-                        "enum": [
-                            "NOUN",
-                            "VERB",
-                            "ADJECTIVE",
-                            "ADVERB",
-                            "IDIOM",
-                            "PHRASE"
-                        ],
-                        "example": "ADJECTIVE"
-                    },
-                    "extraMark": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Optional register or domain mark (null when not applicable or on error)",
-                        "enum": [
-                            "OFFENSIVE",
-                            "SLANG",
-                            "FORMAL",
-                            "INFORMAL",
-                            "SCIENTIFIC",
-                            "TECHNICAL",
-                            "LEGAL",
-                            "MEDICAL",
-                            "COLLOQUIAL",
-                            "POETIC"
-                        ],
-                        "example": "FORMAL"
-                    },
-                    "error": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Error code when the word could not be enriched (e.g. NON_EXISTENT_WORD)",
-                        "example": "NON_EXISTENT_WORD"
-                    }
-                }
-            },
-            "PublicQAWBulkCreateRequest": {
-                "type": "object",
-                "properties": {
-                    "userEmail": {
-                        "type": "string",
-                        "format": "email",
-                        "maxLength": 255,
-                        "minLength": 1
-                    },
-                    "words": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/PublicQAWWordItem"
-                        },
-                        "maxItems": 100,
-                        "minItems": 1
                     },
                     "language": {
                         "type": "string",
@@ -4649,20 +4486,6 @@
                             "RUSSIAN",
                             "SLOVENIAN"
                         ]
-                    }
-                },
-                "required": [
-                    "userEmail",
-                    "words"
-                ]
-            },
-            "PublicQAWWordItem": {
-                "type": "object",
-                "properties": {
-                    "word": {
-                        "type": "string",
-                        "maxLength": 255,
-                        "minLength": 1
                     },
                     "translation": {
                         "type": [
@@ -4716,7 +4539,30 @@
                     }
                 },
                 "required": [
-                    "word"
+                    "sourceWord"
+                ]
+            },
+            "PublicWordsBulkCaptureRequest": {
+                "type": "object",
+                "description": "Public bulk capture request identified by user email",
+                "properties": {
+                    "userEmail": {
+                        "type": "string",
+                        "format": "email",
+                        "minLength": 1
+                    },
+                    "words": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PublicCaptureWordItem"
+                        },
+                        "maxItems": 100,
+                        "minItems": 1
+                    }
+                },
+                "required": [
+                    "userEmail",
+                    "words"
                 ]
             },
             "CreateLanguageProficiencyRequest": {
@@ -4980,6 +4826,9 @@
                         },
                         "uniqueItems": true
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4990,9 +4839,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -5110,6 +4956,9 @@
                         },
                         "uniqueItems": true
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -5120,9 +4969,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -5393,6 +5239,9 @@
                     "reviewedAnswers": {
                         "$ref": "#/components/schemas/CrosswordReviewedAnswers"
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -5403,9 +5252,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -5781,10 +5627,6 @@
                     "content": {
                         "type": "string"
                     },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
                     "messageOrder": {
                         "type": "integer",
                         "format": "int32"
@@ -5795,6 +5637,10 @@
                             "USER",
                             "AI"
                         ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
                     }
                 }
             },
@@ -6547,10 +6393,11 @@
                     }
                 }
             },
-            "UpdateQAWRequest": {
+            "UpdateCapturedWordRequest": {
                 "type": "object",
+                "description": "Partial update for a captured word",
                 "properties": {
-                    "updatedWord": {
+                    "sourceWord": {
                         "type": [
                             "string",
                             "null"
@@ -6610,21 +6457,18 @@
                     }
                 }
             },
-            "ApproveManyQAWRequest": {
+            "ActivateManyWordsRequest": {
                 "type": "object",
+                "description": "Request to activate multiple captured words",
                 "properties": {
                     "ids": {
                         "type": "array",
                         "items": {
                             "type": "string",
                             "format": "uuid"
-                        },
-                        "minItems": 1
+                        }
                     }
-                },
-                "required": [
-                    "ids"
-                ]
+                }
             },
             "UpdateLanguageProficiencyRequest": {
                 "type": "object",
@@ -6706,8 +6550,19 @@
                         "type": "string",
                         "format": "uuid"
                     },
-                    "type": {
+                    "status": {
                         "type": "string",
+                        "description": "Lifecycle status of a vocabulary word",
+                        "enum": [
+                            "CAPTURED",
+                            "ACTIVE"
+                        ]
+                    },
+                    "type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -6722,10 +6577,16 @@
                         "type": "string"
                     },
                     "translation": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "definition": {
-                        "type": "string"
+                        "type": [
+                            "string",
+                            "null"
+                        ]
                     },
                     "extraMark": {
                         "type": [
@@ -6761,9 +6622,15 @@
                             "SLOVENIAN"
                         ]
                     },
-                    "points": {
-                        "type": "integer",
-                        "format": "int32"
+                    "progress": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/WordProgressDTO"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     },
                     "bank": {
                         "oneOf": [
@@ -6793,61 +6660,32 @@
                             }
                         ]
                     },
-                    "completed": {
-                        "type": "boolean"
-                    },
                     "bookmarked": {
                         "type": "boolean"
                     }
                 }
             },
-            "QAWPaginatedDataResponse": {
+            "WordOverviewResponse": {
                 "type": "object",
-                "description": "Paginated quickly added words response with unapproved count metadata",
-                "properties": {
-                    "pagination": {
-                        "$ref": "#/components/schemas/PaginationData",
-                        "description": "Pagination metadata"
-                    },
-                    "data": {
-                        "type": "array",
-                        "description": "Array of quickly added words for the current page",
-                        "items": {
-                            "$ref": "#/components/schemas/QuicklyAddedWordDTO"
-                        }
-                    },
-                    "unapprovedCount": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ],
-                        "format": "int64",
-                        "description": "Total number of unapproved quickly added words for the user. Always present when isApproved filter is not applied.",
-                        "example": 3
-                    }
-                }
-            },
-            "QAWOverviewResponse": {
-                "type": "object",
-                "description": "Quickly added words overview with approval status counts",
+                "description": "Overview of words split by lifecycle status",
                 "properties": {
                     "total": {
                         "type": "integer",
                         "format": "int64",
-                        "description": "Total number of quickly added words for the user",
-                        "example": 42
+                        "description": "Total number of words",
+                        "example": 74
                     },
-                    "approvedCount": {
+                    "activeCount": {
                         "type": "integer",
                         "format": "int64",
-                        "description": "Number of approved quickly added words",
-                        "example": 35
+                        "description": "Number of active words",
+                        "example": 56
                     },
-                    "unapprovedCount": {
+                    "capturedCount": {
                         "type": "integer",
                         "format": "int64",
-                        "description": "Number of unapproved quickly added words",
-                        "example": 7
+                        "description": "Number of captured words",
+                        "example": 18
                     }
                 }
             },
@@ -7127,6 +6965,14 @@
                     "MEDICAL",
                     "COLLOQUIAL",
                     "POETIC"
+                ]
+            },
+            "WordStatus": {
+                "type": "string",
+                "description": "Lifecycle status of a vocabulary word",
+                "enum": [
+                    "CAPTURED",
+                    "ACTIVE"
                 ]
             },
             "WordType": {

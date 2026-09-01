@@ -226,25 +226,38 @@ class WordServiceImpl(
     override fun updateCapturedWord(wordId: UUID, userId: UUID, body: UpdateCapturedWordRequest): Mono<WordDTO> {
         return repository.findByIdAndUserId(wordId, userId)
             .switchIfEmpty(Mono.error(NotFoundException("Word with id $wordId not found")))
-            .map { entity ->
-                entity!!.copy(
-                    sourceWord = body.sourceWord ?: entity.sourceWord,
-                    translation = body.translation ?: entity.translation,
-                    definition = body.definition ?: entity.definition,
-                    extraMark = body.extraMark ?: entity.extraMark,
-                    type = body.type ?: entity.type,
-                )
+            .flatMap { entity ->
+                val word = entity!!
+                if (word.status != WordStatus.CAPTURED) {
+                    return@flatMap Mono.error<WordDTO>(BadRequestException("Only captured words can be updated"))
+                }
+                repository.save(
+                    word.copy(
+                        sourceWord = body.sourceWord ?: word.sourceWord,
+                        translation = body.translation ?: word.translation,
+                        definition = body.definition ?: word.definition,
+                        extraMark = body.extraMark ?: word.extraMark,
+                        type = body.type ?: word.type,
+                    ),
+                ).map { wordMapper.toDTO(it) }
             }
-            .flatMap { repository.save(it) }
-            .map { wordMapper.toDTO(it) }
     }
 
     override fun bulkUpdateSourceWords(userId: UUID, updates: List<Pair<UUID, String>>): Mono<List<WordDTO>> {
         val updateMap = updates.toMap()
         return repository.findAllByIdInAndUserId(updateMap.keys, userId)
-            .map { entity -> entity.copy(sourceWord = updateMap[entity.id] ?: entity.sourceWord) }
             .collectList()
-            .flatMap { repository.saveAll(it).collectList() }
+            .flatMap { entities ->
+                if (entities.any { it.status != WordStatus.CAPTURED }) {
+                    return@flatMap Mono.error<List<WordEntity>>(
+                        BadRequestException("Only captured words can be updated"),
+                    )
+                }
+                val updated = entities.map { entity ->
+                    entity.copy(sourceWord = updateMap[entity.id] ?: entity.sourceWord)
+                }
+                repository.saveAll(updated).collectList()
+            }
             .map { entities -> entities.map { wordMapper.toDTO(it) } }
     }
 
