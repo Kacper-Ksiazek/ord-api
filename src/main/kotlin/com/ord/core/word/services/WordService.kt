@@ -45,7 +45,7 @@ interface WordService : UserResourceService<WordEntity> {
         banksIds: Set<UUID>? = null,
         bankGroupsIds: Set<UUID>? = null,
         wordType: WordType? = null,
-        language: LanguageName? = null,
+        language: LanguageName,
         sortDirection: SortDirection? = null,
         wordExtraMark: WordExtraMark? = null,
         sortBy: GetAllWordsSortOptions? = null,
@@ -53,16 +53,28 @@ interface WordService : UserResourceService<WordEntity> {
         page: Int = 0,
         perPage: Int = 10,
     ): Mono<WordsPaginatedResult>
+
     fun findOneWord(wordId: UUID, userId: UUID): Mono<SingleWordResponse>
+
     fun toggleProperty(wordId: UUID, userId: UUID, property: WordToggleableProperty): Mono<WordEntity>
+
     fun togglePropertyForManyWords(wordIds: Set<UUID>, userId: UUID, property: WordToggleableProperty): Flux<WordEntity>
+
     fun saveNewActiveWord(word: WordEntity, userId: UUID): Mono<WordDTO>
+
     fun captureWord(request: CaptureWordRequest, userId: UUID, status: WordStatus = WordStatus.CAPTURED): Mono<WordDTO>
+
     fun bulkCaptureWords(requests: List<CaptureWordRequest>, userId: UUID, status: WordStatus = WordStatus.CAPTURED): Mono<List<WordDTO>>
+
     fun updateCapturedWord(wordId: UUID, userId: UUID, body: UpdateCapturedWordRequest): Mono<WordDTO>
+
     fun bulkUpdateSourceWords(userId: UUID, updates: List<Pair<UUID, String>>): Mono<List<WordDTO>>
+
     fun activateWord(wordId: UUID, userId: UUID): Mono<WordDTO>
+
     fun activateManyWords(wordIds: Set<UUID>, userId: UUID): Mono<Unit>
+
     fun countByStatus(userId: UUID): Mono<WordStatusCounts>
+
     fun countCreated(language: LanguageName, userId: UUID): Mono<CountingSummary>
 }

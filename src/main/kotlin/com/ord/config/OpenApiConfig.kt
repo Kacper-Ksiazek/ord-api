@@ -45,9 +45,9 @@ class OpenApiConfig(
                         |--------|-------------|----------------------|
                         | **1. Core** | Foundation services for user management and authentication | • **Authentication** - OTP-based email authentication with JWT tokens<br>• **Users** - User profile management and account initialization<br>• **Language Proficiencies** - Multi-language support with proficiency tracking |
                         | **2. Words** | Comprehensive vocabulary management with AI assistance | • **CRUD** - Create, read, update, and delete vocabulary words<br>• **Capture** - Quick capture, overview, and activation workflow<br>• **AI Generation** - AI-powered word generation and enhancement<br>• **Details** - Detailed word information including examples and usage |
-                        | **4. Games** | Interactive learning games with various difficulty levels | • **General** - Start, cancel, and manage game sessions<br>• **Words Typing** - Type words quickly to improve recall and speed<br>• **Crossword** - Solve crossword puzzles with learned vocabulary<br>• **Sentences Writing** - Practice writing sentences using target words |
-                        | **5. Conversations** | AI-powered conversation practice with various scenarios | • **Management** - Create conversations, suggest topics, generate AI interlocutors<br>• **Ongoing Sessions** - Send messages, get AI responses, review user messages |
-                        | **6. Utility** | System utilities and health monitoring | • **Health Check** - Monitor application and database health status<br>• **AI Demo** - Test and demonstrate AI provider functionality |
+                        | **3. Games** | Interactive learning games with various difficulty levels | • **General** - Start, cancel, and manage game sessions<br>• **Words Typing** - Type words quickly to improve recall and speed<br>• **Crossword** - Solve crossword puzzles with learned vocabulary<br>• **Sentences Writing** - Practice writing sentences using target words |
+                        | **4. Conversations** | AI-powered conversation practice with various scenarios | • **Management** - Create conversations, suggest topics, generate AI interlocutors<br>• **Ongoing Sessions** - Send messages, get AI responses, review user messages |
+                        | **5. Utility** | System utilities and health monitoring | • **Health Check** - Monitor application and database health status<br>• **AI Demo** - Test and demonstrate AI provider functionality |
 
                         ---
 
@@ -132,32 +132,32 @@ class OpenApiConfig(
 
                     // 3. Games Domain
                     Tag()
-                        .name("4. Games: General")
+                        .name("3. Games: General")
                         .description("General game management endpoints"),
                     Tag()
-                        .name("4. Games: Crossword")
+                        .name("3. Games: Crossword")
                         .description("Crossword puzzle game variant endpoints"),
                     Tag()
-                        .name("4. Games: Sentences Writing")
+                        .name("3. Games: Sentences Writing")
                         .description("Sentence writing game variant endpoints"),
                     Tag()
-                        .name("4. Games: Words Typing")
+                        .name("3. Games: Words Typing")
                         .description("Word typing game variant endpoints"),
 
-                    // 5. Conversations Domain
+                    // 4. Conversations Domain
                     Tag()
-                        .name("5. Conversations: Management")
+                        .name("4. Conversations: Management")
                         .description("AI-powered conversation practice with various scenarios and tones"),
                     Tag()
-                        .name("5. Conversations: Ongoing Sessions")
+                        .name("4. Conversations: Ongoing Sessions")
                         .description("Manage ongoing conversation sessions and messages"),
 
-                    // 6. Utility
+                    // 5. Utility
                     Tag()
-                        .name("6. Utility: AI Demo")
+                        .name("5. Utility: AI Demo")
                         .description("AI provider testing and demonstration endpoints"),
                     Tag()
-                        .name("6. Utility: Health Check")
+                        .name("5. Utility: Health Check")
                         .description("Application health and status monitoring")
                 )
             )

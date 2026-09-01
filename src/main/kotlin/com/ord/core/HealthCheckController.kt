@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono
 @RestController
 @RequestMapping("/api/v1/health-check")
 @Tag(
-    name = "6. Utility: Health Check",
+    name = "5. Utility: Health Check",
     description = "Application health and status monitoring"
 )
 class HealthCheckController(

@@ -30,16 +30,10 @@ class WordCaptureController(
     private val wordCaptureFacade: WordCaptureFacade,
 ) {
     @PostMapping("/capture")
-    fun captureOne(
+    fun capture(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
-        @Valid @RequestBody body: CaptureWordRequest,
-    ): Mono<ResponseEntity<WordDTO>> = wordCaptureFacade.captureOne(user.id, body)
-
-    @PostMapping("/bulk-capture")
-    fun bulkCapture(
-        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
-        @Valid @RequestBody body: List<CaptureWordRequest>,
-    ): Mono<ResponseEntity<List<WordDTO>>> = wordCaptureFacade.bulkCapture(user.id, body)
+        @Valid @RequestBody body: List<@Valid CaptureWordRequest>,
+    ): Mono<ResponseEntity<List<WordDTO>>> = wordCaptureFacade.capture(user.id, body)
 
     @GetMapping("/overview")
     fun getOverview(
@@ -50,10 +44,10 @@ class WordCaptureController(
     @Operation(summary = "List captured/active words for inbox workflow")
     fun getCapturedWords(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @RequestParam language: LanguageName,
         @RequestParam(required = false) page: Int?,
         @RequestParam(required = false) perPage: Int?,
         @RequestParam(required = false) status: WordStatus?,
-        @RequestParam(required = false) language: LanguageName?,
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCaptureFacade.getCapturedWords(
         userId = user.id,
         page = page,
@@ -61,12 +55,6 @@ class WordCaptureController(
         status = status,
         language = language,
     )
-
-    @PatchMapping("/{id}/activate")
-    fun activateOne(
-        @PathVariable id: UUID,
-        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
-    ): Mono<ResponseEntity<WordDTO>> = wordCaptureFacade.activateOne(user.id, id)
 
     @PatchMapping("/activate-many")
     fun activateMany(

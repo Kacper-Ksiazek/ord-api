@@ -26,12 +26,7 @@ class WordCaptureFacadeImpl(
     private val wordService: WordService,
     private val userRepository: UserRepository,
 ) : WordCaptureFacade {
-    override fun captureOne(userId: UUID, body: CaptureWordRequest): Mono<ResponseEntity<WordDTO>> {
-        return wordService.captureWord(body, userId)
-            .map { ResponseEntity.status(HttpStatus.CREATED).body(it) }
-    }
-
-    override fun bulkCapture(userId: UUID, body: List<CaptureWordRequest>): Mono<ResponseEntity<List<WordDTO>>> {
+    override fun capture(userId: UUID, body: List<CaptureWordRequest>): Mono<ResponseEntity<List<WordDTO>>> {
         return wordService.bulkCaptureWords(body, userId)
             .map { ResponseEntity.status(HttpStatus.CREATED).body(it) }
     }
@@ -60,7 +55,7 @@ class WordCaptureFacadeImpl(
         page: Int?,
         perPage: Int?,
         status: WordStatus?,
-        language: LanguageName?,
+        language: LanguageName,
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>> {
         return wordService.findManyWords(
             userId = userId,
@@ -103,11 +98,6 @@ class WordCaptureFacadeImpl(
         body: List<Pair<UUID, String>>,
     ): Mono<ResponseEntity<List<WordDTO>>> {
         return wordService.bulkUpdateSourceWords(userId, body)
-            .map { ResponseEntity.ok(it) }
-    }
-
-    override fun activateOne(userId: UUID, wordId: UUID): Mono<ResponseEntity<WordDTO>> {
-        return wordService.activateWord(wordId, userId)
             .map { ResponseEntity.ok(it) }
     }
 

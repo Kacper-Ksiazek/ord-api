@@ -1,1 +1,0 @@
--- QAW merged into words table (status = CAPTURED). This migration is intentionally empty.

@@ -97,7 +97,7 @@ class WordServiceImpl(
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
         wordType: WordType?,
-        language: LanguageName?,
+        language: LanguageName,
         sortDirection: SortDirection?,
         wordExtraMark: WordExtraMark?,
         sortBy: GetAllWordsSortOptions?,

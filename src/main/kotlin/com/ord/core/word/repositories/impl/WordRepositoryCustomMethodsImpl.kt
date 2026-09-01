@@ -61,7 +61,7 @@ class WordRepositoryCustomMethodsImpl(
 
     override fun findManyWords(
         userId: UUID,
-        language: LanguageName?,
+        language: LanguageName,
         status: WordStatus?,
         completed: Boolean?,
         bookmarked: Boolean?,
@@ -109,7 +109,9 @@ class WordRepositoryCustomMethodsImpl(
         val capturedCountQuery = """
             SELECT COUNT(*)
             FROM words
-            WHERE words.user_id = :userId AND words.status = 'CAPTURED'
+            WHERE words.user_id = :userId
+              AND words.status = 'CAPTURED'
+              AND words.language = :language
         """
 
         val countQueryResult = databaseClient.sql(countQuery)
@@ -141,6 +143,7 @@ class WordRepositoryCustomMethodsImpl(
         return if (status == null) {
             val capturedCountResult = databaseClient.sql(capturedCountQuery)
                 .bind("userId", userId)
+                .bind("language", language.name)
                 .map { row -> row.get(0, Long::class.java)!! }
                 .one()
 
@@ -432,7 +435,7 @@ class WordRepositoryCustomMethodsImpl(
     }
 
     private fun createQueryConditions(
-        language: LanguageName?,
+        language: LanguageName,
         status: WordStatus?,
         completed: Boolean?,
         searchingPhrase: String?,
@@ -444,7 +447,7 @@ class WordRepositoryCustomMethodsImpl(
     ): String {
         return buildList {
             add("words.user_id = :userId")
-            language?.let { add("words.language = :language") }
+            add("words.language = :language")
             status?.let { add("words.status = CAST(:status AS word_status)") }
             completed?.let {
                 if (it) add("wp.completed_at IS NOT NULL") else add("(wp.completed_at IS NULL OR words.status = 'CAPTURED')")
@@ -460,7 +463,7 @@ class WordRepositoryCustomMethodsImpl(
 
     private fun createValuesBindings(
         userId: UUID,
-        language: LanguageName?,
+        language: LanguageName,
         status: WordStatus?,
         completed: Boolean?,
         searchingPhrase: String?,
@@ -472,8 +475,8 @@ class WordRepositoryCustomMethodsImpl(
     ): Map<String, Any> {
         return mutableMapOf<String, Any>(
             "userId" to userId,
+            "language" to language.name,
         ).apply {
-            language?.let { put("language", it.name) }
             status?.let { put("status", it.name) }
             searchingPhrase?.let { put("searchingPhrase", "%$it%") }
             bookmarked?.let { put("bookmarked", it) }

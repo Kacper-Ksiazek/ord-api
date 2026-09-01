@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "ORD API - Language Learning Platform",
-        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. QAW** | Quickly Added Words - Rapidly collect vocabulary for later processing | \u2022 **Authenticated** - Full CRUD operations for logged-in users (bulk create, update, approve, delete)<br>\u2022 **Public** - Public endpoints for quick word submission without authentication |\n| **4. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **5. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **6. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
+        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. QAW** | Quickly Added Words - Rapidly collect vocabulary for later processing | \u2022 **Authenticated** - Full CRUD operations for logged-in users (bulk create, update, approve, delete)<br>\u2022 **Public** - Public endpoints for quick word submission without authentication |\n| **3. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **4. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **5. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
         "contact": {
             "name": "ORD API Team",
             "email": "support@ord-api.com"
@@ -37,19 +37,19 @@
             "description": "AI-powered explanations of words and phrases for language learning"
         },
         {
-            "name": "6. Utility: AI Demo",
+            "name": "5. Utility: AI Demo",
             "description": "AI provider testing and demonstration endpoints"
         },
         {
-            "name": "6. Utility: Health Check",
+            "name": "5. Utility: Health Check",
             "description": "Application health and status monitoring"
         },
         {
-            "name": "4. Games: Words Typing",
+            "name": "3. Games: Words Typing",
             "description": "Word typing game variant endpoints"
         },
         {
-            "name": "4. Games: General",
+            "name": "3. Games: General",
             "description": "General game management endpoints for all game types"
         },
         {
@@ -57,7 +57,7 @@
             "description": "Public endpoints for quickly adding words without authentication - ideal for browser extensions and quick capture tools"
         },
         {
-            "name": "5. Conversations: Management",
+            "name": "4. Conversations: Management",
             "description": "Create and manage AI-powered conversation practice sessions with customizable scenarios and interlocutors"
         },
         {
@@ -65,11 +65,11 @@
             "description": "Create, read, update, and delete vocabulary words with advanced filtering and bulk operations"
         },
         {
-            "name": "4. Games: Words Typing",
+            "name": "3. Games: Words Typing",
             "description": "Fast-paced word typing game to improve vocabulary recall and typing speed"
         },
         {
-            "name": "4. Games: General",
+            "name": "3. Games: General",
             "description": "General game management endpoints"
         },
         {
@@ -85,19 +85,19 @@
             "description": "Text-to-speech synthesis via ElevenLabs streaming API"
         },
         {
-            "name": "5. Conversations: Ongoing Sessions",
+            "name": "4. Conversations: Ongoing Sessions",
             "description": "Manage active conversation sessions with real-time AI message exchange and feedback"
         },
         {
-            "name": "4. Games: Sentences Writing",
+            "name": "3. Games: Sentences Writing",
             "description": "Sentence writing game variant to practice vocabulary usage in context"
         },
         {
-            "name": "5. Conversations: Management",
+            "name": "4. Conversations: Management",
             "description": "AI-powered conversation practice with various scenarios and tones"
         },
         {
-            "name": "5. Conversations: Ongoing Sessions",
+            "name": "4. Conversations: Ongoing Sessions",
             "description": "Manage ongoing conversation sessions and messages"
         },
         {
@@ -113,11 +113,11 @@
             "description": "Detailed word information including examples and usage"
         },
         {
-            "name": "4. Games: Crossword",
+            "name": "3. Games: Crossword",
             "description": "Crossword puzzle game variant endpoints"
         },
         {
-            "name": "4. Games: Crossword",
+            "name": "3. Games: Crossword",
             "description": "Crossword puzzle game variant for vocabulary practice"
         },
         {
@@ -125,7 +125,7 @@
             "description": "Create, read, update, and delete vocabulary words"
         },
         {
-            "name": "4. Games: Sentences Writing",
+            "name": "3. Games: Sentences Writing",
             "description": "Sentence writing game variant endpoints"
         },
         {
@@ -1169,7 +1169,7 @@
         "/api/v1/games/words-typing/start": {
             "post": {
                 "tags": [
-                    "4. Games: Words Typing"
+                    "3. Games: Words Typing"
                 ],
                 "summary": "Start a words typing game",
                 "description": "Initiate a new word typing game session to practice quick recall and accurate typing",
@@ -1213,7 +1213,7 @@
         "/api/v1/games/words-typing/finish": {
             "post": {
                 "tags": [
-                    "4. Games: Words Typing"
+                    "3. Games: Words Typing"
                 ],
                 "summary": "Finish a words typing game",
                 "description": "Submit typed words and complete the game session to receive results including speed and accuracy metrics",
@@ -1260,7 +1260,7 @@
         "/api/v1/games/sentences-writing/start": {
             "post": {
                 "tags": [
-                    "4. Games: Sentences Writing"
+                    "3. Games: Sentences Writing"
                 ],
                 "summary": "Start a sentences writing game",
                 "description": "Initiate a new sentence writing game session where users create sentences using target words",
@@ -1304,7 +1304,7 @@
         "/api/v1/games/sentences-writing/finish": {
             "post": {
                 "tags": [
-                    "4. Games: Sentences Writing"
+                    "3. Games: Sentences Writing"
                 ],
                 "summary": "Finish a sentences writing game",
                 "description": "Submit written sentences and complete the game session to receive AI-powered feedback and evaluation",
@@ -1351,7 +1351,7 @@
         "/api/v1/games/crossword/start": {
             "post": {
                 "tags": [
-                    "4. Games: Crossword"
+                    "3. Games: Crossword"
                 ],
                 "summary": "Start a crossword game",
                 "description": "Initiate a new crossword puzzle game session with selected difficulty and language",
@@ -1395,7 +1395,7 @@
         "/api/v1/games/crossword/finish": {
             "post": {
                 "tags": [
-                    "4. Games: Crossword"
+                    "3. Games: Crossword"
                 ],
                 "summary": "Finish a crossword game",
                 "description": "Submit answers and complete a crossword game session to receive results and statistics",
@@ -1442,7 +1442,7 @@
         "/api/v1/games/cancel/{gameId}": {
             "post": {
                 "tags": [
-                    "4. Games: General"
+                    "3. Games: General"
                 ],
                 "summary": "Cancel an ongoing game",
                 "description": "Cancel an active game session before completion",
@@ -1501,7 +1501,7 @@
         "/api/v1/conversations/": {
             "get": {
                 "tags": [
-                    "5. Conversations: Management"
+                    "4. Conversations: Management"
                 ],
                 "summary": "Get all conversations",
                 "description": "Retrieve all conversation sessions for the authenticated user",
@@ -1586,7 +1586,7 @@
             },
             "post": {
                 "tags": [
-                    "5. Conversations: Management"
+                    "4. Conversations: Management"
                 ],
                 "summary": "Create a conversation",
                 "description": "Create a new conversation session with a topic, language, and AI interlocutor",
@@ -1630,7 +1630,7 @@
         "/api/v1/conversations/suggest-topics": {
             "post": {
                 "tags": [
-                    "5. Conversations: Management"
+                    "4. Conversations: Management"
                 ],
                 "summary": "Suggest conversation topics",
                 "description": "Get AI-generated conversation topic suggestions based on language and user preferences (streaming response)",
@@ -1677,7 +1677,7 @@
         "/api/v1/conversations/suggest-ai-interlocutor": {
             "post": {
                 "tags": [
-                    "5. Conversations: Management"
+                    "4. Conversations: Management"
                 ],
                 "summary": "Generate AI interlocutor profile",
                 "description": "Generate a detailed AI interlocutor profile with personality, background, and conversation style",
@@ -1721,7 +1721,7 @@
         "/api/v1/conversations/ongoing/user/save-message": {
             "post": {
                 "tags": [
-                    "5. Conversations: Ongoing Sessions"
+                    "4. Conversations: Ongoing Sessions"
                 ],
                 "summary": "Save user message",
                 "description": "Save a user message to a conversation",
@@ -1775,7 +1775,7 @@
         "/api/v1/conversations/ongoing/user/generate-analysis": {
             "post": {
                 "tags": [
-                    "5. Conversations: Ongoing Sessions"
+                    "4. Conversations: Ongoing Sessions"
                 ],
                 "summary": "Generate analysis for user message",
                 "description": "Generate AI-powered grammar and language analysis for an existing user message",
@@ -1822,7 +1822,7 @@
         "/api/v1/conversations/ongoing/ai/request-message": {
             "post": {
                 "tags": [
-                    "5. Conversations: Ongoing Sessions"
+                    "4. Conversations: Ongoing Sessions"
                 ],
                 "summary": "Request AI response",
                 "description": "Request an AI-generated response in an ongoing conversation (streaming response)",
@@ -1872,7 +1872,7 @@
         "/api/v1/conversations/ongoing/ai/initialize": {
             "post": {
                 "tags": [
-                    "5. Conversations: Ongoing Sessions"
+                    "4. Conversations: Ongoing Sessions"
                 ],
                 "summary": "Initialize conversation with AI",
                 "description": "Start a conversation with an AI-generated opening message (streaming response)",
@@ -1931,7 +1931,7 @@
         "/api/v1/conversations/ongoing/ai/generate-learning-tips": {
             "post": {
                 "tags": [
-                    "5. Conversations: Ongoing Sessions"
+                    "4. Conversations: Ongoing Sessions"
                 ],
                 "summary": "Generate learning tips from latest AI message",
                 "description": "Generate structured learning tips and annotations from the most recent AI message in the conversation that doesn't have learning tips yet. The system automatically identifies the appropriate message.",
@@ -2540,7 +2540,7 @@
         "/api/v1/health-check": {
             "get": {
                 "tags": [
-                    "6. Utility: Health Check"
+                    "5. Utility: Health Check"
                 ],
                 "summary": "Check application health",
                 "description": "Returns the health status of the application and database connection. In the e2e profile, ai and tts are reported as STUB (fixture-based clients, no external API calls). No authentication required.",
@@ -2592,7 +2592,7 @@
         "/api/v1/conversations/{conversationId}": {
             "get": {
                 "tags": [
-                    "5. Conversations: Management"
+                    "4. Conversations: Management"
                 ],
                 "summary": "Get conversation by ID",
                 "description": "Retrieve detailed information about a specific conversation",
@@ -2646,7 +2646,7 @@
             },
             "delete": {
                 "tags": [
-                    "5. Conversations: Management"
+                    "4. Conversations: Management"
                 ],
                 "summary": "Delete a conversation",
                 "description": "Permanently delete a conversation and all its messages",
@@ -2696,7 +2696,7 @@
         "/api/v1/conversations/overview": {
             "get": {
                 "tags": [
-                    "5. Conversations: Management"
+                    "4. Conversations: Management"
                 ],
                 "summary": "Get conversation activity overview",
                 "description": "Retrieve activity metrics for the last 90 days: daily heatmap, weekly message/conversation trends, and totals",

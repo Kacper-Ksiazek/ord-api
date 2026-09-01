@@ -145,7 +145,7 @@ Pure stateless calculation objects (no Spring dependencies) live alongside model
 
 Flyway migrations in `src/main/resources/db/migration/` follow `V<number>__<description>.sql`.
 
-Latest migrations at time of writing: `V21__seed_root_user_conversation.sql`
+Latest migrations at time of writing: `V19__seed_e2e_worker_users.sql`
 
 ### Core Tables (Conversation Feature)
 
@@ -194,7 +194,7 @@ conversation_ai_message_learning_tips
 - **Base paths:** `/api/v1/<resource>/`
 - **Trailing slash:** GET list endpoints use trailing slash (e.g., `GET /api/v1/conversations/`)
 - **Response codes:** POST create → `201 CREATED`, GET → `200 OK`, DELETE → `204 NO_CONTENT`
-- **Swagger tags:** numbered and descriptive (e.g., `"5. Conversations: Management"`)
+- **Swagger tags:** numbered and descriptive (e.g., `"4. Conversations: Management"`)
 - **Security:** `@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)` on controller class (`AUTH-TOKEN` cookie)
 
 ---

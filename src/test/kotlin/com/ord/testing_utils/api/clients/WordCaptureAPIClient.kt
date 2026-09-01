@@ -20,42 +20,43 @@ class WordCaptureAPIClient(
 ) : APITestClient(webClient) {
     val baseUrl = "/api/v1/words"
 
-    fun captureOne(
-        body: CaptureWordRequest,
-        user: MockedAuthenticatedUser? = null,
-    ): APIClientResponse<WordDTO?> {
-        return post(
-            url = "$baseUrl/capture",
-            body = body,
-            user = user,
-            responseBodyType = object : ParameterizedTypeReference<WordDTO>() {},
-        )
-    }
-
-    fun bulkCapture(
+    fun capture(
         body: List<CaptureWordRequest>,
         user: MockedAuthenticatedUser? = null,
     ): APIClientResponse<List<WordDTO>?> {
         return post(
-            url = "$baseUrl/bulk-capture",
+            url = "$baseUrl/capture",
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<List<WordDTO>>() {},
         )
     }
 
+    fun captureOne(
+        body: CaptureWordRequest,
+        user: MockedAuthenticatedUser? = null,
+    ): APIClientResponse<WordDTO?> {
+        val response = capture(listOf(body), user)
+        return APIClientResponse(
+            body = response.body?.firstOrNull(),
+            status = response.status,
+            headers = response.headers,
+            cookies = response.cookies,
+        )
+    }
+
     fun getCapturedWords(
+        language: LanguageName? = null,
         page: Int? = null,
         perPage: Int? = null,
         status: WordStatus? = null,
-        language: LanguageName? = null,
         user: MockedAuthenticatedUser? = null,
     ): APIClientResponse<WordsPaginatedDataResponse?> {
         val queryParams = mutableMapOf<String, String>()
+        language?.let { queryParams["language"] = it.name }
         page?.let { queryParams["page"] = it.toString() }
         perPage?.let { queryParams["perPage"] = it.toString() }
         status?.let { queryParams["status"] = it.name }
-        language?.let { queryParams["language"] = it.name }
 
         return get(
             url = "$baseUrl/captured",
@@ -97,18 +98,6 @@ class WordCaptureAPIClient(
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<List<WordDTO>>() {},
-        )
-    }
-
-    fun activateOne(
-        id: UUID,
-        user: MockedAuthenticatedUser? = null,
-    ): APIClientResponse<WordDTO?> {
-        return patch(
-            url = "$baseUrl/$id/activate",
-            body = null,
-            user = user,
-            responseBodyType = object : ParameterizedTypeReference<WordDTO>() {},
         )
     }
 

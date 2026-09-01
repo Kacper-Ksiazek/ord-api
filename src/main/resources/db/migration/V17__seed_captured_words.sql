@@ -1,5 +1,5 @@
 -------------
--- captured words for root user (formerly quickly_added_words)
+-- captured words for root user
 -------------
 
 INSERT INTO public.words (id, status, type, extra_mark, source_word, translation, definition, language, is_bookmarked, user_id, created_at, updated_at)

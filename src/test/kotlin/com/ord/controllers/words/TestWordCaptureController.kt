@@ -310,7 +310,7 @@ class TestWordCaptureController @Autowired constructor(
     }
 
     @Nested
-    @DisplayName("[POST] /api/v1/words/bulk-capture - create multiple quickly added words")
+    @DisplayName("[POST] /api/v1/words/capture - create multiple quickly added words")
     inner class BulkCreateTests {
         @Nested
         @DisplayName("Positive")
@@ -320,7 +320,7 @@ class TestWordCaptureController @Autowired constructor(
             @BeforeEach
             fun beforeEach() {
                 val user = mockAuthenticatedUser()
-                response = wordCaptureAPIClient.bulkCapture(TestData.APIRequestPayloads.createBulk, user)
+                response = wordCaptureAPIClient.capture(TestData.APIRequestPayloads.createBulk, user)
             }
 
             @Test
@@ -352,7 +352,7 @@ class TestWordCaptureController @Autowired constructor(
         inner class Negative {
             @Test
             fun `401 - should require authentication`() {
-                val response = wordCaptureAPIClient.bulkCapture(TestData.APIRequestPayloads.createBulk)
+                val response = wordCaptureAPIClient.capture(TestData.APIRequestPayloads.createBulk)
                 response.status shouldBe HttpStatus.UNAUTHORIZED
             }
         }
@@ -367,9 +367,9 @@ class TestWordCaptureController @Autowired constructor(
             @Test
             fun `200 - should return paginated list of quickly added words`() {
                 val user = mockAuthenticatedUser()
-                wordCaptureAPIClient.bulkCapture(TestData.APIRequestPayloads.createBulk, user)
+                wordCaptureAPIClient.capture(TestData.APIRequestPayloads.createBulk, user)
 
-                val response = wordCaptureAPIClient.getCapturedWords(user = user)
+                val response = wordCaptureAPIClient.getCapturedWords(language = TestData.TEST_LANGUAGE, user = user)
 
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
@@ -380,9 +380,14 @@ class TestWordCaptureController @Autowired constructor(
             @Test
             fun `200 - should respect pagination parameters`() {
                 val user = mockAuthenticatedUser()
-                wordCaptureAPIClient.bulkCapture(TestData.APIRequestPayloads.createBulk, user)
+                wordCaptureAPIClient.capture(TestData.APIRequestPayloads.createBulk, user)
 
-                val response = wordCaptureAPIClient.getCapturedWords(page = 0, perPage = 2, user = user)
+                val response = wordCaptureAPIClient.getCapturedWords(
+                    language = TestData.TEST_LANGUAGE,
+                    page = 0,
+                    perPage = 2,
+                    user = user,
+                )
 
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
@@ -396,10 +401,20 @@ class TestWordCaptureController @Autowired constructor(
             fun `200 - page 1 should return second page when enough items exist`() {
                 val user = mockAuthenticatedUser()
                 val words = (1..51).map { CaptureWordRequest(sourceWord = "word-$it", language = TestData.TEST_LANGUAGE) }
-                wordCaptureAPIClient.bulkCapture(words, user)
+                wordCaptureAPIClient.capture(words, user)
 
-                val firstPage = wordCaptureAPIClient.getCapturedWords(page = 0, perPage = 50, user = user)
-                val secondPage = wordCaptureAPIClient.getCapturedWords(page = 1, perPage = 50, user = user)
+                val firstPage = wordCaptureAPIClient.getCapturedWords(
+                    language = TestData.TEST_LANGUAGE,
+                    page = 0,
+                    perPage = 50,
+                    user = user,
+                )
+                val secondPage = wordCaptureAPIClient.getCapturedWords(
+                    language = TestData.TEST_LANGUAGE,
+                    page = 1,
+                    perPage = 50,
+                    user = user,
+                )
 
                 firstPage.status shouldBe HttpStatus.OK
                 firstPage.body!!.data shouldHaveSize 50
@@ -423,7 +438,7 @@ class TestWordCaptureController @Autowired constructor(
                     user2
                 )
 
-                val response = wordCaptureAPIClient.getCapturedWords(user = user1)
+                val response = wordCaptureAPIClient.getCapturedWords(language = TestData.TEST_LANGUAGE, user = user1)
 
                 response.body!!.data shouldHaveSize 1
                 response.body.data[0].sourceWord shouldBe TestData.TEST_WORD_1
@@ -434,7 +449,7 @@ class TestWordCaptureController @Autowired constructor(
                 val user = mockAuthenticatedUser()
                 val publicClient = PublicWordCaptureAPIClient(webClient)
 
-                wordCaptureAPIClient.bulkCapture(TestData.APIRequestPayloads.createBulk, user)
+                wordCaptureAPIClient.capture(TestData.APIRequestPayloads.createBulk, user)
                 publicClient.publicBulkCreate(
                     PublicWordsBulkCaptureRequest(
                         userEmail = user.email,
@@ -444,7 +459,7 @@ class TestWordCaptureController @Autowired constructor(
                         ))
                 )
 
-                val response = wordCaptureAPIClient.getCapturedWords(user = user)
+                val response = wordCaptureAPIClient.getCapturedWords(language = TestData.TEST_LANGUAGE, user = user)
 
                 response.status shouldBe HttpStatus.OK
                 response.body!!.data shouldHaveSize 5
@@ -463,6 +478,7 @@ class TestWordCaptureController @Autowired constructor(
                 seedActiveAndCapturedWord(user)
 
                 val response = wordCaptureAPIClient.getCapturedWords(
+                    language = TestData.TEST_LANGUAGE,
                     page = 0,
                     perPage = 50,
                     status = status,
@@ -515,7 +531,7 @@ class TestWordCaptureController @Autowired constructor(
                 val user = mockAuthenticatedUser()
                 val publicClient = PublicWordCaptureAPIClient(webClient)
 
-                wordCaptureAPIClient.bulkCapture(
+                wordCaptureAPIClient.capture(
                     listOf(
                         CaptureWordRequest(sourceWord = "captured1", language = TestData.TEST_LANGUAGE),
                         CaptureWordRequest(sourceWord = "captured2", language = TestData.TEST_LANGUAGE),
@@ -533,9 +549,17 @@ class TestWordCaptureController @Autowired constructor(
                 )
 
                 val overview = wordCaptureAPIClient.getOverview(user = user)
-                val allWords = wordCaptureAPIClient.getCapturedWords(user = user)
-                val activeWords = wordCaptureAPIClient.getCapturedWords(status = WordStatus.ACTIVE, user = user)
-                val capturedWords = wordCaptureAPIClient.getCapturedWords(status = WordStatus.CAPTURED, user = user)
+                val allWords = wordCaptureAPIClient.getCapturedWords(language = TestData.TEST_LANGUAGE, user = user)
+                val activeWords = wordCaptureAPIClient.getCapturedWords(
+                    language = TestData.TEST_LANGUAGE,
+                    status = WordStatus.ACTIVE,
+                    user = user,
+                )
+                val capturedWords = wordCaptureAPIClient.getCapturedWords(
+                    language = TestData.TEST_LANGUAGE,
+                    status = WordStatus.CAPTURED,
+                    user = user,
+                )
 
                 overview.status shouldBe HttpStatus.OK
                 overview.body!!.total shouldBe 4
@@ -553,8 +577,15 @@ class TestWordCaptureController @Autowired constructor(
         inner class Negative {
             @Test
             fun `401 - should require authentication`() {
-                val response = wordCaptureAPIClient.getCapturedWords()
+                val response = wordCaptureAPIClient.getCapturedWords(language = TestData.TEST_LANGUAGE)
                 response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `400 - should require language`() {
+                val user = mockAuthenticatedUser()
+                val response = wordCaptureAPIClient.getCapturedWords(language = null, user = user)
+                response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
     }
@@ -788,7 +819,7 @@ class TestWordCaptureController @Autowired constructor(
             @Test
             fun `200 - should update multiple quickly added words`() {
                 val user = mockAuthenticatedUser()
-                val created = wordCaptureAPIClient.bulkCapture(TestData.APIRequestPayloads.createBulk, user)
+                val created = wordCaptureAPIClient.capture(TestData.APIRequestPayloads.createBulk, user)
 
                 val updateMap = mapOf(
                     created.body!![0].id to "updated1",

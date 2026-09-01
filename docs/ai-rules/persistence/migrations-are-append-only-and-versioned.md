@@ -5,7 +5,7 @@ Migrations live in `src/main/resources/db/migration/` and are named `V<n>__<snak
 ## Good
 
 ```sql
--- New file: V22__add_conversation_archived_flag.sql (next free version number)
+-- New file: V20__add_conversation_archived_flag.sql (next free version number)
 ALTER TABLE conversations
     ADD COLUMN IF NOT EXISTS is_archived BOOLEAN NOT NULL DEFAULT FALSE;
 ```

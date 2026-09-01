@@ -29,7 +29,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/v1/conversations/ongoing")
 @Tag(
-    name = "5. Conversations: Ongoing Sessions",
+    name = "4. Conversations: Ongoing Sessions",
     description = "Manage active conversation sessions with real-time AI message exchange and feedback"
 )
 @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)

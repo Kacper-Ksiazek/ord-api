@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono
 @RestController
 @RequestMapping("/api/v1/games/words-typing")
 @Tag(
-    name = "4. Games: Words Typing",
+    name = "3. Games: Words Typing",
     description = "Fast-paced word typing game to improve vocabulary recall and typing speed"
 )
 @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)

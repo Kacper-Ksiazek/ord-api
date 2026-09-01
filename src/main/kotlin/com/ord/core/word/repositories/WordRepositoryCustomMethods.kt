@@ -21,7 +21,7 @@ interface WordRepositoryCustomMethods {
 
     fun findManyWords(
         userId: UUID,
-        language: LanguageName?,
+        language: LanguageName,
         status: WordStatus?,
         completed: Boolean?,
         bookmarked: Boolean?,

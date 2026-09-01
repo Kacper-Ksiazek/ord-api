@@ -88,7 +88,7 @@ class TestWordOverview @Autowired constructor(
             fun `200 - should return counts split by lifecycle status`() {
                 val user = mockAuthenticatedUser()
 
-                wordCaptureAPIClient.bulkCapture(
+                wordCaptureAPIClient.capture(
                     listOf(
                         CaptureWordRequest(sourceWord = "captured1", language = LanguageName.POLISH),
                         CaptureWordRequest(sourceWord = "captured2", language = LanguageName.POLISH),
