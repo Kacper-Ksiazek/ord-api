@@ -7,15 +7,15 @@ import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
 import com.ord.core.word.api.crud.requests.dto.GetManyWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
-import com.ord.core.word.api.crud.responses.dto.WordListItem
+import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.WordMapper
+import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word_details.toCompact
 import com.ord.core.word.services.WordDetailsService
 import com.ord.core.word.services.WordService
 import com.ord.features.bank.service.BankService
-import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.extensions.convertToSetExplicitly
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -32,57 +32,48 @@ class WordCRUDFacadeImpl(
 ) : WordCRUDFacade {
     override fun getManyWords(
         requestBody: GetManyWordsRequest,
-        userId: UUID
-    ): Mono<ResponseEntity<PaginatedDataResponse<WordListItem>>> {
+        userId: UUID,
+    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> {
         return wordService
             .findManyWords(
                 language = requestBody.language,
                 wordType = requestBody.wordType,
+                status = requestBody.status ?: WordStatus.ACTIVE,
                 completed = requestBody.completed,
                 wordExtraMark = requestBody.wordExtraMark,
                 bookmarked = requestBody.bookmarked,
                 searchingPhrase = requestBody.searchingPhrase,
-
                 banksIds = requestBody.banksIds?.convertToSetExplicitly(paramName = "banksIds"),
                 bankGroupsIds = requestBody.bankGroupsIds?.convertToSetExplicitly(paramName = "bankGroupsIds"),
-
                 sortDirection = requestBody.sortDirection,
                 sortBy = requestBody.sortBy,
-
                 userId = userId,
-
                 page = requestBody.page ?: 0,
-                perPage = requestBody.perPage ?: 10
+                perPage = requestBody.perPage ?: 10,
             )
+            .map { result ->
+                WordsPaginatedDataResponse(
+                    pagination = result.paginated.pagination,
+                    data = result.paginated.data,
+                    capturedCount = result.capturedCount,
+                )
+            }
             .map { ResponseEntity.status(HttpStatus.OK).body(it) }
     }
 
-
-    override fun getSingleWord(
-        id: UUID,
-        userId: UUID,
-    ): Mono<ResponseEntity<SingleWordResponse>> {
+    override fun getSingleWord(id: UUID, userId: UUID): Mono<ResponseEntity<SingleWordResponse>> {
         return wordService
-            .findOneWord(
-                wordId = id,
-                userId = userId,
-            )
+            .findOneWord(wordId = id, userId = userId)
             .flatMap { word ->
                 wordDetailsService
-                    .getWordDetailsByWordId(
-                        wordId = id,
-                        userId = userId
-                    )
+                    .getWordDetailsByWordId(wordId = id, userId = userId)
                     .map { details -> word.copy(details = details.toCompact()) }
                     .onErrorResume { Mono.just(word.copy(details = null)) }
             }
             .map { ResponseEntity.status(HttpStatus.OK).body(it) }
     }
 
-    override fun createWord(
-        body: CreateWordRequest,
-        user: UserDTO
-    ): Mono<ResponseEntity<WordDTO>> {
+    override fun createWord(body: CreateWordRequest, user: UserDTO): Mono<ResponseEntity<WordDTO>> {
         return getBankFromRequestOrNull(
             bankService = bankService,
             bankId = body.bankId,
@@ -91,43 +82,30 @@ class WordCRUDFacadeImpl(
         )
             .flatMap { bank ->
                 val wordToSave = WordEntity(
+                    status = WordStatus.ACTIVE,
                     type = body.type,
                     sourceWord = body.sourceWord,
                     translation = body.translation,
                     definition = body.definition,
                     extraMark = body.extraMark,
-
                     language = body.language,
-
                     userId = user.id,
-                    bankId = bank.value?.id
+                    bankId = bank.value?.id,
                 )
-
-                wordService.saveNewWord(
-                    word = wordToSave,
-                    userId = user.id,
-                )
+                wordService.saveNewActiveWord(word = wordToSave, userId = user.id)
             }
             .map { ResponseEntity.status(HttpStatus.CREATED).body(it) }
-
     }
 
-    override fun updateWord(
-        id: UUID,
-        body: UpdateWordRequest,
-        userId: UUID,
-    ): Mono<ResponseEntity<WordDTO>> {
+    override fun updateWord(id: UUID, body: UpdateWordRequest, userId: UUID): Mono<ResponseEntity<WordDTO>> {
         return wordService
-            .findByIdOrFail(
-                id = id,
-                userId = userId
-            )
+            .findByIdOrFail(id = id, userId = userId)
             .flatMap { currentWord ->
                 getBankFromRequestOrNull(
                     bankService = bankService,
                     bankId = body.bankId,
                     bankToCreate = body.bankToCreate,
-                    userId = userId
+                    userId = userId,
                 ).map { bank ->
                     currentWord.copy(
                         type = body.type ?: currentWord.type,
@@ -135,32 +113,27 @@ class WordCRUDFacadeImpl(
                         translation = body.translation ?: currentWord.translation,
                         definition = body.definition ?: currentWord.definition,
                         extraMark = body.extraMark ?: currentWord.extraMark,
-
                         language = body.language ?: currentWord.language,
-
-                        bankId = bank.value?.id ?: currentWord.bankId
+                        bankId = bank.value?.id ?: currentWord.bankId,
                     )
                 }
             }
             .flatMap { updatedEntity -> wordService.save(updatedEntity) }
-            .map { savedEntity ->
-                ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(wordMapper.toDTO(savedEntity))
+            .flatMap { saved ->
+                if (saved.isActive()) {
+                    wordService.findOneWord(saved.id!!, userId).map { response ->
+                        wordMapper.toDTO(saved).apply { progress = response.progress }
+                    }
+                } else {
+                    Mono.just(wordMapper.toDTO(saved))
+                }
             }
-
+            .map { ResponseEntity.status(HttpStatus.OK).body(it) }
     }
 
-    override fun deleteWord(
-        id: UUID,
-        userId: UUID,
-    ): Mono<ResponseEntity<Unit>> {
+    override fun deleteWord(id: UUID, userId: UUID): Mono<ResponseEntity<Unit>> {
         return wordService
-            .deleteById(
-                id = id,
-                userId = userId
-            )
+            .deleteById(id = id, userId = userId)
             .then(Mono.fromCallable { ResponseEntity.status(HttpStatus.OK).build() })
-
     }
 }

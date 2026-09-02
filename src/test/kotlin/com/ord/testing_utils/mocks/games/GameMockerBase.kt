@@ -1,7 +1,9 @@
 package com.ord.testing_utils.mocks.games
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
+import com.ord.seeders.factories.WordProgressFactory
 import com.ord.features.game.model.ongoing_game.OngoingGameDTO
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
@@ -28,6 +30,8 @@ abstract class GameMockerBase<
     private val ongoingGameRepository: OngoingGameRepository,
     private val wordMockFactory: WordFactory,
     private val wordRepository: WordRepository,
+    private val wordProgressRepository: WordProgressRepository,
+    private val wordProgressFactory: WordProgressFactory,
     private val apiClient: GameAPIClient<TStartedGameResponseBody, *, *>,
 ) : ResourceJSONFileReader<List<TJSONDataModelType>, TJSONDataModelType> {
     override val root: RootDir = RootDir.TEST_RESOURCES
@@ -80,7 +84,7 @@ abstract class GameMockerBase<
             .filter { it.language == ongoingGameDTO.language }
             .map { it.sourceWord }
 
-        wordRepository
+        val savedWords = wordRepository
             .saveAll(
                 getListOfUsedWords(ongoingGameDTO)
                     .filter { it !in currentWords }
@@ -90,10 +94,20 @@ abstract class GameMockerBase<
                             language = ongoingGameDTO.language,
                             userId = userId,
                         )
-                    }
+                    },
             )
             .collectList()
-            .block()
+            .block()!!
+
+        val progressEntities = savedWords.map { word ->
+            wordProgressFactory.mockEntity(
+                wordId = word.id!!,
+                userId = userId,
+            )
+        }
+        if (progressEntities.isNotEmpty()) {
+            wordProgressRepository.saveAll(progressEntities).collectList().block()
+        }
 
         return Pair(ongoingGameDTO, instruction)
     }
@@ -111,6 +125,8 @@ abstract class GameMockerBase<
         loadWordsFromResourceFile(
             userId = authenticatedUser.userInfo.id,
             wordsRepository = wordRepository,
+            wordProgressRepository = wordProgressRepository,
+            wordProgressFactory = wordProgressFactory,
         )
 
         val startTime = System.currentTimeMillis()

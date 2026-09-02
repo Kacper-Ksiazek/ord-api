@@ -27,7 +27,7 @@ import reactor.core.publisher.Mono
 @RestController
 @RequestMapping("/api/v1/games/crossword")
 @Tag(
-    name = "4. Games: Crossword",
+    name = "3. Games: Crossword",
     description = "Crossword puzzle game variant for vocabulary practice"
 )
 @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)

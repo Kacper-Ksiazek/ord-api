@@ -23,7 +23,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/v1/games")
 @Tag(
-    name = "4. Games: General",
+    name = "3. Games: General",
     description = "General game management endpoints for all game types"
 )
 @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)

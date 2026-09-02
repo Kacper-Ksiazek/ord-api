@@ -14,8 +14,10 @@ import com.ord.core.word.api.ai.facades.WordAIFacade
 import org.slf4j.LoggerFactory
 import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest
+import com.ord.core.word.api.ai.requests.dto.WordFillGapsRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
 import com.ord.core.word.api.ai.responses.dto.VocabularySuggestion
+import com.ord.core.word.api.ai.responses.openai.OpenAIWordFillGapsBatch
 import com.ord.core.word.api.ai.responses.openai.OpenAIGeneratedWordManual
 import com.ord.core.word.models.word_details.enums.WordCollocationFrequency
 import com.ord.core.word.models.word.enums.WordExtraMark
@@ -23,7 +25,6 @@ import com.ord.core.word.models.word_details.enums.WordGender
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.services.WordService
 import com.ord.exceptions.REST.BadRequestException
-import com.ord.features.quickly_added_words.repositories.QAWRepository
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.utils.EnumUtils.joinEnumValues
@@ -36,7 +37,6 @@ class WordAIFacadeImpl(
     private val openAIAPIClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService,
     private val wordService: WordService,
-    private val qawRepository: QAWRepository,
     private val gptTokensUsageService: GptTokensUsageService,
 ) : WordAIFacade {
     private val logger = LoggerFactory.getLogger(WordAIFacadeImpl::class.java)
@@ -94,31 +94,16 @@ class WordAIFacadeImpl(
                     BadRequestException("User does not have any proficiency in the requested language.")
                 )
             )
-            .zipWith(
-                // Gather existing vocabulary (both regular words and quickly added words)
+            .flatMapMany { userProficiencyInRequestedLanguage ->
                 wordService.getWordsForPromptGeneration(
                     userId = user.id,
                     language = body.language,
                     amountOfLatestWord = 1000,
-                    amountOfProblematicWord = 0
-                ).zipWith(
-                    qawRepository
-                        .findAllWordsByUserIdAndLanguage(user.id, body.language)
-                        .collectList()
-                        .map { it.toSet() }
-                )
-            )
-            .flatMapMany { tuple ->
-                val userProficiencyInRequestedLanguage = tuple.t1
-                val wordsTuple = tuple.t2
-                val wordsFromWords = wordsTuple.t1
-                val wordsFromQAW = wordsTuple.t2
-
-                val translateTo: LanguageName = userProficiencyInRequestedLanguage!!.translateTo
-                val proficiencyLevel: LanguageProficiencyLevel = userProficiencyInRequestedLanguage.level
-                val wordCount: Int = 10
-
-                val allExistingWords = wordsFromWords + wordsFromQAW
+                    amountOfProblematicWord = 0,
+                ).flatMapMany { allExistingWords ->
+                    val translateTo = userProficiencyInRequestedLanguage.translateTo
+                    val proficiencyLevel = userProficiencyInRequestedLanguage.level
+                    val wordCount = 10
                 val existingWordsString = if (allExistingWords.isEmpty()) {
                     "No existing vocabulary"
                 } else {
@@ -178,9 +163,55 @@ class WordAIFacadeImpl(
                         !excludedWordsSet.contains(wordLowercase) && !existingWordsSet.contains(wordLowercase)
                     }
                     .map { suggestion ->
-                        // Serialize back to JSON string for the response
                         jsonObjectMapper.writeValueAsString(suggestion)
                     }
+                }
+            }
+    }
+
+    override fun fillGaps(body: WordFillGapsRequest, user: UserDTO): Mono<com.ord.core.word.api.ai.responses.dto.WordFillGapsResponse> {
+        return languageProficiencyService.findUserProficiencyInLanguage(user.id, body.language)
+            .switchIfEmpty(Mono.error(BadRequestException("User does not have any proficiency in the requested language.")))
+            .flatMap { userProficiencyInRequestedLanguage ->
+                val wordsList = body.items
+                    .mapIndexed { index, item -> "${index + 1}. ${item.sourceWord}" }
+                    .joinToString(separator = "\n")
+
+                val prompt = Prompt(
+                    variant = AvailablePrompts.QAW_FILL_GAPS,
+                    params = mapOf(
+                        "words" to wordsList,
+                        "wordCount" to body.items.size.toString(),
+                        "wordLanguage" to body.language.toString(),
+                        "desiredLanguage" to userProficiencyInRequestedLanguage.translateTo.toString(),
+                        "proficiency" to userProficiencyInRequestedLanguage.level.toString(),
+                        "generativeContentLanguage" to userProficiencyInRequestedLanguage.generativeContentLanguage.toString(),
+                        "wordTypes" to WordType::class.joinEnumValues(separator = " | "),
+                        "wordExtraMarks" to WordExtraMark::class.joinEnumValues(separator = " | "),
+                    ),
+                )
+
+                val expectedItemCount = body.items.size
+
+                openAIAPIClientService
+                    .makeRequest(
+                        aiResponseType = object : TypeReference<OpenAIWordFillGapsBatch>() {},
+                        prompt = prompt,
+                        userId = user.id,
+                        gptTokensUsageLogKey = GptTokensUsageOperationType.Words.FILL_GAPS,
+                        validateResponseBody = { batch ->
+                            if (batch == null || batch.items.size != expectedItemCount) {
+                                return@makeRequest false
+                            }
+                            try {
+                                batch.toDomain()
+                                true
+                            } catch (_: IllegalArgumentException) {
+                                false
+                            }
+                        },
+                    )
+                    .map { it.toDomain() }
             }
     }
 }

@@ -33,7 +33,7 @@ import java.util.*
 @RestController
 @RequestMapping("/api/v1/conversations")
 @Tag(
-    name = "5. Conversations: Management",
+    name = "4. Conversations: Management",
     description = "Create and manage AI-powered conversation practice sessions with customizable scenarios and interlocutors"
 )
 @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)

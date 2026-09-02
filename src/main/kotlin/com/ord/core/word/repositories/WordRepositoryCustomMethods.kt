@@ -3,11 +3,10 @@ package com.ord.core.word.repositories
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
-import com.ord.core.word.api.crud.responses.dto.WordListItem
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
-import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.shared.domain.dto.CountingSummary
 import com.ord.shared.domain.enums.SortDirection
 import reactor.core.publisher.Flux
@@ -15,10 +14,6 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 interface WordRepositoryCustomMethods {
-    // ------
-    // READ
-    // ------
-
     fun findOneWord(
         wordId: UUID,
         userId: UUID,
@@ -27,52 +22,50 @@ interface WordRepositoryCustomMethods {
     fun findManyWords(
         userId: UUID,
         language: LanguageName,
-
+        status: WordStatus?,
         completed: Boolean?,
         bookmarked: Boolean?,
         searchingPhrase: String?,
-
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
-
         wordType: WordType?,
         wordExtraMark: WordExtraMark?,
-
         sortDirection: SortDirection,
         sortBy: GetAllWordsSortOptions,
-
         page: Int,
-        perPage: Int
-    ): Mono<PaginatedDataResponse<WordListItem>>
+        perPage: Int,
+    ): Mono<WordsPaginatedResult>
 
+    fun countByStatus(userId: UUID): Mono<WordStatusCounts>
 
     fun findNOfLatestWords(
         userId: UUID,
         language: LanguageName,
-        limit: Int
+        limit: Int,
     ): Flux<String>
-
 
     fun findNOfMostDifficultWords(
         userId: UUID,
         language: LanguageName,
-        limit: Int
+        limit: Int,
     ): Flux<String>
-
 
     fun findAllWordsFromBanks(
         userId: UUID,
         language: LanguageName,
-        banksIds: List<UUID>
+        banksIds: List<UUID>,
     ): Flux<String>
 
+    fun findAllSourceWordsByUserIdAndLanguage(
+        userId: UUID,
+        language: LanguageName,
+    ): Flux<String>
 
     fun findAllWordByTheirOrigins(
         origins: Set<String>,
         language: LanguageName,
-        userId: UUID
+        userId: UUID,
     ): Flux<WordEntity>
-
 
     fun getWordsForGame(
         userId: UUID,
@@ -82,35 +75,20 @@ interface WordRepositoryCustomMethods {
         bankGroupsIds: Set<UUID>?,
     ): Mono<Set<String>>
 
-    // ------
-    // AGGREGATE
-    // ------
-
     fun countCreated(
         language: LanguageName,
-        userId: UUID
+        userId: UUID,
     ): Mono<CountingSummary>
-
-
-    fun countCompleted(
-        language: LanguageName,
-        userId: UUID
-    ): Mono<CountingSummary>
-
-    // ------
-    // UPDATE
-    // ------
 
     fun changeBankForSingleWord(
         wordId: UUID,
         bankId: UUID?,
-        userId: UUID
+        userId: UUID,
     ): Mono<Int>
-
 
     fun changeBankForMultipleWords(
         bankId: UUID?,
         wordIds: List<UUID>,
-        userId: UUID
+        userId: UUID,
     ): Mono<Int>
 }

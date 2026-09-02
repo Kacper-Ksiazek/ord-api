@@ -16,8 +16,8 @@ import com.ord.features.game.variants.sentences_writing.ai.dto.review.openai.Ope
 import com.ord.features.game.variants.sentences_writing.ai.dto.review.openai.OpenAISentencesWritingReview
 import com.ord.features.game.variants.words_typing.ai.dto.openai.OpenAIWordPair
 import com.ord.features.game.variants.words_typing.ai.dto.openai.OpenAIWordsTyping
-import com.ord.features.quickly_added_words.api.ai.responses.openai.OpenAIQAWFillGapsBatch
-import com.ord.features.quickly_added_words.api.ai.responses.openai.OpenAIQAWFillGapsItem
+import com.ord.core.word.api.ai.responses.openai.OpenAIWordFillGapsBatch
+import com.ord.core.word.api.ai.responses.openai.OpenAIWordFillGapsItem
 import com.ord.stubs.ai.dto.ArrayStreamFixture
 
 class AIFixtureDynamicBuilder(
@@ -45,8 +45,8 @@ class AIFixtureDynamicBuilder(
             GptTokensUsageOperationType.Words.GENERATE_MANUAL ->
                 buildWordManual(prompt)
 
-            GptTokensUsageOperationType.QAW.FILL_GAPS ->
-                buildQAWFillGaps(prompt)
+            GptTokensUsageOperationType.Words.FILL_GAPS ->
+                buildWordFillGaps(prompt)
 
             GptTokensUsageOperationType.Game.Generate.CROSSWORD ->
                 buildCrossword(prompt)
@@ -123,13 +123,13 @@ class AIFixtureDynamicBuilder(
         )
     }
 
-    private fun buildQAWFillGaps(prompt: String): OpenAIQAWFillGapsBatch {
+    private fun buildWordFillGaps(prompt: String): OpenAIWordFillGapsBatch {
         val words = AIPromptParsingUtils.parseQAWInputWords(prompt)
-        require(words.isNotEmpty()) { "Could not parse input words from QAW fill-gaps prompt" }
+        require(words.isNotEmpty()) { "Could not parse input words from fill-gaps prompt" }
 
-        return OpenAIQAWFillGapsBatch(
+        return OpenAIWordFillGapsBatch(
             items = words.map { inputWord ->
-                OpenAIQAWFillGapsItem(
+                OpenAIWordFillGapsItem(
                     inputWord = inputWord,
                     word = inputWord,
                     translation = "translation of $inputWord",
@@ -222,7 +222,7 @@ private object AIFixtureRegistryDynamicKeys {
     private val dynamicKeys = setOf(
         GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY,
         GptTokensUsageOperationType.Words.GENERATE_MANUAL,
-        GptTokensUsageOperationType.QAW.FILL_GAPS,
+        GptTokensUsageOperationType.Words.FILL_GAPS,
         GptTokensUsageOperationType.Game.Generate.CROSSWORD,
         GptTokensUsageOperationType.Game.Generate.WORDS_TYPING,
         GptTokensUsageOperationType.Game.Generate.SENTENCES_WRITING,

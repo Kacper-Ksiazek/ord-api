@@ -15,9 +15,8 @@ import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.requests.dto.WordBulkActionRequest
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
-import com.ord.core.word.api.crud.responses.dto.WordListItem
+import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
-import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -75,7 +74,7 @@ class WordCRUDController(
     fun getAllWords(
         @RequestBody @Valid requestBody: GetManyWordsRequest,
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
-    ): Mono<ResponseEntity<PaginatedDataResponse<WordListItem>>> = wordCRUDFacade.getManyWords(
+    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCRUDFacade.getManyWords(
         requestBody = requestBody,
         userId = user.id
     )

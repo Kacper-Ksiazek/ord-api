@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono
 @RestController
 @RequestMapping("/api/v1/games/sentences-writing")
 @Tag(
-    name = "4. Games: Sentences Writing",
+    name = "3. Games: Sentences Writing",
     description = "Sentence writing game variant to practice vocabulary usage in context"
 )
 @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)

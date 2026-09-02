@@ -7,7 +7,9 @@ import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.ai.facades.WordAIFacade
 import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest
+import com.ord.core.word.api.ai.requests.dto.WordFillGapsRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
+import com.ord.core.word.api.ai.responses.dto.WordFillGapsResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -96,4 +98,13 @@ class WordAIController(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: SuggestVocabularyRequest
     ) = wordAIFacade.suggestVocabulary(body, user)
+
+    @PostMapping("/fill-gaps")
+    fun fillGaps(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @Valid @RequestBody body: WordFillGapsRequest,
+    ): Mono<ResponseEntity<WordFillGapsResponse>> {
+        return wordAIFacade.fillGaps(body, user)
+            .map { ResponseEntity.status(HttpStatus.OK).body(it) }
+    }
 }

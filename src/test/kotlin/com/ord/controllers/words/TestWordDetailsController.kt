@@ -11,6 +11,7 @@ import com.ord.core.security.UserRepository
 import com.ord.core.word.api.details.requests.dto.CreateWordDetailsRequest
 import com.ord.core.word.api.details.requests.dto.UpdateWordDetailsRequest
 import com.ord.core.word.models.word.WordEntity
+import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.models.word_details.WordDetailsMapper
 import com.ord.core.word.models.word_details.enums.WordCollocationFrequency
@@ -64,6 +65,7 @@ class TestWordDetailsController @Autowired constructor(
     private fun createTestWord(userId: UUID, sourceWord: String = "test"): UUID {
         val word = wordRepository.save(
             WordEntity(
+                status = WordStatus.ACTIVE,
                 type = WordType.NOUN,
                 sourceWord = sourceWord,
                 translation = "translation",

@@ -10,7 +10,7 @@ help:
 	@echo "Available targets:"
 	@echo "  status          Show docker / api / front / storybook status"
 	@echo "  docker-restart   Stop stack, wipe DB volume, remove app image, rebuild and start"
-	@echo "  docker-e2e-up    Start ephemeral E2E stack (OTP 123456, 4 worker accounts via Flyway V22)"
+	@echo "  docker-e2e-up    Start ephemeral E2E stack (OTP 123456, 4 worker accounts via Flyway V19)"
 	@echo "  docker-e2e-down  Stop E2E stack"
 	@echo "  openapi         Export OpenAPI spec from a running API (default: openapi.json)"
 	@echo "                  Requires the app to be up. Override: make openapi API_HOST=... OUTPUT_FILE=..."

@@ -1,6 +1,7 @@
 package com.ord.testing_utils.mocks.games.sentences_writing
 
 import tools.jackson.core.type.TypeReference
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
 import com.ord.features.game.model.ongoing_game.OngoingGameEntity
 import com.ord.features.game.model.ongoing_game.OngoingGameMapper
@@ -10,6 +11,7 @@ import com.ord.features.game.repositories.OngoingGameRepository
 import com.ord.features.game.variants.sentences_writing.dto.SentencesWritingInstruction
 import com.ord.features.game.variants.sentences_writing.dto.api_responses.StartedSentencesWritingGameResponse
 import com.ord.seeders.factories.WordFactory
+import com.ord.seeders.factories.WordProgressFactory
 import com.ord.testing_utils.api.clients.games.bases.GameAPIClient
 import com.ord.testing_utils.dto.resources.mocks.games.SentencesWritingInJson
 import com.ord.testing_utils.mocks.games.GameMockerBase
@@ -21,6 +23,8 @@ class SentencesWritingGameMocker(
     val ongoingGameRepository: OngoingGameRepository,
     val wordMockFactory: WordFactory,
     val wordRepository: WordRepository,
+    val wordProgressRepository: WordProgressRepository,
+    val wordProgressFactory: WordProgressFactory,
 ) : GameMockerBase<
         SentencesWritingInJson,
         OngoingSentencesWritingGameDTO,
@@ -31,6 +35,8 @@ class SentencesWritingGameMocker(
     ongoingGameRepository = ongoingGameRepository,
     wordMockFactory = wordMockFactory,
     wordRepository = wordRepository,
+    wordProgressRepository = wordProgressRepository,
+    wordProgressFactory = wordProgressFactory,
     apiClient = apiClient,
 ) {
     override val pathToJsonFile: String = "mocks/games/sentences_writing.json"
