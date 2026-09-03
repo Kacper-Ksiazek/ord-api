@@ -12,6 +12,8 @@ on:
         default: main
         type: string
 
+permissions: {}
+
 concurrency:
   group: integration-tests-${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
   cancel-in-progress: true
@@ -42,6 +44,9 @@ jobs:
       always() &&
       (github.event_name == 'push' ||
         (github.event_name == 'workflow_dispatch' && needs.authorize-manual-run.result == 'success'))
+    permissions:
+      contents: read
+      actions: write
     uses: ./.github/workflows/integration-tests-reusable.yml
     secrets: inherit
     with:

@@ -75,36 +75,44 @@ class WordRepositoryCustomMethodsImpl(
         page: Int,
         perPage: Int,
     ): Mono<WordsPaginatedResult> {
-        val conditions = createQueryConditions(
+        val whereClause = createQueryConditions(
             language, status, completed, searchingPhrase, bookmarked, banksIds, bankGroupsIds, wordType, wordExtraMark,
         )
         val valuesBindings = createValuesBindings(
             userId, language, status, completed, searchingPhrase, bookmarked, banksIds, bankGroupsIds, wordType, wordExtraMark,
         )
+        val orderByClause = resolveWordsOrderByClause(sortBy, sortDirection)
 
-        val countQuery = """
-            SELECT COUNT(*)
-            FROM words
-                LEFT JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
-            WHERE $conditions
-        """
+        val countQuery = buildString {
+            appendLine("SELECT COUNT(*)")
+            appendLine("FROM words")
+            appendLine("    LEFT JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id")
+            append("WHERE ")
+            append(whereClause)
+        }
 
-        val selectQuery = """
-            SELECT
-                ${WordListItem.fields.joinToString(", ") { "words.$it" }},
-                wp.points AS wp_points,
-                wp.completed_at AS wp_completed_at,
-                wp.first_completed_at AS wp_first_completed_at,
-                ${BankCompact.fields.joinToString(", ") { "banks.$it AS bank_$it" }},
-                ${BankGroupCompact.fields.joinToString(", ") { "bank_groups.$it AS bank_group_$it" }}
-            FROM words
-                LEFT JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
-                LEFT JOIN banks ON words.bank_id = banks.id
-                LEFT JOIN bank_groups ON banks.group_id = bank_groups.id
-            WHERE $conditions
-            ORDER BY words.${sortBy.column} ${sortDirection.name}
-            LIMIT :limit OFFSET :offset
-        """
+        val selectQuery = buildString {
+            appendLine(
+                """
+                SELECT
+                    ${WordListItem.fields.joinToString(", ") { "words.$it" }},
+                    wp.points AS wp_points,
+                    wp.completed_at AS wp_completed_at,
+                    wp.first_completed_at AS wp_first_completed_at,
+                    ${BankCompact.fields.joinToString(", ") { "banks.$it AS bank_$it" }},
+                    ${BankGroupCompact.fields.joinToString(", ") { "bank_groups.$it AS bank_group_$it" }}
+                FROM words
+                    LEFT JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
+                    LEFT JOIN banks ON words.bank_id = banks.id
+                    LEFT JOIN bank_groups ON banks.group_id = bank_groups.id
+                """.trimIndent(),
+            )
+            append("WHERE ")
+            append(whereClause)
+            appendLine()
+            appendLine(orderByClause)
+            appendLine("LIMIT :limit OFFSET :offset")
+        }
 
         val capturedCountQuery = """
             SELECT COUNT(*)
@@ -292,7 +300,7 @@ class WordRepositoryCustomMethodsImpl(
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
     ): Mono<Set<String>> {
-        val criterias = buildList {
+        val whereClause = buildList {
             add("words.language = :language")
             add("words.user_id = :userId")
             add("words.status = 'ACTIVE'")
@@ -313,12 +321,17 @@ class WordRepositoryCustomMethodsImpl(
             bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { put("bankGroupsIds", it.toTypedArray()) }
         }
 
-        val selectQuery = """
-            SELECT words.source_word
-            FROM words
-                INNER JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
-            WHERE $criterias
-        """
+        val selectQuery = buildString {
+            appendLine(
+                """
+                SELECT words.source_word
+                FROM words
+                    INNER JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
+                """.trimIndent(),
+            )
+            append("WHERE ")
+            append(whereClause)
+        }
 
         return databaseClient.sql(selectQuery)
             .bindValues(valuesBindings)
@@ -432,6 +445,23 @@ class WordRepositoryCustomMethodsImpl(
         val finalSpec = if (bankId != null) spec.bind("bankId", bankId) else spec.bindNull("bankId", UUID::class.java)
 
         return finalSpec.fetch().rowsUpdated().map { it.toInt() }
+    }
+
+    private fun resolveWordsOrderByClause(
+        sortBy: GetAllWordsSortOptions,
+        sortDirection: SortDirection,
+    ): String {
+        return when (sortBy) {
+            GetAllWordsSortOptions.CREATED_AT -> when (sortDirection) {
+                SortDirection.ASC -> "ORDER BY words.created_at ASC"
+                SortDirection.DESC -> "ORDER BY words.created_at DESC"
+            }
+
+            GetAllWordsSortOptions.SOURCE_WORD -> when (sortDirection) {
+                SortDirection.ASC -> "ORDER BY words.source_word ASC"
+                SortDirection.DESC -> "ORDER BY words.source_word DESC"
+            }
+        }
     }
 
     private fun createQueryConditions(

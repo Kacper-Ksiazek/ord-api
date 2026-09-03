@@ -4,17 +4,21 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: read
-  packages: write
+permissions: {}
 
 jobs:
   smoke-tests:
+    permissions:
+      contents: read
+      actions: write
     uses: ./.github/workflows/smoke-tests-reusable.yml
 
   publish:
     needs: smoke-tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository

@@ -5,10 +5,15 @@ on:
     branches:
       - main
 
+permissions: {}
+
 concurrency:
   group: smoke-tests-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
   smoke-tests:
+    permissions:
+      contents: read
+      actions: write
     uses: ./.github/workflows/smoke-tests-reusable.yml
