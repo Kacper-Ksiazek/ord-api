@@ -5,13 +5,21 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   smoke-tests:
+    permissions:
+      contents: read
+      actions: write
     uses: ./.github/workflows/smoke-tests-reusable.yml
 
   build-test-deploy:
     needs: smoke-tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
 
     steps:
       - name: 🛎️ Checkout code
@@ -25,7 +33,7 @@ jobs:
           cache: maven
 
       - name: ⚙️ Set up Maven 3.9
-        uses: stCarolas/setup-maven@v4
+        uses: stCarolas/setup-maven@1d56b37995622db66cce1214d81014b09807fb5a # v4
         with:
           maven-version: '3.9.16'
 

@@ -11,6 +11,8 @@ on:
       - 'types-package/**'
       - '.github/workflows/publish-api-types.yml'
 
+permissions: {}
+
 jobs:
   publish:
     runs-on: ubuntu-latest

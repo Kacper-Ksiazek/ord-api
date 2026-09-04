@@ -16,6 +16,7 @@
     <properties>
         <java.version>24</java.version>
         <kotlin.version>2.4.10</kotlin.version>
+        <scram.version>3.3</scram.version>
     </properties>
     <dependencies>
         <dependency>
@@ -194,6 +195,21 @@
         </dependency>
 
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.ongres.scram</groupId>
+                <artifactId>scram-common</artifactId>
+                <version>${scram.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ongres.scram</groupId>
+                <artifactId>scram-client</artifactId>
+                <version>${scram.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <finalName>ord-api</finalName>

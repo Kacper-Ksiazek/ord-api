@@ -9,11 +9,16 @@ on:
         type: string
         default: main
 
+permissions: {}
+
 jobs:
   integration-tests:
     name: Integration tests
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: write
 
     steps:
       - name: Checkout
@@ -29,7 +34,7 @@ jobs:
           cache: maven
 
       - name: Set up Maven 3.9
-        uses: stCarolas/setup-maven@v4
+        uses: stCarolas/setup-maven@1d56b37995622db66cce1214d81014b09807fb5a # v4
         with:
           maven-version: '3.9.16'
 
