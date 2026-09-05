@@ -11,7 +11,6 @@ import com.ord.core.security.UserRepository
 import com.ord.core.word.api.details.requests.dto.CreateWordDetailsRequest
 import com.ord.core.word.api.details.requests.dto.UpdateWordDetailsRequest
 import com.ord.core.word.models.word.WordEntity
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.models.word_details.WordDetailsMapper
 import com.ord.core.word.models.word_details.enums.WordCollocationFrequency
@@ -21,6 +20,7 @@ import com.ord.core.word.models.word_details.jsonb.WordCollocation
 import com.ord.core.word.models.word_details.jsonb.WordGrammar
 import com.ord.core.word.models.word_details.jsonb.WordPronunciation
 import com.ord.core.word.repositories.WordDetailsRepository
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
 import com.ord.testing_utils.api.clients.WordDetailsAPIClient
 import io.kotest.matchers.shouldBe
@@ -62,10 +62,12 @@ class TestWordDetailsController @Autowired constructor(
 ) {
     private val apiClient = WordDetailsAPIClient(webClient)
 
+    @Autowired
+    private lateinit var wordProgressRepository: WordProgressRepository
+
     private fun createTestWord(userId: UUID, sourceWord: String = "test"): UUID {
         val word = wordRepository.save(
             WordEntity(
-                status = WordStatus.ACTIVE,
                 type = WordType.NOUN,
                 sourceWord = sourceWord,
                 translation = "translation",
@@ -74,6 +76,13 @@ class TestWordDetailsController @Autowired constructor(
                 userId = userId
             )
         ).block()!!
+
+        wordProgressRepository.save(
+            com.ord.core.word.models.word_progress.WordProgressEntity(
+                wordId = word.id!!,
+                userId = userId,
+            )
+        ).block()
 
         return word.id!!
     }

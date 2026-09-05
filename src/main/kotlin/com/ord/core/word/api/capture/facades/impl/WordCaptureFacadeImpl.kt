@@ -1,6 +1,5 @@
 package com.ord.core.word.api.capture.facades.impl
 
-import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
 import com.ord.core.word.api.capture.facades.WordCaptureFacade
 import com.ord.core.word.api.capture.requests.dto.ActivateManyWordsRequest
@@ -8,9 +7,7 @@ import com.ord.core.word.api.capture.requests.dto.CaptureWordRequest
 import com.ord.core.word.api.capture.requests.dto.PublicWordsBulkCaptureRequest
 import com.ord.core.word.api.capture.requests.dto.UpdateCapturedWordRequest
 import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
-import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.services.WordService
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.UserNotFoundException
@@ -45,40 +42,18 @@ class WordCaptureFacadeImpl(
                         type = item.type,
                     )
                 }
-                wordService.bulkCaptureWords(requests, user.id!!, WordStatus.CAPTURED)
+                wordService.bulkCaptureWords(requests, user.id!!, isFromUnverifiedSource = true)
             }
             .then(Mono.fromCallable { ResponseEntity.status(HttpStatus.NO_CONTENT).build<Unit>() })
     }
 
-    override fun getCapturedWords(
-        userId: UUID,
-        page: Int?,
-        perPage: Int?,
-        status: WordStatus?,
-        language: LanguageName,
-    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> {
-        return wordService.findManyWords(
-            userId = userId,
-            language = language,
-            status = status,
-            page = page ?: 0,
-            perPage = perPage ?: 50,
-        ).map { result ->
-            WordsPaginatedDataResponse(
-                pagination = result.paginated.pagination,
-                data = result.paginated.data,
-                capturedCount = result.capturedCount,
-            )
-        }.map { ResponseEntity.ok(it) }
-    }
-
     override fun getOverview(userId: UUID): Mono<ResponseEntity<WordOverviewResponse>> {
-        return wordService.countByStatus(userId)
+        return wordService.countOverview(userId)
             .map {
                 WordOverviewResponse(
                     total = it.total,
                     activeCount = it.activeCount,
-                    capturedCount = it.capturedCount,
+                    unverifiedSourceCount = it.unverifiedSourceCount,
                 )
             }
             .map { ResponseEntity.ok(it) }

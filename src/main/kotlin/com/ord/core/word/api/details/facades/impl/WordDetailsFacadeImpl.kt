@@ -10,7 +10,7 @@ import com.ord.core.word.models.word_details.toCompact
 import com.ord.core.word.repositories.WordDetailsRepository
 import com.ord.core.word.repositories.WordRepository
 import com.ord.core.word.services.WordDetailsService
-import com.ord.core.word.models.word.enums.WordStatus
+import com.ord.core.word.services.WordProgressService
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.REST.ConflictException
 import com.ord.exceptions.REST.NotFoundException
@@ -26,7 +26,8 @@ class WordDetailsFacadeImpl(
     private val wordDetailsService: WordDetailsService,
     private val wordRepository: WordRepository,
     private val wordDetailsRepository: WordDetailsRepository,
-    private val wordDetailsMapper: WordDetailsMapper
+    private val wordDetailsMapper: WordDetailsMapper,
+    private val wordProgressService: WordProgressService,
 ) : WordDetailsFacade {
 
     override fun createWordDetails(
@@ -43,11 +44,15 @@ class WordDetailsFacadeImpl(
                 Mono.error(NotFoundException("Word with id $wordId not found"))
             )
             .flatMap { word ->
-                if (word!!.status != WordStatus.ACTIVE) {
-                    Mono.error(BadRequestException("Word details can only be created for active words"))
-                } else {
-                    wordDetailsRepository.existsByWordIdAndUserId(wordId = wordId, userId = userId)
-                }
+                wordProgressService.findByWordId(wordId, userId)
+                    .hasElement()
+                    .flatMap { hasProgress ->
+                        if (!hasProgress) {
+                            Mono.error(BadRequestException("Word details can only be created for words with learning progress"))
+                        } else {
+                            wordDetailsRepository.existsByWordIdAndUserId(wordId = wordId, userId = userId)
+                        }
+                    }
             }
             .flatMap { exists ->
                 if (exists) {

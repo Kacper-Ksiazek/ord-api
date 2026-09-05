@@ -9,9 +9,8 @@ import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
-import com.ord.core.word.repositories.WordStatusCounts
+import com.ord.core.word.repositories.WordOverviewCounts
 import com.ord.core.word.repositories.WordsPaginatedResult
 import com.ord.shared.domain.dto.CountingSummary
 import com.ord.shared.domain.enums.SortDirection
@@ -38,7 +37,8 @@ interface WordService : UserResourceService<WordEntity> {
         bankGroupsIds: Set<UUID>? = null,
     ): Mono<Set<String>>
     fun findManyWords(
-        status: WordStatus? = null,
+        isFromUnverifiedSource: Boolean? = null,
+        hasProgress: Boolean? = null,
         completed: Boolean? = null,
         searchingPhrase: String? = null,
         bookmarked: Boolean? = null,
@@ -52,6 +52,7 @@ interface WordService : UserResourceService<WordEntity> {
         userId: UUID,
         page: Int = 0,
         perPage: Int = 10,
+        includeUnverifiedSourceCount: Boolean = false,
     ): Mono<WordsPaginatedResult>
 
     fun findOneWord(wordId: UUID, userId: UUID): Mono<SingleWordResponse>
@@ -62,9 +63,13 @@ interface WordService : UserResourceService<WordEntity> {
 
     fun saveNewActiveWord(word: WordEntity, userId: UUID): Mono<WordDTO>
 
-    fun captureWord(request: CaptureWordRequest, userId: UUID, status: WordStatus = WordStatus.CAPTURED): Mono<WordDTO>
+    fun captureWord(request: CaptureWordRequest, userId: UUID, isFromUnverifiedSource: Boolean = false): Mono<WordDTO>
 
-    fun bulkCaptureWords(requests: List<CaptureWordRequest>, userId: UUID, status: WordStatus = WordStatus.CAPTURED): Mono<List<WordDTO>>
+    fun bulkCaptureWords(
+        requests: List<CaptureWordRequest>,
+        userId: UUID,
+        isFromUnverifiedSource: Boolean = false,
+    ): Mono<List<WordDTO>>
 
     fun updateCapturedWord(wordId: UUID, userId: UUID, body: UpdateCapturedWordRequest): Mono<WordDTO>
 
@@ -74,7 +79,9 @@ interface WordService : UserResourceService<WordEntity> {
 
     fun activateManyWords(wordIds: Set<UUID>, userId: UUID): Mono<Unit>
 
-    fun countByStatus(userId: UUID): Mono<WordStatusCounts>
+    fun countOverview(userId: UUID): Mono<WordOverviewCounts>
 
     fun countCreated(language: LanguageName, userId: UUID): Mono<CountingSummary>
+
+    fun hasProgress(wordId: UUID, userId: UUID): Mono<Boolean>
 }

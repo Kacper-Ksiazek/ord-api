@@ -2,7 +2,6 @@ package com.ord.core.word.models.word
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.models.word.enums.WordExtraMark
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.models.word_progress.WordProgressDTO
 import com.ord.features.bank.model.BankDTO
@@ -12,7 +11,6 @@ import java.util.*
 class WordDTO(
     val id: UUID = UUID.randomUUID(),
 
-    var status: WordStatus,
     var type: WordType? = null,
     var sourceWord: String,
     var translation: String? = null,
@@ -22,6 +20,7 @@ class WordDTO(
     var language: LanguageName,
 
     var isBookmarked: Boolean = false,
+    var isFromUnverifiedSource: Boolean = false,
 
     val userId: UUID,
 

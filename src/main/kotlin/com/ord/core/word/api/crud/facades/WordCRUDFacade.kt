@@ -1,5 +1,6 @@
 package com.ord.core.word.api.crud.facades
 
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
 import com.ord.core.word.api.crud.requests.dto.GetManyWordsRequest
@@ -12,9 +13,18 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 interface WordCRUDFacade {
-    fun getManyWords(
+    fun listWords(
+        userId: UUID,
+        language: LanguageName,
+        page: Int?,
+        perPage: Int?,
+        isFromUnverifiedSource: Boolean?,
+        hasProgress: Boolean?,
+    ): Mono<ResponseEntity<WordsPaginatedDataResponse>>
+
+    fun searchWords(
         requestBody: GetManyWordsRequest,
-        userId: UUID
+        userId: UUID,
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>>
 
     fun getSingleWord(
@@ -24,7 +34,7 @@ interface WordCRUDFacade {
 
     fun createWord(
         body: CreateWordRequest,
-        user: UserDTO
+        user: UserDTO,
     ): Mono<ResponseEntity<WordDTO>>
 
     fun updateWord(

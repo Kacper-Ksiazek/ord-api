@@ -478,14 +478,14 @@
                 ]
             }
         },
-        "/api/v1/words/get-many-words": {
+        "/api/v1/words/search": {
             "post": {
                 "tags": [
                     "2. Words: CRUD"
                 ],
-                "summary": "Get words with advanced filtering",
+                "summary": "Search words with advanced filtering",
                 "description": "Retrieve paginated list of words with filtering by language, bank, type, and search query",
-                "operationId": "getAllWords",
+                "operationId": "searchWords",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -2269,48 +2269,14 @@
                 ]
             }
         },
-        "/api/v1/words/overview": {
+        "/api/v1/words": {
             "get": {
                 "tags": [
-                    "2. Words: Capture"
+                    "2. Words: CRUD"
                 ],
-                "operationId": "getOverview",
-                "responses": {
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BadRequestResponse"
-                                }
-                            }
-                        }
-                    },
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/WordOverviewResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "auth-cookie": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/words/captured": {
-            "get": {
-                "tags": [
-                    "2. Words: Capture"
-                ],
-                "summary": "List captured/active words for inbox workflow",
-                "operationId": "getCapturedWords",
+                "summary": "List words",
+                "description": "Retrieve paginated list of words with optional filters for learning progress and source",
+                "operationId": "listWords",
                 "parameters": [
                     {
                         "name": "language",
@@ -2351,19 +2317,60 @@
                         }
                     },
                     {
-                        "name": "status",
+                        "name": "isFromUnverifiedSource",
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "type": "string",
-                            "description": "Lifecycle status of a vocabulary word",
-                            "enum": [
-                                "CAPTURED",
-                                "ACTIVE"
-                            ]
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "hasProgress",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
                         }
                     }
                 ],
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Words retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WordsPaginatedDataResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/words/overview": {
+            "get": {
+                "tags": [
+                    "2. Words: Capture"
+                ],
+                "operationId": "getOverview",
                 "responses": {
                     "400": {
                         "description": "Bad Request",
@@ -2380,7 +2387,7 @@
                         "content": {
                             "*/*": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/WordsPaginatedDataResponse"
+                                    "$ref": "#/components/schemas/WordOverviewResponse"
                                 }
                             }
                         }
@@ -2949,14 +2956,6 @@
                         "type": "string",
                         "format": "uuid"
                     },
-                    "status": {
-                        "type": "string",
-                        "description": "Lifecycle status of a vocabulary word",
-                        "enum": [
-                            "CAPTURED",
-                            "ACTIVE"
-                        ]
-                    },
                     "type": {
                         "type": [
                             "string",
@@ -3068,6 +3067,9 @@
                         "format": "date-time"
                     },
                     "bookmarked": {
+                        "type": "boolean"
+                    },
+                    "fromUnverifiedSource": {
                         "type": "boolean"
                     }
                 }
@@ -3529,15 +3531,10 @@
                             "PHRASE"
                         ]
                     },
-                    "status": {
+                    "hasProgress": {
                         "type": [
-                            "string",
+                            "boolean",
                             "null"
-                        ],
-                        "description": "Lifecycle status of a vocabulary word",
-                        "enum": [
-                            "CAPTURED",
-                            "ACTIVE"
                         ]
                     },
                     "wordExtraMark": {
@@ -3610,6 +3607,9 @@
                             "CREATED_AT",
                             "SOURCE_WORD"
                         ]
+                    },
+                    "fromUnverifiedSource": {
+                        "type": "boolean"
                     }
                 },
                 "required": [
@@ -3688,18 +3688,16 @@
                         "type": "string",
                         "format": "uuid"
                     },
-                    "status": {
-                        "type": "string",
-                        "description": "Lifecycle status of a vocabulary word",
-                        "enum": [
-                            "CAPTURED",
-                            "ACTIVE"
-                        ]
-                    },
                     "sourceWord": {
                         "type": "string"
                     },
                     "translation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "definition": {
                         "type": [
                             "string",
                             "null"
@@ -3776,12 +3774,19 @@
                     },
                     "bookmarked": {
                         "type": "boolean"
+                    },
+                    "fromUnverifiedSource": {
+                        "type": "boolean"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
                     }
                 }
             },
             "WordsPaginatedDataResponse": {
                 "type": "object",
-                "description": "Paginated words response with optional captured count",
+                "description": "Paginated words response with optional unverified source count",
                 "properties": {
                     "pagination": {
                         "$ref": "#/components/schemas/PaginationData"
@@ -3792,13 +3797,13 @@
                             "$ref": "#/components/schemas/WordListItem"
                         }
                     },
-                    "capturedCount": {
+                    "unverifiedSourceCount": {
                         "type": [
                             "integer",
                             "null"
                         ],
                         "format": "int64",
-                        "description": "Count of captured words when status filter is omitted",
+                        "description": "Count of words from unverified sources when isFromUnverifiedSource filter is omitted",
                         "example": 12
                     }
                 }
@@ -4826,9 +4831,6 @@
                         },
                         "uniqueItems": true
                     },
-                    "accuracy": {
-                        "type": "string"
-                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4839,6 +4841,9 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
@@ -4956,9 +4961,6 @@
                         },
                         "uniqueItems": true
                     },
-                    "accuracy": {
-                        "type": "string"
-                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4969,6 +4971,9 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
@@ -5239,9 +5244,6 @@
                     "reviewedAnswers": {
                         "$ref": "#/components/schemas/CrosswordReviewedAnswers"
                     },
-                    "accuracy": {
-                        "type": "string"
-                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -5252,6 +5254,9 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
@@ -5627,9 +5632,9 @@
                     "content": {
                         "type": "string"
                     },
-                    "messageOrder": {
-                        "type": "integer",
-                        "format": "int32"
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "sender": {
                         "type": "string",
@@ -5638,9 +5643,9 @@
                             "AI"
                         ]
                     },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
+                    "messageOrder": {
+                        "type": "integer",
+                        "format": "int32"
                     }
                 }
             },
@@ -6550,14 +6555,6 @@
                         "type": "string",
                         "format": "uuid"
                     },
-                    "status": {
-                        "type": "string",
-                        "description": "Lifecycle status of a vocabulary word",
-                        "enum": [
-                            "CAPTURED",
-                            "ACTIVE"
-                        ]
-                    },
                     "type": {
                         "type": [
                             "string",
@@ -6662,12 +6659,15 @@
                     },
                     "bookmarked": {
                         "type": "boolean"
+                    },
+                    "fromUnverifiedSource": {
+                        "type": "boolean"
                     }
                 }
             },
             "WordOverviewResponse": {
                 "type": "object",
-                "description": "Overview of words split by lifecycle status",
+                "description": "Overview of words split by learning progress and source",
                 "properties": {
                     "total": {
                         "type": "integer",
@@ -6678,13 +6678,13 @@
                     "activeCount": {
                         "type": "integer",
                         "format": "int64",
-                        "description": "Number of active words",
+                        "description": "Number of words with learning progress",
                         "example": 56
                     },
-                    "capturedCount": {
+                    "unverifiedSourceCount": {
                         "type": "integer",
                         "format": "int64",
-                        "description": "Number of captured words",
+                        "description": "Number of words from unverified sources",
                         "example": 18
                     }
                 }
@@ -6965,14 +6965,6 @@
                     "MEDICAL",
                     "COLLOQUIAL",
                     "POETIC"
-                ]
-            },
-            "WordStatus": {
-                "type": "string",
-                "description": "Lifecycle status of a vocabulary word",
-                "enum": [
-                    "CAPTURED",
-                    "ACTIVE"
                 ]
             },
             "WordType": {

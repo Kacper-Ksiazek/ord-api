@@ -12,7 +12,6 @@ class WordMapper(
     override fun toEntity(dto: WordDTO): WordEntity {
         return WordEntity(
             id = dto.id,
-            status = dto.status,
             type = dto.type,
             sourceWord = dto.sourceWord,
             translation = dto.translation,
@@ -20,6 +19,7 @@ class WordMapper(
             extraMark = dto.extraMark,
             language = dto.language,
             isBookmarked = dto.isBookmarked,
+            isFromUnverifiedSource = dto.isFromUnverifiedSource,
             userId = dto.userId,
             bankId = dto.bankId,
             bankGroupId = dto.bankGroupId,
@@ -31,7 +31,6 @@ class WordMapper(
     override fun toDTO(entity: WordEntity): WordDTO {
         return WordDTO(
             id = entity.id ?: error("Word ID must not be null"),
-            status = entity.status,
             type = entity.type,
             sourceWord = entity.sourceWord,
             translation = entity.translation,
@@ -39,6 +38,7 @@ class WordMapper(
             extraMark = entity.extraMark,
             language = entity.language,
             isBookmarked = entity.isBookmarked,
+            isFromUnverifiedSource = entity.isFromUnverifiedSource,
             userId = entity.userId,
             bankId = entity.bankId,
             bank = null,

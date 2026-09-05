@@ -8,7 +8,6 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
 import com.ord.core.word.models.word.enums.WordExtraMark
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.api.capture.requests.dto.PublicCaptureWordItem
 import com.ord.core.word.api.capture.requests.dto.PublicWordsBulkCaptureRequest
 import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
@@ -19,6 +18,7 @@ import com.ord.core.word.api.capture.requests.dto.ActivateManyWordsRequest
 import com.ord.core.word.api.capture.requests.dto.CaptureWordRequest
 import com.ord.core.word.api.capture.requests.dto.UpdateCapturedWordRequest
 import com.ord.core.word.models.word.WordDTO
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
 import com.ord.testing_utils.api.clients.WordCaptureAPIClient
 import com.ord.testing_utils.api.dto.APIClientResponse
@@ -45,6 +45,7 @@ import java.util.*
 @AutoConfigureWebTestClient
 class TestWordCaptureController @Autowired constructor(
     private val wordRepository: WordRepository,
+    private val wordProgressRepository: WordProgressRepository,
     webClient: WebTestClient,
     jwtProperties: JwtProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
@@ -122,10 +123,10 @@ class TestWordCaptureController @Autowired constructor(
 
     companion object {
         @JvmStatic
-        fun statusFilterCases(): Stream<Arguments> = Stream.of(
-            Arguments.of(WordStatus.ACTIVE, 1, null as Long?, WordStatus.ACTIVE),
-            Arguments.of(WordStatus.CAPTURED, 1, null as Long?, WordStatus.CAPTURED),
-            Arguments.of(null as WordStatus?, 2, 1L, null as WordStatus?),
+        fun progressFilterCases(): Stream<Arguments> = Stream.of(
+            Arguments.of(true, 1, null as Long?, true),
+            Arguments.of(false, 1, null as Long?, false),
+            Arguments.of(null as Boolean?, 2, 1L, null as Boolean?),
         )
     }
 
@@ -160,8 +161,8 @@ class TestWordCaptureController @Autowired constructor(
             }
 
             @Test
-            fun `201 - created word should be approved by default`() {
-                response.body!!.status shouldBe WordStatus.CAPTURED
+            fun `201 - created word should not be from unverified source`() {
+                response.body!!.isFromUnverifiedSource shouldBe false
             }
         }
 
@@ -335,14 +336,16 @@ class TestWordCaptureController @Autowired constructor(
 
             @Test
             fun `201 - all created words should be persisted in database`() {
-                val wordsInDb = wordRepository.findAll().collectList().block()!!
+                val userId = response.body!!.first().userId
+                val wordsInDb = wordRepository.findAllByUserId(userId).collectList().block()!!
                 wordsInDb shouldHaveSize 3
             }
 
             @Test
-            fun `201 - all created words should be captured by default`() {
+            fun `201 - all created words should be inbox words without progress`() {
                 response.body!!.forEach { word ->
-                    word.status shouldBe WordStatus.CAPTURED
+                    word.isFromUnverifiedSource shouldBe false
+                    word.progress shouldBe null
                 }
             }
         }
@@ -359,8 +362,8 @@ class TestWordCaptureController @Autowired constructor(
     }
 
     @Nested
-    @DisplayName("[GET] /api/v1/words/captured - list captured words quickly added words")
-    inner class GetCapturedWordsTests {
+    @DisplayName("[GET] /api/v1/words - list words")
+    inner class ListWordsTests {
         @Nested
         @DisplayName("Positive")
         inner class Positive {
@@ -369,7 +372,7 @@ class TestWordCaptureController @Autowired constructor(
                 val user = mockAuthenticatedUser()
                 wordCaptureAPIClient.capture(TestData.APIRequestPayloads.createBulk, user)
 
-                val response = wordCaptureAPIClient.getCapturedWords(language = TestData.TEST_LANGUAGE, user = user)
+                val response = wordCaptureAPIClient.listWords(language = TestData.TEST_LANGUAGE, user = user)
 
                 response.status shouldBe HttpStatus.OK
                 response.body shouldNotBe null
@@ -382,7 +385,7 @@ class TestWordCaptureController @Autowired constructor(
                 val user = mockAuthenticatedUser()
                 wordCaptureAPIClient.capture(TestData.APIRequestPayloads.createBulk, user)
 
-                val response = wordCaptureAPIClient.getCapturedWords(
+                val response = wordCaptureAPIClient.listWords(
                     language = TestData.TEST_LANGUAGE,
                     page = 0,
                     perPage = 2,
@@ -403,13 +406,13 @@ class TestWordCaptureController @Autowired constructor(
                 val words = (1..51).map { CaptureWordRequest(sourceWord = "word-$it", language = TestData.TEST_LANGUAGE) }
                 wordCaptureAPIClient.capture(words, user)
 
-                val firstPage = wordCaptureAPIClient.getCapturedWords(
+                val firstPage = wordCaptureAPIClient.listWords(
                     language = TestData.TEST_LANGUAGE,
                     page = 0,
                     perPage = 50,
                     user = user,
                 )
-                val secondPage = wordCaptureAPIClient.getCapturedWords(
+                val secondPage = wordCaptureAPIClient.listWords(
                     language = TestData.TEST_LANGUAGE,
                     page = 1,
                     perPage = 50,
@@ -438,14 +441,14 @@ class TestWordCaptureController @Autowired constructor(
                     user2
                 )
 
-                val response = wordCaptureAPIClient.getCapturedWords(language = TestData.TEST_LANGUAGE, user = user1)
+                val response = wordCaptureAPIClient.listWords(language = TestData.TEST_LANGUAGE, user = user1)
 
                 response.body!!.data shouldHaveSize 1
                 response.body.data[0].sourceWord shouldBe TestData.TEST_WORD_1
             }
 
             @Test
-            fun `200 - should return captured count when status filter is not provided`() {
+            fun `200 - should return unverified source count when filter is not provided`() {
                 val user = mockAuthenticatedUser()
                 val publicClient = PublicWordCaptureAPIClient(webClient)
 
@@ -459,29 +462,29 @@ class TestWordCaptureController @Autowired constructor(
                         ))
                 )
 
-                val response = wordCaptureAPIClient.getCapturedWords(language = TestData.TEST_LANGUAGE, user = user)
+                val response = wordCaptureAPIClient.listWords(language = TestData.TEST_LANGUAGE, user = user)
 
                 response.status shouldBe HttpStatus.OK
                 response.body!!.data shouldHaveSize 5
-                response.body.capturedCount shouldBe 5
+                response.body.unverifiedSourceCount shouldBe 2
             }
 
-            @ParameterizedTest(name = "status={0}")
-            @MethodSource("com.ord.controllers.words.TestWordCaptureController#statusFilterCases")
-            fun `200 - should filter words by status query param`(
-                status: WordStatus?,
+            @ParameterizedTest(name = "hasProgress={0}")
+            @MethodSource("com.ord.controllers.words.TestWordCaptureController#progressFilterCases")
+            fun `200 - should filter words by hasProgress query param`(
+                hasProgress: Boolean?,
                 expectedTotal: Int,
-                expectedCapturedCount: Long?,
-                expectedItemStatus: WordStatus?,
+                expectedUnverifiedSourceCount: Long?,
+                expectedHasProgress: Boolean?,
             ) {
                 val user = mockAuthenticatedUser()
-                seedActiveAndCapturedWord(user)
+                seedActiveAndInboxWord(user)
 
-                val response = wordCaptureAPIClient.getCapturedWords(
+                val response = wordCaptureAPIClient.listWords(
                     language = TestData.TEST_LANGUAGE,
                     page = 0,
                     perPage = 50,
-                    status = status,
+                    hasProgress = hasProgress,
                     user = user,
                 )
 
@@ -491,16 +494,19 @@ class TestWordCaptureController @Autowired constructor(
                 response.body.pagination.totalResults shouldBe expectedTotal.toLong()
                 response.body.pagination.page shouldBe 0
                 response.body.pagination.perPage shouldBe 50
-                response.body.capturedCount shouldBe expectedCapturedCount
+                response.body.unverifiedSourceCount shouldBe expectedUnverifiedSourceCount
 
-                if (expectedItemStatus != null) {
-                    response.body.data.forEach { it.status shouldBe expectedItemStatus }
+                if (expectedHasProgress != null) {
+                    response.body.data.forEach {
+                        if (expectedHasProgress) it.progress shouldNotBe null else it.progress shouldBe null
+                    }
                 } else {
-                    response.body.data.map { it.status }.toSet() shouldBe setOf(WordStatus.ACTIVE, WordStatus.CAPTURED)
+                    response.body.data.any { it.progress != null } shouldBe true
+                    response.body.data.any { it.progress == null } shouldBe true
                 }
             }
 
-            private fun seedActiveAndCapturedWord(user: MockedAuthenticatedUser) {
+            private fun seedActiveAndInboxWord(user: MockedAuthenticatedUser) {
                 val publicClient = PublicWordCaptureAPIClient(webClient)
 
                 wordsAPIClient.createWord(
@@ -549,26 +555,26 @@ class TestWordCaptureController @Autowired constructor(
                 )
 
                 val overview = wordCaptureAPIClient.getOverview(user = user)
-                val allWords = wordCaptureAPIClient.getCapturedWords(language = TestData.TEST_LANGUAGE, user = user)
-                val activeWords = wordCaptureAPIClient.getCapturedWords(
+                val allWords = wordCaptureAPIClient.listWords(language = TestData.TEST_LANGUAGE, user = user)
+                val activeWords = wordCaptureAPIClient.listWords(
                     language = TestData.TEST_LANGUAGE,
-                    status = WordStatus.ACTIVE,
+                    hasProgress = true,
                     user = user,
                 )
-                val capturedWords = wordCaptureAPIClient.getCapturedWords(
+                val inboxWords = wordCaptureAPIClient.listWords(
                     language = TestData.TEST_LANGUAGE,
-                    status = WordStatus.CAPTURED,
+                    hasProgress = false,
                     user = user,
                 )
 
                 overview.status shouldBe HttpStatus.OK
                 overview.body!!.total shouldBe 4
                 overview.body.activeCount shouldBe 0
-                overview.body.capturedCount shouldBe 4
+                overview.body.unverifiedSourceCount shouldBe 2
 
                 allWords.body!!.pagination.totalResults shouldBe overview.body.total
                 activeWords.body!!.pagination.totalResults shouldBe overview.body.activeCount
-                capturedWords.body!!.pagination.totalResults shouldBe overview.body.capturedCount
+                inboxWords.body!!.pagination.totalResults shouldBe 4
             }
         }
 
@@ -577,14 +583,14 @@ class TestWordCaptureController @Autowired constructor(
         inner class Negative {
             @Test
             fun `401 - should require authentication`() {
-                val response = wordCaptureAPIClient.getCapturedWords(language = TestData.TEST_LANGUAGE)
+                val response = wordCaptureAPIClient.listWords(language = TestData.TEST_LANGUAGE)
                 response.status shouldBe HttpStatus.UNAUTHORIZED
             }
 
             @Test
             fun `400 - should require language`() {
                 val user = mockAuthenticatedUser()
-                val response = wordCaptureAPIClient.getCapturedWords(language = null, user = user)
+                val response = wordCaptureAPIClient.listWords(language = null, user = user)
                 response.status shouldBe HttpStatus.BAD_REQUEST
             }
         }
@@ -913,7 +919,7 @@ class TestWordCaptureController @Autowired constructor(
                 )
 
                 // Get the created words from database
-                val wordsInDb = wordRepository.findAll().collectList().block()!!
+                val wordsInDb = wordRepository.findAllByUserId(user.userInfo.id).collectList().block()!!
                 val idsToApprove = wordsInDb.map { it.id!! }
 
                 // Approve the words
@@ -926,7 +932,7 @@ class TestWordCaptureController @Autowired constructor(
             }
 
             @Test
-            fun `200 - activated words should have ACTIVE status in database`() {
+            fun `200 - activated words should have learning progress in database`() {
                 val user = mockAuthenticatedUser()
 
                 // Create unapproved words via public endpoint
@@ -942,7 +948,7 @@ class TestWordCaptureController @Autowired constructor(
                 )
 
                 // Get the created words from database
-                val wordsInDb = wordRepository.findAll().collectList().block()!!
+                val wordsInDb = wordRepository.findAllByUserId(user.userInfo.id).collectList().block()!!
                 val idsToApprove = wordsInDb.map { it.id!! }
 
                 // Approve the words
@@ -955,7 +961,8 @@ class TestWordCaptureController @Autowired constructor(
                 val approvedWords = wordRepository.findAllById(idsToApprove).collectList().block()!!
                 approvedWords shouldHaveSize 2
                 approvedWords.forEach { word ->
-                    word.status shouldBe WordStatus.ACTIVE
+                    word.isFromUnverifiedSource shouldBe false
+                    wordProgressRepository.findByWordIdAndUserId(word.id!!, user.userInfo.id).block() shouldNotBe null
                 }
             }
 
@@ -982,9 +989,8 @@ class TestWordCaptureController @Autowired constructor(
                 )
 
                 // Get the created words from database
-                val allWords = wordRepository.findAll().collectList().block()!!
-                val user1WordId = allWords.find { it.sourceWord == TestData.TEST_WORD_1 }!!.id!!
-                val user2WordId = allWords.find { it.sourceWord == TestData.TEST_WORD_2 }!!.id!!
+                val user1WordId = wordRepository.findAllByUserId(user1.userInfo.id).collectList().block()!!.single().id!!
+                val user2WordId = wordRepository.findAllByUserId(user2.userInfo.id).collectList().block()!!.single().id!!
 
                 // User1 tries to approve both words
                 wordCaptureAPIClient.activateMany(
@@ -996,8 +1002,10 @@ class TestWordCaptureController @Autowired constructor(
                 val user1Word = wordRepository.findById(user1WordId).block()!!
                 val user2Word = wordRepository.findById(user2WordId).block()!!
 
-                user1Word.status shouldBe WordStatus.ACTIVE
-                user2Word.status shouldBe WordStatus.CAPTURED
+                user1Word.isFromUnverifiedSource shouldBe false
+                wordProgressRepository.findByWordIdAndUserId(user1WordId, user1.userInfo.id).block() shouldNotBe null
+                user2Word.isFromUnverifiedSource shouldBe true
+                wordProgressRepository.findByWordIdAndUserId(user2WordId, user2.userInfo.id).block() shouldBe null
             }
         }
 

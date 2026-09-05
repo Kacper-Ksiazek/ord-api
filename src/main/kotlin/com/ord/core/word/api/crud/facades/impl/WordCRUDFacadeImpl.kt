@@ -1,5 +1,6 @@
 package com.ord.core.word.api.crud.facades.impl
 
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.crud.facades.WordCRUDFacade
 import com.ord.core.word.api.crud.facades.internal.getBankFromRequestOrNull
@@ -11,10 +12,9 @@ import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.WordMapper
-import com.ord.core.word.models.word.enums.WordStatus
+import com.ord.core.word.services.WordService
 import com.ord.core.word.models.word_details.toCompact
 import com.ord.core.word.services.WordDetailsService
-import com.ord.core.word.services.WordService
 import com.ord.features.bank.service.BankService
 import com.ord.shared.extensions.convertToSetExplicitly
 import org.springframework.http.HttpStatus
@@ -30,7 +30,35 @@ class WordCRUDFacadeImpl(
     private val wordService: WordService,
     private val wordDetailsService: WordDetailsService,
 ) : WordCRUDFacade {
-    override fun getManyWords(
+    override fun listWords(
+        userId: UUID,
+        language: LanguageName,
+        page: Int?,
+        perPage: Int?,
+        isFromUnverifiedSource: Boolean?,
+        hasProgress: Boolean?,
+    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> {
+        return wordService
+            .findManyWords(
+                language = language,
+                isFromUnverifiedSource = isFromUnverifiedSource,
+                hasProgress = hasProgress,
+                userId = userId,
+                page = page ?: 0,
+                perPage = perPage ?: 50,
+                includeUnverifiedSourceCount = hasProgress == null && isFromUnverifiedSource == null,
+            )
+            .map { result ->
+                WordsPaginatedDataResponse(
+                    pagination = result.paginated.pagination,
+                    data = result.paginated.data,
+                    unverifiedSourceCount = result.unverifiedSourceCount,
+                )
+            }
+            .map { ResponseEntity.ok(it) }
+    }
+
+    override fun searchWords(
         requestBody: GetManyWordsRequest,
         userId: UUID,
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>> {
@@ -38,7 +66,8 @@ class WordCRUDFacadeImpl(
             .findManyWords(
                 language = requestBody.language,
                 wordType = requestBody.wordType,
-                status = requestBody.status ?: WordStatus.ACTIVE,
+                isFromUnverifiedSource = requestBody.isFromUnverifiedSource,
+                hasProgress = requestBody.hasProgress ?: true,
                 completed = requestBody.completed,
                 wordExtraMark = requestBody.wordExtraMark,
                 bookmarked = requestBody.bookmarked,
@@ -55,7 +84,7 @@ class WordCRUDFacadeImpl(
                 WordsPaginatedDataResponse(
                     pagination = result.paginated.pagination,
                     data = result.paginated.data,
-                    capturedCount = result.capturedCount,
+                    unverifiedSourceCount = result.unverifiedSourceCount,
                 )
             }
             .map { ResponseEntity.status(HttpStatus.OK).body(it) }
@@ -82,7 +111,6 @@ class WordCRUDFacadeImpl(
         )
             .flatMap { bank ->
                 val wordToSave = WordEntity(
-                    status = WordStatus.ACTIVE,
                     type = body.type,
                     sourceWord = body.sourceWord,
                     translation = body.translation,
@@ -120,12 +148,14 @@ class WordCRUDFacadeImpl(
             }
             .flatMap { updatedEntity -> wordService.save(updatedEntity) }
             .flatMap { saved ->
-                if (saved.isActive()) {
-                    wordService.findOneWord(saved.id!!, userId).map { response ->
-                        wordMapper.toDTO(saved).apply { progress = response.progress }
+                wordService.hasProgress(saved.id!!, userId).flatMap { hasProgress ->
+                    if (hasProgress) {
+                        wordService.findOneWord(saved.id!!, userId).map { response ->
+                            wordMapper.toDTO(saved).apply { progress = response.progress }
+                        }
+                    } else {
+                        Mono.just(wordMapper.toDTO(saved))
                     }
-                } else {
-                    Mono.just(wordMapper.toDTO(saved))
                 }
             }
             .map { ResponseEntity.status(HttpStatus.OK).body(it) }

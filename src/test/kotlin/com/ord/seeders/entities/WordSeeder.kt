@@ -2,7 +2,6 @@ package com.ord.seeders.entities
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.models.word.WordEntity
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word_progress.WordProgressEntity
 import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
@@ -20,8 +19,14 @@ class WordSeeder(
     private val wordProgressRepository: WordProgressRepository,
 ) : SeederInterface<WordEntity> {
     override fun seedOneEntity(data: WordEntity?): WordEntity {
+        return seedOneEntity(data, withProgress = true)
+    }
+
+    fun seedOneEntity(data: WordEntity?, withProgress: Boolean): WordEntity {
         val saved = wordRepository.save(data ?: wordMockFactory.mockEntity()).block()!!
-        seedProgressForActiveWords(listOf(saved))
+        if (withProgress) {
+            seedProgressForWords(listOf(saved))
+        }
         return saved
     }
 
@@ -30,9 +35,11 @@ class WordSeeder(
         wordRepository.deleteAll().block()
     }
 
-    fun saveMany(entities: List<WordEntity>): List<WordEntity> {
+    fun saveMany(entities: List<WordEntity>, withProgress: Boolean = true): List<WordEntity> {
         val saved = wordRepository.saveAll(entities).collectList().block()!!
-        seedProgressForActiveWords(saved)
+        if (withProgress) {
+            seedProgressForWords(saved)
+        }
         return saved
     }
 
@@ -40,13 +47,14 @@ class WordSeeder(
         userId: UUID,
         bankId: UUID? = null,
         language: LanguageName = LanguageName.ENGLISH,
+        withProgress: Boolean = true,
     ): WordEntity {
         val mockEntity: WordEntity = wordMockFactory.mockEntity(userId = userId)
         mockEntity.language = language
 
         bankId?.let { mockEntity.bankId = it }
 
-        return seedOneEntity(mockEntity)
+        return seedOneEntity(mockEntity, withProgress)
     }
 
     fun seedMultipleEntitiesForUser(
@@ -54,6 +62,7 @@ class WordSeeder(
         amount: Int = 5,
         language: LanguageName = LanguageName.ENGLISH,
         bankId: UUID? = null,
+        withProgress: Boolean = true,
     ): List<WordEntity> {
         val wordEntities = mutableListOf<WordEntity>()
 
@@ -67,12 +76,12 @@ class WordSeeder(
             )
         }
 
-        return saveMany(wordEntities)
+        return saveMany(wordEntities, withProgress)
     }
 
-    private fun seedProgressForActiveWords(words: List<WordEntity>) {
+    private fun seedProgressForWords(words: List<WordEntity>) {
         val progressEntities = words
-            .filter { it.status == WordStatus.ACTIVE && it.id != null }
+            .filter { it.id != null }
             .map { word ->
                 wordProgressFactory.mockEntity(
                     wordId = word.id!!,

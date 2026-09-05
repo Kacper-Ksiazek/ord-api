@@ -3,7 +3,6 @@ package com.ord.testing_utils.dto.resources.db_rows
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import java.util.*
 
@@ -19,7 +18,6 @@ data class WordDBExportedRow(
 ) {
     fun convertIntoWordEntity(userId: UUID): WordEntity {
         return WordEntity(
-            status = WordStatus.ACTIVE,
             type = type,
             extraMark = extraMark,
             sourceWord = sourceWord,

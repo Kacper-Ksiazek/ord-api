@@ -3,7 +3,6 @@ package com.ord.seeders.factories
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.seeders.entities.UserSeeder
 import com.ord.seeders.factories.bases.FactoryBase
@@ -21,7 +20,7 @@ class WordFactory(
         translation: String = faker.name().title(),
         definition: String = faker.name().title(),
         isBookmarked: Boolean = faker.bool().bool(),
-        status: WordStatus = WordStatus.ACTIVE,
+        isFromUnverifiedSource: Boolean = false,
         type: WordType = WordType::class.getRandomValue(),
         extraMark: WordExtraMark? = WordExtraMark::class.getRandomValueOrNull(changesForNull = 75),
         language: LanguageName = LanguageName::class.getRandomValue(),
@@ -32,11 +31,11 @@ class WordFactory(
         val userIdToUse = userId ?: userSeeder.seedOneEntity().id!!
 
         return WordEntity(
-            status = status,
             sourceWord = sourceWord,
             translation = translation,
             definition = definition,
             isBookmarked = isBookmarked,
+            isFromUnverifiedSource = isFromUnverifiedSource,
             type = type,
             extraMark = extraMark,
             language = language,

@@ -10,7 +10,6 @@ import com.ord.core.security.UserRepository
 import com.ord.core.word.api.capture.requests.dto.PublicCaptureWordItem
 import com.ord.core.word.api.capture.requests.dto.PublicWordsBulkCaptureRequest
 import com.ord.core.word.models.word.enums.WordExtraMark
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.repositories.WordRepository
 import com.ord.testing_utils.api.clients.PublicWordCaptureAPIClient
@@ -164,10 +163,10 @@ class TestPublicWordCaptureController @Autowired constructor(
             }
 
             @Test
-            fun `204 - words created via public endpoint should be CAPTURED by default`() {
+            fun `204 - words created via public endpoint should be from unverified source`() {
                 val wordsInDb = wordsForUser(userEmail)
                 wordsInDb.forEach { word ->
-                    word.status shouldBe WordStatus.CAPTURED
+                    word.isFromUnverifiedSource shouldBe true
                 }
             }
         }
@@ -367,7 +366,7 @@ class TestPublicWordCaptureController @Autowired constructor(
             }
 
             @Test
-            fun `204 - words with all fields should still be CAPTURED`() {
+            fun `204 - words with all fields should still be from unverified source`() {
                 val user = mockAuthenticatedUser()
                 publicWordCaptureAPIClient.publicBulkCreate(
                     TestData.APIRequestPayloads.bulkCreateWithAllFields(user.email),
@@ -375,7 +374,7 @@ class TestPublicWordCaptureController @Autowired constructor(
 
                 val wordsInDb = wordsForUser(user.email)
                 wordsInDb.forEach { word ->
-                    word.status shouldBe WordStatus.CAPTURED
+                    word.isFromUnverifiedSource shouldBe true
                 }
             }
         }

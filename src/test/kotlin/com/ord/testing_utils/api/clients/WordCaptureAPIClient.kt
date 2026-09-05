@@ -7,7 +7,6 @@ import com.ord.core.word.api.capture.requests.dto.UpdateCapturedWordRequest
 import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
 import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -45,21 +44,23 @@ class WordCaptureAPIClient(
         )
     }
 
-    fun getCapturedWords(
+    fun listWords(
         language: LanguageName? = null,
         page: Int? = null,
         perPage: Int? = null,
-        status: WordStatus? = null,
+        isFromUnverifiedSource: Boolean? = null,
+        hasProgress: Boolean? = null,
         user: MockedAuthenticatedUser? = null,
     ): APIClientResponse<WordsPaginatedDataResponse?> {
         val queryParams = mutableMapOf<String, String>()
         language?.let { queryParams["language"] = it.name }
         page?.let { queryParams["page"] = it.toString() }
         perPage?.let { queryParams["perPage"] = it.toString() }
-        status?.let { queryParams["status"] = it.name }
+        isFromUnverifiedSource?.let { queryParams["isFromUnverifiedSource"] = it.toString() }
+        hasProgress?.let { queryParams["hasProgress"] = it.toString() }
 
         return get(
-            url = "$baseUrl/captured",
+            url = baseUrl,
             user = user,
             queryParams = queryParams,
             responseBodyType = object : ParameterizedTypeReference<WordsPaginatedDataResponse>() {},

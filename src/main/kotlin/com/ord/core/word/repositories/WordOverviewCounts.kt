@@ -1,7 +1,7 @@
 package com.ord.core.word.repositories
 
-data class WordStatusCounts(
+data class WordOverviewCounts(
     val total: Long,
     val activeCount: Long,
-    val capturedCount: Long,
+    val unverifiedSourceCount: Long,
 )

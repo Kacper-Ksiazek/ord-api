@@ -5,7 +5,6 @@ import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.shared.domain.dto.CountingSummary
 import com.ord.shared.domain.enums.SortDirection
@@ -22,7 +21,8 @@ interface WordRepositoryCustomMethods {
     fun findManyWords(
         userId: UUID,
         language: LanguageName,
-        status: WordStatus?,
+        isFromUnverifiedSource: Boolean?,
+        hasProgress: Boolean?,
         completed: Boolean?,
         bookmarked: Boolean?,
         searchingPhrase: String?,
@@ -34,9 +34,10 @@ interface WordRepositoryCustomMethods {
         sortBy: GetAllWordsSortOptions,
         page: Int,
         perPage: Int,
+        includeUnverifiedSourceCount: Boolean = false,
     ): Mono<WordsPaginatedResult>
 
-    fun countByStatus(userId: UUID): Mono<WordStatusCounts>
+    fun countOverview(userId: UUID): Mono<WordOverviewCounts>
 
     fun findNOfLatestWords(
         userId: UUID,

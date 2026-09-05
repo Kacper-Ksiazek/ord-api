@@ -3,6 +3,7 @@ package com.ord.core.word.api.crud
 import com.ord.config.OpenApiSecurity
 
 import com.ord.core.auth.annotations.AuthenticatedUser
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.crud.facades.WordBankManagementFacade
 import com.ord.core.word.api.crud.facades.WordCRUDFacade
@@ -55,10 +56,10 @@ class WordCRUDController(
     // CRUD
     // -------
 
-    @PostMapping("/get-many-words")
+    @GetMapping
     @Operation(
-        summary = "Get words with advanced filtering",
-        description = "Retrieve paginated list of words with filtering by language, bank, type, and search query"
+        summary = "List words",
+        description = "Retrieve paginated list of words with optional filters for learning progress and source",
     )
     @ApiResponses(value = [
         ApiResponse(
@@ -71,10 +72,42 @@ class WordCRUDController(
             content = [Content()]
         )
     ])
-    fun getAllWords(
+    fun listWords(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @RequestParam language: LanguageName,
+        @RequestParam(required = false) page: Int?,
+        @RequestParam(required = false) perPage: Int?,
+        @RequestParam(required = false) isFromUnverifiedSource: Boolean?,
+        @RequestParam(required = false) hasProgress: Boolean?,
+    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCRUDFacade.listWords(
+        userId = user.id,
+        language = language,
+        page = page,
+        perPage = perPage,
+        isFromUnverifiedSource = isFromUnverifiedSource,
+        hasProgress = hasProgress,
+    )
+
+    @PostMapping("/search")
+    @Operation(
+        summary = "Search words with advanced filtering",
+        description = "Retrieve paginated list of words with filtering by language, bank, type, and search query",
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Words retrieved successfully"
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
+    fun searchWords(
         @RequestBody @Valid requestBody: GetManyWordsRequest,
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
-    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCRUDFacade.getManyWords(
+    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCRUDFacade.searchWords(
         requestBody = requestBody,
         userId = user.id
     )

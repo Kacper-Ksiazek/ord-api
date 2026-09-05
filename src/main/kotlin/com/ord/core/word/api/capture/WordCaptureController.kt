@@ -2,16 +2,13 @@ package com.ord.core.word.api.capture
 
 import com.ord.config.OpenApiSecurity
 import com.ord.core.auth.annotations.AuthenticatedUser
-import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.capture.facades.WordCaptureFacade
 import com.ord.core.word.api.capture.requests.dto.ActivateManyWordsRequest
 import com.ord.core.word.api.capture.requests.dto.CaptureWordRequest
 import com.ord.core.word.api.capture.requests.dto.UpdateCapturedWordRequest
 import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
-import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
-import com.ord.core.word.models.word.enums.WordStatus
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -39,22 +36,6 @@ class WordCaptureController(
     fun getOverview(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
     ): Mono<ResponseEntity<WordOverviewResponse>> = wordCaptureFacade.getOverview(user.id)
-
-    @GetMapping("/captured")
-    @Operation(summary = "List captured/active words for inbox workflow")
-    fun getCapturedWords(
-        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
-        @RequestParam language: LanguageName,
-        @RequestParam(required = false) page: Int?,
-        @RequestParam(required = false) perPage: Int?,
-        @RequestParam(required = false) status: WordStatus?,
-    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCaptureFacade.getCapturedWords(
-        userId = user.id,
-        page = page,
-        perPage = perPage,
-        status = status,
-        language = language,
-    )
 
     @PatchMapping("/activate-many")
     fun activateMany(

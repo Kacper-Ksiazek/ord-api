@@ -4,7 +4,6 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.validators.annotations.ValidLanguageName
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.models.word.enums.WordExtraMark
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.shared.domain.enums.SortDirection
 import jakarta.validation.constraints.Max
@@ -29,7 +28,8 @@ data class GetManyWordsRequest(
     val searchingPhrase: String?,
 
     val wordType: WordType?,
-    val status: WordStatus? = null,
+    val isFromUnverifiedSource: Boolean? = null,
+    val hasProgress: Boolean? = null,
     val wordExtraMark: WordExtraMark?,
     val bookmarked: Boolean?,
     val completed: Boolean?,

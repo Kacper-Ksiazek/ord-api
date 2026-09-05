@@ -28,7 +28,6 @@ import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.config.GamesConfig
 import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.repository.BankRepository
@@ -158,7 +157,7 @@ class TestWordCRUDController @Autowired constructor(
                     sortBy = sortBy
                 )
 
-                val response = wordsAPIClient.getManyWords(
+                val response = wordsAPIClient.searchWords(
                     body = request,
                     user = authenticatedUser
                 )
@@ -354,7 +353,6 @@ class TestWordCRUDController @Autowired constructor(
                     List(10) {
                         wordMockFactory.mockEntity(
                             userId = authenticatedUser.userInfo.id,
-                            status = WordStatus.ACTIVE,
                         )
                     },
                 ).collectList().block()!!
@@ -487,7 +485,7 @@ class TestWordCRUDController @Autowired constructor(
                     sortBy = sortBy
                 )
 
-                val response = wordsAPIClient.getManyWords(
+                val response = wordsAPIClient.searchWords(
                     body = request,
                     user = user
                 )

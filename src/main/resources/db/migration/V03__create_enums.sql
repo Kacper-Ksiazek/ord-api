@@ -65,12 +65,6 @@ CALL create_enum_type(
         ARRAY ['OFFENSIVE', 'SLANG', 'FORMAL', 'INFORMAL', 'SCIENTIFIC', 'TECHNICAL', 'LEGAL', 'MEDICAL', 'COLLOQUIAL', 'POETIC']
      );
 
----  WordStatus
-CALL create_enum_type(
-        'word_status',
-        ARRAY ['CAPTURED', 'ACTIVE']
-     );
-
 --- +-------------------+
 --- |       GAMES       |
 --- +-------------------+

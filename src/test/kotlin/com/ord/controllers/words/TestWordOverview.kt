@@ -10,7 +10,6 @@ import com.ord.core.security.UserRepository
 import com.ord.core.word.api.capture.requests.dto.CaptureWordRequest
 import com.ord.core.word.api.capture.requests.dto.PublicCaptureWordItem
 import com.ord.core.word.api.capture.requests.dto.PublicWordsBulkCaptureRequest
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.repositories.WordRepository
 import com.ord.testing_utils.api.clients.PublicWordCaptureAPIClient
 import com.ord.testing_utils.api.clients.WordCaptureAPIClient
@@ -81,7 +80,7 @@ class TestWordOverview @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body!!.total shouldBe 0
                 response.body.activeCount shouldBe 0
-                response.body.capturedCount shouldBe 0
+                response.body.unverifiedSourceCount shouldBe 0
             }
 
             @Test
@@ -111,7 +110,7 @@ class TestWordOverview @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body!!.total shouldBe 5
                 response.body.activeCount shouldBe 0
-                response.body.capturedCount shouldBe 5
+                response.body.unverifiedSourceCount shouldBe 3
             }
 
             @Test
@@ -138,12 +137,12 @@ class TestWordOverview @Autowired constructor(
                 responseA.status shouldBe HttpStatus.OK
                 responseA.body!!.total shouldBe 1
                 responseA.body.activeCount shouldBe 0
-                responseA.body.capturedCount shouldBe 1
+                responseA.body.unverifiedSourceCount shouldBe 0
 
                 responseB.status shouldBe HttpStatus.OK
                 responseB.body!!.total shouldBe 1
                 responseB.body.activeCount shouldBe 0
-                responseB.body.capturedCount shouldBe 1
+                responseB.body.unverifiedSourceCount shouldBe 1
             }
         }
     }

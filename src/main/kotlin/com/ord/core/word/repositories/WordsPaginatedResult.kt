@@ -5,5 +5,5 @@ import com.ord.shared.api.dto.responses.PaginatedDataResponse
 
 data class WordsPaginatedResult(
     val paginated: PaginatedDataResponse<WordListItem>,
-    val capturedCount: Long?,
+    val unverifiedSourceCount: Long?,
 )

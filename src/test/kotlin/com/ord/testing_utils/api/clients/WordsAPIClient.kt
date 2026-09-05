@@ -23,12 +23,12 @@ class WordsAPIClient(
 ) : APITestClient(webClient) {
     val baseUrl = "/api/v1/words"
 
-    fun getManyWords(
+    fun searchWords(
         body: UnsafeGetManyWordsRequest,
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<PaginatedDataResponse<WordListItem>?> {
         return post(
-            url = "$baseUrl/get-many-words",
+            url = "$baseUrl/search",
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<PaginatedDataResponse<WordListItem>>() {}
