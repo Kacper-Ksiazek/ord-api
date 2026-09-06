@@ -1,0 +1,21 @@
+---
+description: Restart native local backend after ord-api code changes
+alwaysApply: true
+---
+
+# Local backend refresh
+
+After finishing backend work in **ord-api**, restart the local JVM app:
+
+```bash
+# from ord-ops (recommended)
+make api-refresh
+
+# or from ord-api
+make dev-refresh
+```
+
+- **Dev mode** — `spring-boot:run` with tests fully skipped (`-Dmaven.test.skip=true`). Broken tests do not block local runs.
+- **DB stays in Docker** — only the Spring Boot process restarts.
+- First-time start: `make api-dev` (ord-ops) or `make dev` (ord-api).
+- Full Docker stack (slower): `make docker-restart` in ord-api.

@@ -1,4 +1,4 @@
-.PHONY: help status docker-restart docker-e2e-up docker-e2e-down openapi test-smoke test-integration
+.PHONY: help status dev-db dev dev-refresh dev-stop docker-restart docker-e2e-up docker-e2e-down openapi test-smoke test-integration
 
 COMPOSE := docker compose
 COMPOSE_E2E := docker compose -f docker-compose.e2e.yml
@@ -9,6 +9,10 @@ OUTPUT_FILE ?= openapi.json
 help:
 	@echo "Available targets:"
 	@echo "  status          Show docker / api / front / storybook status"
+	@echo "  dev-db          Start Postgres only (Docker)"
+	@echo "  dev             Start native API in dev mode (no tests, DB in Docker)"
+	@echo "  dev-refresh     Restart native API after code changes (no tests)"
+	@echo "  dev-stop        Stop native API process"
 	@echo "  docker-restart   Stop stack, wipe DB volume, remove app image, rebuild and start"
 	@echo "  docker-e2e-up    Start ephemeral E2E stack (OTP 123456, 4 worker accounts via Flyway V19)"
 	@echo "  docker-e2e-down  Stop E2E stack"
@@ -21,6 +25,18 @@ help:
 
 status:
 	ORD_API_DIR=$(CURDIR) ORD_FRONTEND_DIR=$(ORD_FRONTEND_DIR) ./scripts/dev-status.sh
+
+dev-db:
+	./scripts/dev-db-up.sh
+
+dev:
+	./scripts/dev-native-up.sh
+
+dev-refresh:
+	./scripts/dev-native-restart.sh
+
+dev-stop:
+	./scripts/dev-native-down.sh
 
 docker-restart:
 	$(COMPOSE) down -v --rmi local --remove-orphans

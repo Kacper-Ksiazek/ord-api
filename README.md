@@ -115,6 +115,15 @@ OTP_CODE_FOR_WHITELISTED_EMAILS=123456
 
 2. Start the stack:
 
+**Fast local dev** (recommended — DB in Docker, app on host, tests ignored):
+
+```bash
+make dev           # first start
+make dev-refresh   # after code changes
+```
+
+**Full Docker stack** (slower — rebuilds app image):
+
 ```bash
 make docker-restart   # rebuild + start app + Postgres
 # or
@@ -173,6 +182,10 @@ Run `make help` for the full list.
 | Target | Description |
 |--------|-------------|
 | `make status` | Show docker / api / front / storybook status |
+| `make dev-db` | Start Postgres only (Docker) |
+| `make dev` | Start native API in dev mode (no tests, DB in Docker) |
+| `make dev-refresh` | Restart native API after code changes (no tests) |
+| `make dev-stop` | Stop native API process |
 | `make docker-restart` | Rebuild and start app + Postgres (wipes DB volume) |
 | `make docker-e2e-up` | Start ephemeral E2E stack |
 | `make docker-e2e-down` | Stop E2E stack |
