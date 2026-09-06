@@ -68,8 +68,8 @@ class WordRepositoryCustomMethodsImpl(
         searchingPhrase: String?,
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
-        wordType: WordType?,
-        wordExtraMark: WordExtraMark?,
+        wordTypes: Set<WordType>?,
+        wordExtraMarks: Set<WordExtraMark>?,
         sortDirection: SortDirection,
         sortBy: GetAllWordsSortOptions,
         page: Int,
@@ -84,8 +84,8 @@ class WordRepositoryCustomMethodsImpl(
             bookmarked,
             banksIds,
             bankGroupsIds,
-            wordType,
-            wordExtraMark,
+            wordTypes,
+            wordExtraMarks,
         )
         val valuesBindings = createValuesBindings(
             userId,
@@ -95,8 +95,8 @@ class WordRepositoryCustomMethodsImpl(
             bookmarked,
             banksIds,
             bankGroupsIds,
-            wordType,
-            wordExtraMark,
+            wordTypes,
+            wordExtraMarks,
         )
         val orderByClause = resolveWordsOrderByClause(sortBy, sortDirection)
 
@@ -494,8 +494,8 @@ class WordRepositoryCustomMethodsImpl(
         bookmarked: Boolean?,
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
-        wordType: WordType?,
-        wordExtraMark: WordExtraMark?,
+        wordTypes: Set<WordType>?,
+        wordExtraMarks: Set<WordExtraMark>?,
     ): String {
         return buildList {
             add("words.user_id = :userId")
@@ -511,8 +511,8 @@ class WordRepositoryCustomMethodsImpl(
             bookmarked?.let { add("words.is_bookmarked = :bookmarked") }
             banksIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_id = ANY(:banksIds)") }
             bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_group_id = ANY(:bankGroupsIds)") }
-            wordType?.let { add("words.type = :wordType") }
-            wordExtraMark?.let { add("words.extra_mark = :wordExtraMark") }
+            wordTypes?.takeIf { it.isNotEmpty() }?.let { add("words.type = ANY(:wordTypes)") }
+            wordExtraMarks?.takeIf { it.isNotEmpty() }?.let { add("words.extra_mark = ANY(:wordExtraMarks)") }
         }.joinToString(" AND ")
     }
 
@@ -524,8 +524,8 @@ class WordRepositoryCustomMethodsImpl(
         bookmarked: Boolean?,
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
-        wordType: WordType?,
-        wordExtraMark: WordExtraMark?,
+        wordTypes: Set<WordType>?,
+        wordExtraMarks: Set<WordExtraMark>?,
     ): Map<String, Any> {
         return mutableMapOf<String, Any>(
             "userId" to userId,
@@ -534,8 +534,10 @@ class WordRepositoryCustomMethodsImpl(
             isFromUnverifiedSource?.let { put("isFromUnverifiedSource", it) }
             searchingPhrase?.let { put("searchingPhrase", "%$it%") }
             bookmarked?.let { put("bookmarked", it) }
-            wordType?.let { put("wordType", it.name) }
-            wordExtraMark?.let { put("wordExtraMark", it.name) }
+            wordTypes?.takeIf { it.isNotEmpty() }?.let { put("wordTypes", it.map { type -> type.name }.toTypedArray()) }
+            wordExtraMarks?.takeIf { it.isNotEmpty() }?.let {
+                put("wordExtraMarks", it.map { mark -> mark.name }.toTypedArray())
+            }
             banksIds?.takeIf { it.isNotEmpty() }?.let { put("banksIds", it.toTypedArray()) }
             bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { put("bankGroupsIds", it.toTypedArray()) }
         }

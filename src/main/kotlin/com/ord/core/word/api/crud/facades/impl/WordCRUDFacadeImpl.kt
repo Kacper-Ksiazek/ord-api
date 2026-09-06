@@ -12,6 +12,8 @@ import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.WordMapper
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.services.WordService
 import com.ord.core.word.models.word_details.toCompact
 import com.ord.core.word.services.WordDetailsService
@@ -65,11 +67,11 @@ class WordCRUDFacadeImpl(
         return wordService
             .findManyWords(
                 language = requestBody.language,
-                wordType = requestBody.wordType,
+                wordTypes = resolveWordTypes(requestBody),
                 isFromUnverifiedSource = requestBody.isFromUnverifiedSource,
                 hasProgress = requestBody.hasProgress ?: true,
                 completed = requestBody.completed,
-                wordExtraMark = requestBody.wordExtraMark,
+                wordExtraMarks = resolveWordExtraMarks(requestBody),
                 bookmarked = requestBody.bookmarked,
                 searchingPhrase = requestBody.searchingPhrase,
                 banksIds = requestBody.banksIds?.convertToSetExplicitly(paramName = "banksIds"),
@@ -165,5 +167,27 @@ class WordCRUDFacadeImpl(
         return wordService
             .deleteById(id = id, userId = userId)
             .then(Mono.fromCallable { ResponseEntity.status(HttpStatus.OK).build() })
+    }
+
+    private fun resolveWordTypes(requestBody: GetManyWordsRequest): Set<WordType>? {
+        val fromList = requestBody.wordTypes?.toSet()
+        val fromSingle = requestBody.wordType?.let { setOf(it) }
+
+        return when {
+            fromList != null && fromList.isNotEmpty() -> fromList
+            fromSingle != null -> fromSingle
+            else -> null
+        }
+    }
+
+    private fun resolveWordExtraMarks(requestBody: GetManyWordsRequest): Set<WordExtraMark>? {
+        val fromList = requestBody.wordExtraMarks?.toSet()
+        val fromSingle = requestBody.wordExtraMark?.let { setOf(it) }
+
+        return when {
+            fromList != null && fromList.isNotEmpty() -> fromList
+            fromSingle != null -> fromSingle
+            else -> null
+        }
     }
 }

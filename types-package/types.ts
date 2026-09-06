@@ -1114,12 +1114,14 @@ export interface components {
              * @enum {string|null}
              */
             wordType?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE" | null;
+            wordTypes?: ("NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE")[] | null;
             hasProgress?: boolean | null;
             /**
              * @description Extra marks or tags for word classification by register or domain
              * @enum {string|null}
              */
             wordExtraMark?: "OFFENSIVE" | "SLANG" | "FORMAL" | "INFORMAL" | "SCIENTIFIC" | "TECHNICAL" | "LEGAL" | "MEDICAL" | "COLLOQUIAL" | "POETIC" | null;
+            wordExtraMarks?: ("OFFENSIVE" | "SLANG" | "FORMAL" | "INFORMAL" | "SCIENTIFIC" | "TECHNICAL" | "LEGAL" | "MEDICAL" | "COLLOQUIAL" | "POETIC")[] | null;
             bookmarked?: boolean | null;
             completed?: boolean | null;
             banksIds?: string[] | null;

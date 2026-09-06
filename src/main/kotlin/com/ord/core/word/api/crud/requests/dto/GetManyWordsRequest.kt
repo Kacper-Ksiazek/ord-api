@@ -28,9 +28,11 @@ data class GetManyWordsRequest(
     val searchingPhrase: String?,
 
     val wordType: WordType?,
+    val wordTypes: List<WordType>?,
     val isFromUnverifiedSource: Boolean? = null,
     val hasProgress: Boolean? = null,
     val wordExtraMark: WordExtraMark?,
+    val wordExtraMarks: List<WordExtraMark>?,
     val bookmarked: Boolean?,
     val completed: Boolean?,
     val banksIds: List<UUID>?,
@@ -47,8 +49,10 @@ data class UnsafeGetManyWordsRequest(
     val perPage: Any?,
 
     val wordType: Any?,
+    val wordTypes: Any?,
     val completed: Any?,
     val wordExtraMark: Any?,
+    val wordExtraMarks: Any?,
     val bookmarked: Any?,
     val searchingPhrase: Any?,
 
