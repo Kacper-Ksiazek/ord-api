@@ -14,6 +14,11 @@ stop_docker_app_if_running
 load_api_env
 require_java
 
+if ! api_dev_compile; then
+	printf '❌ compile failed — API not started\n' >&2
+	exit 1
+fi
+
 api_dev_start
 
 if api_dev_wait_healthy; then
@@ -21,5 +26,4 @@ if api_dev_wait_healthy; then
 	exit 0
 fi
 
-printf '❌ api failed to start — see %s\n' "$API_DEV_LOG_FILE" >&2
 exit 1

@@ -8,6 +8,7 @@ API_HEALTH_PATH="${API_HEALTH_PATH:-/api/v1/health-check}"
 RUNTIME_DIR="$ORD_API_DIR/.runtime"
 API_DEV_PID_FILE="$RUNTIME_DIR/api-dev.pid"
 API_DEV_LOG_FILE="$RUNTIME_DIR/api-dev.log"
+API_DEV_HEALTH_TIMEOUT="${API_DEV_HEALTH_TIMEOUT:-120}"
 
 # Dev mode: main sources only — never compile or run tests (broken tests are OK).
 MVN_DEV_ARGS=(
@@ -61,7 +62,6 @@ load_compose_env() {
 		set +a
 	fi
 
-	# Silence docker compose warnings when only the db service is started.
 	export SMTP_HOST="${SMTP_HOST:-}"
 	export SMTP_PORT="${SMTP_PORT:-}"
 	export SMTP_USERNAME="${SMTP_USERNAME:-}"
@@ -99,6 +99,8 @@ stop_docker_app_if_running() {
 		return 0
 	fi
 
+	load_compose_env
+
 	if docker compose -f "$COMPOSE_DEV" ps --status running app -q 2>/dev/null | grep -q .; then
 		printf '⚠️  stopping docker app container (native api uses port %s)\n' "$API_PORT"
 		docker compose -f "$COMPOSE_DEV" stop app
@@ -116,14 +118,45 @@ stop_process_tree() {
 	done < <(pgrep -P "$pid" 2>/dev/null || true)
 }
 
-api_dev_down() {
+api_dev_read_pid() {
 	if [[ ! -f "$API_DEV_PID_FILE" ]]; then
-		return 0
+		return 1
 	fi
 
 	local pid
 	pid="$(<"$API_DEV_PID_FILE")"
-	stop_process_tree "$pid"
+	[[ -n "$pid" ]] || return 1
+	printf '%s' "$pid"
+}
+
+api_dev_is_running() {
+	local pid
+
+	if ! api_dev_read_pid; then
+		return 1
+	fi
+
+	pid="$(api_dev_read_pid)"
+	kill -0 "$pid" 2>/dev/null
+}
+
+api_dev_kill_port_listeners() {
+	local pid
+
+	while read -r pid; do
+		[[ -n "$pid" ]] && kill "$pid" 2>/dev/null || true
+	done < <(lsof -ti ":$API_PORT" 2>/dev/null || true)
+}
+
+api_dev_down() {
+	local pid
+
+	if api_dev_read_pid; then
+		pid="$(api_dev_read_pid)"
+		stop_process_tree "$pid"
+	fi
+
+	api_dev_kill_port_listeners
 	rm -f "$API_DEV_PID_FILE"
 }
 
@@ -137,6 +170,17 @@ ensure_db_up() {
 
 	load_compose_env
 	docker compose -f "$COMPOSE_DEV" up -d db
+}
+
+api_dev_compile() {
+	local mvn
+	mvn="$(resolve_mvn_cmd)"
+
+	printf '📦 compiling main sources (tests skipped)...\n'
+	(
+		cd "$ORD_API_DIR"
+		"$mvn" compile "${MVN_DEV_ARGS[@]}"
+	)
 }
 
 api_dev_start() {
@@ -153,17 +197,47 @@ api_dev_start() {
 	)
 }
 
+api_dev_print_log_tail() {
+	local lines="${1:-30}"
+
+	if [[ ! -f "$API_DEV_LOG_FILE" ]]; then
+		return 0
+	fi
+
+	printf '\n--- last %s lines of %s ---\n' "$lines" "$API_DEV_LOG_FILE" >&2
+	tail -n "$lines" "$API_DEV_LOG_FILE" >&2
+}
+
+api_dev_fail() {
+	local reason="$1"
+
+	printf '❌ %s\n' "$reason" >&2
+	api_dev_print_log_tail 40
+}
+
 api_dev_wait_healthy() {
 	local health_url="http://localhost:${API_PORT}${API_HEALTH_PATH}"
 	local attempt=0
+	local pid=""
 
-	while [[ "$attempt" -lt 90 ]]; do
+	if api_dev_read_pid; then
+		pid="$(api_dev_read_pid)"
+	fi
+
+	while [[ "$attempt" -lt "$API_DEV_HEALTH_TIMEOUT" ]]; do
 		if http_up "$health_url"; then
 			return 0
 		fi
+
+		if [[ -n "$pid" ]] && ! kill -0 "$pid" 2>/dev/null; then
+			api_dev_fail "API process exited before health check passed"
+			return 1
+		fi
+
 		attempt=$((attempt + 1))
 		sleep 1
 	done
 
+	api_dev_fail "health check timed out after ${API_DEV_HEALTH_TIMEOUT}s"
 	return 1
 }
