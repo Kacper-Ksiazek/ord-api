@@ -37,7 +37,7 @@ interface WordRepositoryCustomMethods {
         includeUnverifiedSourceCount: Boolean = false,
     ): Mono<WordsPaginatedResult>
 
-    fun countOverview(userId: UUID): Mono<WordOverviewCounts>
+    fun countOverview(userId: UUID, language: LanguageName? = null): Mono<WordOverviewCounts>
 
     fun findNOfLatestWords(
         userId: UUID,

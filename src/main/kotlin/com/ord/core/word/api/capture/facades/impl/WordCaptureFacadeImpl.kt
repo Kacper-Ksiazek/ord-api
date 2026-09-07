@@ -1,5 +1,6 @@
 package com.ord.core.word.api.capture.facades.impl
 
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
 import com.ord.core.word.api.capture.facades.WordCaptureFacade
 import com.ord.core.word.api.capture.requests.dto.ActivateManyWordsRequest
@@ -47,12 +48,13 @@ class WordCaptureFacadeImpl(
             .then(Mono.fromCallable { ResponseEntity.status(HttpStatus.NO_CONTENT).build<Unit>() })
     }
 
-    override fun getOverview(userId: UUID): Mono<ResponseEntity<WordOverviewResponse>> {
-        return wordService.countOverview(userId)
+    override fun getOverview(userId: UUID, language: LanguageName?): Mono<ResponseEntity<WordOverviewResponse>> {
+        return wordService.countOverview(userId, language)
             .map {
                 WordOverviewResponse(
                     total = it.total,
                     activeCount = it.activeCount,
+                    pendingCount = it.pendingCount,
                     unverifiedSourceCount = it.unverifiedSourceCount,
                 )
             }

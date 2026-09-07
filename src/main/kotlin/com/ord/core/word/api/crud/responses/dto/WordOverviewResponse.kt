@@ -10,6 +10,9 @@ data class WordOverviewResponse(
     @Schema(description = "Number of words with learning progress", example = "56")
     val activeCount: Long,
 
+    @Schema(description = "Number of captured words without learning progress", example = "18")
+    val pendingCount: Long,
+
     @Schema(description = "Number of words from unverified sources", example = "18")
     val unverifiedSourceCount: Long,
 )

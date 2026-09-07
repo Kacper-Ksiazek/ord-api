@@ -69,10 +69,15 @@ class WordCaptureAPIClient(
 
     fun getOverview(
         user: MockedAuthenticatedUser? = null,
+        language: LanguageName? = null,
     ): APIClientResponse<WordOverviewResponse?> {
+        val queryParams = mutableMapOf<String, String>()
+        language?.let { queryParams["language"] = it.name }
+
         return get(
             url = "$baseUrl/overview",
             user = user,
+            queryParams = queryParams,
             responseBodyType = object : ParameterizedTypeReference<WordOverviewResponse>() {},
         )
     }

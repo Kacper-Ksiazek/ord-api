@@ -2371,6 +2371,16 @@
                     "2. Words: Capture"
                 ],
                 "operationId": "getOverview",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/LanguageName"
+                        }
+                    }
+                ],
                 "responses": {
                     "400": {
                         "description": "Bad Request",
@@ -6720,6 +6730,12 @@
                         "format": "int64",
                         "description": "Number of words with learning progress",
                         "example": 56
+                    },
+                    "pendingCount": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of captured words without learning progress",
+                        "example": 18
                     },
                     "unverifiedSourceCount": {
                         "type": "integer",

@@ -767,7 +767,9 @@ export interface paths {
     };
     "/api/v1/words/overview": {
         parameters: {
-            query?: never;
+            query?: {
+                language?: components["schemas"]["LanguageName"];
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2118,6 +2120,12 @@ export interface components {
              * @example 56
              */
             activeCount?: number;
+            /**
+             * Format: int64
+             * @description Number of captured words without learning progress
+             * @example 18
+             */
+            pendingCount?: number;
             /**
              * Format: int64
              * @description Number of words from unverified sources
@@ -4134,7 +4142,9 @@ export interface operations {
     };
     getOverview: {
         parameters: {
-            query?: never;
+            query?: {
+                language?: components["schemas"]["LanguageName"];
+            };
             header?: never;
             path?: never;
             cookie?: never;

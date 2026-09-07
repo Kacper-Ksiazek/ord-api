@@ -1,6 +1,6 @@
 {
   "name": "@kacper-ksiazek/ord-api-types",
-  "version": "1.0.48",
+  "version": "1.0.49",
   "description": "TypeScript types for ORD API - Auto-generated from OpenAPI specification",
   "main": "types.ts",
   "types": "types.ts",

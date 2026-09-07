@@ -180,23 +180,31 @@ class WordRepositoryCustomMethodsImpl(
         }
     }
 
-    override fun countOverview(userId: UUID): Mono<WordOverviewCounts> {
+    override fun countOverview(userId: UUID, language: LanguageName?): Mono<WordOverviewCounts> {
+        val languageFilter = language?.let { "AND words.language = :language" } ?: ""
         val query = """
             SELECT
                 COUNT(*) AS total,
                 COALESCE(SUM(CASE WHEN wp.id IS NOT NULL THEN 1 ELSE 0 END), 0) AS active_count,
+                COALESCE(SUM(CASE WHEN wp.id IS NULL THEN 1 ELSE 0 END), 0) AS pending_count,
                 COALESCE(SUM(CASE WHEN words.is_from_unverified_source = TRUE THEN 1 ELSE 0 END), 0) AS unverified_source_count
             FROM words
                 LEFT JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
             WHERE words.user_id = :userId
+                $languageFilter
         """
 
-        return databaseClient.sql(query)
-            .bind("userId", userId)
+        var statement = databaseClient.sql(query).bind("userId", userId)
+        if (language != null) {
+            statement = statement.bind("language", language.name)
+        }
+
+        return statement
             .map { row ->
                 WordOverviewCounts(
                     total = row.get("total", Long::class.java)!!,
                     activeCount = row.get("active_count", Long::class.java)!!,
+                    pendingCount = row.get("pending_count", Long::class.java)!!,
                     unverifiedSourceCount = row.get("unverified_source_count", Long::class.java)!!,
                 )
             }

@@ -14,6 +14,7 @@ import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.models.word_progress.WordProgressDTO
 import com.ord.core.word.repositories.WordOverviewCounts
+import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
 import com.ord.core.word.repositories.WordsPaginatedResult
 import com.ord.core.word.services.WordProgressService
@@ -311,14 +312,16 @@ class WordServiceImpl(
             .then(Mono.just(Unit))
     }
 
-    override fun countOverview(userId: UUID): Mono<WordOverviewCounts> = repository.countOverview(userId)
+    override fun countOverview(userId: UUID, language: LanguageName?): Mono<WordOverviewCounts> =
+        repository.countOverview(userId, language)
 
     override fun countCreated(language: LanguageName, userId: UUID): Mono<CountingSummary> {
         return repository.countCreated(language, userId)
     }
 
     override fun hasProgress(wordId: UUID, userId: UUID): Mono<Boolean> {
-        return wordProgressService.findByWordId(wordId, userId)
+        return (wordProgressService.repository as WordProgressRepository)
+            .findByWordIdAndUserId(wordId, userId)
             .hasElement()
     }
 }

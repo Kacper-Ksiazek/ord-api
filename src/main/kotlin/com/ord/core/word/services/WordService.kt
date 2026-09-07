@@ -79,7 +79,7 @@ interface WordService : UserResourceService<WordEntity> {
 
     fun activateManyWords(wordIds: Set<UUID>, userId: UUID): Mono<Unit>
 
-    fun countOverview(userId: UUID): Mono<WordOverviewCounts>
+    fun countOverview(userId: UUID, language: LanguageName? = null): Mono<WordOverviewCounts>
 
     fun countCreated(language: LanguageName, userId: UUID): Mono<CountingSummary>
 

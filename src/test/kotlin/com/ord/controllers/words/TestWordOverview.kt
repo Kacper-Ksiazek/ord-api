@@ -80,6 +80,7 @@ class TestWordOverview @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body!!.total shouldBe 0
                 response.body.activeCount shouldBe 0
+                response.body.pendingCount shouldBe 0
                 response.body.unverifiedSourceCount shouldBe 0
             }
 
@@ -110,6 +111,7 @@ class TestWordOverview @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body!!.total shouldBe 5
                 response.body.activeCount shouldBe 0
+                response.body.pendingCount shouldBe 5
                 response.body.unverifiedSourceCount shouldBe 3
             }
 
@@ -137,12 +139,45 @@ class TestWordOverview @Autowired constructor(
                 responseA.status shouldBe HttpStatus.OK
                 responseA.body!!.total shouldBe 1
                 responseA.body.activeCount shouldBe 0
+                responseA.body.pendingCount shouldBe 1
                 responseA.body.unverifiedSourceCount shouldBe 0
 
                 responseB.status shouldBe HttpStatus.OK
                 responseB.body!!.total shouldBe 1
                 responseB.body.activeCount shouldBe 0
+                responseB.body.pendingCount shouldBe 1
                 responseB.body.unverifiedSourceCount shouldBe 1
+            }
+
+            @Test
+            fun `200 - should scope counts to requested language`() {
+                val user = mockAuthenticatedUser()
+
+                wordCaptureAPIClient.captureOne(
+                    CaptureWordRequest(sourceWord = "english-pending", language = LanguageName.ENGLISH),
+                    user,
+                )
+                wordCaptureAPIClient.captureOne(
+                    CaptureWordRequest(sourceWord = "polish-pending", language = LanguageName.POLISH),
+                    user,
+                )
+
+                val englishOverview = wordCaptureAPIClient.getOverview(
+                    user = user,
+                    language = LanguageName.ENGLISH,
+                )
+                val polishOverview = wordCaptureAPIClient.getOverview(
+                    user = user,
+                    language = LanguageName.POLISH,
+                )
+
+                englishOverview.status shouldBe HttpStatus.OK
+                englishOverview.body!!.total shouldBe 1
+                englishOverview.body.pendingCount shouldBe 1
+
+                polishOverview.status shouldBe HttpStatus.OK
+                polishOverview.body!!.total shouldBe 1
+                polishOverview.body.pendingCount shouldBe 1
             }
         }
     }

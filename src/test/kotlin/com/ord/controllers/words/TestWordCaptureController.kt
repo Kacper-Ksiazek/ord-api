@@ -570,11 +570,12 @@ class TestWordCaptureController @Autowired constructor(
                 overview.status shouldBe HttpStatus.OK
                 overview.body!!.total shouldBe 4
                 overview.body.activeCount shouldBe 0
+                overview.body.pendingCount shouldBe 4
                 overview.body.unverifiedSourceCount shouldBe 2
 
                 allWords.body!!.pagination.totalResults shouldBe overview.body.total
                 activeWords.body!!.pagination.totalResults shouldBe overview.body.activeCount
-                inboxWords.body!!.pagination.totalResults shouldBe 4
+                inboxWords.body!!.pagination.totalResults shouldBe overview.body.pendingCount
             }
         }
 
