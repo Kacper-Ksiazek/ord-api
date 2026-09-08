@@ -56,6 +56,7 @@ class WordCaptureFacadeImpl(
                     activeCount = it.activeCount,
                     pendingCount = it.pendingCount,
                     unverifiedSourceCount = it.unverifiedSourceCount,
+                    bookmarkedCount = it.bookmarkedCount,
                 )
             }
             .map { ResponseEntity.ok(it) }

@@ -187,7 +187,8 @@ class WordRepositoryCustomMethodsImpl(
                 COUNT(*) AS total,
                 COALESCE(SUM(CASE WHEN wp.id IS NOT NULL THEN 1 ELSE 0 END), 0) AS active_count,
                 COALESCE(SUM(CASE WHEN wp.id IS NULL THEN 1 ELSE 0 END), 0) AS pending_count,
-                COALESCE(SUM(CASE WHEN words.is_from_unverified_source = TRUE THEN 1 ELSE 0 END), 0) AS unverified_source_count
+                COALESCE(SUM(CASE WHEN words.is_from_unverified_source = TRUE THEN 1 ELSE 0 END), 0) AS unverified_source_count,
+                COALESCE(SUM(CASE WHEN words.is_bookmarked = TRUE AND wp.id IS NOT NULL THEN 1 ELSE 0 END), 0) AS bookmarked_count
             FROM words
                 LEFT JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
             WHERE words.user_id = :userId
@@ -206,6 +207,7 @@ class WordRepositoryCustomMethodsImpl(
                     activeCount = row.get("active_count", Long::class.java)!!,
                     pendingCount = row.get("pending_count", Long::class.java)!!,
                     unverifiedSourceCount = row.get("unverified_source_count", Long::class.java)!!,
+                    bookmarkedCount = row.get("bookmarked_count", Long::class.java)!!,
                 )
             }
             .one()

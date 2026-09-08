@@ -6742,6 +6742,12 @@
                         "format": "int64",
                         "description": "Number of words from unverified sources",
                         "example": 18
+                    },
+                    "bookmarkedCount": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Number of bookmarked words in the learning list",
+                        "example": 12
                     }
                 }
             },

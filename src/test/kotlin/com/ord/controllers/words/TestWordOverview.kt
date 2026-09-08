@@ -82,6 +82,7 @@ class TestWordOverview @Autowired constructor(
                 response.body.activeCount shouldBe 0
                 response.body.pendingCount shouldBe 0
                 response.body.unverifiedSourceCount shouldBe 0
+                response.body.bookmarkedCount shouldBe 0
             }
 
             @Test
@@ -113,6 +114,7 @@ class TestWordOverview @Autowired constructor(
                 response.body.activeCount shouldBe 0
                 response.body.pendingCount shouldBe 5
                 response.body.unverifiedSourceCount shouldBe 3
+                response.body.bookmarkedCount shouldBe 0
             }
 
             @Test

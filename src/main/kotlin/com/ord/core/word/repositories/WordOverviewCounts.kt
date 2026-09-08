@@ -5,4 +5,5 @@ data class WordOverviewCounts(
     val activeCount: Long,
     val pendingCount: Long,
     val unverifiedSourceCount: Long,
+    val bookmarkedCount: Long,
 )

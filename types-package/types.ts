@@ -2132,6 +2132,12 @@ export interface components {
              * @example 18
              */
             unverifiedSourceCount?: number;
+            /**
+             * Format: int64
+             * @description Number of bookmarked words in the learning list
+             * @example 12
+             */
+            bookmarkedCount?: number;
         };
         /** @description Application health snapshot */
         HealthCheckResponse: {

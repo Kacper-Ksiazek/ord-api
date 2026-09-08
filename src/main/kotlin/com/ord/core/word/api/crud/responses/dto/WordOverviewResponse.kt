@@ -15,4 +15,7 @@ data class WordOverviewResponse(
 
     @Schema(description = "Number of words from unverified sources", example = "18")
     val unverifiedSourceCount: Long,
+
+    @Schema(description = "Number of bookmarked words in the learning list", example = "12")
+    val bookmarkedCount: Long,
 )
