@@ -2,7 +2,6 @@ package com.ord.core.word.services.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.capture.requests.dto.CaptureWordRequest
-import com.ord.core.word.api.capture.requests.dto.UpdateCapturedWordRequest
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.crud.requests.enums.toggleProperty
@@ -225,55 +224,6 @@ class WordServiceImpl(
         return Flux.fromIterable(requests)
             .concatMap { captureWord(it, userId, isFromUnverifiedSource) }
             .collectList()
-    }
-
-    override fun updateCapturedWord(wordId: UUID, userId: UUID, body: UpdateCapturedWordRequest): Mono<WordDTO> {
-        return repository.findByIdAndUserId(wordId, userId)
-            .switchIfEmpty(Mono.error(NotFoundException("Word with id $wordId not found")))
-            .flatMap { entity ->
-                val word = entity!!
-                hasProgress(wordId, userId).flatMap { hasProgress ->
-                    if (hasProgress) {
-                        return@flatMap Mono.error<WordDTO>(
-                            BadRequestException("Only words without learning progress can be updated"),
-                        )
-                    }
-                    repository.save(
-                        word.copy(
-                            sourceWord = body.sourceWord ?: word.sourceWord,
-                            translation = body.translation ?: word.translation,
-                            definition = body.definition ?: word.definition,
-                            extraMark = body.extraMark ?: word.extraMark,
-                            type = body.type ?: word.type,
-                        ),
-                    ).map { wordMapper.toDTO(it) }
-                }
-            }
-    }
-
-    override fun bulkUpdateSourceWords(userId: UUID, updates: List<Pair<UUID, String>>): Mono<List<WordDTO>> {
-        val updateMap = updates.toMap()
-        return repository.findAllByIdInAndUserId(updateMap.keys, userId)
-            .collectList()
-            .flatMap { entities ->
-                Flux.fromIterable(entities)
-                    .flatMap { entity ->
-                        hasProgress(entity.id!!, userId).map { hasProgress -> entity to hasProgress }
-                    }
-                    .collectList()
-                    .flatMap { entitiesWithProgress ->
-                        if (entitiesWithProgress.any { it.second }) {
-                            return@flatMap Mono.error<List<WordEntity>>(
-                                BadRequestException("Only words without learning progress can be updated"),
-                            )
-                        }
-                        val updated = entitiesWithProgress.map { (entity, _) ->
-                            entity.copy(sourceWord = updateMap[entity.id] ?: entity.sourceWord)
-                        }
-                        repository.saveAll(updated).collectList()
-                    }
-            }
-            .map { entities -> entities.map { wordMapper.toDTO(it) } }
     }
 
     override fun activateWord(wordId: UUID, userId: UUID): Mono<WordDTO> {

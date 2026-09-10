@@ -148,22 +148,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/words/capture": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["capture"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/words/ai/suggest-vocabulary": {
         parameters: {
             query?: never;
@@ -697,38 +681,6 @@ export interface paths {
         patch: operations["updateWord"];
         trace?: never;
     };
-    "/api/v1/words/{id}/capture": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: operations["updateCaptured"];
-        trace?: never;
-    };
-    "/api/v1/words/bulk-update-source": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: operations["bulkUpdateSourceWords"];
-        trace?: never;
-    };
     "/api/v1/words/activate-many": {
         parameters: {
             query?: never;
@@ -767,9 +719,7 @@ export interface paths {
     };
     "/api/v1/words/overview": {
         parameters: {
-            query?: {
-                language?: components["schemas"]["LanguageName"];
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -1219,32 +1169,6 @@ export interface components {
             bankId?: string | null;
             wordIds?: string[];
             bankToCreate?: components["schemas"]["CreateBankRequest"] | null;
-        };
-        /** @description Request to quickly capture a word for later activation */
-        CaptureWordRequest: {
-            /**
-             * @description The word or phrase to capture
-             * @example comprehensive
-             */
-            sourceWord: string;
-            /**
-             * @description Language of the word
-             * @example ENGLISH
-             * @enum {string}
-             */
-            language: "POLISH" | "ENGLISH" | "GERMAN" | "FRENCH" | "SPANISH" | "ITALIAN" | "NORWEGIAN" | "RUSSIAN" | "SLOVENIAN";
-            translation?: string | null;
-            definition?: string | null;
-            /**
-             * @description Extra marks or tags for word classification by register or domain
-             * @enum {string|null}
-             */
-            extraMark?: "OFFENSIVE" | "SLANG" | "FORMAL" | "INFORMAL" | "SCIENTIFIC" | "TECHNICAL" | "LEGAL" | "MEDICAL" | "COLLOQUIAL" | "POETIC" | null;
-            /**
-             * @description Type of word or expression
-             * @enum {string|null}
-             */
-            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE" | null;
         };
         /** @description Request to generate AI-powered vocabulary suggestions */
         SuggestVocabularyRequest: {
@@ -2036,22 +1960,6 @@ export interface components {
             bankId?: string | null;
             bankToCreate?: components["schemas"]["CreateBankRequest"] | null;
         };
-        /** @description Partial update for a captured word */
-        UpdateCapturedWordRequest: {
-            sourceWord?: string | null;
-            translation?: string | null;
-            definition?: string | null;
-            /**
-             * @description Extra marks or tags for word classification by register or domain
-             * @enum {string|null}
-             */
-            extraMark?: "OFFENSIVE" | "SLANG" | "FORMAL" | "INFORMAL" | "SCIENTIFIC" | "TECHNICAL" | "LEGAL" | "MEDICAL" | "COLLOQUIAL" | "POETIC" | null;
-            /**
-             * @description Type of word or expression
-             * @enum {string|null}
-             */
-            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE" | null;
-        };
         /** @description Request to activate multiple captured words */
         ActivateManyWordsRequest: {
             ids?: string[];
@@ -2674,39 +2582,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    capture: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CaptureWordRequest"][];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["WordDTO"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["BadRequestResponse"];
-                };
             };
         };
     };
@@ -4000,76 +3875,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    updateCaptured: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateCapturedWordRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["WordDTO"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["BadRequestResponse"];
-                };
-            };
-        };
-    };
-    bulkUpdateSourceWords: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    [key: string]: string;
-                };
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["WordDTO"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["BadRequestResponse"];
-                };
             };
         };
     };

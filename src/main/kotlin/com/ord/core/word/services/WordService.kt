@@ -2,7 +2,6 @@ package com.ord.core.word.services
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.capture.requests.dto.CaptureWordRequest
-import com.ord.core.word.api.capture.requests.dto.UpdateCapturedWordRequest
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
@@ -70,10 +69,6 @@ interface WordService : UserResourceService<WordEntity> {
         userId: UUID,
         isFromUnverifiedSource: Boolean = false,
     ): Mono<List<WordDTO>>
-
-    fun updateCapturedWord(wordId: UUID, userId: UUID, body: UpdateCapturedWordRequest): Mono<WordDTO>
-
-    fun bulkUpdateSourceWords(userId: UUID, updates: List<Pair<UUID, String>>): Mono<List<WordDTO>>
 
     fun activateWord(wordId: UUID, userId: UUID): Mono<WordDTO>
 
