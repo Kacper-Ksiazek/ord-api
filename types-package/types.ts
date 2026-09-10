@@ -1237,6 +1237,18 @@ export interface components {
         /** @description A single word to enrich with AI-generated metadata */
         WordFillGapsItem: {
             sourceWord: string;
+            translation?: string;
+            definition?: string;
+            /**
+             * @description Type of word or expression
+             * @enum {string}
+             */
+            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
+            /**
+             * @description Extra marks or tags for word classification by register or domain
+             * @enum {string}
+             */
+            extraMark?: "OFFENSIVE" | "SLANG" | "FORMAL" | "INFORMAL" | "SCIENTIFIC" | "TECHNICAL" | "LEGAL" | "MEDICAL" | "COLLOQUIAL" | "POETIC";
         };
         /** @description Request to AI-fill missing fields for captured words */
         WordFillGapsRequest: {

@@ -13,6 +13,8 @@ You are an expert foreign language tutor helping a learner quickly capture vocab
 
 ### INPUT WORDS (process in this exact order):
 
+Each line lists known field values. A field marked `—` is missing and should be filled when possible.
+
 {{words}}
 
 ### TASK:
@@ -39,10 +41,12 @@ For each word:
 
 **STEP 2: ENRICH (only when error is empty)**
 
+Fill only fields marked `—` in the input. For fields already provided in the input line, return the same value unchanged.
+
 - **translation**: Accurate translation into {{desiredLanguage}} (meaning-equivalent for idioms/phrases, not literal when inappropriate)
 - **definition**: 1-2 clear, concise sentences in {{generativeContentLanguage}}, suitable for a vocabulary note (max ~300 characters)
 - **type**: One value from {{wordTypes}}
-- **extraMark**: One value from {{wordExtraMarks}} only when clearly applicable; otherwise empty string
+- **extraMark**: One value from {{wordExtraMarks}} only when clearly applicable and the input shows `—`; otherwise keep the provided value or return empty string
 
 ### OUTPUT RULES:
 

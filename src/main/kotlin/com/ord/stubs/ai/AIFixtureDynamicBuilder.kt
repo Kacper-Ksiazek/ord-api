@@ -5,6 +5,7 @@ import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
 import com.ord.core.word.api.ai.responses.openai.OpenAIGeneratedWordManual
 import com.ord.core.word.api.ai.responses.openai.OpenAIGrammar
 import com.ord.core.word.api.ai.responses.openai.OpenAIPronunciation
+import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.features.game.variants.crossword.ai.dto.openai.OpenAICrossword
 import com.ord.features.game.variants.crossword.ai.dto.openai.OpenAICrosswordQuestion
@@ -124,18 +125,19 @@ class AIFixtureDynamicBuilder(
     }
 
     private fun buildWordFillGaps(prompt: String): OpenAIWordFillGapsBatch {
-        val words = AIPromptParsingUtils.parseQAWInputWords(prompt)
-        require(words.isNotEmpty()) { "Could not parse input words from fill-gaps prompt" }
+        val items = AIPromptParsingUtils.parseQAWFillGapsItems(prompt)
+        require(items.isNotEmpty()) { "Could not parse input words from fill-gaps prompt" }
 
         return OpenAIWordFillGapsBatch(
-            items = words.map { inputWord ->
+            items = items.map { item ->
                 OpenAIWordFillGapsItem(
-                    inputWord = inputWord,
-                    word = inputWord,
-                    translation = "translation of $inputWord",
-                    definition = "A concise definition of \"$inputWord\" for vocabulary practice.",
-                    type = resolveWordType(inputWord).name,
-                    extraMark = "",
+                    inputWord = item.sourceWord,
+                    word = item.sourceWord,
+                    translation = item.translation ?: "translation of ${item.sourceWord}",
+                    definition = item.definition
+                        ?: "A concise definition of \"${item.sourceWord}\" for vocabulary practice.",
+                    type = item.type ?: resolveWordType(item.sourceWord).name,
+                    extraMark = item.extraMark ?: resolveExtraMark(item.sourceWord)?.name ?: "",
                     error = "",
                 )
             }
@@ -215,6 +217,12 @@ class AIFixtureDynamicBuilder(
         "verbose" -> WordType.ADJECTIVE
         "meeting", "library" -> WordType.NOUN
         else -> WordType.NOUN
+    }
+
+    private fun resolveExtraMark(word: String): WordExtraMark? = when (word.lowercase()) {
+        "dude", "lit" -> WordExtraMark.SLANG
+        "verbose" -> WordExtraMark.FORMAL
+        else -> null
     }
 }
 
