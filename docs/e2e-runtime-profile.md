@@ -82,7 +82,7 @@ flowchart LR
 
   subgraph testPath [Smoke tests]
     TestCfg["StubOpenAITestConfiguration\n@TestConfiguration"]
-    Maven["make test-smoke"]
+    Maven["make test"]
     Maven --> TestCfg
     TestCfg --> AiStubCfg
   end

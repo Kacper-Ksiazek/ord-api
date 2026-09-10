@@ -39,7 +39,7 @@ jobs:
           maven-version: '3.9.16'
 
       - name: Run integration tests
-        run: make test-integration
+        run: make test-live
         env:
           ENV_TEST_PROPERTY: '1test1'
           SPRING_PROFILES_ACTIVE: test

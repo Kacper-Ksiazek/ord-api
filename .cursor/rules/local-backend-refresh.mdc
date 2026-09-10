@@ -1,21 +1,34 @@
 ---
-description: Restart native local backend after ord-api code changes
+description: Restart local backend after ord-api code changes
 alwaysApply: true
 ---
 
 # Local backend refresh
 
-After finishing backend work in **ord-api**, restart the local JVM app:
+After finishing backend work in **ord-api**, restart or reset the local JVM app when changes require it:
 
 ```bash
 # from ord-ops (recommended)
-make api-refresh
+make api-restart
 
 # or from ord-api
-make dev-refresh
+make restart
 ```
 
-- **Dev mode** — `spring-boot:run` with tests fully skipped (`-Dmaven.test.skip=true`). Broken tests do not block local runs.
-- **DB stays in Docker** — only the Spring Boot process restarts.
-- First-time start: `make api-dev` (ord-ops) or `make dev` (ord-api).
-- Full Docker stack (slower): `make docker-restart` in ord-api.
+- **Fast dev** — `spring-boot:run` with tests fully skipped (`-Dmaven.test.skip=true`). Broken tests do not block local runs.
+- **DB stays in Docker** — only the Spring Boot process restarts on `make restart`.
+- **First-time start:** `make api-run` (ord-ops) or `make run` (ord-api).
+- **After Flyway migration:** `make db-wipe` then `make run`.
+- **Full dev stack wipe:** `ord-ops make dev-wipe` (rebuilds docker stack + frontend).
+
+## Tests and OpenAPI
+
+```bash
+make test        # controller tests with AI stubs (CI default)
+make test-live   # same suite with real OpenAI (.env.test)
+make openapi     # after DTO changes — export spec, sync types on frontend
+```
+
+## E2E stack
+
+Start the E2E backend only from **ord-ops**: `make e2e-up`. Do not use docker-e2e targets from ord-api.

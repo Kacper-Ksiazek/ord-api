@@ -1,6 +1,6 @@
 # Ensure smoke tests pass before merging to main
 
-Pull requests targeting `main` run `.github/workflows/smoke-tests.yml` (`make test-smoke` with AI stubs, no OpenAI key). A failed run blocks merge once **Smoke tests** is marked as a required check in GitHub branch protection.
+Pull requests targeting `main` run `.github/workflows/smoke-tests.yml` (`make test` with AI stubs, no OpenAI key). A failed run blocks merge once **Smoke tests** is marked as a required check in GitHub branch protection.
 
 Pushes to `main` run the same suite first via `.github/workflows/deploy.yml` — deploy only proceeds when smoke tests pass.
 
@@ -8,7 +8,7 @@ Pushes to `main` run the same suite first via `.github/workflows/deploy.yml` —
 
 ```bash
 # Run the same suite CI runs before opening / updating a PR.
-make test-smoke
+make test
 # Merge only when the GitHub "Smoke tests" check is green.
 ```
 
