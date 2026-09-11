@@ -25,7 +25,7 @@ val qawFillGapsSchema = StructuredOutputTemplate(
                         ),
                         "translation" to mapOf(
                             "type" to "string",
-                            "description" to "Translation into the desired language, or empty string if error is set",
+                            "description" to "Practical translation into the desired language using common, learner-friendly words; one gloss or at most two common equivalents separated by comma and space; avoid rare or obscure synonyms; never use semicolons or parenthetical notes — use extraMark for register; empty string if error is set",
                         ),
                         "definition" to mapOf(
                             "type" to "string",

@@ -43,7 +43,12 @@ For each word:
 
 Fill only fields marked `—` in the input. For fields already provided in the input line, return the same value unchanged.
 
-- **translation**: Accurate translation into {{desiredLanguage}} (meaning-equivalent for idioms/phrases, not literal when inappropriate)
+- **translation**: Practical, learner-friendly translation into {{desiredLanguage}} (meaning-equivalent for idioms/phrases, not literal when inappropriate)
+  - Prefer words a typical learner would recognize and actually use — avoid rare, archaic, or overly literary synonyms
+  - When one gloss is enough, return a single translation; when alternatives help, return **at most two** common equivalents separated by comma and space: `gloss1, gloss2`
+  - Never use semicolons (`;`) in `translation`
+  - Never add parenthetical notes in `translation` (e.g. `(slang)`, `(informal)`, `(vulgar)`); put register or domain in `extraMark` instead
+  - Keep `translation` as plain words only — no brackets, slashes, or labels
 - **definition**: 1-2 clear, concise sentences in {{generativeContentLanguage}}, suitable for a vocabulary note (max ~300 characters)
 - **type**: One value from {{wordTypes}}
 - **extraMark**: One value from {{wordExtraMarks}} only when clearly applicable and the input shows `—`; otherwise keep the provided value or return empty string
