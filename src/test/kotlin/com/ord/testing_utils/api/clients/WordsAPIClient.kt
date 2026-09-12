@@ -40,6 +40,24 @@ class WordsAPIClient(
         )
     }
 
+    fun listWords(
+        language: LanguageName,
+        page: Int? = null,
+        perPage: Int? = null,
+        user: MockedAuthenticatedUser? = null,
+    ): APIClientResponse<PaginatedDataResponse<WordListItem>?> {
+        val queryParams = mutableMapOf("language" to language.name)
+        page?.let { queryParams["page"] = it.toString() }
+        perPage?.let { queryParams["perPage"] = it.toString() }
+
+        return get(
+            url = baseUrl,
+            queryParams = queryParams,
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<PaginatedDataResponse<WordListItem>>() {},
+        )
+    }
+
     fun searchWords(
         body: UnsafeGetManyWordsRequest,
         user: MockedAuthenticatedUser? = null
