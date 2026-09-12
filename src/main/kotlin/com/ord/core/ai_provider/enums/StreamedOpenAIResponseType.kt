@@ -39,7 +39,7 @@ enum class StreamedOpenAIResponseType {
      */
     fun extractRelevantValue(node: JsonNode): String? = when (this) {
         RESPONSE_OUTPUT_TEXT_DELTA ->
-            node.get("delta")?.asText()
+            node.get("delta")?.asString()
 
         RESPONSE_COMPLETED -> try {
             node.path("response")
@@ -48,7 +48,7 @@ enum class StreamedOpenAIResponseType {
                 ?.path("content")
                 ?.firstOrNull()
                 ?.path("text")
-                ?.asText()
+                ?.asString()
         } catch (e: Exception) {
             null
         }

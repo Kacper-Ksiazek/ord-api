@@ -40,18 +40,14 @@ class E2eUserProvisioner(
 
         return userRepository.findByEmail(email)
             .flatMap { existing ->
-                if (existing == null) {
-                    Mono.empty()
-                } else {
-                    val updated = existing.copy(
-                        name = user.name,
-                        nativeLanguage = user.nativeLanguage,
-                        selectedLearningLanguage = user.selectedLearningLanguage,
-                        isAccountInitialized = true,
-                        updatedAt = Instant.now(),
-                    )
-                    userRepository.save(updated)
-                }
+                val updated = existing.copy(
+                    name = user.name,
+                    nativeLanguage = user.nativeLanguage,
+                    selectedLearningLanguage = user.selectedLearningLanguage,
+                    isAccountInitialized = true,
+                    updatedAt = Instant.now(),
+                )
+                userRepository.save(updated)
             }
             .switchIfEmpty(
                 r2dbcEntityTemplate.insert(UserEntity::class.java)
@@ -80,16 +76,12 @@ class E2eUserProvisioner(
 
         return languageProficiencyRepository.findUserProficiencyInLanguage(userId, LanguageName.ENGLISH.name)
             .flatMap { existing ->
-                if (existing == null) {
-                    Mono.empty()
-                } else {
-                    val updated = existing.copy(
-                        level = proficiency.level,
-                        translateTo = proficiency.translateTo,
-                        generativeContentLanguage = proficiency.generativeContentLanguage,
-                    )
-                    languageProficiencyRepository.save(updated)
-                }
+                val updated = existing.copy(
+                    level = proficiency.level,
+                    translateTo = proficiency.translateTo,
+                    generativeContentLanguage = proficiency.generativeContentLanguage,
+                )
+                languageProficiencyRepository.save(updated)
             }
             .switchIfEmpty(
                 r2dbcEntityTemplate.insert(LanguageProficiencyEntity::class.java)

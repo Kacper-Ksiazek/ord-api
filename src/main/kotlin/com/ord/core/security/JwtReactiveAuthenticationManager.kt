@@ -48,7 +48,7 @@ class JwtReactiveAuthenticationManager(
                     .findByEmail(claims.extractSubject())
                     .switchIfEmpty(Mono.error(MissingUserSessionException("Invalid token - no corresponding user found")))
                     .map { user ->
-                        authenticatedToken(user!!, null)
+                        authenticatedToken(user, null)
                     }
             }
     }
@@ -70,7 +70,7 @@ class JwtReactiveAuthenticationManager(
                         val subject = claims.extractSubject()
                         val newToken = jwtService.createToken(subject = subject)
 
-                        val updatedSession = session!!.copy(
+                        val updatedSession = session.copy(
                             token = newToken,
                         )
 
@@ -78,7 +78,7 @@ class JwtReactiveAuthenticationManager(
                             .findByEmail(email = subject)
                             .delayUntil { sessionsRepository.save(updatedSession) }
                             .map { user ->
-                                authenticatedToken(user!!, newToken)
+                                authenticatedToken(user, newToken)
                             }
                     }
             }

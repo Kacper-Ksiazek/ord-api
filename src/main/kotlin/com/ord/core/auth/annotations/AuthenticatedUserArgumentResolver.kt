@@ -32,7 +32,7 @@ class AuthenticatedUserArgumentResolver(
 
                 userRepository
                     .findByEmail(email)
-                    .map { it!!.toDTO() }
+                    .map { it.toDTO() }
                     .switchIfEmpty(Mono.error(IllegalArgumentException("User not found")))
             }
             .cast(Any::class.java)

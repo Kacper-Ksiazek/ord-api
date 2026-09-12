@@ -7,8 +7,6 @@ fun GameDifficulty.getNumberOfQuestions(gameType: GameType): Int = when (gameTyp
     GameType.CROSSWORD -> getNumberOfWordsForCrossword()
     GameType.WORDS_TYPING -> getNumberOfWordsForWordsTypingGame()
     GameType.SENTENCES_WRITING-> getNumberOfSentencesForSentencesWritingGame()
-
-    else -> throw IllegalArgumentException("Unsupported game type: $gameType")
 }
 
 /**

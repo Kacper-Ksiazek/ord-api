@@ -75,7 +75,7 @@ class AIFixtureDynamicBuilder(
         val pool = fixtureLoader.loadArrayStream(GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY).items
         val selectedItems = pool
             .filter { item ->
-                val word = item.get("word")?.asText()?.lowercase().orEmpty()
+                val word = item.get("word")?.asString()?.lowercase().orEmpty()
                 word.isNotBlank() && word !in blockedWords
             }
             .take(wordCount)

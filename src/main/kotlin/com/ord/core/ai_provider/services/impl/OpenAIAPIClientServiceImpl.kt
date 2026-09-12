@@ -181,7 +181,7 @@ class OpenAIAPIClientServiceImpl(
                     parseResponseBody(objectMapper.readValue(response.data, aiResponseType))
                 } catch (e: Exception) {
                     Console.printRed("\n🚨 [OPENAI REQUEST PARSING ERROR] Exception: ${e.message}")
-                    Console.printRed("Response data type: ${response.data?.javaClass?.name}")
+                    Console.printRed("Response data type: ${response.data.javaClass.name}")
                     Console.printRed("Response data content: ${response.data}")
                     println(e)
                     null
@@ -386,7 +386,7 @@ class OpenAIAPIClientServiceImpl(
             .doOnNext { chunk ->
                 try {
                     val jsonNode = objectMapper.readTree(chunk)
-                    val type = StreamedOpenAIResponseType.fromRawType(jsonNode["type"]?.asText()!!)
+                    val type = StreamedOpenAIResponseType.fromRawType(jsonNode["type"]?.asString()!!)
 
                     when (type) {
                         StreamedOpenAIResponseType.RESPONSE_OUTPUT_TEXT_DELTA -> {
@@ -436,7 +436,6 @@ class OpenAIAPIClientServiceImpl(
             Flux.defer {
                 flux.collectList()
                     .subscribeOn(Schedulers.boundedElastic())
-                    .map { list -> list ?: emptyList() }
                     .flatMapMany { Flux.fromIterable(it) }
             }.onErrorMap(::mapOpenAIClientError)
         } else {
