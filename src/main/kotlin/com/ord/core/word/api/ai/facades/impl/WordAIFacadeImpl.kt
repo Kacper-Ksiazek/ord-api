@@ -15,9 +15,12 @@ import org.slf4j.LoggerFactory
 import com.ord.core.word.api.ai.requests.dto.GenerateWordManualRequest
 import com.ord.core.word.api.ai.requests.dto.SuggestVocabularyRequest
 import com.ord.core.word.api.ai.WordFillGapsPromptFormatter
+import com.ord.core.word.api.ai.requests.dto.WordFillGapsItem
 import com.ord.core.word.api.ai.requests.dto.WordFillGapsRequest
 import com.ord.core.word.api.ai.responses.dto.AIGeneratedWordManual
 import com.ord.core.word.api.ai.responses.dto.VocabularySuggestion
+import com.ord.core.word.api.ai.responses.dto.WordFillGapsResponse
+import com.ord.core.word.api.ai.responses.dto.WordFillGapsResultItem
 import com.ord.core.word.api.ai.responses.openai.OpenAIWordFillGapsBatch
 import com.ord.core.word.api.ai.responses.openai.OpenAIGeneratedWordManual
 import com.ord.core.word.models.word_details.enums.WordCollocationFrequency
@@ -51,9 +54,9 @@ class WordAIFacadeImpl(
             .switchIfEmpty(Mono.error(BadRequestException("User does not have any proficiency in the requested language.")))
             .flatMap { userProficiencyInRequestedLanguage ->
                 val translateTo: LanguageName =
-                    body.targetLanguage ?: userProficiencyInRequestedLanguage!!.translateTo
+                    body.targetLanguage ?: userProficiencyInRequestedLanguage.translateTo
                 val proficiencyLevel: LanguageProficiencyLevel =
-                    body.proficiencyLevel ?: userProficiencyInRequestedLanguage!!.level
+                    body.proficiencyLevel ?: userProficiencyInRequestedLanguage.level
 
                 val prompt = Prompt(
                     variant = AvailablePrompts.WORDS_GENERATE_MANUAL,
@@ -62,7 +65,7 @@ class WordAIFacadeImpl(
                         "wordLanguage" to body.language.toString(),
                         "desiredLanguage" to translateTo.toString(),
                         "proficiency" to proficiencyLevel.toString(),
-                        "generativeContentLanguage" to userProficiencyInRequestedLanguage!!.generativeContentLanguage.toString(),
+                        "generativeContentLanguage" to userProficiencyInRequestedLanguage.generativeContentLanguage.toString(),
 
                         "wordTypes" to WordType::class.joinEnumValues(separator = " | "),
                         "wordExtraMarks" to WordExtraMark::class.joinEnumValues(separator = " | "),
@@ -160,7 +163,8 @@ class WordAIFacadeImpl(
                     }
                     .filter { suggestion ->
                         // Filter on the parsed object - skip if word is null/empty
-                        val wordLowercase = suggestion?.word?.lowercase() ?: return@filter false
+                        val wordLowercase = suggestion.word.lowercase()
+                        if (wordLowercase.isBlank()) return@filter false
                         !excludedWordsSet.contains(wordLowercase) && !existingWordsSet.contains(wordLowercase)
                     }
                     .map { suggestion ->
@@ -210,7 +214,31 @@ class WordAIFacadeImpl(
                             }
                         },
                     )
-                    .map { it.toDomain() }
+                    .map { batch -> mergeKnownFillGapsFields(body.items, batch.toDomain()) }
             }
     }
+
+    private fun mergeKnownFillGapsFields(
+        requestItems: List<WordFillGapsItem>,
+        response: WordFillGapsResponse,
+    ): WordFillGapsResponse {
+        val mergedItems = response.items.mapIndexed { index, resultItem ->
+            val requestItem = requestItems.getOrNull(index)
+            if (requestItem == null || resultItem.error != null) {
+                resultItem
+            } else {
+                resultItem.mergeKnownFieldsFrom(requestItem)
+            }
+        }
+
+        return WordFillGapsResponse(items = mergedItems)
+    }
+
+    private fun WordFillGapsResultItem.mergeKnownFieldsFrom(request: WordFillGapsItem): WordFillGapsResultItem =
+        copy(
+            translation = request.translation?.trim()?.takeIf { it.isNotEmpty() } ?: translation,
+            definition = request.definition?.trim()?.takeIf { it.isNotEmpty() } ?: definition,
+            type = request.type ?: type,
+            extraMark = request.extraMark ?: extraMark,
+        )
 }
