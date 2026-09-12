@@ -61,8 +61,6 @@ class WordRepositoryCustomMethodsImpl(
     override fun findManyWords(
         userId: UUID,
         language: LanguageName,
-        isFromUnverifiedSource: Boolean?,
-        hasProgress: Boolean?,
         completed: Boolean?,
         bookmarked: Boolean?,
         searchingPhrase: String?,
@@ -74,11 +72,8 @@ class WordRepositoryCustomMethodsImpl(
         sortBy: GetAllWordsSortOptions,
         page: Int,
         perPage: Int,
-        includeUnverifiedSourceCount: Boolean,
     ): Mono<WordsPaginatedResult> {
         val whereClause = createQueryConditions(
-            isFromUnverifiedSource,
-            hasProgress,
             completed,
             searchingPhrase,
             bookmarked,
@@ -90,7 +85,6 @@ class WordRepositoryCustomMethodsImpl(
         val valuesBindings = createValuesBindings(
             userId,
             language,
-            isFromUnverifiedSource,
             searchingPhrase,
             bookmarked,
             banksIds,
@@ -131,14 +125,6 @@ class WordRepositoryCustomMethodsImpl(
             appendLine("LIMIT :limit OFFSET :offset")
         }
 
-        val unverifiedSourceCountQuery = """
-            SELECT COUNT(*)
-            FROM words
-            WHERE words.user_id = :userId
-              AND words.is_from_unverified_source = TRUE
-              AND words.language = :language
-        """
-
         val countQueryResult = databaseClient.sql(countQuery)
             .bindValues(valuesBindings)
             .map { row -> row.get(0, Long::class.java)!! }
@@ -152,31 +138,18 @@ class WordRepositoryCustomMethodsImpl(
             .all()
             .collectList()
 
-        fun toResult(words: List<WordListItem>, totalItems: Long, unverifiedSourceCount: Long?) = WordsPaginatedResult(
-            paginated = PaginatedDataResponse(
-                data = words,
-                pagination = PaginationData(
-                    page = page,
-                    perPage = perPage,
-                    totalResults = totalItems,
-                    resultsOnCurrentPage = words.size,
+        return Mono.zip(selectQueryResult, countQueryResult) { words, totalItems ->
+            WordsPaginatedResult(
+                paginated = PaginatedDataResponse(
+                    data = words,
+                    pagination = PaginationData(
+                        page = page,
+                        perPage = perPage,
+                        totalResults = totalItems,
+                        resultsOnCurrentPage = words.size,
+                    ),
                 ),
-            ),
-            unverifiedSourceCount = unverifiedSourceCount,
-        )
-
-        return if (includeUnverifiedSourceCount) {
-            val unverifiedSourceCountResult = databaseClient.sql(unverifiedSourceCountQuery)
-                .bind("userId", userId)
-                .bind("language", language.name)
-                .map { row -> row.get(0, Long::class.java)!! }
-                .one()
-
-            Mono.zip(selectQueryResult, countQueryResult, unverifiedSourceCountResult)
-                .map { t -> toResult(t.t1, t.t2, t.t3) }
-        } else {
-            Mono.zip(selectQueryResult, countQueryResult)
-                .map { t -> toResult(t.t1, t.t2, unverifiedSourceCount = null) }
+            )
         }
     }
 
@@ -185,12 +158,9 @@ class WordRepositoryCustomMethodsImpl(
         val query = """
             SELECT
                 COUNT(*) AS total,
-                COALESCE(SUM(CASE WHEN wp.id IS NOT NULL THEN 1 ELSE 0 END), 0) AS active_count,
-                COALESCE(SUM(CASE WHEN wp.id IS NULL THEN 1 ELSE 0 END), 0) AS pending_count,
-                COALESCE(SUM(CASE WHEN words.is_from_unverified_source = TRUE THEN 1 ELSE 0 END), 0) AS unverified_source_count,
-                COALESCE(SUM(CASE WHEN words.is_bookmarked = TRUE AND wp.id IS NOT NULL THEN 1 ELSE 0 END), 0) AS bookmarked_count
+                COALESCE(SUM(CASE WHEN words.is_bookmarked = TRUE THEN 1 ELSE 0 END), 0) AS bookmarked_count
             FROM words
-                LEFT JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
+                INNER JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
             WHERE words.user_id = :userId
                 $languageFilter
         """
@@ -204,9 +174,6 @@ class WordRepositoryCustomMethodsImpl(
             .map { row ->
                 WordOverviewCounts(
                     total = row.get("total", Long::class.java)!!,
-                    activeCount = row.get("active_count", Long::class.java)!!,
-                    pendingCount = row.get("pending_count", Long::class.java)!!,
-                    unverifiedSourceCount = row.get("unverified_source_count", Long::class.java)!!,
                     bookmarkedCount = row.get("bookmarked_count", Long::class.java)!!,
                 )
             }
@@ -287,7 +254,7 @@ class WordRepositoryCustomMethodsImpl(
     ): Flux<WordEntity> {
         val selectQuery = """
             SELECT w.id, w.type, w.source_word, w.translation, w.definition, w.extra_mark,
-                   w.language, w.is_bookmarked, w.is_from_unverified_source, w.user_id, w.bank_id,
+                   w.language, w.is_bookmarked, w.user_id, w.bank_id,
                    w.bank_group_id, w.created_at, w.updated_at
             FROM words w
                 INNER JOIN word_progress wp ON wp.word_id = w.id AND wp.user_id = w.user_id
@@ -398,14 +365,13 @@ class WordRepositoryCustomMethodsImpl(
     private fun mapWordEntity(row: Readable): WordEntity {
         return WordEntity(
             id = row.get("id", UUID::class.java)!!,
-            type = row.get("type", String::class.java)?.let { WordType.valueOf(it) },
+            type = WordType.valueOf(row.get("type", String::class.java)!!),
             sourceWord = row.get("source_word", String::class.java)!!,
-            translation = row.get("translation", String::class.java),
+            translation = row.get("translation", String::class.java)!!,
             definition = row.get("definition", String::class.java),
             extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
             language = LanguageName.valueOf(row.get("language", String::class.java)!!),
             isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
-            isFromUnverifiedSource = row.get("is_from_unverified_source", Boolean::class.java)!!,
             userId = row.get("user_id", UUID::class.java)!!,
             bankId = row.get("bank_id", UUID::class.java),
             bankGroupId = row.get("bank_group_id", UUID::class.java),
@@ -417,14 +383,13 @@ class WordRepositoryCustomMethodsImpl(
     private fun mapSingleWordResponse(row: Readable): SingleWordResponse {
         return SingleWordResponse(
             id = row.get("id", UUID::class.java)!!,
-            type = row.get("type", String::class.java)?.let { WordType.valueOf(it) },
+            type = WordType.valueOf(row.get("type", String::class.java)!!),
             sourceWord = row.get("source_word", String::class.java)!!,
-            translation = row.get("translation", String::class.java),
+            translation = row.get("translation", String::class.java)!!,
             definition = row.get("definition", String::class.java),
             extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
             language = LanguageName.valueOf(row.get("language", String::class.java)!!),
             isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
-            isFromUnverifiedSource = row.get("is_from_unverified_source", Boolean::class.java)!!,
             progress = mapProgress(row),
             bank = BankCompact.construct(row),
             createdAt = row.get("created_at", Instant::class.java)!!,
@@ -436,12 +401,11 @@ class WordRepositoryCustomMethodsImpl(
         return WordListItem(
             id = row.get("id", UUID::class.java)!!,
             sourceWord = row.get("source_word", String::class.java)!!,
-            translation = row.get("translation", String::class.java),
+            translation = row.get("translation", String::class.java)!!,
             definition = row.get("definition", String::class.java),
             isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
-            isFromUnverifiedSource = row.get("is_from_unverified_source", Boolean::class.java)!!,
             progress = mapProgress(row),
-            type = row.get("type", String::class.java)?.let { WordType.valueOf(it) },
+            type = WordType.valueOf(row.get("type", String::class.java)!!),
             extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
             language = LanguageName.valueOf(row.get("language", String::class.java)!!),
             bank = BankCompact.construct(row),
@@ -497,8 +461,6 @@ class WordRepositoryCustomMethodsImpl(
     }
 
     private fun createQueryConditions(
-        isFromUnverifiedSource: Boolean?,
-        hasProgress: Boolean?,
         completed: Boolean?,
         searchingPhrase: String?,
         bookmarked: Boolean?,
@@ -510,12 +472,9 @@ class WordRepositoryCustomMethodsImpl(
         return buildList {
             add("words.user_id = :userId")
             add("words.language = :language")
-            isFromUnverifiedSource?.let { add("words.is_from_unverified_source = :isFromUnverifiedSource") }
-            hasProgress?.let {
-                if (it) add("wp.id IS NOT NULL") else add("wp.id IS NULL")
-            }
+            add("wp.id IS NOT NULL")
             completed?.let {
-                if (it) add("wp.completed_at IS NOT NULL") else add("(wp.completed_at IS NULL OR wp.id IS NULL)")
+                if (it) add("wp.completed_at IS NOT NULL") else add("wp.completed_at IS NULL")
             }
             searchingPhrase?.let { add("words.source_word ILIKE :searchingPhrase") }
             bookmarked?.let { add("words.is_bookmarked = :bookmarked") }
@@ -529,7 +488,6 @@ class WordRepositoryCustomMethodsImpl(
     private fun createValuesBindings(
         userId: UUID,
         language: LanguageName,
-        isFromUnverifiedSource: Boolean?,
         searchingPhrase: String?,
         bookmarked: Boolean?,
         banksIds: Set<UUID>?,
@@ -541,7 +499,6 @@ class WordRepositoryCustomMethodsImpl(
             "userId" to userId,
             "language" to language.name,
         ).apply {
-            isFromUnverifiedSource?.let { put("isFromUnverifiedSource", it) }
             searchingPhrase?.let { put("searchingPhrase", "%$it%") }
             bookmarked?.let { put("bookmarked", it) }
             wordTypes?.takeIf { it.isNotEmpty() }?.let { put("wordTypes", it.map { type -> type.name }.toTypedArray()) }

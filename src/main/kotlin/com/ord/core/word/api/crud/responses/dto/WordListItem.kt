@@ -12,13 +12,12 @@ data class WordListItem(
     val id: UUID,
 
     var sourceWord: String,
-    var translation: String?,
+    var translation: String,
     var definition: String?,
     var isBookmarked: Boolean,
-    var isFromUnverifiedSource: Boolean,
     var progress: WordProgressDTO?,
 
-    var type: WordType?,
+    var type: WordType,
     var extraMark: WordExtraMark?,
     var language: LanguageName,
 
@@ -33,7 +32,6 @@ data class WordListItem(
             "translation",
             "definition",
             "is_bookmarked",
-            "is_from_unverified_source",
             "type",
             "extra_mark",
             "language",

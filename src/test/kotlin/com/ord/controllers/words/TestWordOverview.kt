@@ -7,11 +7,11 @@ import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
-import com.ord.core.word.api.capture.requests.dto.PublicCaptureWordItem
-import com.ord.core.word.api.capture.requests.dto.PublicWordsBulkCaptureRequest
+import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
+import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
+import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.repositories.WordRepository
-import com.ord.testing_utils.api.clients.PublicWordCaptureAPIClient
-import com.ord.testing_utils.api.clients.WordCaptureAPIClient
+import com.ord.testing_utils.api.clients.WordsAPIClient
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
@@ -24,7 +24,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.reactive.server.WebTestClient
 
-@DisplayName("- WordCaptureController: Overview")
+@DisplayName("- WordCRUDController: Overview")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 class TestWordOverview @Autowired constructor(
@@ -45,13 +45,21 @@ class TestWordOverview @Autowired constructor(
     passwordEncoder = passwordEncoder,
     gptTokensUsageRepository = gptTokensUsageRepository,
 ) {
-    private val wordCaptureAPIClient = WordCaptureAPIClient(webClient)
-    private val publicWordCaptureAPIClient = PublicWordCaptureAPIClient(webClient)
+    private val wordsAPIClient = WordsAPIClient(webClient)
 
     @AfterEach
     fun cleanup() {
         wordRepository.deleteAll().block()
     }
+
+    private fun createWordRequest(sourceWord: String, language: LanguageName = LanguageName.POLISH) =
+        CreateWordRequest(
+            type = WordType.NOUN,
+            sourceWord = sourceWord,
+            translation = "translation-$sourceWord",
+            definition = "definition-$sourceWord",
+            language = language,
+        )
 
     @Nested
     @DisplayName("[GET] /api/v1/words/overview")
@@ -62,7 +70,7 @@ class TestWordOverview @Autowired constructor(
         inner class Negative {
             @Test
             fun `401 - should reject unauthenticated request`() {
-                val response = wordCaptureAPIClient.getOverview(user = null)
+                val response = wordsAPIClient.getOverview(user = null)
                 response.status shouldBe HttpStatus.UNAUTHORIZED
             }
         }
@@ -74,40 +82,25 @@ class TestWordOverview @Autowired constructor(
             fun `200 - should return zero counts for user with no words`() {
                 val user = mockAuthenticatedUser()
 
-                val response = wordCaptureAPIClient.getOverview(user = user)
+                val response = wordsAPIClient.getOverview(user = user)
 
                 response.status shouldBe HttpStatus.OK
                 response.body!!.total shouldBe 0
-                response.body.activeCount shouldBe 0
-                response.body.pendingCount shouldBe 0
-                response.body.unverifiedSourceCount shouldBe 0
                 response.body.bookmarkedCount shouldBe 0
             }
 
             @Test
-            fun `200 - should return counts split by lifecycle status`() {
+            fun `200 - should return total count for active words`() {
                 val user = mockAuthenticatedUser()
 
-                publicWordCaptureAPIClient.publicBulkCreate(
-                    PublicWordsBulkCaptureRequest(
-                        userEmail = user.email,
-                        words = listOf(
-                            PublicCaptureWordItem(sourceWord = "pending1", language = LanguageName.POLISH),
-                            PublicCaptureWordItem(sourceWord = "pending2", language = LanguageName.POLISH),
-                            PublicCaptureWordItem(sourceWord = "pending3", language = LanguageName.POLISH),
-                            PublicCaptureWordItem(sourceWord = "pending4", language = LanguageName.POLISH),
-                            PublicCaptureWordItem(sourceWord = "pending5", language = LanguageName.POLISH),
-                        ),
-                    ),
-                )
+                repeat(5) { index ->
+                    wordsAPIClient.createWord(createWordRequest("word-$index"), user = user)
+                }
 
-                val response = wordCaptureAPIClient.getOverview(user = user)
+                val response = wordsAPIClient.getOverview(user = user)
 
                 response.status shouldBe HttpStatus.OK
                 response.body!!.total shouldBe 5
-                response.body.activeCount shouldBe 0
-                response.body.pendingCount shouldBe 5
-                response.body.unverifiedSourceCount shouldBe 5
                 response.body.bookmarkedCount shouldBe 0
             }
 
@@ -116,69 +109,65 @@ class TestWordOverview @Autowired constructor(
                 val userA = mockAuthenticatedUser()
                 val userB = mockAuthenticatedUser()
 
-                publicWordCaptureAPIClient.publicBulkCreate(
-                    PublicWordsBulkCaptureRequest(
-                        userEmail = userA.email,
-                        words = listOf(
-                            PublicCaptureWordItem(sourceWord = "user-a-word", language = LanguageName.POLISH),
-                        ),
-                    ),
-                )
-                publicWordCaptureAPIClient.publicBulkCreate(
-                    PublicWordsBulkCaptureRequest(
-                        userEmail = userB.email,
-                        words = listOf(
-                            PublicCaptureWordItem(sourceWord = "user-b-pending", language = LanguageName.POLISH),
-                        ),
-                    ),
-                )
+                wordsAPIClient.createWord(createWordRequest("user-a-word"), user = userA)
+                wordsAPIClient.createWord(createWordRequest("user-b-word"), user = userB)
 
-                val responseA = wordCaptureAPIClient.getOverview(user = userA)
-                val responseB = wordCaptureAPIClient.getOverview(user = userB)
+                val responseA = wordsAPIClient.getOverview(user = userA)
+                val responseB = wordsAPIClient.getOverview(user = userB)
 
                 responseA.status shouldBe HttpStatus.OK
                 responseA.body!!.total shouldBe 1
-                responseA.body.activeCount shouldBe 0
-                responseA.body.pendingCount shouldBe 1
-                responseA.body.unverifiedSourceCount shouldBe 1
 
                 responseB.status shouldBe HttpStatus.OK
                 responseB.body!!.total shouldBe 1
-                responseB.body.activeCount shouldBe 0
-                responseB.body.pendingCount shouldBe 1
-                responseB.body.unverifiedSourceCount shouldBe 1
             }
 
             @Test
             fun `200 - should scope counts to requested language`() {
                 val user = mockAuthenticatedUser()
 
-                publicWordCaptureAPIClient.publicBulkCreate(
-                    PublicWordsBulkCaptureRequest(
-                        userEmail = user.email,
-                        words = listOf(
-                            PublicCaptureWordItem(sourceWord = "english-pending", language = LanguageName.ENGLISH),
-                            PublicCaptureWordItem(sourceWord = "polish-pending", language = LanguageName.POLISH),
-                        ),
-                    ),
+                wordsAPIClient.createWord(
+                    createWordRequest("english-word", LanguageName.ENGLISH),
+                    user = user,
+                )
+                wordsAPIClient.createWord(
+                    createWordRequest("polish-word", LanguageName.POLISH),
+                    user = user,
                 )
 
-                val englishOverview = wordCaptureAPIClient.getOverview(
+                val englishOverview = wordsAPIClient.getOverview(
                     user = user,
                     language = LanguageName.ENGLISH,
                 )
-                val polishOverview = wordCaptureAPIClient.getOverview(
+                val polishOverview = wordsAPIClient.getOverview(
                     user = user,
                     language = LanguageName.POLISH,
                 )
 
                 englishOverview.status shouldBe HttpStatus.OK
                 englishOverview.body!!.total shouldBe 1
-                englishOverview.body.pendingCount shouldBe 1
 
                 polishOverview.status shouldBe HttpStatus.OK
                 polishOverview.body!!.total shouldBe 1
-                polishOverview.body.pendingCount shouldBe 1
+            }
+
+            @Test
+            fun `200 - should count bookmarked words`() {
+                val user = mockAuthenticatedUser()
+
+                val created = wordsAPIClient.createWord(createWordRequest("bookmark-me"), user = user)
+                wordsAPIClient.createWord(createWordRequest("plain-word"), user = user)
+                wordsAPIClient.togglePropertyForOneWord(
+                    id = created.body!!.id,
+                    property = WordToggleableProperty.IS_BOOKMARKED,
+                    user = user,
+                )
+
+                val response = wordsAPIClient.getOverview(user = user)
+
+                response.status shouldBe HttpStatus.OK
+                response.body!!.total shouldBe 2
+                response.body.bookmarkedCount shouldBe 1
             }
         }
     }

@@ -14,16 +14,15 @@ data class WordEntity(
     @Id
     override val id: UUID? = null,
 
-    var type: WordType? = null,
+    var type: WordType,
     var sourceWord: String,
-    var translation: String? = null,
+    var translation: String,
     var definition: String? = null,
     var extraMark: WordExtraMark? = null,
 
     var language: LanguageName,
 
     var isBookmarked: Boolean = false,
-    var isFromUnverifiedSource: Boolean = false,
 
     override var userId: UUID,
     var bankId: UUID? = null,
@@ -32,6 +31,5 @@ data class WordEntity(
     var createdAt: Instant = Instant.now(),
     var updatedAt: Instant = Instant.now(),
 ) : IdentifiableUserResource {
-    fun hasActivationFields(): Boolean =
-        type != null && !translation.isNullOrBlank() && !definition.isNullOrBlank()
+    fun hasActivationFields(): Boolean = !definition.isNullOrBlank()
 }

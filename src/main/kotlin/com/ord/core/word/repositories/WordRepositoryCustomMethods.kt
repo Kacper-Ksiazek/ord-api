@@ -21,8 +21,6 @@ interface WordRepositoryCustomMethods {
     fun findManyWords(
         userId: UUID,
         language: LanguageName,
-        isFromUnverifiedSource: Boolean?,
-        hasProgress: Boolean?,
         completed: Boolean?,
         bookmarked: Boolean?,
         searchingPhrase: String?,
@@ -34,7 +32,6 @@ interface WordRepositoryCustomMethods {
         sortBy: GetAllWordsSortOptions,
         page: Int,
         perPage: Int,
-        includeUnverifiedSourceCount: Boolean = false,
     ): Mono<WordsPaginatedResult>
 
     fun countOverview(userId: UUID, language: LanguageName? = null): Mono<WordOverviewCounts>

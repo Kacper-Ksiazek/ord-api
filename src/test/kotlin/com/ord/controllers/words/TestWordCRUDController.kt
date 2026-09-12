@@ -312,7 +312,7 @@ class TestWordCRUDController @Autowired constructor(
                 )
 
                 body.data.forEach { t ->
-                    assert(t.sourceWord.contains(expectedWordMark) || (t.translation?.contains(expectedWordMark) == true))
+                    assert(t.sourceWord.contains(expectedWordMark) || t.translation.contains(expectedWordMark))
                 }
             }
 

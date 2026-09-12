@@ -1,16 +1,15 @@
 CREATE TABLE IF NOT EXISTS words
 (
     id                       UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-    type                     word_type                DEFAULT NULL,
+    type                     word_type     NOT NULL,
     source_word              varchar(255)  NOT NULL,
-    translation              VARCHAR(255)             DEFAULT NULL,
+    translation              VARCHAR(255)  NOT NULL,
     definition               TEXT                     DEFAULT NULL,
     extra_mark               word_extra_mark          DEFAULT NULL,
 
     language                 language_name NOT NULL,
 
     is_bookmarked            BOOLEAN       NOT NULL   DEFAULT FALSE,
-    is_from_unverified_source BOOLEAN      NOT NULL   DEFAULT FALSE,
 
     user_id                  UUID          NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     bank_id                  UUID                     DEFAULT NULL REFERENCES banks (id) ON DELETE SET NULL,
@@ -21,13 +20,11 @@ CREATE TABLE IF NOT EXISTS words
 );
 
 CREATE UNIQUE INDEX uq_words_learning_per_user_language_type
-    ON words (user_id, language, lower(source_word), type)
-    WHERE type IS NOT NULL;
+    ON words (user_id, language, lower(source_word), type);
 
 CREATE INDEX idx_words_id_user_id ON words (id, user_id);
 CREATE INDEX idx_words_user_language ON words (user_id, language);
 CREATE INDEX idx_words_user_created_at ON words (user_id, created_at DESC);
-CREATE INDEX idx_words_user_unverified_source ON words (user_id, is_from_unverified_source);
 
 CREATE TABLE IF NOT EXISTS word_progress
 (

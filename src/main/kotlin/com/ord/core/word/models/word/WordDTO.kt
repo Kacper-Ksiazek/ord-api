@@ -11,16 +11,15 @@ import java.util.*
 class WordDTO(
     val id: UUID = UUID.randomUUID(),
 
-    var type: WordType? = null,
+    var type: WordType,
     var sourceWord: String,
-    var translation: String? = null,
+    var translation: String,
     var definition: String? = null,
     var extraMark: WordExtraMark? = null,
 
     var language: LanguageName,
 
     var isBookmarked: Boolean = false,
-    var isFromUnverifiedSource: Boolean = false,
 
     val userId: UUID,
 

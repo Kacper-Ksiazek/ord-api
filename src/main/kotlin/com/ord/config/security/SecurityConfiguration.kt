@@ -26,7 +26,6 @@ class SecurityConfiguration(
         private val ANONYMOUS_PATHS = arrayOf(
             "/api/v1/auth/otp-request",
             "/api/v1/auth/otp-verify",
-            "/api/v1/public/words/**",
             "/api/v1/health-check"
         )
 

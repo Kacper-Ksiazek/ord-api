@@ -8,6 +8,7 @@ import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
 import com.ord.core.word.api.crud.requests.dto.GetManyWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
 import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
@@ -37,24 +38,18 @@ class WordCRUDFacadeImpl(
         language: LanguageName,
         page: Int?,
         perPage: Int?,
-        isFromUnverifiedSource: Boolean?,
-        hasProgress: Boolean?,
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>> {
         return wordService
             .findManyWords(
                 language = language,
-                isFromUnverifiedSource = isFromUnverifiedSource,
-                hasProgress = hasProgress,
                 userId = userId,
                 page = page ?: 0,
                 perPage = perPage ?: 50,
-                includeUnverifiedSourceCount = hasProgress == null && isFromUnverifiedSource == null,
             )
             .map { result ->
                 WordsPaginatedDataResponse(
                     pagination = result.paginated.pagination,
                     data = result.paginated.data,
-                    unverifiedSourceCount = result.unverifiedSourceCount,
                 )
             }
             .map { ResponseEntity.ok(it) }
@@ -68,8 +63,6 @@ class WordCRUDFacadeImpl(
             .findManyWords(
                 language = requestBody.language,
                 wordTypes = resolveWordTypes(requestBody),
-                isFromUnverifiedSource = requestBody.isFromUnverifiedSource,
-                hasProgress = requestBody.hasProgress ?: true,
                 completed = requestBody.completed,
                 wordExtraMarks = resolveWordExtraMarks(requestBody),
                 bookmarked = requestBody.bookmarked,
@@ -86,10 +79,20 @@ class WordCRUDFacadeImpl(
                 WordsPaginatedDataResponse(
                     pagination = result.paginated.pagination,
                     data = result.paginated.data,
-                    unverifiedSourceCount = result.unverifiedSourceCount,
                 )
             }
             .map { ResponseEntity.status(HttpStatus.OK).body(it) }
+    }
+
+    override fun getOverview(userId: UUID, language: LanguageName?): Mono<ResponseEntity<WordOverviewResponse>> {
+        return wordService.countOverview(userId, language)
+            .map {
+                WordOverviewResponse(
+                    total = it.total,
+                    bookmarkedCount = it.bookmarkedCount,
+                )
+            }
+            .map { ResponseEntity.ok(it) }
     }
 
     override fun getSingleWord(id: UUID, userId: UUID): Mono<ResponseEntity<SingleWordResponse>> {
@@ -150,14 +153,8 @@ class WordCRUDFacadeImpl(
             }
             .flatMap { updatedEntity -> wordService.save(updatedEntity) }
             .flatMap { saved ->
-                wordService.hasProgress(saved.id!!, userId).flatMap { hasProgress ->
-                    if (hasProgress) {
-                        wordService.findOneWord(saved.id!!, userId).map { response ->
-                            wordMapper.toDTO(saved).apply { progress = response.progress }
-                        }
-                    } else {
-                        Mono.just(wordMapper.toDTO(saved))
-                    }
+                wordService.findOneWord(saved.id!!, userId).map { response ->
+                    wordMapper.toDTO(saved).apply { progress = response.progress }
                 }
             }
             .map { ResponseEntity.status(HttpStatus.OK).body(it) }

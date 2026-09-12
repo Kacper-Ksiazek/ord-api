@@ -932,11 +932,11 @@ export interface components {
             id?: string;
             /**
              * @description Type of word or expression
-             * @enum {string|null}
+             * @enum {string}
              */
-            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE" | null;
+            type: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
             sourceWord?: string;
-            translation?: string | null;
+            translation: string;
             definition?: string | null;
             /**
              * @description Extra marks or tags for word classification by register or domain
@@ -1129,14 +1129,14 @@ export interface components {
             /** Format: uuid */
             id?: string;
             sourceWord?: string;
-            translation?: string | null;
+            translation: string;
             definition?: string | null;
             progress?: components["schemas"]["WordProgressDTO"] | null;
             /**
              * @description Type of word or expression
-             * @enum {string|null}
+             * @enum {string}
              */
-            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE" | null;
+            type: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
             /**
              * @description Extra marks or tags for word classification by register or domain
              * @enum {string|null}
@@ -2000,11 +2000,11 @@ export interface components {
             id?: string;
             /**
              * @description Type of word or expression
-             * @enum {string|null}
+             * @enum {string}
              */
-            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE" | null;
+            type: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
             sourceWord?: string;
-            translation?: string | null;
+            translation: string;
             definition?: string | null;
             /**
              * @description Extra marks or tags for word classification by register or domain
@@ -2026,35 +2026,17 @@ export interface components {
             bookmarked?: boolean;
             fromUnverifiedSource?: boolean;
         };
-        /** @description Overview of words split by learning progress and source */
+        /** @description Overview of vocabulary words */
         WordOverviewResponse: {
             /**
              * Format: int64
-             * @description Total number of words
+             * @description Total number of words in the learning list
              * @example 74
              */
             total?: number;
             /**
              * Format: int64
-             * @description Number of words with learning progress
-             * @example 56
-             */
-            activeCount?: number;
-            /**
-             * Format: int64
-             * @description Number of captured words without learning progress
-             * @example 18
-             */
-            pendingCount?: number;
-            /**
-             * Format: int64
-             * @description Number of words from unverified sources
-             * @example 18
-             */
-            unverifiedSourceCount?: number;
-            /**
-             * Format: int64
-             * @description Number of bookmarked words in the learning list
+             * @description Number of bookmarked words
              * @example 12
              */
             bookmarkedCount?: number;

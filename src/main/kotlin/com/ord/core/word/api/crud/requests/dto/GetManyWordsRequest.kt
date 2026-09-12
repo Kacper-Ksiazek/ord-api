@@ -29,8 +29,6 @@ data class GetManyWordsRequest(
 
     val wordType: WordType?,
     val wordTypes: List<WordType>?,
-    val isFromUnverifiedSource: Boolean? = null,
-    val hasProgress: Boolean? = null,
     val wordExtraMark: WordExtraMark?,
     val wordExtraMarks: List<WordExtraMark>?,
     val bookmarked: Boolean?,

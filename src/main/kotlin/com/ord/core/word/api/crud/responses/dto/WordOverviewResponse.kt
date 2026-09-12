@@ -2,20 +2,11 @@ package com.ord.core.word.api.crud.responses.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 
-@Schema(description = "Overview of words split by learning progress and source")
+@Schema(description = "Overview of vocabulary words")
 data class WordOverviewResponse(
-    @Schema(description = "Total number of words", example = "74")
+    @Schema(description = "Total number of words in the learning list", example = "74")
     val total: Long,
 
-    @Schema(description = "Number of words with learning progress", example = "56")
-    val activeCount: Long,
-
-    @Schema(description = "Number of captured words without learning progress", example = "18")
-    val pendingCount: Long,
-
-    @Schema(description = "Number of words from unverified sources", example = "18")
-    val unverifiedSourceCount: Long,
-
-    @Schema(description = "Number of bookmarked words in the learning list", example = "12")
+    @Schema(description = "Number of bookmarked words", example = "12")
     val bookmarkedCount: Long,
 )

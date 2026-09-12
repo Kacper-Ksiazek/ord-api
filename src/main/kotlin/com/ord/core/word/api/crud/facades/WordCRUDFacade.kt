@@ -6,6 +6,7 @@ import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
 import com.ord.core.word.api.crud.requests.dto.GetManyWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
 import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
 import org.springframework.http.ResponseEntity
@@ -18,14 +19,17 @@ interface WordCRUDFacade {
         language: LanguageName,
         page: Int?,
         perPage: Int?,
-        isFromUnverifiedSource: Boolean?,
-        hasProgress: Boolean?,
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>>
 
     fun searchWords(
         requestBody: GetManyWordsRequest,
         userId: UUID,
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>>
+
+    fun getOverview(
+        userId: UUID,
+        language: LanguageName?,
+    ): Mono<ResponseEntity<WordOverviewResponse>>
 
     fun getSingleWord(
         id: UUID,

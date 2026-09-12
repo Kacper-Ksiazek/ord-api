@@ -16,6 +16,7 @@ import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.requests.dto.WordBulkActionRequest
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
 import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
 import io.swagger.v3.oas.annotations.Operation
@@ -56,10 +57,31 @@ class WordCRUDController(
     // CRUD
     // -------
 
+    @GetMapping("/overview")
+    @Operation(
+        summary = "Get vocabulary overview",
+        description = "Retrieve total and bookmarked word counts for the learning list",
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Overview retrieved successfully"
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
+    fun getOverview(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @RequestParam(required = false) language: LanguageName?,
+    ): Mono<ResponseEntity<WordOverviewResponse>> = wordCRUDFacade.getOverview(user.id, language)
+
     @GetMapping
     @Operation(
         summary = "List words",
-        description = "Retrieve paginated list of words with optional filters for learning progress and source",
+        description = "Retrieve paginated list of words in the learning list",
     )
     @ApiResponses(value = [
         ApiResponse(
@@ -77,15 +99,11 @@ class WordCRUDController(
         @RequestParam language: LanguageName,
         @RequestParam(required = false) page: Int?,
         @RequestParam(required = false) perPage: Int?,
-        @RequestParam(required = false) isFromUnverifiedSource: Boolean?,
-        @RequestParam(required = false) hasProgress: Boolean?,
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCRUDFacade.listWords(
         userId = user.id,
         language = language,
         page = page,
         perPage = perPage,
-        isFromUnverifiedSource = isFromUnverifiedSource,
-        hasProgress = hasProgress,
     )
 
     @PostMapping("/search")

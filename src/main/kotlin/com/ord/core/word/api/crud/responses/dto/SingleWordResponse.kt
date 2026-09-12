@@ -12,16 +12,15 @@ import java.util.*
 data class SingleWordResponse(
     val id: UUID,
 
-    var type: WordType?,
+    var type: WordType,
     var sourceWord: String,
-    var translation: String?,
+    var translation: String,
     var definition: String?,
     var extraMark: WordExtraMark?,
 
     var language: LanguageName,
 
     var isBookmarked: Boolean,
-    var isFromUnverifiedSource: Boolean,
     var progress: WordProgressDTO?,
 
     var bank: BankCompact?,
@@ -41,7 +40,6 @@ data class SingleWordResponse(
             "extra_mark",
             "language",
             "is_bookmarked",
-            "is_from_unverified_source",
             "created_at",
             "updated_at",
         )

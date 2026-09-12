@@ -1,7 +1,6 @@
 package com.ord.core.word.services
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.word.api.capture.requests.dto.CaptureWordRequest
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
@@ -36,8 +35,6 @@ interface WordService : UserResourceService<WordEntity> {
         bankGroupsIds: Set<UUID>? = null,
     ): Mono<Set<String>>
     fun findManyWords(
-        isFromUnverifiedSource: Boolean? = null,
-        hasProgress: Boolean? = null,
         completed: Boolean? = null,
         searchingPhrase: String? = null,
         bookmarked: Boolean? = null,
@@ -51,7 +48,6 @@ interface WordService : UserResourceService<WordEntity> {
         userId: UUID,
         page: Int = 0,
         perPage: Int = 10,
-        includeUnverifiedSourceCount: Boolean = false,
     ): Mono<WordsPaginatedResult>
 
     fun findOneWord(wordId: UUID, userId: UUID): Mono<SingleWordResponse>
@@ -62,21 +58,7 @@ interface WordService : UserResourceService<WordEntity> {
 
     fun saveNewActiveWord(word: WordEntity, userId: UUID): Mono<WordDTO>
 
-    fun captureWord(request: CaptureWordRequest, userId: UUID, isFromUnverifiedSource: Boolean = false): Mono<WordDTO>
-
-    fun bulkCaptureWords(
-        requests: List<CaptureWordRequest>,
-        userId: UUID,
-        isFromUnverifiedSource: Boolean = false,
-    ): Mono<List<WordDTO>>
-
-    fun activateWord(wordId: UUID, userId: UUID): Mono<WordDTO>
-
-    fun activateManyWords(wordIds: Set<UUID>, userId: UUID): Mono<Unit>
-
     fun countOverview(userId: UUID, language: LanguageName? = null): Mono<WordOverviewCounts>
 
     fun countCreated(language: LanguageName, userId: UUID): Mono<CountingSummary>
-
-    fun hasProgress(wordId: UUID, userId: UUID): Mono<Boolean>
 }
