@@ -15,6 +15,13 @@ PARSER="$ROOT/scripts/surefire-report-parser.py"
 
 cd "$ROOT"
 
+if ! docker info >/dev/null 2>&1; then
+  echo "ERROR: Docker is not running. Smoke/integration tests need Testcontainers (PostgreSQL)." >&2
+  echo "Start Docker Desktop, verify with: docker ps" >&2
+  echo "Then rerun: make test" >&2
+  exit 1
+fi
+
 case "$MODE" in
   smoke)
     LABEL="Smoke tests"
