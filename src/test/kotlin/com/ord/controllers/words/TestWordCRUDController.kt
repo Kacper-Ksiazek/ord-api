@@ -28,7 +28,6 @@ import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.config.GamesConfig
 import com.ord.features.bank.api.requests.dto.CreateBankRequest
 import com.ord.features.bank.repository.BankRepository
@@ -132,10 +131,12 @@ class TestWordCRUDController @Autowired constructor(
                 perPage: Int? = null,
 
                 wordType: WordType? = null,
+                wordTypes: List<WordType>? = null,
                 completed: Boolean? = null,
                 searchingPhrase: String? = null,
                 bookmarked: Boolean? = null,
                 wordExtraMark: WordExtraMark? = null,
+                wordExtraMarks: List<WordExtraMark>? = null,
 
                 banksIds: Set<UUID>? = null,
                 banksGroupsIds: Set<UUID>? = null,
@@ -148,17 +149,19 @@ class TestWordCRUDController @Autowired constructor(
                     page = page,
                     perPage = perPage,
                     wordType = wordType,
+                    wordTypes = wordTypes,
                     completed = completed,
                     searchingPhrase = searchingPhrase,
                     bookmarked = bookmarked,
                     wordExtraMark = wordExtraMark,
+                    wordExtraMarks = wordExtraMarks,
                     banksIds = banksIds?.toList(),
                     bankGroupsIds = banksGroupsIds?.toList(),
                     sortDirection = sortDirection,
                     sortBy = sortBy
                 )
 
-                val response = wordsAPIClient.getManyWords(
+                val response = wordsAPIClient.searchWords(
                     body = request,
                     user = authenticatedUser
                 )
@@ -309,7 +312,7 @@ class TestWordCRUDController @Autowired constructor(
                 )
 
                 body.data.forEach { t ->
-                    assert(t.sourceWord.contains(expectedWordMark) || (t.translation?.contains(expectedWordMark) == true))
+                    assert(t.sourceWord.contains(expectedWordMark) || t.translation.contains(expectedWordMark))
                 }
             }
 
@@ -354,7 +357,6 @@ class TestWordCRUDController @Autowired constructor(
                     List(10) {
                         wordMockFactory.mockEntity(
                             userId = authenticatedUser.userInfo.id,
-                            status = WordStatus.ACTIVE,
                         )
                     },
                 ).collectList().block()!!
@@ -459,10 +461,12 @@ class TestWordCRUDController @Autowired constructor(
 
                 language: Any? = learningLanguage,
                 wordType: Any? = null,
+                wordTypes: Any? = null,
                 searchingPhrase: Any? = null,
                 bookmarked: Any? = null,
                 completed: Any? = null,
                 wordExtraMark: Any? = null,
+                wordExtraMarks: Any? = null,
 
                 banksIds: Any? = null,
                 bankGroupsIds: Any? = null,
@@ -477,8 +481,10 @@ class TestWordCRUDController @Autowired constructor(
                     page = page,
                     perPage = perPage,
                     wordType = wordType,
+                    wordTypes = wordTypes,
                     completed = completed,
                     wordExtraMark = wordExtraMark,
+                    wordExtraMarks = wordExtraMarks,
                     bookmarked = bookmarked,
                     searchingPhrase = searchingPhrase,
                     banksIds = banksIds,
@@ -487,7 +493,7 @@ class TestWordCRUDController @Autowired constructor(
                     sortBy = sortBy
                 )
 
-                val response = wordsAPIClient.getManyWords(
+                val response = wordsAPIClient.searchWords(
                     body = request,
                     user = user
                 )

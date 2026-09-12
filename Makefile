@@ -1,42 +1,68 @@
-.PHONY: help status docker-restart docker-e2e-up docker-e2e-down openapi test-smoke test-integration
+.PHONY: help status db-up db-wipe run restart stop openapi test test-live \
+	dev-db dev dev-refresh dev-stop test-smoke test-integration
 
 COMPOSE := docker compose
-COMPOSE_E2E := docker compose -f docker-compose.e2e.yml
 ORD_FRONTEND_DIR ?= $(HOME)/workspace/ord-frontend
 API_HOST ?= http://localhost:8080
 OUTPUT_FILE ?= openapi.json
 
+.DEFAULT_GOAL := help
+
 help:
 	@echo "Available targets:"
-	@echo "  status          Show docker / api / front / storybook status"
-	@echo "  docker-restart   Stop stack, wipe DB volume, remove app image, rebuild and start"
-	@echo "  docker-e2e-up    Start ephemeral E2E stack (OTP 123456, 4 worker accounts via Flyway V19)"
-	@echo "  docker-e2e-down  Stop E2E stack"
-	@echo "  openapi         Export OpenAPI spec from a running API (default: openapi.json)"
-	@echo "                  Requires the app to be up. Override: make openapi API_HOST=... OUTPUT_FILE=..."
-	@echo "  test-smoke      Run full suite with AI stubs (no external OpenAI calls)"
-	@echo "  test-integration Run full suite against real OpenAI API (requires OPEN_AI_KEY in .env.test)"
 	@echo ""
-	@echo "Override frontend path: make status ORD_FRONTEND_DIR=/path/to/ord-frontend"
+	@echo "🔍 Status:"
+	@echo "  status          Show docker / api / front / storybook status"
+	@echo ""
+	@echo "💻 Native API (DB in Docker, JVM on host):"
+	@echo "  db-up           Start Postgres (Docker)"
+	@echo "  db-wipe         Wipe DB volume and restart Postgres"
+	@echo "  run             Start native API (fast local dev)"
+	@echo "  restart         Recompile and restart native API"
+	@echo "  stop            Stop native API process"
+	@echo ""
+	@echo "🧪 Tests:"
+	@echo "  test            Controller tests with AI stubs (CI default)"
+	@echo "  test-live       Same suite with real OpenAI (.env.test)"
+	@echo ""
+	@echo "📄 OpenAPI:"
+	@echo "  openapi         Export OpenAPI spec (API must be running)"
+	@echo ""
+	@echo "Override: make openapi API_HOST=... OUTPUT_FILE=..."
+	@echo "E2E stack: use ord-ops (make e2e-up)"
 
 status:
 	ORD_API_DIR=$(CURDIR) ORD_FRONTEND_DIR=$(ORD_FRONTEND_DIR) ./scripts/dev-status.sh
 
-docker-restart:
-	$(COMPOSE) down -v --rmi local --remove-orphans
-	$(COMPOSE) up -d --build
+db-up:
+	./scripts/dev-db-up.sh
 
-docker-e2e-up:
-	$(COMPOSE_E2E) up -d --build
+db-wipe:
+	$(COMPOSE) down -v --remove-orphans
+	./scripts/dev-db-up.sh
 
-docker-e2e-down:
-	$(COMPOSE_E2E) down --remove-orphans
+run:
+	./scripts/dev-native-up.sh
+
+restart:
+	./scripts/dev-native-restart.sh
+
+stop:
+	./scripts/dev-native-down.sh
 
 openapi:
 	API_HOST=$(API_HOST) OUTPUT_FILE=$(OUTPUT_FILE) ./export-openapi-spec.sh
 
-test-smoke:
+test:
 	./scripts/run-tests.sh smoke
 
-test-integration:
+test-live:
 	./scripts/run-tests.sh integration
+
+# Deprecated aliases (hidden from help)
+dev-db: db-up
+dev: run
+dev-refresh: restart
+dev-stop: stop
+test-smoke: test
+test-integration: test-live

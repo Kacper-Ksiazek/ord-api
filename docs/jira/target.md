@@ -18,11 +18,8 @@ Atlassian/Jira MCP is **not** committed in `.cursor/mcp.json` — enable the Atl
 
 Issue keys (`OA-*`) change when epics are recreated. Resolve the current key at runtime, e.g.:
 
-`project = OA AND issuetype = Epic AND summary = "QAW"`
-
 | Epic (summary) | Zakres |
 |----------------|--------|
-| QAW | Quickly Added Words — CRUD, AI fill-gaps, public endpoint |
 | CI/CD | GHCR publish, docker-compose.e2e, workflow guards |
 | AI Rules | `docs/ai-rules/` knowledge base, agent conventions |
 | Conversations | AI conversation practice, messages, analysis, tips |

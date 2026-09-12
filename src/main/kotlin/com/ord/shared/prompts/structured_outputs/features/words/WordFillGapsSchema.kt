@@ -1,11 +1,11 @@
-package com.ord.shared.prompts.structured_outputs.features.qaw
+package com.ord.shared.prompts.structured_outputs.features.words
 
 import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 
-val qawFillGapsSchema = StructuredOutputTemplate(
-    name = "qaw_fill_gaps",
+val wordFillGapsSchema = StructuredOutputTemplate(
+    name = "word_fill_gaps",
     schema = mapOf(
         "type" to "object",
         "properties" to mapOf(
@@ -25,7 +25,7 @@ val qawFillGapsSchema = StructuredOutputTemplate(
                         ),
                         "translation" to mapOf(
                             "type" to "string",
-                            "description" to "Translation into the desired language, or empty string if error is set",
+                            "description" to "Practical translation into the desired language using common, learner-friendly words; one gloss or at most two common equivalents separated by comma and space; avoid rare or obscure synonyms; never use semicolons or parenthetical notes — use extraMark for register; empty string if error is set",
                         ),
                         "definition" to mapOf(
                             "type" to "string",

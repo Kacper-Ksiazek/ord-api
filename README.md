@@ -46,7 +46,7 @@ Every feature follows the same vertical slice under `com.ord`. All user data is 
 src/main/kotlin/com/ord/
 ├── config/          # Security, OpenAPI, properties
 ├── core/            # Auth, users, words, AI client, TTS, proficiencies
-├── features/        # Banks, games, conversations, QAW, explainer, …
+├── features/        # Banks, games, conversations, explainer, …
 ├── shared/          # Base abstractions, prompts, validators, DTOs
 └── exceptions/      # REST exception hierarchy + @ControllerAdvice
 ```
@@ -115,8 +115,17 @@ OTP_CODE_FOR_WHITELISTED_EMAILS=123456
 
 2. Start the stack:
 
+**Fast local dev** (recommended — DB in Docker, app on host, tests ignored):
+
 ```bash
-make docker-restart   # rebuild + start app + Postgres
+make run           # first start
+make restart       # after code changes
+```
+
+**Full Docker stack** (slower — rebuilds app image):
+
+```bash
+cd ../ord-ops && make dev-wipe   # wipe DB volume + restart dev stack
 # or
 docker compose up -d --build
 ```
@@ -156,8 +165,8 @@ Explore the API — Swagger UI at `http://localhost:8080/swagger-ui.html` (basic
 ### Run tests
 
 ```bash
-make test-smoke        # full suite with AI stubs (no OPEN_AI_KEY)
-make test-integration  # full suite against real OpenAI (requires .env.test with OPEN_AI_KEY)
+make test        # full suite with AI stubs (no OPEN_AI_KEY)
+make test-live   # full suite against real OpenAI (requires .env.test with OPEN_AI_KEY)
 ```
 
 ### Export OpenAPI spec
@@ -170,15 +179,36 @@ make openapi   # requires a running API; writes openapi.json
 
 Run `make help` for the full list.
 
+**🔍 Status**
+
 | Target | Description |
 |--------|-------------|
 | `make status` | Show docker / api / front / storybook status |
-| `make docker-restart` | Rebuild and start app + Postgres (wipes DB volume) |
-| `make docker-e2e-up` | Start ephemeral E2E stack |
-| `make docker-e2e-down` | Stop E2E stack |
+
+**💻 Native API (DB in Docker, JVM on host)**
+
+| Target | Description |
+|--------|-------------|
+| `make db-up` | Start Postgres only (Docker) |
+| `make db-wipe` | Wipe DB volume and restart Postgres |
+| `make run` | Start native API in dev mode (no tests, DB in Docker) |
+| `make restart` | Restart native API after code changes (no tests) |
+| `make stop` | Stop native API process |
+
+**🧪 Tests**
+
+| Target | Description |
+|--------|-------------|
+| `make test` | Run full suite with AI stubs (no external OpenAI calls) |
+| `make test-live` | Run full suite against real OpenAI (requires `OPEN_AI_KEY` in `.env.test`) |
+
+**📄 OpenAPI**
+
+| Target | Description |
+|--------|-------------|
 | `make openapi` | Export OpenAPI spec from a running API |
-| `make test-smoke` | Run full suite with AI stubs (no external OpenAI calls) |
-| `make test-integration` | Run full suite against real OpenAI (requires `OPEN_AI_KEY` in `.env.test`) |
+
+E2E stack: use **ord-ops** (`make e2e-up` / `make e2e-down`).
 
 Override frontend path: `make status ORD_FRONTEND_DIR=/path/to/ord-frontend`.
 
@@ -186,8 +216,8 @@ Override frontend path: `make status ORD_FRONTEND_DIR=/path/to/ord-frontend`.
 
 | Workflow | Trigger | What it does |
 |----------|---------|-------------|
-| **Smoke tests** | Pull request → `main` | Runs `make test-smoke` (required check — blocks merge on failure) |
-| **Integration tests** | Push to `main`; manual (`workflow_dispatch`, branch default `main`) | Runs `make test-integration` against real OpenAI (`OPEN_AI_KEY` secret) |
+| **Smoke tests** | Pull request → `main` | Runs `make test` (required check — blocks merge on failure) |
+| **Integration tests** | Push to `main`; manual (`workflow_dispatch`, branch default `main`) | Runs `make test-live` against real OpenAI (`OPEN_AI_KEY` secret) |
 | **Build, Test & Deploy** | Push to `main` | Smoke tests, then builds Docker image and deploys to Heroku |
 | **Publish API Types** | Push to `main` when `openapi.json` changes | Generates TypeScript types and publishes to GitHub Packages |
 | **Publish GHCR image** | Push to `main` | Builds and pushes `ghcr.io/kacper-ksiazek/ord-api` (`latest` + `sha-<commit>`) for E2E CI |
@@ -203,10 +233,10 @@ The `docker-compose.e2e.yml` file starts a self-contained backend for Playwright
 - Health check reports integration mode: `GET /api/v1/health-check` → `"ai": "STUB", "tts": "STUB"`.
 
 ```bash
-make docker-e2e-up    # or: docker compose -f docker-compose.e2e.yml up -d --wait
+cd ../ord-ops && make e2e-up
 curl http://localhost:8080/api/v1/health-check
 # {"application":"UP","database":"UP","ai":"STUB","tts":"STUB"}
-make docker-e2e-down  # or: docker compose -f docker-compose.e2e.yml down -v
+cd ../ord-ops && make e2e-down
 ```
 
 | Variable | E2E value |

@@ -30,7 +30,6 @@ class WordProgressRepositoryCustomMethodsImpl(
             FROM word_progress wp
                 INNER JOIN words w ON w.id = wp.word_id
             WHERE w.language = :language
-              AND w.status = 'ACTIVE'
               AND w.source_word = ANY(:origins)
               AND wp.user_id = :userId
         """

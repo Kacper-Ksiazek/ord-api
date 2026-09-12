@@ -12,8 +12,8 @@ data class CountingSummary(
     val month: Int
 ) {
     constructor(projection: CountingSummaryProjection) : this(
-        today = projection.today?.toInt() ?: 0,
-        week = projection.week?.toInt() ?: 0,
-        month = projection.month?.toInt() ?: 0
+        today = projection.today ?: 0,
+        week = projection.week ?: 0,
+        month = projection.month ?: 0
     )
 }

@@ -29,8 +29,6 @@ object GamesConfig {
                     GameType.CROSSWORD -> CROSSWORD
                     GameType.WORDS_TYPING -> WORDS_TYPING
                     GameType.SENTENCES_WRITING -> SENTENCES_WRITING
-
-                    else -> throw IllegalArgumentException("Unknown game type: $gameType")
                 }
             }
         }

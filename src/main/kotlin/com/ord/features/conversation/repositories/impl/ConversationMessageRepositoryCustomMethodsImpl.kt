@@ -68,7 +68,7 @@ class ConversationMessageRepositoryCustomMethodsImpl(
             .map { row ->
                 DailyActivityCount(
                     date = row.get("activity_date", LocalDate::class.java)!!,
-                    count = row.get("cnt", java.lang.Long::class.java)!!.toLong(),
+                    count = row.get("cnt", Long::class.java)!!,
                 )
             }
             .all()

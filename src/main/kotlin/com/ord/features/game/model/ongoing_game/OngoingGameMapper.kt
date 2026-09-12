@@ -41,7 +41,6 @@ class OngoingGameMapper(
             GameType.CROSSWORD -> toCrosswordDTO(entity)
             GameType.WORDS_TYPING -> toWordsTypingDTO(entity)
             GameType.SENTENCES_WRITING -> toSentencesWritingDTO(entity)
-            else -> throw IllegalArgumentException("Invalid game type")
         }
     }
 

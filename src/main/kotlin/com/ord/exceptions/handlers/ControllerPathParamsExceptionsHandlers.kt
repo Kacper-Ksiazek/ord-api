@@ -97,7 +97,7 @@ class HandlerMethodValidationExceptionHandler {
                         field = exception.name,
                         expectedType = exception.requiredType?.name ?: "unknown",
                         receivedValue = exception.value!!.toString(),
-                        errorMessage = exception.message!!
+                        errorMessage = exception.message
                     )
                 ),
             ),

@@ -6,9 +6,9 @@ ORD is the backend API for an **AI-powered language / vocabulary learning app**.
 words in a foreign language and practice them through several interactive features:
 
 - **Words & word details** — managing vocabulary the user is learning, with AI-generated details.
+  New words enter the learning list directly (with progress); there is no separate capture/inbox
+  flow.
 - **Banks & bank groups** — organizing words into collections.
-- **Quickly added words (QAW)** — a fast capture flow for new vocabulary, including a public
-  (anonymous) entry point.
 - **Games** — practice variants (crossword, sentences writing, words typing) generated and
   reviewed by AI.
 - **Conversations** — AI-powered conversation practice with customizable scenarios,

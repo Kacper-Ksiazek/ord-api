@@ -36,7 +36,6 @@ class LanguageProficiencyServiceImpl(
             .switchIfEmpty(
                 Mono.error(BadRequestException("User does not have any proficiency in the requested language."))
             )
-            .map { it!! }
     }
 }
 

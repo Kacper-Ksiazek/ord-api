@@ -39,8 +39,7 @@ class StubOpenAIAPIClientService(
         parseResponseBody: (responseBody: T) -> T,
     ): Mono<T> {
         val rawBody = resolveStructuredBody(gptTokensUsageLogKey, prompt, aiResponseType)
-        @Suppress("UNCHECKED_CAST")
-        val parsedBody = parseResponseBody(rawBody as T)
+        val parsedBody = parseResponseBody(rawBody)
 
         if (!validateResponseBody(parsedBody)) {
             return Mono.error(
@@ -191,7 +190,6 @@ class StubOpenAIAPIClientService(
         return Flux.defer {
             flux.collectList()
                 .subscribeOn(Schedulers.boundedElastic())
-                .map { list -> list ?: emptyList() }
                 .flatMapMany { Flux.fromIterable(it) }
         }
     }

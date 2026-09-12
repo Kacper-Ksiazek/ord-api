@@ -5,29 +5,30 @@ Entities that belong to a user must implement `IdentifiableUserResource`, exposi
 ## Good
 
 ```kotlin
-@Table("quickly_added_words")
-data class QuicklyAddedWordEntity(
+@Table("banks")
+data class BankEntity(
     @Id
-    override var id: UUID? = null,
+    override val id: UUID? = null,
 
-    var word: String,
-    var language: LanguageName,
-    var isApproved: Boolean = false,
-    var createdAt: Instant = Instant.now(),
+    val name: String,
+    val description: String,
 
     override val userId: UUID,
+    var groupId: UUID? = null,
+
+    val createdAt: Instant = Instant.now(),
 ) : IdentifiableUserResource
 ```
 
 ## Bad
 
 ```kotlin
-@Table("quickly_added_words")
-data class QuicklyAddedWordEntity(
+@Table("banks")
+data class BankEntity(
     @Id
     var id: UUID? = null,
-    var word: String,
-    var language: LanguageName,
+    var name: String,
+    var description: String,
     // No userId and no IdentifiableUserResource: rows cannot be scoped to an owner
 )
 ```

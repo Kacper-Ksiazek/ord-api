@@ -1,5 +1,6 @@
 package com.ord.core.word.api.crud.facades.impl
 
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.crud.facades.WordCRUDFacade
 import com.ord.core.word.api.crud.facades.internal.getBankFromRequestOrNull
@@ -7,14 +8,16 @@ import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
 import com.ord.core.word.api.crud.requests.dto.GetManyWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
 import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.WordMapper
-import com.ord.core.word.models.word.enums.WordStatus
+import com.ord.core.word.models.word.enums.WordExtraMark
+import com.ord.core.word.models.word.enums.WordType
+import com.ord.core.word.services.WordService
 import com.ord.core.word.models.word_details.toCompact
 import com.ord.core.word.services.WordDetailsService
-import com.ord.core.word.services.WordService
 import com.ord.features.bank.service.BankService
 import com.ord.shared.extensions.convertToSetExplicitly
 import org.springframework.http.HttpStatus
@@ -30,17 +33,38 @@ class WordCRUDFacadeImpl(
     private val wordService: WordService,
     private val wordDetailsService: WordDetailsService,
 ) : WordCRUDFacade {
-    override fun getManyWords(
+    override fun listWords(
+        userId: UUID,
+        language: LanguageName,
+        page: Int?,
+        perPage: Int?,
+    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> {
+        return wordService
+            .findManyWords(
+                language = language,
+                userId = userId,
+                page = page ?: 0,
+                perPage = perPage ?: 50,
+            )
+            .map { result ->
+                WordsPaginatedDataResponse(
+                    pagination = result.paginated.pagination,
+                    data = result.paginated.data,
+                )
+            }
+            .map { ResponseEntity.ok(it) }
+    }
+
+    override fun searchWords(
         requestBody: GetManyWordsRequest,
         userId: UUID,
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>> {
         return wordService
             .findManyWords(
                 language = requestBody.language,
-                wordType = requestBody.wordType,
-                status = requestBody.status ?: WordStatus.ACTIVE,
+                wordTypes = resolveWordTypes(requestBody),
                 completed = requestBody.completed,
-                wordExtraMark = requestBody.wordExtraMark,
+                wordExtraMarks = resolveWordExtraMarks(requestBody),
                 bookmarked = requestBody.bookmarked,
                 searchingPhrase = requestBody.searchingPhrase,
                 banksIds = requestBody.banksIds?.convertToSetExplicitly(paramName = "banksIds"),
@@ -55,10 +79,20 @@ class WordCRUDFacadeImpl(
                 WordsPaginatedDataResponse(
                     pagination = result.paginated.pagination,
                     data = result.paginated.data,
-                    capturedCount = result.capturedCount,
                 )
             }
             .map { ResponseEntity.status(HttpStatus.OK).body(it) }
+    }
+
+    override fun getOverview(userId: UUID, language: LanguageName?): Mono<ResponseEntity<WordOverviewResponse>> {
+        return wordService.countOverview(userId, language)
+            .map {
+                WordOverviewResponse(
+                    total = it.total,
+                    bookmarkedCount = it.bookmarkedCount,
+                )
+            }
+            .map { ResponseEntity.ok(it) }
     }
 
     override fun getSingleWord(id: UUID, userId: UUID): Mono<ResponseEntity<SingleWordResponse>> {
@@ -82,7 +116,6 @@ class WordCRUDFacadeImpl(
         )
             .flatMap { bank ->
                 val wordToSave = WordEntity(
-                    status = WordStatus.ACTIVE,
                     type = body.type,
                     sourceWord = body.sourceWord,
                     translation = body.translation,
@@ -120,12 +153,8 @@ class WordCRUDFacadeImpl(
             }
             .flatMap { updatedEntity -> wordService.save(updatedEntity) }
             .flatMap { saved ->
-                if (saved.isActive()) {
-                    wordService.findOneWord(saved.id!!, userId).map { response ->
-                        wordMapper.toDTO(saved).apply { progress = response.progress }
-                    }
-                } else {
-                    Mono.just(wordMapper.toDTO(saved))
+                wordService.findOneWord(saved.id!!, userId).map { response ->
+                    wordMapper.toDTO(saved).apply { progress = response.progress }
                 }
             }
             .map { ResponseEntity.status(HttpStatus.OK).body(it) }
@@ -135,5 +164,27 @@ class WordCRUDFacadeImpl(
         return wordService
             .deleteById(id = id, userId = userId)
             .then(Mono.fromCallable { ResponseEntity.status(HttpStatus.OK).build() })
+    }
+
+    private fun resolveWordTypes(requestBody: GetManyWordsRequest): Set<WordType>? {
+        val fromList = requestBody.wordTypes?.toSet()
+        val fromSingle = requestBody.wordType?.let { setOf(it) }
+
+        return when {
+            fromList != null && fromList.isNotEmpty() -> fromList
+            fromSingle != null -> fromSingle
+            else -> null
+        }
+    }
+
+    private fun resolveWordExtraMarks(requestBody: GetManyWordsRequest): Set<WordExtraMark>? {
+        val fromList = requestBody.wordExtraMarks?.toSet()
+        val fromSingle = requestBody.wordExtraMark?.let { setOf(it) }
+
+        return when {
+            fromList != null && fromList.isNotEmpty() -> fromList
+            fromSingle != null -> fromSingle
+            else -> null
+        }
     }
 }

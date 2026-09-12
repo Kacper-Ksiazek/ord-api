@@ -3,10 +3,12 @@ package com.ord.features.bank.service.impl
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.bank.api.requests.dto.CreateBankRequest
+import com.ord.features.bank.api.responses.BankListItem
 import com.ord.features.bank.model.BankEntity
 import com.ord.features.bank.repository.BankRepository
 import com.ord.features.bank.service.BankService
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.util.*
 
@@ -15,6 +17,9 @@ class BankServiceImpl(
     private val bankRepository: BankRepository
 ) : BankService {
     override val repository: BankRepository = bankRepository
+
+    override fun findAllListItems(userId: UUID): Flux<BankListItem> =
+        bankRepository.findAllListItemsByUserId(userId)
 
     override fun findByIdOrCreate(
         bankId: UUID?,

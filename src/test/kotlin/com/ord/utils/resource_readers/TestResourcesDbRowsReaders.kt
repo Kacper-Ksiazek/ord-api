@@ -1,7 +1,6 @@
 package com.ord.utils.resource_readers
 
 import com.ord.core.word.models.word.WordEntity
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.repositories.WordProgressRepository
 import com.ord.core.word.repositories.WordRepository
 import com.ord.seeders.factories.WordProgressFactory
@@ -50,7 +49,6 @@ fun loadWordsFromResourceFile(
     val saved = wordsRepository.saveAll(result).collectList().block()!!
 
     val progressEntities = saved
-        .filter { it.status == WordStatus.ACTIVE }
         .zip(rows)
         .map { (word, row) ->
             wordProgressFactory.mockEntity(

@@ -3,6 +3,7 @@ package com.ord.core.word.api.crud
 import com.ord.config.OpenApiSecurity
 
 import com.ord.core.auth.annotations.AuthenticatedUser
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.crud.facades.WordBankManagementFacade
 import com.ord.core.word.api.crud.facades.WordCRUDFacade
@@ -15,6 +16,7 @@ import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.requests.dto.WordBulkActionRequest
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
+import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
 import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
 import com.ord.core.word.models.word.WordDTO
 import io.swagger.v3.oas.annotations.Operation
@@ -55,10 +57,31 @@ class WordCRUDController(
     // CRUD
     // -------
 
-    @PostMapping("/get-many-words")
+    @GetMapping("/overview")
     @Operation(
-        summary = "Get words with advanced filtering",
-        description = "Retrieve paginated list of words with filtering by language, bank, type, and search query"
+        summary = "Get vocabulary overview",
+        description = "Retrieve total and bookmarked word counts for the learning list",
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Overview retrieved successfully"
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
+    fun getOverview(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @RequestParam(required = false) language: LanguageName?,
+    ): Mono<ResponseEntity<WordOverviewResponse>> = wordCRUDFacade.getOverview(user.id, language)
+
+    @GetMapping
+    @Operation(
+        summary = "List words",
+        description = "Retrieve paginated list of words in the learning list",
     )
     @ApiResponses(value = [
         ApiResponse(
@@ -71,10 +94,38 @@ class WordCRUDController(
             content = [Content()]
         )
     ])
-    fun getAllWords(
+    fun listWords(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @RequestParam language: LanguageName,
+        @RequestParam(required = false) page: Int?,
+        @RequestParam(required = false) perPage: Int?,
+    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCRUDFacade.listWords(
+        userId = user.id,
+        language = language,
+        page = page,
+        perPage = perPage,
+    )
+
+    @PostMapping("/search")
+    @Operation(
+        summary = "Search words with advanced filtering",
+        description = "Retrieve paginated list of words with filtering by language, bank, type, and search query",
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Words retrieved successfully"
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
+    fun searchWords(
         @RequestBody @Valid requestBody: GetManyWordsRequest,
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
-    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCRUDFacade.getManyWords(
+    ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCRUDFacade.searchWords(
         requestBody = requestBody,
         userId = user.id
     )

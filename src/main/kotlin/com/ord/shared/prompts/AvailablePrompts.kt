@@ -8,8 +8,8 @@ import com.ord.shared.prompts.structured_outputs.features.games.crosswordGenerat
 import com.ord.shared.prompts.structured_outputs.features.games.sentencesWritingGenerateSchema
 import com.ord.shared.prompts.structured_outputs.features.games.sentencesWritingReviewSchema
 import com.ord.shared.prompts.structured_outputs.features.games.wordsTypingGenerateSchema
-import com.ord.shared.prompts.structured_outputs.features.qaw.qawFillGapsSchema
 import com.ord.shared.prompts.structured_outputs.features.words.generatedWordManualSchema
+import com.ord.shared.prompts.structured_outputs.features.words.wordFillGapsSchema
 
 enum class AvailablePrompts(
     val resourcePath: String,
@@ -56,8 +56,8 @@ enum class AvailablePrompts(
     WORDS_SUGGEST_VOCABULARY(resourcePath = "words/suggest_vocabulary.md"),
     WORDS_EXPLAIN(resourcePath = "words/explain_word.md"),
 
-    QAW_FILL_GAPS(
-        resourcePath = "qaw/fill_gaps.md",
-        structuredOutput = qawFillGapsSchema,
+    WORDS_FILL_GAPS(
+        resourcePath = "words/fill_gaps.md",
+        structuredOutput = wordFillGapsSchema,
     ),
 }

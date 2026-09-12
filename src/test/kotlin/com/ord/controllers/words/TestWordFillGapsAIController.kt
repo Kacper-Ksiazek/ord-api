@@ -11,6 +11,7 @@ import com.ord.core.security.UserRepository
 import com.ord.core.word.api.ai.requests.dto.WordFillGapsItem
 import com.ord.core.word.api.ai.requests.dto.WordFillGapsRequest
 import com.ord.core.word.api.ai.responses.dto.WordFillGapsResponse
+import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.testing_utils.api.clients.WordFillGapsAIAPIClient
 import com.ord.testing_utils.api.dto.APIClientResponse
@@ -138,6 +139,37 @@ class TestWordFillGapsAIController @Autowired constructor(
                     item.definition.shouldNotBeNull().shouldNotBeBlank()
                     item.type.shouldNotBeNull()
                 }
+
+                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_FILL_GAPS")
+            }
+
+            @Test
+            fun `200 - should accept optional known fields in request items`() {
+                val response = fillGapsExpectingSuccess(
+                    body = WordFillGapsRequest(
+                        language = LanguageName.ENGLISH,
+                        items = listOf(
+                            WordFillGapsItem(
+                                sourceWord = "dude",
+                                translation = "stary",
+                                type = WordType.NOUN,
+                                extraMark = WordExtraMark.SLANG,
+                            ),
+                        ),
+                    ),
+                )
+
+                response.status shouldBe HttpStatus.OK
+                val body = response.body.shouldNotBeNull()
+                body.items shouldHaveSize 1
+
+                val item = body.items.first()
+                item.inputSourceWord shouldBe "dude"
+                item.error.shouldBeNull()
+                item.translation shouldBe "stary"
+                item.type shouldBe WordType.NOUN
+                item.extraMark shouldBe WordExtraMark.SLANG
+                item.definition.shouldNotBeNull().shouldNotBeBlank()
 
                 assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_FILL_GAPS")
             }

@@ -94,8 +94,8 @@ export type WordToggleableProperty = components['schemas']['WordToggleableProper
 // Export DTOs
 export type UserDTO = components['schemas']['UserDTO'];
 export type WordDTO = components['schemas']['WordDTO'];
-export type QuicklyAddedWordDTO = components['schemas']['QuicklyAddedWordDTO'];
-export type CreateQAWRequest = components['schemas']['CreateQAWRequest'];
+export type WordListItem = components['schemas']['WordListItem'];
+export type CreateWordRequest = components['schemas']['CreateWordRequest'];
 export type PaginatedDataResponse<T> = components['schemas']['PaginatedDataResponse'] & {
   data: T[];
 };
@@ -143,37 +143,29 @@ export const load = async () => {
 // src/lib/api/queries/words.ts
 import { createQuery, createMutation } from '@tanstack/svelte-query';
 import { api } from '$lib/api/client';
-import type { QuicklyAddedWordDTO, CreateQAWRequest, PaginatedDataResponse } from '$lib/types/api-types';
+import type { WordListItem, CreateWordRequest, PaginatedDataResponse, LanguageName } from '$lib/types/api-types';
 
-export const createQuicklyAddedWordsQuery = (page = 0, perPage = 20) => {
+export const createWordsListQuery = (language: LanguageName, page = 0, perPage = 20) => {
   return createQuery({
-    queryKey: ['quickly-added-words', page, perPage],
+    queryKey: ['words', language, page, perPage],
     queryFn: async () => {
-      const response = await api.get<PaginatedDataResponse<QuicklyAddedWordDTO>>(
-        '/api/v1/quickly-added-words/',
-        { params: { page, perPage } }
+      const response = await api.get<PaginatedDataResponse<WordListItem>>(
+        '/api/v1/words',
+        { params: { language, page, perPage } }
       );
       return response.data;
     },
   });
 };
 
-export const createCreateQAWMutation = () => {
+export const createCreateWordMutation = () => {
   return createMutation({
-    mutationFn: async (word: CreateQAWRequest) => {
-      const response = await api.post<QuicklyAddedWordDTO>(
-        '/api/v1/quickly-added-words/',
+    mutationFn: async (word: CreateWordRequest) => {
+      const response = await api.post<WordListItem>(
+        '/api/v1/words/',
         word
       );
       return response.data;
-    },
-  });
-};
-
-export const createDeleteQAWMutation = () => {
-  return createMutation({
-    mutationFn: async (id: string) => {
-      await api.delete(`/api/v1/quickly-added-words/${id}`);
     },
   });
 };
@@ -184,19 +176,20 @@ export const createDeleteQAWMutation = () => {
 ```svelte
 <!-- src/routes/words/+page.svelte -->
 <script lang="ts">
-  import { createQuicklyAddedWordsQuery, createCreateQAWMutation } from '$lib/api/queries/words';
+  import { createWordsListQuery, createCreateWordMutation } from '$lib/api/queries/words';
   import type { LanguageName } from '$lib/types/api-types';
 
+  let language = $state<LanguageName>('ENGLISH');
   let page = $state(0);
   let perPage = $state(20);
 
   // Query
-  const wordsQuery = createQuicklyAddedWordsQuery(page, perPage);
+  const wordsQuery = createWordsListQuery(language, page, perPage);
   const words = $derived($wordsQuery.data?.data ?? []);
   const pagination = $derived($wordsQuery.data?.pagination);
 
   // Mutation
-  const createWordMutation = createCreateQAWMutation();
+  const createWordMutation = createCreateWordMutation();
 
   async function handleCreateWord(word: string, language: LanguageName) {
     await $createWordMutation.mutateAsync({
@@ -424,7 +417,7 @@ const word = await apiCall('post', '/api/v1/words/', { word: 'test', language: '
 ```typescript
 // src/routes/words/create/+page.server.ts
 import type { Actions } from './$types';
-import type { CreateQAWRequest } from '$lib/types/api-types';
+import type { CreateWordRequest } from '$lib/types/api-types';
 import { api } from '$lib/api/client';
 import { fail } from '@sveltejs/kit';
 
@@ -432,14 +425,14 @@ export const actions = {
   default: async ({ request }) => {
     const data = await request.formData();
 
-    const wordData: CreateQAWRequest = {
+    const wordData: CreateWordRequest = {
       word: data.get('word') as string,
       language: data.get('language') as any,
       definition: data.get('definition') as string || undefined,
     };
 
     try {
-      await api.post('/api/v1/quickly-added-words/', wordData);
+      await api.post('/api/v1/words/', wordData);
       return { success: true };
     } catch (error) {
       return fail(400, { error: 'Failed to create word' });

@@ -14,7 +14,7 @@ The same stub implementation powers the **`e2e` runtime profile** used by Playwr
 - **E2E runtime:** `E2eStubConfiguration` (`@Profile("e2e")`) imports the same beans; real HTTP clients are excluded via `@Profile("!e2e")`.
 - `StubMailTestConfiguration` always provides a no-op `JavaMailSender` in tests.
 - Responses come from JSON fixtures in `src/main/resources/stubs/ai/openai/<controller>/` or from
-  `AIFixtureDynamicBuilder` when the response must match prompt input (games, QAW, word manual).
+  `AIFixtureDynamicBuilder` when the response must match prompt input (games, word fill-gaps, word manual).
 - Fixtures are keyed by `gptTokensUsageLogKey` (`GptTokensUsageOperationType` constants).
 - Token usage is still persisted so positive tests keep using `assertGptTokensLogCreated`.
 
@@ -22,10 +22,10 @@ The same stub implementation powers the **`e2e` runtime profile** used by Playwr
 
 | Command | Behaviour |
 |---------|-----------|
-| `make test-smoke` | Full `AllTestsSuite` with AI stubs (no `OPEN_AI_KEY`; defaults in `src/test/resources/application.properties`) |
-| `make test-integration` | Full suite against real OpenAI (`INTEGRATION_TESTS=true`, requires `.env.test` with `OPEN_AI_KEY` locally) |
+| `make test` | Full `AllTestsSuite` with AI stubs (no `OPEN_AI_KEY`; defaults in `src/test/resources/application.properties`) |
+| `make test-live` | Full suite against real OpenAI (`INTEGRATION_TESTS=true`, requires `.env.test` with `OPEN_AI_KEY` locally) |
 
-CI runs `make test-smoke` on pull requests to `main` and before deploy — no `OPEN_AI_KEY` required. After merge to `main`, `.github/workflows/integration-tests.yml` runs `make test-integration` (requires `OPEN_AI_KEY` repository secret). Manual runs use **Actions → Integration tests → Run workflow** and are restricted to `Kacper-Ksiazek` via a workflow guard (others see a failed authorization job).
+CI runs `make test` on pull requests to `main` and before deploy — no `OPEN_AI_KEY` required. After merge to `main`, `.github/workflows/integration-tests.yml` runs `make test-live` (requires `OPEN_AI_KEY` repository secret). Manual runs use **Actions → Integration tests → Run workflow** and are restricted to `Kacper-Ksiazek` via a workflow guard (others see a failed authorization job).
 
 ## Adding a fixture for a new AI operation
 
@@ -37,7 +37,7 @@ CI runs `make test-smoke` on pull requests to `main` and before deploy — no `O
 4. If the response must mirror words/IDs from the prompt (e.g. game generation), implement
    logic in [`AIFixtureDynamicBuilder`](../../../src/main/kotlin/com/ord/stubs/ai/AIFixtureDynamicBuilder.kt)
    and mark the registry entry `isDynamic = true`.
-5. Run `make test-smoke` — existing controller tests should pass without edits.
+5. Run `make test` — existing controller tests should pass without edits.
 
 ## Fixture formats
 

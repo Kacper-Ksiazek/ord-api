@@ -7,5 +7,5 @@ data class MeResponse(
     val email: String,
     val isAccountInitialized: Boolean,
     val nativeLanguage: LanguageName?,
-    val selectedLearningLanguage: LanguageName??,
+    val selectedLearningLanguage: LanguageName?,
 )

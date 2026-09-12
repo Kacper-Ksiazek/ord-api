@@ -31,10 +31,10 @@ Krótki, czytelny tytuł. **Bez prefiksów** ani tagów w summary — kontekst d
 
 | Kontekst | Format | Przykład |
 |----------|--------|----------|
-| Faza w epicu | `Faza N — <cel>` | `Faza 1 — QAW fill-gaps retry` |
+| Faza w epicu | `Faza N — <cel>` | `Faza 1 — words list API` |
 | Subtask | `<co> — <szczegół>` | `Test — stabilizacja batch fill-gaps` |
 | Samodzielny Task | `<krótki tytuł>` | `GHCR publish workflow` |
-| Bug | `<co nie działa>` | `Flaky test — TestQAWAIController.FillGaps` |
+| Bug | `<co nie działa>` | `Flaky test — TestWordAIController.FillGaps` |
 
 W raportach i PR-ach podawaj **klucz Jiry** (`OA-12`), nie prefiks w tytule.
 

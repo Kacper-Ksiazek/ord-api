@@ -29,7 +29,6 @@ src/main/kotlin/com/ord/
 │   ├── word/                      # Word management
 │   ├── bank/                      # Word banks
 │   ├── bank_group/                # Bank groups
-│   ├── quickly_added_words/       # Quick-add word feature
 │   ├── user_activity_log/         # Activity tracking with points
 │   └── ai_explainer/              # AI explanations
 ├── exceptions/                    # Custom exceptions (REST/NotFoundException, etc.)

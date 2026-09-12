@@ -1,8 +1,6 @@
 package com.ord.core.word.services.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
-import com.ord.core.word.api.capture.requests.dto.CaptureWordRequest
-import com.ord.core.word.api.capture.requests.dto.UpdateCapturedWordRequest
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.crud.requests.enums.toggleProperty
@@ -11,15 +9,13 @@ import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.WordMapper
 import com.ord.core.word.models.word.enums.WordExtraMark
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.models.word_progress.WordProgressDTO
+import com.ord.core.word.repositories.WordOverviewCounts
 import com.ord.core.word.repositories.WordRepository
-import com.ord.core.word.repositories.WordStatusCounts
 import com.ord.core.word.repositories.WordsPaginatedResult
 import com.ord.core.word.services.WordProgressService
 import com.ord.core.word.services.WordService
-import com.ord.exceptions.REST.BadRequestException
 import com.ord.exceptions.REST.ConflictException
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.user_activity_log.model.UserActivityLogEntity
@@ -90,16 +86,15 @@ class WordServiceImpl(
     }
 
     override fun findManyWords(
-        status: WordStatus?,
         completed: Boolean?,
         searchingPhrase: String?,
         bookmarked: Boolean?,
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
-        wordType: WordType?,
+        wordTypes: Set<WordType>?,
         language: LanguageName,
         sortDirection: SortDirection?,
-        wordExtraMark: WordExtraMark?,
+        wordExtraMarks: Set<WordExtraMark>?,
         sortBy: GetAllWordsSortOptions?,
         userId: UUID,
         page: Int,
@@ -108,11 +103,10 @@ class WordServiceImpl(
         return repository.findManyWords(
             userId = userId,
             language = language,
-            status = status,
             completed = completed,
             bookmarked = bookmarked,
-            wordType = wordType,
-            wordExtraMark = wordExtraMark,
+            wordTypes = wordTypes,
+            wordExtraMarks = wordExtraMarks,
             searchingPhrase = searchingPhrase,
             sortDirection = sortDirection ?: SortDirection.DESC,
             sortBy = sortBy ?: GetAllWordsSortOptions.CREATED_AT,
@@ -130,7 +124,7 @@ class WordServiceImpl(
     override fun toggleProperty(wordId: UUID, userId: UUID, property: WordToggleableProperty): Mono<WordEntity> {
         return repository.findByIdAndUserId(wordId, userId)
             .switchIfEmpty(Mono.error(NotFoundException("Word with id $wordId not found")))
-            .map { it!!.toggleProperty(property) }
+            .map { it.toggleProperty(property) }
             .flatMap { repository.save(it) }
     }
 
@@ -152,8 +146,8 @@ class WordServiceImpl(
     }
 
     override fun saveNewActiveWord(word: WordEntity, userId: UUID): Mono<WordDTO> {
-        require(word.status == WordStatus.ACTIVE && word.hasActivationFields()) {
-            "Active words require type, translation and definition"
+        require(word.hasActivationFields()) {
+            "Words with learning progress require definition"
         }
 
         val language = word.language
@@ -195,105 +189,8 @@ class WordServiceImpl(
             }
     }
 
-    override fun captureWord(request: CaptureWordRequest, userId: UUID, status: WordStatus): Mono<WordDTO> {
-        val entity = WordEntity(
-            status = status,
-            sourceWord = request.sourceWord,
-            language = request.language,
-            translation = request.translation,
-            definition = request.definition,
-            extraMark = request.extraMark,
-            type = request.type,
-            userId = userId,
-        )
-        return repository.save(entity)
-            .map { wordMapper.toDTO(it) }
-            .onErrorMap(DataIntegrityViolationException::class.java) {
-                ConflictException("Captured word already exists for this user and language")
-            }
-    }
-
-    override fun bulkCaptureWords(
-        requests: List<CaptureWordRequest>,
-        userId: UUID,
-        status: WordStatus,
-    ): Mono<List<WordDTO>> {
-        return Flux.fromIterable(requests)
-            .concatMap { captureWord(it, userId, status) }
-            .collectList()
-    }
-
-    override fun updateCapturedWord(wordId: UUID, userId: UUID, body: UpdateCapturedWordRequest): Mono<WordDTO> {
-        return repository.findByIdAndUserId(wordId, userId)
-            .switchIfEmpty(Mono.error(NotFoundException("Word with id $wordId not found")))
-            .flatMap { entity ->
-                val word = entity!!
-                if (word.status != WordStatus.CAPTURED) {
-                    return@flatMap Mono.error<WordDTO>(BadRequestException("Only captured words can be updated"))
-                }
-                repository.save(
-                    word.copy(
-                        sourceWord = body.sourceWord ?: word.sourceWord,
-                        translation = body.translation ?: word.translation,
-                        definition = body.definition ?: word.definition,
-                        extraMark = body.extraMark ?: word.extraMark,
-                        type = body.type ?: word.type,
-                    ),
-                ).map { wordMapper.toDTO(it) }
-            }
-    }
-
-    override fun bulkUpdateSourceWords(userId: UUID, updates: List<Pair<UUID, String>>): Mono<List<WordDTO>> {
-        val updateMap = updates.toMap()
-        return repository.findAllByIdInAndUserId(updateMap.keys, userId)
-            .collectList()
-            .flatMap { entities ->
-                if (entities.any { it.status != WordStatus.CAPTURED }) {
-                    return@flatMap Mono.error<List<WordEntity>>(
-                        BadRequestException("Only captured words can be updated"),
-                    )
-                }
-                val updated = entities.map { entity ->
-                    entity.copy(sourceWord = updateMap[entity.id] ?: entity.sourceWord)
-                }
-                repository.saveAll(updated).collectList()
-            }
-            .map { entities -> entities.map { wordMapper.toDTO(it) } }
-    }
-
-    override fun activateWord(wordId: UUID, userId: UUID): Mono<WordDTO> {
-        return repository.findByIdAndUserId(wordId, userId)
-            .switchIfEmpty(Mono.error(NotFoundException("Word with id $wordId not found")))
-            .flatMap { entity ->
-                val word = entity!!
-                if (word.status != WordStatus.CAPTURED) {
-                    return@flatMap Mono.error<WordDTO>(BadRequestException("Only captured words can be activated"))
-                }
-                if (!word.hasActivationFields()) {
-                    return@flatMap Mono.error<WordDTO>(
-                        BadRequestException("Word must have type, translation and definition before activation"),
-                    )
-                }
-                val activated = word.copy(status = WordStatus.ACTIVE)
-                repository.save(activated)
-                    .flatMap { saved ->
-                        wordProgressService.createInitialProgress(saved.id!!, userId)
-                            .map { progress -> wordMapper.toDTO(saved, WordProgressDTO.fromEntity(progress)) }
-                    }
-                    .onErrorMap(DataIntegrityViolationException::class.java) {
-                        ConflictException("Active word already exists for this user, language, type and source word")
-                    }
-            }
-    }
-
-    override fun activateManyWords(wordIds: Set<UUID>, userId: UUID): Mono<Unit> {
-        if (wordIds.isEmpty()) return Mono.error(BadRequestException("No IDs provided for activation"))
-        return Flux.fromIterable(wordIds)
-            .concatMap { activateWord(it, userId).then() }
-            .then(Mono.just(Unit))
-    }
-
-    override fun countByStatus(userId: UUID): Mono<WordStatusCounts> = repository.countByStatus(userId)
+    override fun countOverview(userId: UUID, language: LanguageName?): Mono<WordOverviewCounts> =
+        repository.countOverview(userId, language)
 
     override fun countCreated(language: LanguageName, userId: UUID): Mono<CountingSummary> {
         return repository.countCreated(language, userId)

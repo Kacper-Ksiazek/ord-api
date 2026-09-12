@@ -7,8 +7,10 @@ import com.ord.core.word.api.crud.requests.dto.UnsafeGetManyWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.requests.dto.WordBulkActionRequest
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.api.crud.responses.dto.WordListItem
+import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
 import com.ord.core.word.models.word.WordDTO
 import com.ord.shared.api.dto.responses.PaginatedDataResponse
 import com.ord.testing_utils.api.APITestClient
@@ -23,12 +25,45 @@ class WordsAPIClient(
 ) : APITestClient(webClient) {
     val baseUrl = "/api/v1/words"
 
-    fun getManyWords(
+    fun getOverview(
+        user: MockedAuthenticatedUser? = null,
+        language: LanguageName? = null,
+    ): APIClientResponse<WordOverviewResponse?> {
+        val queryParams = mutableMapOf<String, String>()
+        language?.let { queryParams["language"] = it.name }
+
+        return get(
+            url = "$baseUrl/overview",
+            queryParams = queryParams,
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<WordOverviewResponse>() {},
+        )
+    }
+
+    fun listWords(
+        language: LanguageName,
+        page: Int? = null,
+        perPage: Int? = null,
+        user: MockedAuthenticatedUser? = null,
+    ): APIClientResponse<PaginatedDataResponse<WordListItem>?> {
+        val queryParams = mutableMapOf("language" to language.name)
+        page?.let { queryParams["page"] = it.toString() }
+        perPage?.let { queryParams["perPage"] = it.toString() }
+
+        return get(
+            url = baseUrl,
+            queryParams = queryParams,
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<PaginatedDataResponse<WordListItem>>() {},
+        )
+    }
+
+    fun searchWords(
         body: UnsafeGetManyWordsRequest,
         user: MockedAuthenticatedUser? = null
     ): APIClientResponse<PaginatedDataResponse<WordListItem>?> {
         return post(
-            url = "$baseUrl/get-many-words",
+            url = "$baseUrl/search",
             body = body,
             user = user,
             responseBodyType = object : ParameterizedTypeReference<PaginatedDataResponse<WordListItem>>() {}

@@ -32,7 +32,7 @@ class AIExplainerFacadeImpl(
         return languageProficiencyService.findUserProficiencyInLanguage(user.id, body.language)
             .switchIfEmpty(Mono.error(BadRequestException("User does not have any proficiency in the requested language.")))
             .flatMapMany { userProficiencyInRequestedLanguage ->
-                val translateTo: LanguageName = userProficiencyInRequestedLanguage!!.translateTo
+                val translateTo: LanguageName = userProficiencyInRequestedLanguage.translateTo
                 val proficiencyLevel: LanguageProficiencyLevel = userProficiencyInRequestedLanguage.level
 
                 val prompt = Prompt(

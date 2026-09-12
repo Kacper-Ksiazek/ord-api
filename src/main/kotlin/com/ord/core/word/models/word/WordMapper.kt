@@ -12,7 +12,6 @@ class WordMapper(
     override fun toEntity(dto: WordDTO): WordEntity {
         return WordEntity(
             id = dto.id,
-            status = dto.status,
             type = dto.type,
             sourceWord = dto.sourceWord,
             translation = dto.translation,
@@ -31,7 +30,6 @@ class WordMapper(
     override fun toDTO(entity: WordEntity): WordDTO {
         return WordDTO(
             id = entity.id ?: error("Word ID must not be null"),
-            status = entity.status,
             type = entity.type,
             sourceWord = entity.sourceWord,
             translation = entity.translation,

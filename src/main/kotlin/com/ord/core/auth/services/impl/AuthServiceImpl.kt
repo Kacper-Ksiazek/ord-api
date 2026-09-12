@@ -56,7 +56,7 @@ class AuthServiceImpl(
                     .findByEmail(verifiedEmail)
                     .flatMap { user ->
                         // User exists, return it
-                        Mono.just(user!!)
+                        Mono.just(user)
                     }
                     .switchIfEmpty(
                         // User doesn't exist, create new one

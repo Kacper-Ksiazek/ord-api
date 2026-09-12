@@ -7,11 +7,10 @@ import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.api.crud.responses.dto.WordListItem
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
-import com.ord.core.word.models.word.enums.WordStatus
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.core.word.models.word_progress.WordProgressDTO
+import com.ord.core.word.repositories.WordOverviewCounts
 import com.ord.core.word.repositories.WordRepositoryCustomMethods
-import com.ord.core.word.repositories.WordStatusCounts
 import com.ord.core.word.repositories.WordsPaginatedResult
 import com.ord.exceptions.REST.NotFoundException
 import com.ord.features.bank.dto.BankCompact
@@ -62,24 +61,36 @@ class WordRepositoryCustomMethodsImpl(
     override fun findManyWords(
         userId: UUID,
         language: LanguageName,
-        status: WordStatus?,
         completed: Boolean?,
         bookmarked: Boolean?,
         searchingPhrase: String?,
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
-        wordType: WordType?,
-        wordExtraMark: WordExtraMark?,
+        wordTypes: Set<WordType>?,
+        wordExtraMarks: Set<WordExtraMark>?,
         sortDirection: SortDirection,
         sortBy: GetAllWordsSortOptions,
         page: Int,
         perPage: Int,
     ): Mono<WordsPaginatedResult> {
         val whereClause = createQueryConditions(
-            language, status, completed, searchingPhrase, bookmarked, banksIds, bankGroupsIds, wordType, wordExtraMark,
+            completed,
+            searchingPhrase,
+            bookmarked,
+            banksIds,
+            bankGroupsIds,
+            wordTypes,
+            wordExtraMarks,
         )
         val valuesBindings = createValuesBindings(
-            userId, language, status, completed, searchingPhrase, bookmarked, banksIds, bankGroupsIds, wordType, wordExtraMark,
+            userId,
+            language,
+            searchingPhrase,
+            bookmarked,
+            banksIds,
+            bankGroupsIds,
+            wordTypes,
+            wordExtraMarks,
         )
         val orderByClause = resolveWordsOrderByClause(sortBy, sortDirection)
 
@@ -114,14 +125,6 @@ class WordRepositoryCustomMethodsImpl(
             appendLine("LIMIT :limit OFFSET :offset")
         }
 
-        val capturedCountQuery = """
-            SELECT COUNT(*)
-            FROM words
-            WHERE words.user_id = :userId
-              AND words.status = 'CAPTURED'
-              AND words.language = :language
-        """
-
         val countQueryResult = databaseClient.sql(countQuery)
             .bindValues(valuesBindings)
             .map { row -> row.get(0, Long::class.java)!! }
@@ -135,51 +138,43 @@ class WordRepositoryCustomMethodsImpl(
             .all()
             .collectList()
 
-        fun toResult(words: List<WordListItem>, totalItems: Long, capturedCount: Long?) = WordsPaginatedResult(
-            paginated = PaginatedDataResponse(
-                data = words,
-                pagination = PaginationData(
-                    page = page,
-                    perPage = perPage,
-                    totalResults = totalItems,
-                    resultsOnCurrentPage = words.size,
+        return Mono.zip(selectQueryResult, countQueryResult) { words, totalItems ->
+            WordsPaginatedResult(
+                paginated = PaginatedDataResponse(
+                    data = words,
+                    pagination = PaginationData(
+                        page = page,
+                        perPage = perPage,
+                        totalResults = totalItems,
+                        resultsOnCurrentPage = words.size,
+                    ),
                 ),
-            ),
-            capturedCount = capturedCount,
-        )
-
-        return if (status == null) {
-            val capturedCountResult = databaseClient.sql(capturedCountQuery)
-                .bind("userId", userId)
-                .bind("language", language.name)
-                .map { row -> row.get(0, Long::class.java)!! }
-                .one()
-
-            Mono.zip(selectQueryResult, countQueryResult, capturedCountResult)
-                .map { t -> toResult(t.t1, t.t2, t.t3) }
-        } else {
-            Mono.zip(selectQueryResult, countQueryResult)
-                .map { t -> toResult(t.t1, t.t2, capturedCount = null) }
+            )
         }
     }
 
-    override fun countByStatus(userId: UUID): Mono<WordStatusCounts> {
+    override fun countOverview(userId: UUID, language: LanguageName?): Mono<WordOverviewCounts> {
+        val languageFilter = language?.let { "AND words.language = :language" } ?: ""
         val query = """
             SELECT
                 COUNT(*) AS total,
-                COALESCE(SUM(CASE WHEN status = 'ACTIVE' THEN 1 ELSE 0 END), 0) AS active_count,
-                COALESCE(SUM(CASE WHEN status = 'CAPTURED' THEN 1 ELSE 0 END), 0) AS captured_count
+                COALESCE(SUM(CASE WHEN words.is_bookmarked = TRUE THEN 1 ELSE 0 END), 0) AS bookmarked_count
             FROM words
-            WHERE user_id = :userId
+                INNER JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
+            WHERE words.user_id = :userId
+                $languageFilter
         """
 
-        return databaseClient.sql(query)
-            .bind("userId", userId)
+        var statement = databaseClient.sql(query).bind("userId", userId)
+        if (language != null) {
+            statement = statement.bind("language", language.name)
+        }
+
+        return statement
             .map { row ->
-                WordStatusCounts(
+                WordOverviewCounts(
                     total = row.get("total", Long::class.java)!!,
-                    activeCount = row.get("active_count", Long::class.java)!!,
-                    capturedCount = row.get("captured_count", Long::class.java)!!,
+                    bookmarkedCount = row.get("bookmarked_count", Long::class.java)!!,
                 )
             }
             .one()
@@ -209,7 +204,6 @@ class WordRepositoryCustomMethodsImpl(
                 INNER JOIN word_progress wp ON wp.word_id = w.id AND wp.user_id = w.user_id
             WHERE w.language = :language
               AND w.user_id = :userId
-              AND w.status = 'ACTIVE'
             ORDER BY wp.points ASC
             LIMIT :limit
         """
@@ -259,37 +253,21 @@ class WordRepositoryCustomMethodsImpl(
         userId: UUID,
     ): Flux<WordEntity> {
         val selectQuery = """
-            SELECT id, status, type, source_word, translation, definition, extra_mark,
-                   language, is_bookmarked, user_id, bank_id, bank_group_id, created_at, updated_at
-            FROM words
-            WHERE language = :language
-              AND source_word = ANY(:origins)
-              AND user_id = :userId
-              AND status = 'ACTIVE'
+            SELECT w.id, w.type, w.source_word, w.translation, w.definition, w.extra_mark,
+                   w.language, w.is_bookmarked, w.user_id, w.bank_id,
+                   w.bank_group_id, w.created_at, w.updated_at
+            FROM words w
+                INNER JOIN word_progress wp ON wp.word_id = w.id AND wp.user_id = w.user_id
+            WHERE w.language = :language
+              AND w.source_word = ANY(:origins)
+              AND w.user_id = :userId
         """
 
         return databaseClient.sql(selectQuery)
             .bind("language", language.name)
             .bind("origins", origins.toTypedArray())
             .bind("userId", userId)
-            .map { row ->
-                WordEntity(
-                    id = row.get("id", UUID::class.java)!!,
-                    status = WordStatus.valueOf(row.get("status", String::class.java)!!),
-                    type = row.get("type", String::class.java)?.let { WordType.valueOf(it) },
-                    sourceWord = row.get("source_word", String::class.java)!!,
-                    translation = row.get("translation", String::class.java),
-                    definition = row.get("definition", String::class.java),
-                    extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
-                    language = LanguageName.valueOf(row.get("language", String::class.java)!!),
-                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
-                    userId = userId,
-                    bankId = row.get("bank_id", UUID::class.java),
-                    bankGroupId = row.get("bank_group_id", UUID::class.java),
-                    createdAt = row.get("created_at", Instant::class.java)!!,
-                    updatedAt = row.get("updated_at", Instant::class.java)!!,
-                )
-            }
+            .map { row -> mapWordEntity(row) }
             .all()
     }
 
@@ -303,7 +281,7 @@ class WordRepositoryCustomMethodsImpl(
         val whereClause = buildList {
             add("words.language = :language")
             add("words.user_id = :userId")
-            add("words.status = 'ACTIVE'")
+            add("wp.id IS NOT NULL")
             if (completed) {
                 add("wp.completed_at IS NOT NULL")
             } else {
@@ -384,13 +362,30 @@ class WordRepositoryCustomMethodsImpl(
         return WordProgressDTO(points, isCompleted, completedAt, firstCompletedAt)
     }
 
+    private fun mapWordEntity(row: Readable): WordEntity {
+        return WordEntity(
+            id = row.get("id", UUID::class.java)!!,
+            type = WordType.valueOf(row.get("type", String::class.java)!!),
+            sourceWord = row.get("source_word", String::class.java)!!,
+            translation = row.get("translation", String::class.java)!!,
+            definition = row.get("definition", String::class.java),
+            extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
+            language = LanguageName.valueOf(row.get("language", String::class.java)!!),
+            isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
+            userId = row.get("user_id", UUID::class.java)!!,
+            bankId = row.get("bank_id", UUID::class.java),
+            bankGroupId = row.get("bank_group_id", UUID::class.java),
+            createdAt = row.get("created_at", Instant::class.java)!!,
+            updatedAt = row.get("updated_at", Instant::class.java)!!,
+        )
+    }
+
     private fun mapSingleWordResponse(row: Readable): SingleWordResponse {
         return SingleWordResponse(
             id = row.get("id", UUID::class.java)!!,
-            status = WordStatus.valueOf(row.get("status", String::class.java)!!),
-            type = row.get("type", String::class.java)?.let { WordType.valueOf(it) },
+            type = WordType.valueOf(row.get("type", String::class.java)!!),
             sourceWord = row.get("source_word", String::class.java)!!,
-            translation = row.get("translation", String::class.java),
+            translation = row.get("translation", String::class.java)!!,
             definition = row.get("definition", String::class.java),
             extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
             language = LanguageName.valueOf(row.get("language", String::class.java)!!),
@@ -405,15 +400,16 @@ class WordRepositoryCustomMethodsImpl(
     private fun mapWordListItem(row: Readable): WordListItem {
         return WordListItem(
             id = row.get("id", UUID::class.java)!!,
-            status = WordStatus.valueOf(row.get("status", String::class.java)!!),
             sourceWord = row.get("source_word", String::class.java)!!,
-            translation = row.get("translation", String::class.java),
+            translation = row.get("translation", String::class.java)!!,
+            definition = row.get("definition", String::class.java),
             isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
             progress = mapProgress(row),
-            type = row.get("type", String::class.java)?.let { WordType.valueOf(it) },
+            type = WordType.valueOf(row.get("type", String::class.java)!!),
             extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
             language = LanguageName.valueOf(row.get("language", String::class.java)!!),
             bank = BankCompact.construct(row),
+            createdAt = row.get("created_at", Instant::class.java)!!,
         )
     }
 
@@ -465,53 +461,50 @@ class WordRepositoryCustomMethodsImpl(
     }
 
     private fun createQueryConditions(
-        language: LanguageName,
-        status: WordStatus?,
         completed: Boolean?,
         searchingPhrase: String?,
         bookmarked: Boolean?,
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
-        wordType: WordType?,
-        wordExtraMark: WordExtraMark?,
+        wordTypes: Set<WordType>?,
+        wordExtraMarks: Set<WordExtraMark>?,
     ): String {
         return buildList {
             add("words.user_id = :userId")
             add("words.language = :language")
-            status?.let { add("words.status = CAST(:status AS word_status)") }
+            add("wp.id IS NOT NULL")
             completed?.let {
-                if (it) add("wp.completed_at IS NOT NULL") else add("(wp.completed_at IS NULL OR words.status = 'CAPTURED')")
+                if (it) add("wp.completed_at IS NOT NULL") else add("wp.completed_at IS NULL")
             }
             searchingPhrase?.let { add("words.source_word ILIKE :searchingPhrase") }
             bookmarked?.let { add("words.is_bookmarked = :bookmarked") }
             banksIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_id = ANY(:banksIds)") }
             bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { add("words.bank_group_id = ANY(:bankGroupsIds)") }
-            wordType?.let { add("words.type = :wordType") }
-            wordExtraMark?.let { add("words.extra_mark = :wordExtraMark") }
+            wordTypes?.takeIf { it.isNotEmpty() }?.let { add("words.type = ANY(:wordTypes)") }
+            wordExtraMarks?.takeIf { it.isNotEmpty() }?.let { add("words.extra_mark = ANY(:wordExtraMarks)") }
         }.joinToString(" AND ")
     }
 
     private fun createValuesBindings(
         userId: UUID,
         language: LanguageName,
-        status: WordStatus?,
-        completed: Boolean?,
         searchingPhrase: String?,
         bookmarked: Boolean?,
         banksIds: Set<UUID>?,
         bankGroupsIds: Set<UUID>?,
-        wordType: WordType?,
-        wordExtraMark: WordExtraMark?,
+        wordTypes: Set<WordType>?,
+        wordExtraMarks: Set<WordExtraMark>?,
     ): Map<String, Any> {
         return mutableMapOf<String, Any>(
             "userId" to userId,
             "language" to language.name,
         ).apply {
-            status?.let { put("status", it.name) }
             searchingPhrase?.let { put("searchingPhrase", "%$it%") }
             bookmarked?.let { put("bookmarked", it) }
-            wordType?.let { put("wordType", it.name) }
-            wordExtraMark?.let { put("wordExtraMark", it.name) }
+            wordTypes?.takeIf { it.isNotEmpty() }?.let { put("wordTypes", it.map { type -> type.name }.toTypedArray()) }
+            wordExtraMarks?.takeIf { it.isNotEmpty() }?.let {
+                put("wordExtraMarks", it.map { mark -> mark.name }.toTypedArray())
+            }
             banksIds?.takeIf { it.isNotEmpty() }?.let { put("banksIds", it.toTypedArray()) }
             bankGroupsIds?.takeIf { it.isNotEmpty() }?.let { put("bankGroupsIds", it.toTypedArray()) }
         }

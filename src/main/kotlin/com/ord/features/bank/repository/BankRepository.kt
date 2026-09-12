@@ -8,4 +8,5 @@ import java.util.UUID
 
 interface BankRepository :
     UserResourceRepository<BankEntity>,
-    ReactiveCrudRepository<BankEntity, UUID>
+    ReactiveCrudRepository<BankEntity, UUID>,
+    BankRepositoryCustomMethods
