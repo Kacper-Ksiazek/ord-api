@@ -46,7 +46,7 @@ Every feature follows the same vertical slice under `com.ord`. All user data is 
 src/main/kotlin/com/ord/
 ├── config/          # Security, OpenAPI, properties
 ├── core/            # Auth, users, words, AI client, TTS, proficiencies
-├── features/        # Banks, games, conversations, QAW, explainer, …
+├── features/        # Banks, games, conversations, explainer, …
 ├── shared/          # Base abstractions, prompts, validators, DTOs
 └── exceptions/      # REST exception hierarchy + @ControllerAdvice
 ```

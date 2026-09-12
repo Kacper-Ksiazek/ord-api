@@ -87,8 +87,8 @@ npx openapi-typescript openapi.json -o src/types/api.ts
 ```
 
 This creates TypeScript interfaces for all:
-- Request DTOs (e.g., `CreateQAWRequest`, `OtpVerifyDto`)
-- Response DTOs (e.g., `UserDTO`, `QuicklyAddedWordDTO`)
+- Request DTOs (e.g., `CreateWordRequest`, `OtpVerifyDto`)
+- Response DTOs (e.g., `UserDTO`, `WordListItem`)
 - Enums (e.g., `LanguageName`, `WordType`)
 
 ### Using openapi-generator-cli (Full Client)

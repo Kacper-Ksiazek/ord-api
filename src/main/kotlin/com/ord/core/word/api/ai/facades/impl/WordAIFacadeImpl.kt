@@ -181,7 +181,7 @@ class WordAIFacadeImpl(
                 val wordsList = WordFillGapsPromptFormatter.formatItemsForPrompt(body.items)
 
                 val prompt = Prompt(
-                    variant = AvailablePrompts.QAW_FILL_GAPS,
+                    variant = AvailablePrompts.WORDS_FILL_GAPS,
                     params = mapOf(
                         "words" to wordsList,
                         "wordCount" to body.items.size.toString(),

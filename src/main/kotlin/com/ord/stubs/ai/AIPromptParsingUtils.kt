@@ -21,10 +21,10 @@ object AIPromptParsingUtils {
     fun parseNumberedWords(prompt: String): List<String> =
         NUMBERED_WORD_LINE.findAll(prompt).map { it.groupValues[1].trim() }.toList()
 
-    fun parseQAWInputWords(prompt: String): List<String> =
-        parseQAWFillGapsItems(prompt).map { it.sourceWord }
+    fun parseFillGapsInputWords(prompt: String): List<String> =
+        parseFillGapsItems(prompt).map { it.sourceWord }
 
-    fun parseQAWFillGapsItems(prompt: String): List<ParsedFillGapsPromptItem> {
+    fun parseFillGapsItems(prompt: String): List<ParsedFillGapsPromptItem> {
         val wordsSection = prompt
             .substringAfter("INPUT WORDS (process in this exact order):", "")
             .substringBefore("### TASK:")

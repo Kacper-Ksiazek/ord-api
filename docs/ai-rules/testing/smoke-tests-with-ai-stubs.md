@@ -14,7 +14,7 @@ The same stub implementation powers the **`e2e` runtime profile** used by Playwr
 - **E2E runtime:** `E2eStubConfiguration` (`@Profile("e2e")`) imports the same beans; real HTTP clients are excluded via `@Profile("!e2e")`.
 - `StubMailTestConfiguration` always provides a no-op `JavaMailSender` in tests.
 - Responses come from JSON fixtures in `src/main/resources/stubs/ai/openai/<controller>/` or from
-  `AIFixtureDynamicBuilder` when the response must match prompt input (games, QAW, word manual).
+  `AIFixtureDynamicBuilder` when the response must match prompt input (games, word fill-gaps, word manual).
 - Fixtures are keyed by `gptTokensUsageLogKey` (`GptTokensUsageOperationType` constants).
 - Token usage is still persisted so positive tests keep using `assertGptTokensLogCreated`.
 

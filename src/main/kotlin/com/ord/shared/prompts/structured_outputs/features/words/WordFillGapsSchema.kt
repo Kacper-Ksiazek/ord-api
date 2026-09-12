@@ -1,11 +1,11 @@
-package com.ord.shared.prompts.structured_outputs.features.qaw
+package com.ord.shared.prompts.structured_outputs.features.words
 
 import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 
-val qawFillGapsSchema = StructuredOutputTemplate(
-    name = "qaw_fill_gaps",
+val wordFillGapsSchema = StructuredOutputTemplate(
+    name = "word_fill_gaps",
     schema = mapOf(
         "type" to "object",
         "properties" to mapOf(

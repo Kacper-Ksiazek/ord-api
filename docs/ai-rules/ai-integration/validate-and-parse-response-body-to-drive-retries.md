@@ -30,19 +30,19 @@ openAIAPIClientService
 
 ### Batch responses (item count must match the request)
 
-When the prompt asks the model to return **one item per input** (e.g. QAW fill-gaps, game review), validate the array size inside `validateResponseBody` — not in a downstream `.map`. Also run `toDomain()` in validation so invalid enum values (e.g. bad `WordType`) trigger a retry instead of a 500.
+When the prompt asks the model to return **one item per input** (e.g. word fill-gaps, game review), validate the array size inside `validateResponseBody` — not in a downstream `.map`. Also run `toDomain()` in validation so invalid enum values (e.g. bad `WordType`) trigger a retry instead of a 500.
 
-Reference implementations: `QAWAIFacadeImpl.fillGaps`, `SentencesWritingAIReviewService.review`.
+Reference implementations: `WordAIFacadeImpl.fillGaps`, `SentencesWritingAIReviewService.review`.
 
 ```kotlin
 val expectedItemCount = body.items.size
 
 openAIAPIClientService
     .makeRequest(
-        aiResponseType = object : TypeReference<OpenAIQAWFillGapsBatch>() {},
+        aiResponseType = object : TypeReference<OpenAIWordFillGapsBatch>() {},
         prompt = prompt,
         userId = user.id,
-        gptTokensUsageLogKey = GptTokensUsageOperationType.QAW.FILL_GAPS,
+        gptTokensUsageLogKey = GptTokensUsageOperationType.Words.FILL_GAPS,
         validateResponseBody = { batch ->
             if (batch == null || batch.items.size != expectedItemCount) {
                 return@makeRequest false
@@ -78,10 +78,10 @@ openAIAPIClientService
 // and surfaces 500 instead of 502 after exhaustion.
 openAIAPIClientService
     .makeRequest(
-        aiResponseType = object : TypeReference<OpenAIQAWFillGapsBatch>() {},
+        aiResponseType = object : TypeReference<OpenAIWordFillGapsBatch>() {},
         prompt = prompt,
         userId = user.id,
-        gptTokensUsageLogKey = GptTokensUsageOperationType.QAW.FILL_GAPS,
+        gptTokensUsageLogKey = GptTokensUsageOperationType.Words.FILL_GAPS,
     )
     .map { batch ->
         if (batch.items.size != body.items.size) {

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 @DisplayName("AIPromptParsingUtils")
 class AIPromptParsingUtilsTest {
     @Test
-    fun `parseQAWFillGapsItems should extract sourceWord from formatted prompt lines`() {
+    fun `parseFillGapsItems should extract sourceWord from formatted prompt lines`() {
         val prompt = """
             ### INPUT WORDS (process in this exact order):
 
@@ -17,7 +17,7 @@ class AIPromptParsingUtilsTest {
             ### TASK:
         """.trimIndent()
 
-        AIPromptParsingUtils.parseQAWFillGapsItems(prompt) shouldBe listOf(
+        AIPromptParsingUtils.parseFillGapsItems(prompt) shouldBe listOf(
             ParsedFillGapsPromptItem(sourceWord = "verbose"),
             ParsedFillGapsPromptItem(
                 sourceWord = "dude",
@@ -29,7 +29,7 @@ class AIPromptParsingUtilsTest {
     }
 
     @Test
-    fun `parseQAWInputWords should return only source words`() {
+    fun `parseFillGapsInputWords should return only source words`() {
         val prompt = """
             ### INPUT WORDS (process in this exact order):
 
@@ -38,6 +38,6 @@ class AIPromptParsingUtilsTest {
             ### TASK:
         """.trimIndent()
 
-        AIPromptParsingUtils.parseQAWInputWords(prompt) shouldBe listOf("hello")
+        AIPromptParsingUtils.parseFillGapsInputWords(prompt) shouldBe listOf("hello")
     }
 }

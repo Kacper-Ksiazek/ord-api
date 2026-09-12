@@ -125,7 +125,7 @@ class AIFixtureDynamicBuilder(
     }
 
     private fun buildWordFillGaps(prompt: String): OpenAIWordFillGapsBatch {
-        val items = AIPromptParsingUtils.parseQAWFillGapsItems(prompt)
+        val items = AIPromptParsingUtils.parseFillGapsItems(prompt)
         require(items.isNotEmpty()) { "Could not parse input words from fill-gaps prompt" }
 
         return OpenAIWordFillGapsBatch(

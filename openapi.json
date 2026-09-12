@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "ORD API - Language Learning Platform",
-        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **Capture** - Quick capture, overview, and activation workflow<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **4. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **5. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
+        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **4. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **5. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
         "contact": {
             "name": "ORD API Team",
             "email": "support@ord-api.com"
@@ -41,10 +41,6 @@
             "description": "General game management endpoints for all game types"
         },
         {
-            "name": "2. Words: Capture",
-            "description": "Quick capture, overview, and activation workflow"
-        },
-        {
             "name": "4. Conversations: Ongoing Sessions",
             "description": "Manage ongoing conversation sessions and messages"
         },
@@ -77,10 +73,6 @@
             "description": "Fast-paced word typing game to improve vocabulary recall and typing speed"
         },
         {
-            "name": "2. Words: Public Capture",
-            "description": "Anonymous bulk word capture by user email"
-        },
-        {
             "name": "1. Core: Language Proficiencies",
             "description": "Manage user's language learning proficiencies and levels"
         },
@@ -99,6 +91,10 @@
         {
             "name": "5. Utility: AI Demo",
             "description": "AI provider testing and demonstration endpoints"
+        },
+        {
+            "name": "5. Banks: Management",
+            "description": "List and manage vocabulary banks for organizing words"
         },
         {
             "name": "3. Games: General",
@@ -793,41 +789,6 @@
                         "auth-cookie": []
                     }
                 ]
-            }
-        },
-        "/api/v1/public/words/bulk-create": {
-            "post": {
-                "tags": [
-                    "2. Words: Public Capture"
-                ],
-                "summary": "Public bulk capture words for a user identified by email",
-                "operationId": "publicBulkCreate",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PublicWordsBulkCaptureRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BadRequestResponse"
-                                }
-                            }
-                        }
-                    },
-                    "200": {
-                        "description": "OK",
-                        "content": {}
-                    }
-                }
             }
         },
         "/api/v1/language-proficiencies": {
@@ -2072,52 +2033,13 @@
                 ]
             }
         },
-        "/api/v1/words/activate-many": {
-            "patch": {
-                "tags": [
-                    "2. Words: Capture"
-                ],
-                "operationId": "activateMany",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ActivateManyWordsRequest"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BadRequestResponse"
-                                }
-                            }
-                        }
-                    },
-                    "200": {
-                        "description": "OK",
-                        "content": {}
-                    }
-                },
-                "security": [
-                    {
-                        "auth-cookie": []
-                    }
-                ]
-            }
-        },
         "/api/v1/words": {
             "get": {
                 "tags": [
                     "2. Words: CRUD"
                 ],
                 "summary": "List words",
-                "description": "Retrieve paginated list of words with optional filters for learning progress and source",
+                "description": "Retrieve paginated list of words in the learning list",
                 "operationId": "listWords",
                 "parameters": [
                     {
@@ -2157,22 +2079,6 @@
                             "type": "integer",
                             "format": "int32"
                         }
-                    },
-                    {
-                        "name": "isFromUnverifiedSource",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "boolean"
-                        }
-                    },
-                    {
-                        "name": "hasProgress",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "boolean"
-                        }
                     }
                 ],
                 "responses": {
@@ -2210,8 +2116,10 @@
         "/api/v1/words/overview": {
             "get": {
                 "tags": [
-                    "2. Words: Capture"
+                    "2. Words: CRUD"
                 ],
+                "summary": "Get vocabulary overview",
+                "description": "Retrieve total and bookmarked word counts for the learning list",
                 "operationId": "getOverview",
                 "parameters": [
                     {
@@ -2219,7 +2127,19 @@
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/LanguageName"
+                            "type": "string",
+                            "description": "Supported languages in the platform",
+                            "enum": [
+                                "POLISH",
+                                "ENGLISH",
+                                "GERMAN",
+                                "FRENCH",
+                                "SPANISH",
+                                "ITALIAN",
+                                "NORWEGIAN",
+                                "RUSSIAN",
+                                "SLOVENIAN"
+                            ]
                         }
                     }
                 ],
@@ -2235,7 +2155,7 @@
                         }
                     },
                     "200": {
-                        "description": "OK",
+                        "description": "Overview retrieved successfully",
                         "content": {
                             "*/*": {
                                 "schema": {
@@ -2243,6 +2163,9 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -2479,6 +2402,46 @@
                     },
                     "401": {
                         "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/banks": {
+            "get": {
+                "tags": [
+                    "5. Banks: Management"
+                ],
+                "summary": "List banks",
+                "description": "Returns all vocabulary banks owned by the authenticated user.",
+                "operationId": "listBanks",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Banks retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BankListItem"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not authenticated"
                     }
                 },
                 "security": [
@@ -2809,10 +2772,7 @@
                         "format": "uuid"
                     },
                     "type": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
+                        "type": "string",
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -2827,10 +2787,7 @@
                         "type": "string"
                     },
                     "translation": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
+                        "type": "string"
                     },
                     "definition": {
                         "type": [
@@ -2919,9 +2876,6 @@
                         "format": "date-time"
                     },
                     "bookmarked": {
-                        "type": "boolean"
-                    },
-                    "fromUnverifiedSource": {
                         "type": "boolean"
                     }
                 }
@@ -3401,12 +3355,6 @@
                             ]
                         }
                     },
-                    "hasProgress": {
-                        "type": [
-                            "boolean",
-                            "null"
-                        ]
-                    },
                     "wordExtraMark": {
                         "type": [
                             "string",
@@ -3499,9 +3447,6 @@
                             "CREATED_AT",
                             "SOURCE_WORD"
                         ]
-                    },
-                    "fromUnverifiedSource": {
-                        "type": "boolean"
                     }
                 },
                 "required": [
@@ -3584,10 +3529,7 @@
                         "type": "string"
                     },
                     "translation": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
+                        "type": "string"
                     },
                     "definition": {
                         "type": [
@@ -3606,10 +3548,7 @@
                         ]
                     },
                     "type": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
+                        "type": "string",
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -3664,21 +3603,18 @@
                             }
                         ]
                     },
-                    "bookmarked": {
-                        "type": "boolean"
-                    },
-                    "fromUnverifiedSource": {
-                        "type": "boolean"
-                    },
                     "createdAt": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "bookmarked": {
+                        "type": "boolean"
                     }
                 }
             },
             "WordsPaginatedDataResponse": {
                 "type": "object",
-                "description": "Paginated words response with optional unverified source count",
+                "description": "Paginated words response",
                 "properties": {
                     "pagination": {
                         "$ref": "#/components/schemas/PaginationData"
@@ -3688,15 +3624,6 @@
                         "items": {
                             "$ref": "#/components/schemas/WordListItem"
                         }
-                    },
-                    "unverifiedSourceCount": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ],
-                        "format": "int64",
-                        "description": "Count of words from unverified sources when isFromUnverifiedSource filter is omitted",
-                        "example": 12
                     }
                 }
             },
@@ -3969,15 +3896,26 @@
                         "minLength": 1
                     },
                     "translation": {
-                        "type": "string",
-                        "maxLength": 255
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255,
+                        "minLength": 0
                     },
                     "definition": {
-                        "type": "string",
-                        "maxLength": 2000
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000,
+                        "minLength": 0
                     },
                     "type": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -3989,7 +3927,10 @@
                         ]
                     },
                     "extraMark": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Extra marks or tags for word classification by register or domain",
                         "enum": [
                             "OFFENSIVE",
@@ -4313,108 +4254,6 @@
                     "text"
                 ]
             },
-            "PublicCaptureWordItem": {
-                "type": "object",
-                "description": "Single word item for public bulk capture",
-                "properties": {
-                    "sourceWord": {
-                        "type": "string",
-                        "maxLength": 255,
-                        "minLength": 1
-                    },
-                    "language": {
-                        "type": "string",
-                        "description": "Supported languages in the platform",
-                        "enum": [
-                            "POLISH",
-                            "ENGLISH",
-                            "GERMAN",
-                            "FRENCH",
-                            "SPANISH",
-                            "ITALIAN",
-                            "NORWEGIAN",
-                            "RUSSIAN",
-                            "SLOVENIAN"
-                        ]
-                    },
-                    "translation": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "maxLength": 255,
-                        "minLength": 0
-                    },
-                    "definition": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "maxLength": 2000,
-                        "minLength": 0
-                    },
-                    "extraMark": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Extra marks or tags for word classification by register or domain",
-                        "enum": [
-                            "OFFENSIVE",
-                            "SLANG",
-                            "FORMAL",
-                            "INFORMAL",
-                            "SCIENTIFIC",
-                            "TECHNICAL",
-                            "LEGAL",
-                            "MEDICAL",
-                            "COLLOQUIAL",
-                            "POETIC"
-                        ]
-                    },
-                    "type": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "description": "Type of word or expression",
-                        "enum": [
-                            "NOUN",
-                            "VERB",
-                            "ADJECTIVE",
-                            "ADVERB",
-                            "IDIOM",
-                            "PHRASE"
-                        ]
-                    }
-                },
-                "required": [
-                    "sourceWord"
-                ]
-            },
-            "PublicWordsBulkCaptureRequest": {
-                "type": "object",
-                "description": "Public bulk capture request identified by user email",
-                "properties": {
-                    "userEmail": {
-                        "type": "string",
-                        "format": "email",
-                        "minLength": 1
-                    },
-                    "words": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/PublicCaptureWordItem"
-                        },
-                        "maxItems": 100,
-                        "minItems": 1
-                    }
-                },
-                "required": [
-                    "userEmail",
-                    "words"
-                ]
-            },
             "CreateLanguageProficiencyRequest": {
                 "type": "object",
                 "properties": {
@@ -4676,6 +4515,9 @@
                         },
                         "uniqueItems": true
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4686,9 +4528,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -4806,6 +4645,9 @@
                         },
                         "uniqueItems": true
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4816,9 +4658,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -5089,6 +4928,9 @@
                     "reviewedAnswers": {
                         "$ref": "#/components/schemas/CrosswordReviewedAnswers"
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -5099,9 +4941,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -5477,16 +5316,16 @@
                     "content": {
                         "type": "string"
                     },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
                     "sender": {
                         "type": "string",
                         "enum": [
                             "USER",
                             "AI"
                         ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "messageOrder": {
                         "type": "integer",
@@ -6243,19 +6082,6 @@
                     }
                 }
             },
-            "ActivateManyWordsRequest": {
-                "type": "object",
-                "description": "Request to activate multiple captured words",
-                "properties": {
-                    "ids": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                }
-            },
             "UpdateLanguageProficiencyRequest": {
                 "type": "object",
                 "properties": {
@@ -6337,10 +6163,7 @@
                         "format": "uuid"
                     },
                     "type": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
+                        "type": "string",
                         "description": "Type of word or expression",
                         "enum": [
                             "NOUN",
@@ -6355,10 +6178,7 @@
                         "type": "string"
                     },
                     "translation": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
+                        "type": "string"
                     },
                     "definition": {
                         "type": [
@@ -6440,44 +6260,23 @@
                     },
                     "bookmarked": {
                         "type": "boolean"
-                    },
-                    "fromUnverifiedSource": {
-                        "type": "boolean"
                     }
                 }
             },
             "WordOverviewResponse": {
                 "type": "object",
-                "description": "Overview of words split by learning progress and source",
+                "description": "Overview of vocabulary words",
                 "properties": {
                     "total": {
                         "type": "integer",
                         "format": "int64",
-                        "description": "Total number of words",
+                        "description": "Total number of words in the learning list",
                         "example": 74
-                    },
-                    "activeCount": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "Number of words with learning progress",
-                        "example": 56
-                    },
-                    "pendingCount": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "Number of captured words without learning progress",
-                        "example": 18
-                    },
-                    "unverifiedSourceCount": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "Number of words from unverified sources",
-                        "example": 18
                     },
                     "bookmarkedCount": {
                         "type": "integer",
                         "format": "int64",
-                        "description": "Number of bookmarked words in the learning list",
+                        "description": "Number of bookmarked words",
                         "example": 12
                     }
                 }
@@ -6678,6 +6477,28 @@
                             "p40",
                             "p60",
                             "p80"
+                        ]
+                    }
+                }
+            },
+            "BankListItem": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "bankGroup": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/BankGroupCompact"
+                            },
+                            {
+                                "type": "null"
+                            }
                         ]
                     }
                 }
