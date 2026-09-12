@@ -6,17 +6,27 @@ ORD_FRONTEND_DIR ?= $(HOME)/workspace/ord-frontend
 API_HOST ?= http://localhost:8080
 OUTPUT_FILE ?= openapi.json
 
+.DEFAULT_GOAL := help
+
 help:
 	@echo "Available targets:"
-	@echo "  status       Show docker / api / front / storybook status"
-	@echo "  db-up        Start Postgres (Docker)"
-	@echo "  db-wipe      Wipe DB volume and restart Postgres"
-	@echo "  run          Start native API (fast local dev)"
-	@echo "  restart      Recompile and restart native API"
-	@echo "  stop         Stop native API process"
-	@echo "  test         Controller tests with AI stubs (CI default)"
-	@echo "  test-live    Same suite with real OpenAI (.env.test)"
-	@echo "  openapi      Export OpenAPI spec (API must be running)"
+	@echo ""
+	@echo "🔍 Status:"
+	@echo "  status          Show docker / api / front / storybook status"
+	@echo ""
+	@echo "💻 Native API (DB in Docker, JVM on host):"
+	@echo "  db-up           Start Postgres (Docker)"
+	@echo "  db-wipe         Wipe DB volume and restart Postgres"
+	@echo "  run             Start native API (fast local dev)"
+	@echo "  restart         Recompile and restart native API"
+	@echo "  stop            Stop native API process"
+	@echo ""
+	@echo "🧪 Tests:"
+	@echo "  test            Controller tests with AI stubs (CI default)"
+	@echo "  test-live       Same suite with real OpenAI (.env.test)"
+	@echo ""
+	@echo "📄 OpenAPI:"
+	@echo "  openapi         Export OpenAPI spec (API must be running)"
 	@echo ""
 	@echo "Override: make openapi API_HOST=... OUTPUT_FILE=..."
 	@echo "E2E stack: use ord-ops (make e2e-up)"

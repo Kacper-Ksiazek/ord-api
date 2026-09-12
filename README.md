@@ -179,17 +179,34 @@ make openapi   # requires a running API; writes openapi.json
 
 Run `make help` for the full list.
 
+**🔍 Status**
+
 | Target | Description |
 |--------|-------------|
 | `make status` | Show docker / api / front / storybook status |
+
+**💻 Native API (DB in Docker, JVM on host)**
+
+| Target | Description |
+|--------|-------------|
 | `make db-up` | Start Postgres only (Docker) |
 | `make db-wipe` | Wipe DB volume and restart Postgres |
 | `make run` | Start native API in dev mode (no tests, DB in Docker) |
 | `make restart` | Restart native API after code changes (no tests) |
 | `make stop` | Stop native API process |
-| `make openapi` | Export OpenAPI spec from a running API |
+
+**🧪 Tests**
+
+| Target | Description |
+|--------|-------------|
 | `make test` | Run full suite with AI stubs (no external OpenAI calls) |
 | `make test-live` | Run full suite against real OpenAI (requires `OPEN_AI_KEY` in `.env.test`) |
+
+**📄 OpenAPI**
+
+| Target | Description |
+|--------|-------------|
+| `make openapi` | Export OpenAPI spec from a running API |
 
 E2E stack: use **ord-ops** (`make e2e-up` / `make e2e-down`).
 
