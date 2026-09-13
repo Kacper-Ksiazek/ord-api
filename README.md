@@ -2,7 +2,7 @@
 
 **AI-powered language-learning backend — fully reactive Kotlin / Spring WebFlux.**
 
-ORD is the backend for a vocabulary-learning app where users capture words, practice through AI-generated games and conversations, and get on-demand explanations — all scoped to their CEFR proficiency level. Built as a personal learning project, it follows production-grade patterns: strict layering, a first-class OpenAPI contract, and full controller integration test coverage.
+ORD is the backend for a vocabulary-learning app where users manage a personal word learning list, practice through AI-generated games and conversations, and get on-demand explanations — all scoped to their CEFR proficiency level. Built as a personal learning project, it follows production-grade patterns: strict layering, a first-class OpenAPI contract, and full controller integration test coverage.
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.1.21-7F52FF?logo=kotlin&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2.3-6DB33F?logo=springboot&logoColor=white)
@@ -31,12 +31,11 @@ ORD is the backend for a vocabulary-learning app where users capture words, prac
 |--------|-------------|
 | **Conversations** | Scenario-based AI chat with customizable interlocutors, per-message analysis, and learning tips |
 | **Games** | AI-generated practice: crossword, sentence writing, words typing — with AI review |
-| **Quickly Added Words** | Fast vocabulary capture flow, including a public anonymous entry point |
 | **AI Explainer** | On-demand phrase explanations |
 | **TTS** | Text-to-speech via ElevenLabs |
-| **Words & details** | Vocabulary CRUD with AI-generated definitions, examples, and manual enrichment |
+| **Words & details** | Authenticated learning-list vocabulary — CRUD, search/filter, bookmarking, overview stats, AI fill-gaps, generated manuals, and enriched word details |
 | **Language proficiencies** | Per-user CEFR levels (A1–C2) gating generative features |
-| **Banks & groups** | Organize words into collections and bank groups |
+| **Banks & groups** | List banks and organize words into collections and bank groups |
 
 ## Architecture
 
