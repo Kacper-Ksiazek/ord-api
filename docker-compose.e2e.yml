@@ -25,6 +25,7 @@ services:
       CORS_ALLOWED_ORIGINS: http://localhost:5173
       OTP_WHITELISTED_EMAILS: e2e-ci-w0@ord.test,e2e-ci-w1@ord.test,e2e-ci-w2@ord.test,e2e-ci-w3@ord.test
       OTP_CODE_FOR_WHITELISTED_EMAILS: '123456'
+      E2E_SEEDER_ENABLED: 'true'
     depends_on:
       db:
         condition: service_healthy
