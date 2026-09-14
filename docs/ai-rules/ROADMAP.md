@@ -40,6 +40,7 @@ Strict vertical slicing under `com.ord`: `config/`, `core/`, `features/`, `excep
 | `error-handling` | `exceptions/REST/*` hierarchy, `RESTExceptionHandler` `@ControllerAdvice`, error response DTO, switchIfEmpty→NotFound pattern | [x] (7) |
 | `testing` | Controller integration tests, `ControllerTestBase`, `*APIClient` wrappers, seeders/factories, Kotest matchers, Testcontainers, `AllTestsSuite` registration, AI smoke stubs | [x] (12) |
 | `git-workflow` | Commit policy (never self-commit; ask + push), migration immutability, OpenAPI re-export discipline | [x] (7) |
+| `bruno` | `bruno/ord-api/` collection layout, domain/facade folder rules, auth/SSE/workflow conventions | [x] (8) |
 
 ## Progress
 
@@ -59,3 +60,4 @@ Strict vertical slicing under `com.ord`: `config/`, `core/`, `features/`, `excep
 - [x] `testing` rules
 - [x] `git-workflow` rules
 - [x] Pointer files (`.cursor/rules/ai-rules.mdc`, `CLAUDE.md`)
+- [x] `bruno` rules
