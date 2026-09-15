@@ -4515,9 +4515,6 @@
                         },
                         "uniqueItems": true
                     },
-                    "accuracy": {
-                        "type": "string"
-                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4528,6 +4525,9 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
@@ -4645,9 +4645,6 @@
                         },
                         "uniqueItems": true
                     },
-                    "accuracy": {
-                        "type": "string"
-                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4658,6 +4655,9 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
@@ -4928,9 +4928,6 @@
                     "reviewedAnswers": {
                         "$ref": "#/components/schemas/CrosswordReviewedAnswers"
                     },
-                    "accuracy": {
-                        "type": "string"
-                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4941,6 +4938,9 @@
                             "D",
                             "NA"
                         ]
+                    },
+                    "accuracy": {
+                        "type": "string"
                     }
                 }
             },
@@ -5309,12 +5309,13 @@
                     "propertyName": "sender"
                 },
                 "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "uuid"
+                    "messageOrder": {
+                        "type": "integer",
+                        "format": "int32"
                     },
-                    "content": {
-                        "type": "string"
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "sender": {
                         "type": "string",
@@ -5323,13 +5324,12 @@
                             "AI"
                         ]
                     },
-                    "createdAt": {
+                    "id": {
                         "type": "string",
-                        "format": "date-time"
+                        "format": "uuid"
                     },
-                    "messageOrder": {
-                        "type": "integer",
-                        "format": "int32"
+                    "content": {
+                        "type": "string"
                     }
                 }
             },
@@ -5886,10 +5886,10 @@
             "JsonNullableSetExampleSentence": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }
@@ -5897,10 +5897,10 @@
             "JsonNullableSetString": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }
@@ -5908,10 +5908,10 @@
             "JsonNullableSetWordCollocation": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }
@@ -5919,10 +5919,10 @@
             "JsonNullableString": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }
@@ -5930,10 +5930,10 @@
             "JsonNullableWordGrammar": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }
@@ -5941,10 +5941,10 @@
             "JsonNullableWordPronunciation": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }

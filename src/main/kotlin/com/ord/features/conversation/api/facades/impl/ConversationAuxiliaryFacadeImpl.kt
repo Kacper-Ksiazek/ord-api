@@ -6,8 +6,8 @@ import tools.jackson.core.type.TypeReference
 import tools.jackson.databind.json.JsonMapper
 import com.ord.core.ai_provider.dto.helpers.StreamSimpleItem
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
-import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
+import com.ord.core.ai_provider_usage.models.AiProviderUsageOperationType
+import com.ord.core.ai_provider_usage.services.AiProviderUsageService
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import org.slf4j.LoggerFactory
 import com.ord.features.conversation.api.facades.ConversationAuxiliaryFacade
@@ -30,7 +30,7 @@ class ConversationAuxiliaryFacadeImpl(
     private val conversationService: ConversationService,
     private val openAIStreamClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService,
-    private val gptTokensUsageService: GptTokensUsageService,
+    private val aiProviderUsageService: AiProviderUsageService,
 ) : ConversationAuxiliaryFacade {
     private val logger = LoggerFactory.getLogger(ConversationAuxiliaryFacadeImpl::class.java)
     private val objectMapper: JsonMapper = OrdJsonMapper.instance.rebuild()
@@ -80,7 +80,7 @@ class ConversationAuxiliaryFacadeImpl(
                         prompt = prompt.toString(),
                         streamedItemType = object : TypeReference<StreamSimpleItem>() {},
                         userId = userId,
-                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.SUGGEST_TOPICS
+                        gptTokensUsageLogKey = AiProviderUsageOperationType.Conversation.SUGGEST_TOPICS
                     )
             }
     }
@@ -144,7 +144,7 @@ class ConversationAuxiliaryFacadeImpl(
                         prompt = prompt.toString(),
                         aiResponseType = object : TypeReference<OpenAIGeneratedAIInterlocutor>() {},
                         userId = userId,
-                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.GENERATE_INTERLOCUTOR,
+                        gptTokensUsageLogKey = AiProviderUsageOperationType.Conversation.GENERATE_INTERLOCUTOR,
                         structuredOutput = prompt.variant.structuredOutput,
                         validateResponseBody = { openAIResponse ->
                             // Validate that toDomain() succeeds - if not, trigger retry

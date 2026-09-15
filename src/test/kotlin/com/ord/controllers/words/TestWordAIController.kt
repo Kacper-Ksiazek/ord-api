@@ -2,7 +2,7 @@ package com.ord.controllers.words
 
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
-import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
+import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.security.UserRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
@@ -39,7 +39,7 @@ class TestWordAIController @Autowired constructor(
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
-    gptTokensUsageRepository: GptTokensUsageRepository
+    aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
@@ -47,7 +47,7 @@ class TestWordAIController @Autowired constructor(
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
     passwordEncoder = passwordEncoder,
-    gptTokensUsageRepository = gptTokensUsageRepository
+    aiProviderUsageRepository = aiProviderUsageRepository
 ) {
     private val wordAIAPIClient = WordAIAPIClient(webClient)
 
@@ -94,7 +94,7 @@ class TestWordAIController @Autowired constructor(
                     suggestion.definition.shouldNotBeBlank()
                 }
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_SUGGEST_VOCABULARY")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "WORDS_SUGGEST_VOCABULARY")
             }
 
             @Test
@@ -114,7 +114,7 @@ class TestWordAIController @Autowired constructor(
                 response.suggestions.shouldNotBeEmpty()
                 response.suggestions.size shouldBeGreaterThanOrEqualTo 10
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_SUGGEST_VOCABULARY")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "WORDS_SUGGEST_VOCABULARY")
             }
 
             @Test
@@ -296,7 +296,7 @@ class TestWordAIController @Autowired constructor(
                 manual.type shouldNotBe null
                 manual.exampleSentences.shouldNotBeEmpty()
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_GENERATE_MANUAL")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "WORDS_GENERATE_MANUAL")
             }
 
             @Test
@@ -383,7 +383,7 @@ class TestWordAIController @Autowired constructor(
                 manual.definition.shouldNotBeBlank()
                 manual.exampleSentences.shouldNotBeEmpty()
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_GENERATE_MANUAL")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "WORDS_GENERATE_MANUAL")
             }
         }
 

@@ -21,7 +21,7 @@ class OpenAIRequestFactory(
         structuredOutput: StructuredOutputTemplate? = null,
     ): OpenAIRequest {
         return OpenAIRequest(
-            model = AvailableAIModels.GPT_5_NANO.model,
+            model = AvailableAIModels.DEFAULT.model,
             temperature = openAIProperties.temperature,
             max_output_tokens = openAIProperties.maxTokens,
             input = prompt,

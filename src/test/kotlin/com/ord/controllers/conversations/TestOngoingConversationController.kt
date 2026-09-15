@@ -5,7 +5,7 @@ import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.security.UserRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
-import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
+import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.features.conversation.api.requests.CreateAIConversationMessageRequest
@@ -55,7 +55,7 @@ class TestOngoingConversationController @Autowired constructor(
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
-    gptTokensUsageRepository: GptTokensUsageRepository
+    aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
@@ -63,7 +63,7 @@ class TestOngoingConversationController @Autowired constructor(
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
     passwordEncoder = passwordEncoder,
-    gptTokensUsageRepository = gptTokensUsageRepository
+    aiProviderUsageRepository = aiProviderUsageRepository
 ) {
     private val ongoingConversationAPIClient = OngoingConversationAPIClient(webClient)
     private val conversationAPIClient = ConversationAPIClient(webClient)
@@ -183,7 +183,7 @@ class TestOngoingConversationController @Autowired constructor(
                 response.body shouldNotBe null
                 response.body!!.shouldNotBeBlank()
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_INITIALIZE")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_INITIALIZE")
             }
 
             @Test
@@ -339,7 +339,7 @@ class TestOngoingConversationController @Autowired constructor(
                 response.body shouldNotBe null
                 response.body!!.shouldNotBeBlank()
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_AI_RESPONSE")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_AI_RESPONSE")
             }
 
             @Test
@@ -760,7 +760,7 @@ class TestOngoingConversationController @Autowired constructor(
                 response.body!!.grammar shouldBeInRange 0..10
                 response.body.vocabulary shouldBeInRange 0..10
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_REVIEW_USER_MESSAGE")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_REVIEW_USER_MESSAGE")
             }
 
             @Test
@@ -1082,7 +1082,7 @@ class TestOngoingConversationController @Autowired constructor(
                 tippedMessage shouldNotBe null
                 (tippedMessage!! as ConversationAIMessageDTO).learningTips shouldNotBe null
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_AI_MESSAGE_LEARNING_TIPS")
             }
 
             @Test

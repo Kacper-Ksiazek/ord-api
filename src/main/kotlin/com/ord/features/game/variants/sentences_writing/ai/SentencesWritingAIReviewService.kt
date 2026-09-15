@@ -2,7 +2,7 @@ package com.ord.features.game.variants.sentences_writing.ai
 
 import tools.jackson.core.type.TypeReference
 import com.ord.config.GamesConfig
-import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
+import com.ord.core.ai_provider_usage.models.AiProviderUsageOperationType
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.OngoingSentencesWritingGameDTO
@@ -47,7 +47,7 @@ class SentencesWritingAIReviewService(
 
                 makeGameAIRequest(
                     userId = userId,
-                    operationType = GptTokensUsageOperationType.Game.Review.SENTENCES_WRITING,
+                    operationType = AiProviderUsageOperationType.Game.Review.SENTENCES_WRITING,
                     aiResponseTypeReference = object : TypeReference<OpenAISentencesWritingReview>() {},
                     prompt = prompt.toString(),
                     structuredOutput = prompt.variant.structuredOutput,

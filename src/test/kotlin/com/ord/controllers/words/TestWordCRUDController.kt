@@ -5,7 +5,7 @@ import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.security.UserRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
-import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
+import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
 import com.ord.core.word.api.details.requests.dto.CreateWordDetailsRequest
@@ -83,7 +83,7 @@ class TestWordCRUDController @Autowired constructor(
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
-    gptTokensUsageRepository: GptTokensUsageRepository
+    aiProviderUsageRepository: AiProviderUsageRepository
 
 ) : ControllerTestBase(
     webClient = webClient,
@@ -92,7 +92,7 @@ class TestWordCRUDController @Autowired constructor(
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
     passwordEncoder = passwordEncoder,
-    gptTokensUsageRepository = gptTokensUsageRepository
+    aiProviderUsageRepository = aiProviderUsageRepository
 ) {
     private val wordsAPIClient = WordsAPIClient(webClient)
     private val wordDetailsAPIClient = WordDetailsAPIClient(webClient)

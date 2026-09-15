@@ -24,6 +24,6 @@ data class OpenAIRequest(
     val text: Map<String, Any>? = null,
 ) {
     val reasoning = mapOf(
-        "effort" to OpenAIReasoningEffort.MINIMAL.value
+        "effort" to OpenAIReasoningEffort.NONE.value
     )
 }

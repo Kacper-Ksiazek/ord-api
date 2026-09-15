@@ -1,5 +1,19 @@
 package com.ord.shared.prompts
 
-enum class AvailableAIModels(val model: String){
-    GPT_5_NANO("gpt-5-nano-2025-08-07")
+import java.math.BigDecimal
+
+enum class AvailableAIModels(
+    val model: String,
+    val pricePerMlnInputTokens: BigDecimal,
+    val pricePerMlnOutputTokens: BigDecimal,
+) {
+    GPT_5_6_LUNA(
+        model = "gpt-5.6-luna",
+        pricePerMlnInputTokens = BigDecimal("0.20"),
+        pricePerMlnOutputTokens = BigDecimal("1.20"),
+    );
+
+    companion object {
+        val DEFAULT = GPT_5_6_LUNA
+    }
 }

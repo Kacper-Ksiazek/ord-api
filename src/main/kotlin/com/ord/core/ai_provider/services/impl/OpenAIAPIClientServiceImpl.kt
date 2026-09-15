@@ -11,8 +11,9 @@ import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
 import com.ord.core.ai_provider.enums.StreamedOpenAIResponseType
 import com.ord.core.ai_provider.services.Emitter
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
+import com.ord.core.ai_provider_usage.services.AiProviderUsageService
 import com.ord.exceptions.REST.BadGatewayException
+import com.ord.shared.prompts.AvailableAIModels
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.shared.utils.Console
@@ -42,7 +43,7 @@ class OpenAIAPIClientServiceImpl(
     private val openAIProperties: OpenAIProperties,
     private val webClient: WebClient,
     private val env: Environment,
-    private val gptTokensUsageService: GptTokensUsageService
+    private val aiProviderUsageService: AiProviderUsageService
 ) : OpenAIAPIClientService {
     private val objectMapper: JsonMapper = OrdJsonMapper.instance.rebuild()
         .enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
@@ -64,15 +65,17 @@ class OpenAIAPIClientServiceImpl(
         parseResponseBody: (responseBody: T) -> T
     ): Mono<T> {
         val openAIRequest = openAIRequestFactory.createRequest(prompt, structuredOutput = structuredOutput)
+        val model = openAIRequest.model
 
         val enhancedSaveLog: (OpenAIResponse) -> Unit = { openAIResponse ->
             saveLog(openAIResponse)
 
-            gptTokensUsageService.saveTokensUsage(
+            aiProviderUsageService.saveOpenAiUsage(
                 userId = userId,
                 operationType = gptTokensUsageLogKey,
+                model = model,
                 inputTokens = openAIResponse.usage.input_tokens,
-                outputTokens = openAIResponse.usage.output_tokens
+                outputTokens = openAIResponse.usage.output_tokens,
             ).subscribe()
         }
 
@@ -231,11 +234,12 @@ class OpenAIAPIClientServiceImpl(
             onComplete = { (payload, emitter) ->
                 onComplete(Pair(payload, emitter))
 
-                gptTokensUsageService.saveTokensUsage(
+                aiProviderUsageService.saveOpenAiUsage(
                     userId = userId,
                     operationType = gptTokensUsageLogKey,
+                    model = AvailableAIModels.DEFAULT.model,
                     inputTokens = payload.inputTokens,
-                    outputTokens = payload.outputTokens
+                    outputTokens = payload.outputTokens,
                 ).subscribe()
             },
             onDeltaReceived = { (delta, emitter) ->
@@ -280,11 +284,12 @@ class OpenAIAPIClientServiceImpl(
                 }
 
                 // Save token usage but don't emit final content to client
-                gptTokensUsageService.saveTokensUsage(
+                aiProviderUsageService.saveOpenAiUsage(
                     userId = userId,
                     operationType = gptTokensUsageLogKey,
+                    model = AvailableAIModels.DEFAULT.model,
                     inputTokens = payload.inputTokens,
-                    outputTokens = payload.outputTokens
+                    outputTokens = payload.outputTokens,
                 ).subscribe()
 
                 // Allow custom onComplete logic if provided

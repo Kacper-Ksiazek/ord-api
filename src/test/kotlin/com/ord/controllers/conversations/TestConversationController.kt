@@ -2,7 +2,7 @@ package com.ord.controllers.conversations
 
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
-import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
+import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -48,7 +48,7 @@ class TestConversationController @Autowired constructor(
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
-    gptTokensUsageRepository: GptTokensUsageRepository
+    aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
@@ -56,7 +56,7 @@ class TestConversationController @Autowired constructor(
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
     passwordEncoder = passwordEncoder,
-    gptTokensUsageRepository = gptTokensUsageRepository
+    aiProviderUsageRepository = aiProviderUsageRepository
 ) {
     private val conversationAPIClient = ConversationAPIClient(webClient)
 
@@ -133,7 +133,7 @@ class TestConversationController @Autowired constructor(
                 response.body!!.name.shouldNotBeBlank()
                 response.body.avatarId shouldNotBe null
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
             }
 
             @Test
@@ -159,7 +159,7 @@ class TestConversationController @Autowired constructor(
                 response.body!!.name.shouldNotBeBlank()
                 response.body.avatarId shouldNotBe null
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
             }
 
             @Test
@@ -186,7 +186,7 @@ class TestConversationController @Autowired constructor(
                 response.body!!.name.shouldNotBeBlank()
                 response.body.avatarId shouldNotBe null
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
             }
 
             @Test
@@ -219,7 +219,7 @@ class TestConversationController @Autowired constructor(
                 response.body!!.name.shouldNotBeBlank()
                 response.body.avatarId shouldNotBe null
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
             }
 
             @Test
@@ -260,7 +260,7 @@ class TestConversationController @Autowired constructor(
                 response.body!!.name.shouldNotBeBlank()
                 response.body.avatarId shouldNotBe null
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "CONVERSATION_GENERATE_INTERLOCUTOR")
             }
         }
 
@@ -1242,7 +1242,7 @@ class TestConversationController @Autowired constructor(
                 response.body.shouldNotBeNull()
                 response.body.shouldNotBeBlank()
 
-                assertGptTokensLogCreated(user.userInfo.id, "CONVERSATION_SUGGEST_TOPICS")
+                assertAiProviderUsageLogCreated(user.userInfo.id, "CONVERSATION_SUGGEST_TOPICS")
             }
 
             @Test
@@ -1263,7 +1263,7 @@ class TestConversationController @Autowired constructor(
                 response.status shouldBe HttpStatus.OK
                 response.body.shouldNotBeNull()
 
-                assertGptTokensLogCreated(user.userInfo.id, "CONVERSATION_SUGGEST_TOPICS")
+                assertAiProviderUsageLogCreated(user.userInfo.id, "CONVERSATION_SUGGEST_TOPICS")
             }
 
             @Test

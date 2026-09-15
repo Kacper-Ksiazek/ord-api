@@ -3,7 +3,8 @@ package com.ord.controllers.tts
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
-import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
+import com.ord.core.ai_provider_usage.models.AiProviderUsageOperationType
+import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -34,7 +35,7 @@ class TestTtsController @Autowired constructor(
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
-    gptTokensUsageRepository: GptTokensUsageRepository,
+    aiProviderUsageRepository: AiProviderUsageRepository,
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
@@ -42,7 +43,7 @@ class TestTtsController @Autowired constructor(
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
     passwordEncoder = passwordEncoder,
-    gptTokensUsageRepository = gptTokensUsageRepository,
+    aiProviderUsageRepository = aiProviderUsageRepository,
 ) {
     private val ttsAPIClient = TtsAPIClient(webClient)
 
@@ -66,9 +67,45 @@ class TestTtsController @Autowired constructor(
         inner class Positive {
 
             @Test
-            fun `200 - should stream audio for valid text`() {
+            fun `200 - should stream audio when language is provided explicitly`() {
                 val request = SpeakRequest(
-                    text = "That's a great question! Let me explain..."
+                    text = "That's a great question! Let me explain...",
+                    language = LanguageName.ENGLISH,
+                )
+
+                val response = ttsAPIClient.speak(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.audioBytes.size shouldBeGreaterThan 0
+                assertAiProviderUsageLogCreated(
+                    authenticatedUser.userInfo.id,
+                    AiProviderUsageOperationType.Tts.SPEAK,
+                )
+            }
+
+            @Test
+            fun `200 - should stream audio using selectedLearningLanguage as fallback`() {
+                val request = SpeakRequest(
+                    text = "That's a great question! Let me explain...",
+                )
+
+                val response = ttsAPIClient.speak(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.audioBytes.size shouldBeGreaterThan 0
+            }
+
+            @Test
+            fun `200 - should stream audio for supported German voice`() {
+                val request = SpeakRequest(
+                    text = "Das ist eine gute Frage!",
+                    language = LanguageName.GERMAN,
                 )
 
                 val response = ttsAPIClient.speak(
@@ -88,7 +125,8 @@ class TestTtsController @Autowired constructor(
             @Test
             fun `401 - anonymous user cannot synthesize speech`() {
                 val request = SpeakRequest(
-                    text = "Hello there"
+                    text = "Hello there",
+                    language = LanguageName.ENGLISH,
                 )
 
                 val response = ttsAPIClient.speak(
@@ -102,7 +140,8 @@ class TestTtsController @Autowired constructor(
             @Test
             fun `400 - empty text should fail`() {
                 val request = SpeakRequest(
-                    text = ""
+                    text = "",
+                    language = LanguageName.ENGLISH,
                 )
 
                 val response = ttsAPIClient.speak(
@@ -116,12 +155,43 @@ class TestTtsController @Autowired constructor(
             @Test
             fun `400 - text exceeding max length should fail`() {
                 val request = SpeakRequest(
-                    text = "a".repeat(5001)
+                    text = "a".repeat(5001),
+                    language = LanguageName.ENGLISH,
                 )
 
                 val response = ttsAPIClient.speak(
                     body = request,
                     user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - unsupported language should fail`() {
+                val request = SpeakRequest(
+                    text = "Bonjour",
+                    language = LanguageName.FRENCH,
+                )
+
+                val response = ttsAPIClient.speak(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - missing language when user has no selectedLearningLanguage should fail`() {
+                val userWithoutLearningLanguage = mockAuthenticatedUserWithUninitializedAccount()
+                val request = SpeakRequest(
+                    text = "Hello there",
+                )
+
+                val response = ttsAPIClient.speak(
+                    body = request,
+                    user = userWithoutLearningLanguage,
                 )
 
                 response.status shouldBe HttpStatus.BAD_REQUEST
