@@ -10,27 +10,54 @@ fun ServerWebExchange.getCookieValue(
 
 fun ServerWebExchange.addAuthTokenCookie(
     name: String,
-    value: String
+    value: String,
+    secure: Boolean = false,
+    sameSite: String = "Lax",
 ) {
-    val cookie = ResponseCookie
-        .from(name, value)
-        .httpOnly(true)
-        .path("/")
-        .build()
+    val cookie = buildAuthTokenCookie(
+        name = name,
+        value = value,
+        secure = secure,
+        sameSite = sameSite,
+    )
 
     this.response.addCookie(cookie)
 }
 
 
 fun ServerWebExchange.invalidateAuthTokenCookie(
-    name: String
+    name: String,
+    secure: Boolean = false,
+    sameSite: String = "Lax",
 ) {
-    val cookie = ResponseCookie
-        .from(name, "")
-        .httpOnly(true)
-        .path("/")
-        .maxAge(0)
-        .build()
+    val cookie = buildAuthTokenCookie(
+        name = name,
+        value = "",
+        secure = secure,
+        sameSite = sameSite,
+        maxAge = 0,
+    )
 
     this.response.addCookie(cookie)
+}
+
+private fun buildAuthTokenCookie(
+    name: String,
+    value: String,
+    secure: Boolean,
+    sameSite: String,
+    maxAge: Long? = null,
+): ResponseCookie {
+    val builder = ResponseCookie
+        .from(name, value)
+        .httpOnly(true)
+        .path("/")
+        .secure(secure)
+        .sameSite(sameSite)
+
+    if (maxAge != null) {
+        builder.maxAge(maxAge)
+    }
+
+    return builder.build()
 }

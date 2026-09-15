@@ -31,7 +31,9 @@ class JwtSecurityContextRepository(
                     if (!renewedToken.isNullOrBlank()) {
                         exchange.addAuthTokenCookie(
                             name = jwtProperties.authCookieName,
-                            value = renewedToken
+                            value = renewedToken,
+                            secure = jwtProperties.cookieSecure,
+                            sameSite = jwtProperties.cookieSameSite,
                         )
                     }
                 }
@@ -41,12 +43,20 @@ class JwtSecurityContextRepository(
             .onErrorResume { error ->
                 when {
                     error is MissingUserSessionException -> {
-                        exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
+                        exchange.invalidateAuthTokenCookie(
+                            name = jwtProperties.authCookieName,
+                            secure = jwtProperties.cookieSecure,
+                            sameSite = jwtProperties.cookieSameSite,
+                        )
                         Mono.empty()
                     }
 
                     error is JwtException || error.cause is JwtException -> {
-                        exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
+                        exchange.invalidateAuthTokenCookie(
+                            name = jwtProperties.authCookieName,
+                            secure = jwtProperties.cookieSecure,
+                            sameSite = jwtProperties.cookieSameSite,
+                        )
                         Mono.empty()
                     }
 

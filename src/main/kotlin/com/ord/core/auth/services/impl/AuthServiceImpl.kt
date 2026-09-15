@@ -85,7 +85,11 @@ class AuthServiceImpl(
             return Mono.error(UnauthorizedException("Missing auth token"))
         }
 
-        exchange.invalidateAuthTokenCookie(jwtProperties.authCookieName)
+        exchange.invalidateAuthTokenCookie(
+            name = jwtProperties.authCookieName,
+            secure = jwtProperties.cookieSecure,
+            sameSite = jwtProperties.cookieSameSite,
+        )
 
         return sessionRepositoryReactive
             .deleteByToken(tokenFromCookie)
@@ -117,7 +121,9 @@ class AuthServiceImpl(
 
         exchange.addAuthTokenCookie(
             name = jwtProperties.authCookieName,
-            value = token
+            value = token,
+            secure = jwtProperties.cookieSecure,
+            sameSite = jwtProperties.cookieSameSite,
         )
 
         return user
