@@ -4248,6 +4248,25 @@
                         "example": "That's a great question! Let me explain...",
                         "maxLength": 5000,
                         "minLength": 1
+                    },
+                    "language": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Language to synthesize in; defaults to user's selectedLearningLanguage",
+                        "enum": [
+                            "POLISH",
+                            "ENGLISH",
+                            "GERMAN",
+                            "FRENCH",
+                            "SPANISH",
+                            "ITALIAN",
+                            "NORWEGIAN",
+                            "RUSSIAN",
+                            "SLOVENIAN"
+                        ],
+                        "example": "ENGLISH"
                     }
                 },
                 "required": [
@@ -4515,6 +4534,9 @@
                         },
                         "uniqueItems": true
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4525,9 +4547,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -4645,6 +4664,9 @@
                         },
                         "uniqueItems": true
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4655,9 +4677,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -4928,6 +4947,9 @@
                     "reviewedAnswers": {
                         "$ref": "#/components/schemas/CrosswordReviewedAnswers"
                     },
+                    "accuracy": {
+                        "type": "string"
+                    },
                     "grade": {
                         "type": "string",
                         "enum": [
@@ -4938,9 +4960,6 @@
                             "D",
                             "NA"
                         ]
-                    },
-                    "accuracy": {
-                        "type": "string"
                     }
                 }
             },
@@ -5309,20 +5328,20 @@
                     "propertyName": "sender"
                 },
                 "properties": {
-                    "messageOrder": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
                     "sender": {
                         "type": "string",
                         "enum": [
                             "USER",
                             "AI"
                         ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "messageOrder": {
+                        "type": "integer",
+                        "format": "int32"
                     },
                     "id": {
                         "type": "string",
