@@ -1,8 +1,8 @@
 package com.ord.features.ai_explainer.api.facades.impl
 
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
-import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
+import com.ord.core.ai_provider_usage.models.AiProviderUsageOperationType
+import com.ord.core.ai_provider_usage.services.AiProviderUsageService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono
 class AIExplainerFacadeImpl(
     private val openAIAPIClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService,
-    private val gptTokensUsageService: GptTokensUsageService,
+    private val aiProviderUsageService: AiProviderUsageService,
 ) : AIExplainerFacade {
     private val logger = LoggerFactory.getLogger(AIExplainerFacadeImpl::class.java)
 
@@ -51,7 +51,7 @@ class AIExplainerFacadeImpl(
                 openAIAPIClientService.openSimpleStringStream(
                     prompt = prompt,
                     userId = user.id,
-                    gptTokensUsageLogKey = GptTokensUsageOperationType.AIExplainer.EXPLAIN_PHRASE,
+                    gptTokensUsageLogKey = AiProviderUsageOperationType.AIExplainer.EXPLAIN_PHRASE,
                     onComplete = { (payload, emitter) ->
                         emitter.tryEmitComplete()
                     }

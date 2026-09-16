@@ -1,4 +1,4 @@
-.PHONY: help status db-up db-wipe run restart stop openapi test test-live \
+.PHONY: help status db-up db-wipe run restart stop openapi check-openapi test test-live \
 	dev-db dev dev-refresh dev-stop test-smoke test-integration
 
 COMPOSE := docker compose
@@ -27,6 +27,7 @@ help:
 	@echo ""
 	@echo "📄 OpenAPI:"
 	@echo "  openapi         Export OpenAPI spec (API must be running)"
+	@echo "  check-openapi   Verify committed openapi.json matches live spec"
 	@echo ""
 	@echo "Override: make openapi API_HOST=... OUTPUT_FILE=..."
 	@echo "E2E stack: use ord-ops (make e2e-up)"
@@ -52,6 +53,9 @@ stop:
 
 openapi:
 	API_HOST=$(API_HOST) OUTPUT_FILE=$(OUTPUT_FILE) ./export-openapi-spec.sh
+
+check-openapi:
+	./scripts/check-openapi.sh
 
 test:
 	./scripts/run-tests.sh smoke

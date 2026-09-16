@@ -3,7 +3,7 @@ package com.ord.controllers.language_proficiencies
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
-import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
+import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.api.requests.CreateLanguageProficiencyRequest
 import com.ord.core.langugae_proficiency.api.requests.UpdateLanguageProficiencyRequest
@@ -34,7 +34,7 @@ class TestLanguageProficienciesController @Autowired constructor(
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
-    gptTokensUsageRepository: GptTokensUsageRepository
+    aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient,
     jwtProperties = jwtProperties,
@@ -42,7 +42,7 @@ class TestLanguageProficienciesController @Autowired constructor(
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
     passwordEncoder = passwordEncoder,
-    gptTokensUsageRepository = gptTokensUsageRepository
+    aiProviderUsageRepository = aiProviderUsageRepository
 ) {
     private val apiClient = LanguageProficienciesAPIClient(webClient)
 

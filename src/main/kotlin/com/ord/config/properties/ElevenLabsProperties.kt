@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration
 class ElevenLabsProperties(
     var apiKey: String = "",
     var apiUrl: String = "",
-    var voiceId: String = "DODLEQrClDo8wCz460ld",
     var modelId: String = "eleven_turbo_v2_5",
     var outputFormat: String = "mp3_44100_128",
     var optimizeStreamingLatency: Int = 3,
@@ -24,8 +23,5 @@ class ElevenLabsProperties(
         get() = apiKey.isBlank() || apiKey == "dummy-key"
 
     val isConfigured: Boolean
-        get() = !isDummyKey &&
-            voiceId.isNotBlank() &&
-            !voiceId.startsWith("\${") &&
-            voiceId != "dummy-voice-id"
+        get() = !isDummyKey
 }

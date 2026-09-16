@@ -1,5 +1,6 @@
 package com.ord.features.tts.api.requests
 
+import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -16,4 +17,11 @@ data class SpeakRequest(
         maxLength = 5000,
     )
     val text: String,
+
+    @Schema(
+        description = "Language to synthesize in; defaults to user's selectedLearningLanguage",
+        example = "ENGLISH",
+        nullable = true,
+    )
+    val language: LanguageName? = null,
 )

@@ -2,7 +2,7 @@ package com.ord.features.game.variants.shared.ai
 
 import tools.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
+import com.ord.core.ai_provider_usage.services.AiProviderUsageService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserEntity
 import com.ord.features.game.model.ongoing_game.enums.GameDifficulty
@@ -18,7 +18,7 @@ abstract class AIGameServiceBase {
     protected lateinit var openAIAPIClientService: OpenAIAPIClientService
 
     @Autowired
-    protected lateinit var gptTokensUsageService: GptTokensUsageService
+    protected lateinit var aiProviderUsageService: AiProviderUsageService
 
     private val logger = LoggerFactory.getLogger(AIGameServiceBase::class.java)
 

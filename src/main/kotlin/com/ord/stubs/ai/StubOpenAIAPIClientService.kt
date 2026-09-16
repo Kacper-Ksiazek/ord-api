@@ -8,7 +8,8 @@ import com.ord.core.ai_provider.dto.OpenAIResponseTokensUsage
 import com.ord.core.ai_provider.dto.helpers.StreamCompletedPayload
 import com.ord.core.ai_provider.services.Emitter
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
+import com.ord.core.ai_provider_usage.services.AiProviderUsageService
+import com.ord.shared.prompts.AvailableAIModels
 import com.ord.exceptions.REST.BadGatewayException
 import com.ord.shared.prompts.Prompt
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
@@ -23,7 +24,7 @@ import java.util.UUID
  * Never calls the real OpenAI HTTP API.
  */
 class StubOpenAIAPIClientService(
-    private val gptTokensUsageService: GptTokensUsageService,
+    private val aiProviderUsageService: AiProviderUsageService,
     private val fixtureLoader: AIFixtureLoader,
     private val dynamicBuilder: AIFixtureDynamicBuilder,
 ) : OpenAIAPIClientService {
@@ -151,9 +152,10 @@ class StubOpenAIAPIClientService(
         inputTokens: Int = 42,
         outputTokens: Int = 18,
     ) {
-        gptTokensUsageService.saveTokensUsage(
+        aiProviderUsageService.saveOpenAiUsage(
             userId = userId,
             operationType = operationType,
+            model = AvailableAIModels.DEFAULT.model,
             inputTokens = inputTokens,
             outputTokens = outputTokens,
         ).subscribe()

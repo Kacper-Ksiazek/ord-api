@@ -1,7 +1,7 @@
 package com.ord.config.e2e
 
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
+import com.ord.core.ai_provider_usage.services.AiProviderUsageService
 import com.ord.core.tts.services.ElevenLabsTTSClientService
 import com.ord.stubs.ai.AIFixtureDynamicBuilder
 import com.ord.stubs.ai.AIFixtureLoader
@@ -36,17 +36,19 @@ class AiStubBeansConfiguration {
     @Bean(name = ["openAIAPIClientServiceImpl"])
     @Primary
     fun openAIAPIClientServiceImpl(
-        gptTokensUsageService: GptTokensUsageService,
+        aiProviderUsageService: AiProviderUsageService,
         fixtureLoader: AIFixtureLoader,
         dynamicBuilder: AIFixtureDynamicBuilder,
     ): OpenAIAPIClientService = StubOpenAIAPIClientService(
-        gptTokensUsageService = gptTokensUsageService,
+        aiProviderUsageService = aiProviderUsageService,
         fixtureLoader = fixtureLoader,
         dynamicBuilder = dynamicBuilder,
     )
 
     @Bean
     @Primary
-    fun elevenLabsTTSClientService(): ElevenLabsTTSClientService =
-        StubElevenLabsTTSClientService()
+    fun elevenLabsTTSClientService(
+        aiProviderUsageService: AiProviderUsageService,
+    ): ElevenLabsTTSClientService =
+        StubElevenLabsTTSClientService(aiProviderUsageService)
 }

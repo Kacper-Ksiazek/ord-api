@@ -3,7 +3,7 @@ package com.ord.controllers.words
 import com.ord.config.properties.JwtProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
-import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
+import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
@@ -42,7 +42,7 @@ class TestWordFillGapsAIController @Autowired constructor(
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
-    gptTokensUsageRepository: GptTokensUsageRepository,
+    aiProviderUsageRepository: AiProviderUsageRepository,
 ) : ControllerTestBase(
     webClient = webClient,
     jwtProperties = jwtProperties,
@@ -50,7 +50,7 @@ class TestWordFillGapsAIController @Autowired constructor(
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
     passwordEncoder = passwordEncoder,
-    gptTokensUsageRepository = gptTokensUsageRepository,
+    aiProviderUsageRepository = aiProviderUsageRepository,
 ) {
     private val wordFillGapsAIAPIClient = WordFillGapsAIAPIClient(webClient)
 
@@ -116,7 +116,7 @@ class TestWordFillGapsAIController @Autowired constructor(
                 item.definition.shouldNotBeNull().shouldNotBeBlank()
                 item.type shouldBe WordType.ADJECTIVE
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_FILL_GAPS")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "WORDS_FILL_GAPS")
             }
 
             @Test
@@ -140,7 +140,7 @@ class TestWordFillGapsAIController @Autowired constructor(
                     item.type.shouldNotBeNull()
                 }
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_FILL_GAPS")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "WORDS_FILL_GAPS")
             }
 
             @Test
@@ -171,7 +171,7 @@ class TestWordFillGapsAIController @Autowired constructor(
                 item.extraMark shouldBe WordExtraMark.SLANG
                 item.definition.shouldNotBeNull().shouldNotBeBlank()
 
-                assertGptTokensLogCreated(authenticatedUser.userInfo.id, "WORDS_FILL_GAPS")
+                assertAiProviderUsageLogCreated(authenticatedUser.userInfo.id, "WORDS_FILL_GAPS")
             }
         }
 

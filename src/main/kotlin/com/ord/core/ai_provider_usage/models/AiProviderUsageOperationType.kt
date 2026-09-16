@@ -1,10 +1,9 @@
-package com.ord.core.gpt_tokens_usage.models
+package com.ord.core.ai_provider_usage.models
 
 /**
- * Object containing all GPT token usage operation types, organized by feature.
- * Used for categorizing and tracking different AI operations that consume tokens.
+ * Stable operation keys for AI provider usage logging, organized by feature.
  */
-object GptTokensUsageOperationType {
+object AiProviderUsageOperationType {
 
     object Conversation {
         const val INITIALIZE = "CONVERSATION_INITIALIZE"
@@ -31,25 +30,17 @@ object GptTokensUsageOperationType {
             const val WORDS_TYPING = "GAME_GENERATE_WORDS_TYPING"
             const val CROSSWORD = "GAME_GENERATE_CROSSWORD"
 
-            /**
-             * Creates a game generation operation type from the game type name.
-             * Example: "SENTENCES_WRITING" -> "GAME_GENERATE_SENTENCES_WRITING"
-             */
-            fun createKey(gameTypeName: String): String {
-                return "GAME_GENERATE_$gameTypeName"
-            }
+            fun createKey(gameTypeName: String): String = "GAME_GENERATE_$gameTypeName"
         }
 
         object Review {
             const val SENTENCES_WRITING = "GAME_REVIEW_SENTENCES_WRITING"
 
-            /**
-             * Creates a game review operation type from the game type name.
-             * Example: "SENTENCES_WRITING" -> "GAME_REVIEW_SENTENCES_WRITING"
-             */
-            fun createKey(gameTypeName: String): String {
-                return "GAME_REVIEW_$gameTypeName"
-            }
+            fun createKey(gameTypeName: String): String = "GAME_REVIEW_$gameTypeName"
         }
+    }
+
+    object Tts {
+        const val SPEAK = "TTS_SPEAK"
     }
 }

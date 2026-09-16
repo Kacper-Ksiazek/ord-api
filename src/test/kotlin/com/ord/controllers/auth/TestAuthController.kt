@@ -6,7 +6,7 @@ import com.ord.core.auth.api.requests.dto.OtpRequestDto
 import com.ord.core.auth.api.requests.dto.OtpVerifyDto
 import com.ord.core.auth.models.OtpCodeEntity
 import com.ord.core.auth.repositories.OtpCodeRepository
-import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
+import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.UserRepository
@@ -42,7 +42,7 @@ class TestAuthController @Autowired constructor(
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
-    gptTokensUsageRepository: GptTokensUsageRepository
+    aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient,
     jwtProperties = jwtProperties,
@@ -50,7 +50,7 @@ class TestAuthController @Autowired constructor(
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
     passwordEncoder = passwordEncoder,
-    gptTokensUsageRepository = gptTokensUsageRepository
+    aiProviderUsageRepository = aiProviderUsageRepository
 ) {
     private val authAPIClient = AuthAPIClient(webClient)
     private val usersAPIClient = UsersAPIClient(webClient)

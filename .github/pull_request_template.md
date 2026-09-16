@@ -3,4 +3,4 @@
 
 ## Checklist
 - [ ] These changes do not require reverting migrations on production environment
-- [ ] These changes have up to date openapi.yaml
+- [ ] These changes have up to date openapi.json (CI runs `make check-openapi` via smoke tests)

@@ -4248,6 +4248,25 @@
                         "example": "That's a great question! Let me explain...",
                         "maxLength": 5000,
                         "minLength": 1
+                    },
+                    "language": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Language to synthesize in; defaults to user's selectedLearningLanguage",
+                        "enum": [
+                            "POLISH",
+                            "ENGLISH",
+                            "GERMAN",
+                            "FRENCH",
+                            "SPANISH",
+                            "ITALIAN",
+                            "NORWEGIAN",
+                            "RUSSIAN",
+                            "SLOVENIAN"
+                        ],
+                        "example": "ENGLISH"
                     }
                 },
                 "required": [
@@ -5309,13 +5328,6 @@
                     "propertyName": "sender"
                 },
                 "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "content": {
-                        "type": "string"
-                    },
                     "sender": {
                         "type": "string",
                         "enum": [
@@ -5330,6 +5342,13 @@
                     "messageOrder": {
                         "type": "integer",
                         "format": "int32"
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "content": {
+                        "type": "string"
                     }
                 }
             },
@@ -5886,10 +5905,10 @@
             "JsonNullableSetExampleSentence": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }
@@ -5897,10 +5916,10 @@
             "JsonNullableSetString": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }
@@ -5908,10 +5927,10 @@
             "JsonNullableSetWordCollocation": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }
@@ -5919,10 +5938,10 @@
             "JsonNullableString": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }
@@ -5930,10 +5949,10 @@
             "JsonNullableWordGrammar": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }
@@ -5941,10 +5960,10 @@
             "JsonNullableWordPronunciation": {
                 "type": "object",
                 "properties": {
-                    "present": {
+                    "undefined": {
                         "type": "boolean"
                     },
-                    "undefined": {
+                    "present": {
                         "type": "boolean"
                     }
                 }

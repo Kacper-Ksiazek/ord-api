@@ -2,7 +2,7 @@ package com.ord.features.conversation.api.facades.impl
 
 import tools.jackson.core.type.TypeReference
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
+import com.ord.core.ai_provider_usage.models.AiProviderUsageOperationType
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.exceptions.REST.BadRequestException
@@ -72,7 +72,7 @@ class OngoingConversationFacadeImpl(
                     .openSimpleStringStream(
                         prompt = prompt.toString(),
                         userId = userId,
-                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.INITIALIZE,
+                        gptTokensUsageLogKey = AiProviderUsageOperationType.Conversation.INITIALIZE,
                         onComplete = { (payload) ->
                             conversationMessageService.createMessage(
                                 conversationId = conversation.id,
@@ -118,7 +118,7 @@ class OngoingConversationFacadeImpl(
                     .openSimpleStringStream(
                         prompt = prompt.toString(),
                         userId = userId,
-                        gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.AI_RESPONSE,
+                        gptTokensUsageLogKey = AiProviderUsageOperationType.Conversation.AI_RESPONSE,
                         onComplete = { (payload, emitter) ->
                             conversationMessageService.createMessage(
                                 conversationId = conversation.id,
@@ -185,7 +185,7 @@ class OngoingConversationFacadeImpl(
                             prompt = prompt.toString(),
                             aiResponseType = object : TypeReference<OpenAIReviewedMessage>() {},
                             userId = userId,
-                            gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
+                            gptTokensUsageLogKey = AiProviderUsageOperationType.Conversation.REVIEW_USER_MESSAGE,
                             structuredOutput = prompt.variant.structuredOutput,
                         )
                             .map { openAIResponse -> openAIResponse.toDomain() }
@@ -235,7 +235,7 @@ class OngoingConversationFacadeImpl(
                             prompt = prompt,
                             aiResponseType = object : TypeReference<OpenAIAIMessageLearningTips>() {},
                             userId = userId,
-                            gptTokensUsageLogKey = GptTokensUsageOperationType.Conversation.GENERATE_AI_MESSAGE_LEARNING_TIPS,
+                            gptTokensUsageLogKey = AiProviderUsageOperationType.Conversation.GENERATE_AI_MESSAGE_LEARNING_TIPS,
                         )
                             .map { openAIResponse -> openAIResponse.toDomain() }
                             .flatMap { learningTips ->

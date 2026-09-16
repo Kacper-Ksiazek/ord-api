@@ -1,6 +1,7 @@
 package com.ord.core.tts.services.impl
 
 import com.ord.config.properties.ElevenLabsProperties
+import com.ord.core.ai_provider_usage.services.AiProviderUsageService
 import com.ord.core.tts.dto.ElevenLabsTTSRequest
 import com.ord.core.tts.services.ElevenLabsTTSClientService
 import com.ord.exceptions.REST.BadGatewayException
@@ -21,6 +22,7 @@ import reactor.util.retry.Retry
 import java.io.IOException
 import java.net.ConnectException
 import java.time.Duration
+import java.util.UUID
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -31,32 +33,45 @@ class ElevenLabsTTSClientServiceImpl(
     @Qualifier("elevenLabsWebClient")
     private val webClient: WebClient,
     private val env: Environment,
+    private val aiProviderUsageService: AiProviderUsageService,
 ) : ElevenLabsTTSClientService {
     private val bufferFactory = DefaultDataBufferFactory()
 
     private val isTestingEnv: Boolean
         get() = env.activeProfiles.contains("test")
 
-    override fun streamSpeech(text: String): Flux<DataBuffer> {
+    override fun streamSpeech(
+        text: String,
+        voiceId: String,
+        modelId: String,
+        userId: UUID,
+        operationType: String,
+    ): Flux<DataBuffer> {
         if (shouldUseMockResponse()) {
-            return mockSpeechFlux()
+            return mockSpeechFlux(text, voiceId, modelId, userId, operationType)
         }
 
         if (!elevenLabsProperties.isConfigured) {
             return Flux.error(
                 BadGatewayException(
-                    "ElevenLabs TTS is not configured. Set ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID environment variables."
+                    "ElevenLabs TTS is not configured. Set ELEVENLABS_API_KEY environment variable."
                 )
             )
         }
 
-        return streamSpeechFromElevenLabs(text)
+        return streamSpeechFromElevenLabs(text, voiceId, modelId, userId, operationType)
     }
 
     private fun shouldUseMockResponse(): Boolean = isTestingEnv
 
-    private fun mockSpeechFlux(): Flux<DataBuffer> =
-        Flux.just(
+    private fun mockSpeechFlux(
+        text: String,
+        voiceId: String,
+        modelId: String,
+        userId: UUID,
+        operationType: String,
+    ): Flux<DataBuffer> =
+        Flux.just<DataBuffer>(
             bufferFactory.wrap(
                 byteArrayOf(
                     0xFF.toByte(),
@@ -65,10 +80,19 @@ class ElevenLabsTTSClientServiceImpl(
                     0x00.toByte(),
                 )
             )
-        )
+        ).doOnComplete {
+            saveUsage(text, voiceId, modelId, userId, operationType)
+        }
 
-    private fun streamSpeechFromElevenLabs(text: String): Flux<DataBuffer> {
+    private fun streamSpeechFromElevenLabs(
+        text: String,
+        voiceId: String,
+        modelId: String,
+        userId: UUID,
+        operationType: String,
+    ): Flux<DataBuffer> {
         val hasEmitted = AtomicBoolean(false)
+        val usageLogged = AtomicBoolean(false)
 
         return Flux.defer {
             webClient.post()
@@ -77,14 +101,14 @@ class ElevenLabsTTSClientServiceImpl(
                         .path("/text-to-speech/{voiceId}/stream")
                         .queryParam("optimize_streaming_latency", elevenLabsProperties.optimizeStreamingLatency)
                         .queryParam("output_format", elevenLabsProperties.outputFormat)
-                        .build(elevenLabsProperties.voiceId)
+                        .build(voiceId)
                 }
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.parseMediaType("audio/mpeg"))
                 .bodyValue(
                     ElevenLabsTTSRequest(
                         text = text,
-                        modelId = elevenLabsProperties.modelId,
+                        modelId = modelId,
                     )
                 )
                 .retrieve()
@@ -130,6 +154,11 @@ class ElevenLabsTTSClientServiceImpl(
                         )
                     }
             )
+            .doOnComplete {
+                if (usageLogged.compareAndSet(false, true)) {
+                    saveUsage(text, voiceId, modelId, userId, operationType)
+                }
+            }
             .onErrorMap { throwable ->
                 when (throwable) {
                     is BadGatewayException -> throwable
@@ -142,5 +171,21 @@ class ElevenLabsTTSClientServiceImpl(
                     )
                 }
             }
+    }
+
+    private fun saveUsage(
+        text: String,
+        voiceId: String,
+        modelId: String,
+        userId: UUID,
+        operationType: String,
+    ) {
+        aiProviderUsageService.saveElevenLabsUsage(
+            userId = userId,
+            operationType = operationType,
+            model = modelId,
+            voiceId = voiceId,
+            characterCount = text.length,
+        ).subscribe()
     }
 }

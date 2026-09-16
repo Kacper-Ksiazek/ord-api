@@ -4,8 +4,8 @@ import com.ord.shared.utils.OrdJsonMapper
 import tools.jackson.core.type.TypeReference
 import tools.jackson.databind.json.JsonMapper
 import com.ord.core.ai_provider.services.OpenAIAPIClientService
-import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
-import com.ord.core.gpt_tokens_usage.services.GptTokensUsageService
+import com.ord.core.ai_provider_usage.models.AiProviderUsageOperationType
+import com.ord.core.ai_provider_usage.services.AiProviderUsageService
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
@@ -41,7 +41,7 @@ class WordAIFacadeImpl(
     private val openAIAPIClientService: OpenAIAPIClientService,
     private val languageProficiencyService: LanguageProficiencyService,
     private val wordService: WordService,
-    private val gptTokensUsageService: GptTokensUsageService,
+    private val aiProviderUsageService: AiProviderUsageService,
 ) : WordAIFacade {
     private val logger = LoggerFactory.getLogger(WordAIFacadeImpl::class.java)
     private val jsonObjectMapper: JsonMapper = OrdJsonMapper.instance
@@ -79,7 +79,7 @@ class WordAIFacadeImpl(
                         aiResponseType = object : TypeReference<OpenAIGeneratedWordManual>() {},
                         prompt = prompt,
                         userId = user.id,
-                        gptTokensUsageLogKey = GptTokensUsageOperationType.Words.GENERATE_MANUAL,
+                        gptTokensUsageLogKey = AiProviderUsageOperationType.Words.GENERATE_MANUAL,
                     )
                     .map {
                         it.toDomain(body.word)
@@ -150,7 +150,7 @@ class WordAIFacadeImpl(
                         prompt = prompt,
                         streamedItemType = object : TypeReference<VocabularySuggestion>() {},
                         userId = user.id,
-                        gptTokensUsageLogKey = GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY
+                        gptTokensUsageLogKey = AiProviderUsageOperationType.Words.SUGGEST_VOCABULARY
                     )
                     .mapNotNull { jsonString ->
                         // Parse JSON once and handle parsing errors
@@ -201,7 +201,7 @@ class WordAIFacadeImpl(
                         aiResponseType = object : TypeReference<OpenAIWordFillGapsBatch>() {},
                         prompt = prompt,
                         userId = user.id,
-                        gptTokensUsageLogKey = GptTokensUsageOperationType.Words.FILL_GAPS,
+                        gptTokensUsageLogKey = AiProviderUsageOperationType.Words.FILL_GAPS,
                         validateResponseBody = { batch ->
                             if (batch == null || batch.items.size != expectedItemCount) {
                                 return@makeRequest false

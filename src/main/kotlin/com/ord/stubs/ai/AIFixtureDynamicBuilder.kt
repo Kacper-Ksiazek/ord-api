@@ -1,7 +1,7 @@
 package com.ord.stubs.ai
 
 import tools.jackson.core.type.TypeReference
-import com.ord.core.gpt_tokens_usage.models.GptTokensUsageOperationType
+import com.ord.core.ai_provider_usage.models.AiProviderUsageOperationType
 import com.ord.core.word.api.ai.responses.openai.OpenAIGeneratedWordManual
 import com.ord.core.word.api.ai.responses.openai.OpenAIGrammar
 import com.ord.core.word.api.ai.responses.openai.OpenAIPronunciation
@@ -28,7 +28,7 @@ class AIFixtureDynamicBuilder(
         if (!AIFixtureRegistryDynamicKeys.isDynamic(operationKey)) return null
 
         return when (operationKey) {
-            GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY ->
+            AiProviderUsageOperationType.Words.SUGGEST_VOCABULARY ->
                 buildSuggestVocabulary(prompt)
 
             else -> null
@@ -43,22 +43,22 @@ class AIFixtureDynamicBuilder(
         if (!AIFixtureRegistryDynamicKeys.isDynamic(operationKey)) return null
 
         return when (operationKey) {
-            GptTokensUsageOperationType.Words.GENERATE_MANUAL ->
+            AiProviderUsageOperationType.Words.GENERATE_MANUAL ->
                 buildWordManual(prompt)
 
-            GptTokensUsageOperationType.Words.FILL_GAPS ->
+            AiProviderUsageOperationType.Words.FILL_GAPS ->
                 buildWordFillGaps(prompt)
 
-            GptTokensUsageOperationType.Game.Generate.CROSSWORD ->
+            AiProviderUsageOperationType.Game.Generate.CROSSWORD ->
                 buildCrossword(prompt)
 
-            GptTokensUsageOperationType.Game.Generate.WORDS_TYPING ->
+            AiProviderUsageOperationType.Game.Generate.WORDS_TYPING ->
                 buildWordsTyping(prompt)
 
-            GptTokensUsageOperationType.Game.Generate.SENTENCES_WRITING ->
+            AiProviderUsageOperationType.Game.Generate.SENTENCES_WRITING ->
                 buildSentencesWriting(prompt)
 
-            GptTokensUsageOperationType.Game.Review.SENTENCES_WRITING ->
+            AiProviderUsageOperationType.Game.Review.SENTENCES_WRITING ->
                 buildSentencesWritingReview(prompt)
 
             else -> null
@@ -72,7 +72,7 @@ class AIFixtureDynamicBuilder(
                 AIPromptParsingUtils.parseExcludedWords(prompt)
             ).map { it.lowercase() }.toSet()
 
-        val pool = fixtureLoader.loadArrayStream(GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY).items
+        val pool = fixtureLoader.loadArrayStream(AiProviderUsageOperationType.Words.SUGGEST_VOCABULARY).items
         val selectedItems = pool
             .filter { item ->
                 val word = item.get("word")?.asString()?.lowercase().orEmpty()
@@ -228,13 +228,13 @@ class AIFixtureDynamicBuilder(
 
 private object AIFixtureRegistryDynamicKeys {
     private val dynamicKeys = setOf(
-        GptTokensUsageOperationType.Words.SUGGEST_VOCABULARY,
-        GptTokensUsageOperationType.Words.GENERATE_MANUAL,
-        GptTokensUsageOperationType.Words.FILL_GAPS,
-        GptTokensUsageOperationType.Game.Generate.CROSSWORD,
-        GptTokensUsageOperationType.Game.Generate.WORDS_TYPING,
-        GptTokensUsageOperationType.Game.Generate.SENTENCES_WRITING,
-        GptTokensUsageOperationType.Game.Review.SENTENCES_WRITING,
+        AiProviderUsageOperationType.Words.SUGGEST_VOCABULARY,
+        AiProviderUsageOperationType.Words.GENERATE_MANUAL,
+        AiProviderUsageOperationType.Words.FILL_GAPS,
+        AiProviderUsageOperationType.Game.Generate.CROSSWORD,
+        AiProviderUsageOperationType.Game.Generate.WORDS_TYPING,
+        AiProviderUsageOperationType.Game.Generate.SENTENCES_WRITING,
+        AiProviderUsageOperationType.Game.Review.SENTENCES_WRITING,
     )
 
     fun isDynamic(operationKey: String): Boolean = operationKey in dynamicKeys

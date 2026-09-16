@@ -5,8 +5,11 @@ import com.ord.config.properties.JwtProperties
 import com.ord.core.auth.api.requests.dto.OtpVerifyDto
 import com.ord.core.auth.models.OtpCodeEntity
 import com.ord.core.auth.repositories.OtpCodeRepository
-import com.ord.core.gpt_tokens_usage.models.GptTokensUsageEntity
-import com.ord.core.gpt_tokens_usage.repositories.GptTokensUsageRepository
+import com.ord.core.ai_provider_usage.models.AiProvider
+import com.ord.core.ai_provider_usage.models.AiProviderUsageEntity
+import com.ord.core.ai_provider_usage.models.AiUsageUnitType
+import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
+import com.ord.shared.prompts.AvailableAIModels
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.LanguageProficiencyEntity
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
@@ -16,9 +19,11 @@ import com.ord.core.user.model.UserDTO
 import com.ord.core.user.model.UserEntity
 import com.ord.shared.utils.EnumUtils.getRandomValue
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
+import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import java.math.BigDecimal
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseCookie
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -33,7 +38,7 @@ abstract class ControllerTestBase(
     val userRepository: UserRepository,
     val otpCodeRepository: OtpCodeRepository,
     val passwordEncoder: PasswordEncoder,
-    val gptTokensUsageRepository: GptTokensUsageRepository,
+    val aiProviderUsageRepository: AiProviderUsageRepository,
 ) : TestcontainersConfig() {
     val faker = Faker()
 
@@ -159,14 +164,14 @@ abstract class ControllerTestBase(
         )
     }
 
-    fun assertGptTokensLogCreated(userId: UUID, operationType: String) {
+    fun assertAiProviderUsageLogCreated(userId: UUID, operationType: String) {
         // Wait for async token usage save to complete (with retry logic)
-        var tokenUsage: GptTokensUsageEntity? = null
+        var tokenUsage: AiProviderUsageEntity? = null
         var attempts = 0
         val maxAttempts = 10
 
         while (tokenUsage == null && attempts < maxAttempts) {
-            tokenUsage = gptTokensUsageRepository
+            tokenUsage = aiProviderUsageRepository
                 .findAllByUserId(userId)
                 .collectList()
                 .block()!!
@@ -180,9 +185,21 @@ abstract class ControllerTestBase(
 
         tokenUsage shouldNotBe null
         tokenUsage!!.apply {
-            inputTokens shouldBeGreaterThan 0
-            outputTokens shouldBeGreaterThan 0
-            model shouldBe GptTokensUsageEntity.DEFAULT_MODEL
+            inputUnits shouldBeGreaterThan 0
+            estimatedPrice shouldBeGreaterThan BigDecimal.ZERO
+
+            when (unitType) {
+                AiUsageUnitType.TOKENS -> {
+                    provider shouldBe AiProvider.OPENAI
+                    outputUnits shouldBeGreaterThan 0
+                    model shouldBe AvailableAIModels.DEFAULT.model
+                }
+                AiUsageUnitType.CHARACTERS -> {
+                    provider shouldBe AiProvider.ELEVENLABS
+                    outputUnits shouldBe 0
+                    voiceId shouldNotBe null
+                }
+            }
         }
     }
 }

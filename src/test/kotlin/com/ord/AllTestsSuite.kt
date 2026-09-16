@@ -2,6 +2,7 @@ package com.ord
 
 import com.ord.controllers.AllControllersTestsSuite
 import com.ord.e2e.TestE2eUserProvisioner
+import com.ord.openapi.TestOpenApiSpec
 import com.ord.e2e.TestE2eWhitelistGuard
 import com.ord.e2e.TestE2eWorkerFlywaySeed
 import com.ord.features.conversation.models.conversation.RecencyBucketCalculatorTest
@@ -16,6 +17,7 @@ import org.junit.platform.suite.api.SuiteDisplayName
 @SelectClasses(
     value = [
         AllControllersTestsSuite::class,
+        TestOpenApiSpec::class,
         RecencyBucketCalculatorTest::class,
         ConversationActivityCalculatorTest::class,
         TestE2eWorkerFlywaySeed::class,

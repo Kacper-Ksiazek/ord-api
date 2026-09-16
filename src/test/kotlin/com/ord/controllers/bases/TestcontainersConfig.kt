@@ -49,7 +49,6 @@ abstract class TestcontainersConfig {
             registry.add("spring.datasource.driver-class-name") { "org.postgresql.Driver" }
 
             registry.add("elevenlabs.api_key") { "dummy-key" }
-            registry.add("elevenlabs.voice_id") { "dummy-voice-id" }
 
             registry.add("ENV_TEST_PROPERTY") { "1test1" }
             registry.add("jwt.secret_key") {
