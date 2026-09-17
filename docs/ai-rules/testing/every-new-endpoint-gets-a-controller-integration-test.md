@@ -11,7 +11,7 @@ Every new HTTP endpoint must come with a controller integration test annotated w
 class TestConversationController @Autowired constructor(
     private val conversationRepository: ConversationRepository,
     webClient: WebTestClient,
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
@@ -19,7 +19,7 @@ class TestConversationController @Autowired constructor(
     gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

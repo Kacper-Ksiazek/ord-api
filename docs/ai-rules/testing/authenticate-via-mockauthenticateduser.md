@@ -31,8 +31,8 @@ fun `401 - anonymous user cannot generate AI interlocutor`() {
 ```kotlin
 // Hand-rolled user + token setup, bypassing the real auth flow.
 val user = userRepository.save(UserEntity(email = "a@b.com", /* ... */)).block()!!
-val fakeJwt = Jwts.builder().setSubject(user.id.toString()).compact()
+val fakeToken = "not-a-real-session"
 webClient.get().uri("/api/v1/conversations/")
-    .header("Authorization", "Bearer $fakeJwt") // not how the app authenticates
+    .header("Authorization", "Bearer $fakeToken") // not how the app authenticates
     .exchange()
 ```

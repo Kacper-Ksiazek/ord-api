@@ -1,6 +1,6 @@
 package com.ord.controllers.conversations
 
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.security.UserRepository
@@ -50,7 +50,7 @@ class TestOngoingConversationController @Autowired constructor(
     private val conversationMessageRepository: ConversationMessageRepository,
     private val databaseClient: org.springframework.r2dbc.core.DatabaseClient,
     webClient: WebTestClient,
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
@@ -58,7 +58,7 @@ class TestOngoingConversationController @Autowired constructor(
     aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

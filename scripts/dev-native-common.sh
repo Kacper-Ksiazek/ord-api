@@ -81,7 +81,6 @@ load_api_env() {
 
 	export SPRING_PROFILES_ACTIVE="${SPRING_PROFILE:-local}"
 	export DATABASE_URL="postgres://${DOCKER_DB_USER}:${DOCKER_DB_PASSWORD}@localhost:5432/${DOCKER_DB_NAME}"
-	export JWT_SECRET_KEY="${JWT_SECRET_KEY:-dev-secret-key-change-in-production}"
 	export CORS_ALLOWED_ORIGINS="${CORS_ALLOWED_ORIGINS:-http://localhost:5173}"
 	export ENV_TEST_PROPERTY="${ENV_TEST_PROPERTY:-1test1}"
 	export PORT="${PORT:-$API_PORT}"

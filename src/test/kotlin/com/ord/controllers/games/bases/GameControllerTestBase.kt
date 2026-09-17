@@ -2,7 +2,7 @@ package com.ord.controllers.games.bases
 
 /*
 
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.user.model.UserMapper
@@ -20,7 +20,7 @@ abstract class GameControllerTestBase(
     objectMapper: JsonMapper,
     mockMvc: MockMvc,
     userMapper: UserMapper,
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     userRepository: UserRepository,
     languageProficiencyRepository: LanguageProficiencyRepository,
 
@@ -31,7 +31,7 @@ abstract class GameControllerTestBase(
 ) : ControllerTestBase(
     objectMapper = objectMapper,
     mockMvc = mockMvc,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userMapper = userMapper,
     userRepository = userRepository

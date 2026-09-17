@@ -12,7 +12,7 @@ A reference document for AI agents working on this codebase.
 - **Database:** PostgreSQL with Flyway migrations
 - **Testing:** JUnit 5, Kotest assertions, TestContainers
 - **Build Tool:** Maven
-- **Auth:** JWT (jjwt library)
+- **Auth:** opaque session cookie (hashed at rest)
 - **API Docs:** SpringDoc OpenAPI + Swagger UI
 
 ---

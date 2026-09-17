@@ -1,6 +1,6 @@
 package com.ord.controllers.tts
 
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.ai_provider_usage.models.AiProviderUsageOperationType
@@ -29,7 +29,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @AutoConfigureWebTestClient(timeout = "60000")
 @DisplayName("- TtsController")
 class TestTtsController @Autowired constructor(
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     webClient: WebTestClient,
     userRepository: UserRepository,
@@ -38,7 +38,7 @@ class TestTtsController @Autowired constructor(
     aiProviderUsageRepository: AiProviderUsageRepository,
 ) : ControllerTestBase(
     webClient = webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

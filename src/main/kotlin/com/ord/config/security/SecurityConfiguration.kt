@@ -2,8 +2,8 @@ package com.ord.config.security
 
 import com.ord.core.security.AnonymousOnlyAuthorizationManager
 import com.ord.core.security.ApiAuthenticationEntryPoint
-import com.ord.core.security.JwtReactiveAuthenticationManager
-import com.ord.core.security.JwtSecurityContextRepository
+import com.ord.core.security.SessionReactiveAuthenticationManager
+import com.ord.core.security.SessionSecurityContextRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -16,8 +16,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 @Configuration
 @EnableWebFluxSecurity
 class SecurityConfiguration(
-    private val authManager: JwtReactiveAuthenticationManager,
-    private val contextRepository: JwtSecurityContextRepository,
+    private val authManager: SessionReactiveAuthenticationManager,
+    private val contextRepository: SessionSecurityContextRepository,
     private val apiAuthenticationEntryPoint: ApiAuthenticationEntryPoint,
 ) {
     val anonymousOnlyAuthorizationManager = AnonymousOnlyAuthorizationManager()

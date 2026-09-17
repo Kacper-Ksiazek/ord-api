@@ -1,33 +1,39 @@
 {
   "properties": [
     {
-      "name": "jwt.secret_key",
+      "name": "session.cookie-name",
       "type": "java.lang.String",
-      "description": "Description for jwt.secret_key."
+      "description": "HttpOnly cookie name that carries the opaque session token."
     },
     {
-      "name": "jwt.expiration_time",
-      "type": "java.lang.String",
-      "description": "Description for jwt.expiration_time."
+      "name": "session.cookie-secure",
+      "type": "java.lang.Boolean",
+      "description": "Whether the session cookie is marked Secure."
     },
     {
-      "name": "jwt.auth_cookie_name",
+      "name": "session.cookie-same-site",
       "type": "java.lang.String",
-      "description": "Description for jwt.auth_cookie_name."
+      "description": "SameSite attribute for the session cookie (Lax locally, None in production cross-origin)."
     },
     {
-      "name": "jwt.user_id_claim_name",
-      "type": "java.lang.String",
-      "description": "Description for jwt.user_id_claim_name."
+      "name": "session.idle-timeout",
+      "type": "java.time.Duration",
+      "description": "Inactivity window after which the session is revoked."
     },
     {
-      "name": "jwt.issuer",
-      "type": "java.lang.String",
-      "description": "Description for jwt.issuer."
+      "name": "session.absolute-timeout",
+      "type": "java.time.Duration",
+      "description": "Hard lifetime of a session from creation, regardless of activity."
+    },
+    {
+      "name": "session.slide-interval",
+      "type": "java.time.Duration",
+      "description": "Minimum time between last-seen / idle-expiry writes."
     },
     {
       "name": "otp.expiration.minutes",
       "type": "java.lang.String",
       "description": "Description for otp.expiration.minutes."
     }
-  ] }
+  ]
+}

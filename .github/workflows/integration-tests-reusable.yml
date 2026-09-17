@@ -45,5 +45,4 @@ jobs:
           SPRING_PROFILES_ACTIVE: test
           NO_COLOR: '1'
           INTEGRATION_TESTS: 'true'
-          JWT_SECRET_KEY: test-jwt-secret-key-with-sufficient-length-for-hs256-algorithm
           OPEN_AI_KEY: ${{ secrets.OPEN_AI_KEY }}

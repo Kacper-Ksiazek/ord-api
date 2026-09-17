@@ -47,17 +47,17 @@ class AuthController(
     @PostMapping("/otp-verify")
     @Operation(
         summary = "Verify OTP code and login",
-        description = "Verifies the OTP code and returns a JWT token in the response cookie (AUTH-TOKEN) along with user details."
+        description = "Verifies the OTP code and returns an opaque session token in the AUTH-TOKEN cookie along with user details."
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "OTP verified; JWT stored in AUTH-TOKEN cookie",
+                description = "OTP verified; opaque session token stored in AUTH-TOKEN cookie",
                 headers = [
                     io.swagger.v3.oas.annotations.headers.Header(
                         name = "Set-Cookie",
-                        description = "AUTH-TOKEN=<jwt>; HttpOnly; Path=/",
+                        description = "AUTH-TOKEN=<opaque-session-token>; HttpOnly; Path=/",
                         schema = Schema(type = "string")
                     )
                 ],
@@ -76,7 +76,7 @@ class AuthController(
     @DeleteMapping("/logout")
     @Operation(
         summary = "Logout user",
-        description = "Logs out the authenticated user by clearing the JWT token cookie."
+        description = "Logs out the authenticated user by deleting the server-side session and clearing the AUTH-TOKEN cookie."
     )
     @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
     @ApiResponses(

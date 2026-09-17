@@ -1,6 +1,6 @@
 package com.ord.controllers.users
 
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
@@ -30,14 +30,14 @@ import org.springframework.test.web.reactive.server.WebTestClient
 class TestUsersController @Autowired constructor(
     userRepository: UserRepository,
     webClient: WebTestClient,
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
     aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

@@ -1,6 +1,6 @@
 package com.ord.controllers.auth
 
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.api.requests.dto.OtpRequestDto
 import com.ord.core.auth.api.requests.dto.OtpVerifyDto
@@ -9,6 +9,7 @@ import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.security.SessionTokenService
 import com.ord.core.security.UserRepository
 import com.ord.core.security.UserSessionRepositoryReactive
 import com.ord.core.user.model.UserDTO
@@ -25,9 +26,12 @@ import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseCookie
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.reactive.server.WebTestClient
+import java.time.Duration
 import java.time.Instant
 
 @DisplayName("- AuthController")
@@ -35,9 +39,9 @@ import java.time.Instant
 @AutoConfigureWebTestClient(timeout = "3600000")
 class TestAuthController @Autowired constructor(
     private val userSessionRepository: UserSessionRepositoryReactive,
-    private val jwtService: com.ord.core.security.JwtService,
+    private val sessionTokenService: SessionTokenService,
     webClient: WebTestClient,
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
@@ -45,7 +49,7 @@ class TestAuthController @Autowired constructor(
     aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,
@@ -65,6 +69,12 @@ class TestAuthController @Autowired constructor(
         userRepository.deleteByEmail(TestData.TEST_EMAIL).block()
         otpCodeRepository.deleteByUserEmail(TestData.TEST_EMAIL).block()
     }
+
+    private fun findSession(rawToken: String) =
+        userSessionRepository.findByTokenHash(sessionTokenService.hash(rawToken)).block()
+
+    private fun sessionCookie(rawToken: String) =
+        ResponseCookie.from(sessionProperties.cookieName, rawToken).build()
 
     @Nested
     @DisplayName("[POST] /api/v1/auth/otp-request - request OTP code")
@@ -200,11 +210,11 @@ class TestAuthController @Autowired constructor(
 
             @Test
             fun `200 - should create a session for the new user`() {
-                val authCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+                val authCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
                 authCookie.shouldNotBeNull()
 
                 val createdUser = userRepository.findByEmail(TestData.TEST_EMAIL).block()
-                val session = userSessionRepository.findByToken(authCookie.value).block()
+                val session = findSession(authCookie.value)
                 session.shouldNotBeNull()
                 session.userId shouldBe createdUser!!.id
             }
@@ -252,18 +262,19 @@ class TestAuthController @Autowired constructor(
                 response.body!!.nativeLanguage shouldBe LanguageName.ENGLISH
 
                 // Verify session was created
-                val authCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+                val authCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
                 authCookie.shouldNotBeNull()
 
-                val session = userSessionRepository.findByToken(authCookie.value).block()
+                val session = findSession(authCookie.value)
                 session.shouldNotBeNull()
             }
 
             @Test
             fun `200 - cookie has been set with HttpOnly and Secure flags`() {
-                val authCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+                val authCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
 
                 authCookie.shouldNotBeNull()
+                authCookie.isHttpOnly shouldBe true
             }
 
             @Test
@@ -273,10 +284,10 @@ class TestAuthController @Autowired constructor(
 
             @Test
             fun `200 - should create a new session on each login`() {
-                val authCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+                val authCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
                 authCookie.shouldNotBeNull()
 
-                val session = userSessionRepository.findByToken(authCookie.value).block()
+                val session = findSession(authCookie.value)
                 session.shouldNotBeNull()
             }
         }
@@ -375,17 +386,15 @@ class TestAuthController @Autowired constructor(
                 val authenticatedUser = mockAuthenticatedUser()
 
                 // Verify session exists
-                userSessionRepository.findByToken(authenticatedUser.token).block().shouldNotBeNull()
+                findSession(authenticatedUser.token).shouldNotBeNull()
 
                 val response = authAPIClient.logout(user = authenticatedUser)
 
                 response.status shouldBe HttpStatus.NO_CONTENT
 
-                // Verify session was deleted
-                userSessionRepository.findByToken(authenticatedUser.token).block().shouldBeNull()
+                findSession(authenticatedUser.token).shouldBeNull()
 
-                // Verify auth cookie was invalidated
-                val authCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
+                val authCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
                 authCookie.shouldNotBeNull()
                 authCookie.maxAge.seconds shouldBe 0
             }
@@ -400,180 +409,120 @@ class TestAuthController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.UNAUTHORIZED
             }
+
+            @Test
+            fun `403 - should reject logout from a disallowed origin`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                webClient
+                    .mutate()
+                    .defaultHeaders { headers -> headers.set(HttpHeaders.ORIGIN, "https://evil.example") }
+                    .build()
+                    .delete()
+                    .uri("/api/v1/auth/logout")
+                    .cookie(authenticatedUser.authCookie.name, authenticatedUser.authCookie.value)
+                    .exchange()
+                    .expectStatus().isForbidden
+
+                findSession(authenticatedUser.token).shouldNotBeNull()
+            }
+
+            @Test
+            fun `403 - should reject logout without an origin`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                webClient
+                    .mutate()
+                    .defaultHeaders { headers -> headers.remove(HttpHeaders.ORIGIN) }
+                    .build()
+                    .delete()
+                    .uri("/api/v1/auth/logout")
+                    .cookie(authenticatedUser.authCookie.name, authenticatedUser.authCookie.value)
+                    .exchange()
+                    .expectStatus().isForbidden
+
+                findSession(authenticatedUser.token).shouldNotBeNull()
+            }
         }
     }
 
     @Nested
-    @DisplayName("JWT Token Refresh - automatic renewal on expiration")
-    inner class JwtTokenRefreshTests {
+    @DisplayName("Opaque session cookie")
+    inner class OpaqueSessionTests {
+
+        private fun persistUser(): UserEntity {
+            return userRepository.save(
+                UserEntity(
+                    name = "Test User",
+                    email = TestData.TEST_EMAIL,
+                    nativeLanguage = LanguageName.ENGLISH,
+                    selectedLearningLanguage = LanguageName.SPANISH,
+                    isAccountInitialized = true
+                )
+            ).block()!!
+        }
+
+        private fun persistSession(
+            user: UserEntity,
+            rawToken: String = sessionTokenService.generateRawToken(),
+            idleExpiresAt: Instant = Instant.now().plus(Duration.ofDays(7)),
+            absoluteExpiresAt: Instant = Instant.now().plus(Duration.ofDays(30)),
+        ): Pair<String, com.ord.core.auth.models.UserSessionEntity> {
+            val now = Instant.now()
+            val session = userSessionRepository.save(
+                com.ord.core.auth.models.UserSessionEntity(
+                    tokenHash = sessionTokenService.hash(rawToken),
+                    userId = user.id!!,
+                    createdAt = now,
+                    lastSeenAt = now,
+                    idleExpiresAt = idleExpiresAt,
+                    absoluteExpiresAt = absoluteExpiresAt,
+                )
+            ).block()!!
+
+            return Pair(rawToken, session)
+        }
+
+        private fun userWithCookie(user: UserEntity, rawToken: String) =
+            com.ord.testing_utils.dto.MockedAuthenticatedUser(
+                token = rawToken,
+                userInfo = user.toDTO(),
+                authCookie = sessionCookie(rawToken),
+                email = user.email
+            )
 
         @Nested
         @DisplayName("Positive")
         inner class Positive {
             @Test
-            fun `200 - should automatically refresh expired JWT token and allow continued access`() {
-                // Create a user
-                val user = userRepository.save(
-                    UserEntity(
-                        name = "Test User",
-                        email = TestData.TEST_EMAIL,
-                        nativeLanguage = LanguageName.ENGLISH,
-                        selectedLearningLanguage = LanguageName.SPANISH,
-                        isAccountInitialized = true
-                    )
-                ).block()!!
+            fun `200 - should authenticate with the same opaque cookie across sequential requests`() {
+                val user = persistUser()
+                val (rawToken, _) = persistSession(user)
+                val mockUser = userWithCookie(user, rawToken)
 
-                // Create an expired JWT token - set issuedAt far enough in the past to ensure expiration
-                val expiredToken = jwtService.createToken(
-                    subject = user.email,
-                    issuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
-                )
-
-                // Create a session with the expired token
-                val session = userSessionRepository.save(
-                    com.ord.core.auth.models.UserSessionEntity(
-                        userId = user.id!!,
-                        token = expiredToken
-                    )
-                ).block()!!
-
-                // Create a mocked authenticated user with the expired token
-                val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
-                    token = expiredToken,
-                    userInfo = user.toDTO(),
-                    authCookie = org.springframework.http.ResponseCookie.from(jwtProperties.authCookieName, expiredToken).build(),
-                    email = user.email
-                )
-
-                // Call /me endpoint with expired token
-                val response = usersAPIClient.me(user = mockUser)
-
-                // Should succeed with 200
-                response.status shouldBe HttpStatus.OK
-                response.body.shouldNotBeNull()
-                response.body.email shouldBe TestData.TEST_EMAIL
-
-                // Verify new token was set in cookie
-                val newAuthCookie = response.cookies[jwtProperties.authCookieName]?.firstOrNull()
-                newAuthCookie.shouldNotBeNull()
-                newAuthCookie.value shouldNotBe expiredToken
-
-                // Verify the session was updated with the new token
-                val updatedSession = userSessionRepository.findById(session.id!!).block()
-                updatedSession.shouldNotBeNull()
-                updatedSession.token shouldBe newAuthCookie.value
-                updatedSession.token shouldNotBe expiredToken
-
-                // Verify the new token is valid
-                val parsedToken = jwtService.parseAndValidate(newAuthCookie.value)
-                parsedToken.body.subject shouldBe user.email
-            }
-
-            @Test
-            fun `200 - should update session token in database after refresh`() {
-                // Create a user
-                val user = userRepository.save(
-                    UserEntity(
-                        name = "Test User",
-                        email = TestData.TEST_EMAIL,
-                        nativeLanguage = LanguageName.ENGLISH,
-                        selectedLearningLanguage = LanguageName.SPANISH,
-                        isAccountInitialized = true
-                    )
-                ).block()!!
-
-                // Create an expired JWT token - set issuedAt far enough in the past to ensure expiration
-                // even with very long expirationTime settings (like in CI/CD)
-                val expiredToken = jwtService.createToken(
-                    subject = user.email,
-                    issuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
-                )
-
-                // Create a session with the expired token
-                userSessionRepository.save(
-                    com.ord.core.auth.models.UserSessionEntity(
-                        userId = user.id!!,
-                        token = expiredToken
-                    )
-                ).block()!!
-
-                val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
-                    token = expiredToken,
-                    userInfo = user.toDTO(),
-                    authCookie = org.springframework.http.ResponseCookie.from(jwtProperties.authCookieName, expiredToken).build(),
-                    email = user.email
-                )
-
-                val response = usersAPIClient.me(user = mockUser)
-
-                response.status shouldBe HttpStatus.OK
-
-                // Verify old session token no longer exists
-                userSessionRepository.findByToken(expiredToken).block().shouldBeNull()
-
-                // Verify new session exists with new token
-                val newToken = response.cookies[jwtProperties.authCookieName]?.firstOrNull()?.value
-                newToken.shouldNotBeNull()
-
-                val updatedSession = userSessionRepository.findByToken(newToken).block()
-                updatedSession.shouldNotBeNull()
-                updatedSession.userId shouldBe user.id
-            }
-
-            @Test
-            fun `200 - should allow multiple sequential requests with refreshed token`() {
-                // Create a user
-                val user = userRepository.save(
-                    UserEntity(
-                        name = "Test User",
-                        email = TestData.TEST_EMAIL,
-                        nativeLanguage = LanguageName.ENGLISH,
-                        selectedLearningLanguage = LanguageName.SPANISH,
-                        isAccountInitialized = true
-                    )
-                ).block()!!
-
-                // Create an expired JWT token - set issuedAt far enough in the past to ensure expiration
-                val expiredToken = jwtService.createToken(
-                    subject = user.email,
-                    issuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
-                )
-
-                // Create a session with the expired token
-                userSessionRepository.save(
-                    com.ord.core.auth.models.UserSessionEntity(
-                        userId = user.id!!,
-                        token = expiredToken
-                    )
-                ).block()!!
-
-                val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
-                    token = expiredToken,
-                    userInfo = user.toDTO(),
-                    authCookie = org.springframework.http.ResponseCookie.from(jwtProperties.authCookieName, expiredToken).build(),
-                    email = user.email
-                )
-
-                // First request with expired token
                 val firstResponse = usersAPIClient.me(user = mockUser)
                 firstResponse.status shouldBe HttpStatus.OK
+                firstResponse.body.shouldNotBeNull()
+                firstResponse.body.email shouldBe TestData.TEST_EMAIL
+                firstResponse.cookies[sessionProperties.cookieName]?.firstOrNull().shouldBeNull()
 
-                // Get the refreshed token
-                val refreshedToken = firstResponse.cookies[jwtProperties.authCookieName]?.firstOrNull()?.value
-                refreshedToken.shouldNotBeNull()
-
-                // Second request with refreshed token
-                val mockUserWithRefreshedToken = com.ord.testing_utils.dto.MockedAuthenticatedUser(
-                    token = refreshedToken!!,
-                    userInfo = user.toDTO(),
-                    authCookie = org.springframework.http.ResponseCookie.from(jwtProperties.authCookieName, refreshedToken).build(),
-                    email = user.email
-                )
-
-                val secondResponse = usersAPIClient.me(user = mockUserWithRefreshedToken)
+                val secondResponse = usersAPIClient.me(user = mockUser)
                 secondResponse.status shouldBe HttpStatus.OK
                 secondResponse.body.shouldNotBeNull()
                 secondResponse.body.email shouldBe TestData.TEST_EMAIL
+                findSession(rawToken).shouldNotBeNull()
+            }
+
+            @Test
+            fun `200 - should persist only the hash of the session cookie`() {
+                val user = persistUser()
+                val (rawToken, session) = persistSession(user)
+
+                session.tokenHash shouldBe sessionTokenService.hash(rawToken)
+                session.tokenHash shouldNotBe rawToken
+
+                val response = usersAPIClient.me(user = userWithCookie(user, rawToken))
+                response.status shouldBe HttpStatus.OK
             }
         }
 
@@ -581,34 +530,42 @@ class TestAuthController @Autowired constructor(
         @DisplayName("Negative")
         inner class Negative {
             @Test
-            fun `401 - should fail with expired token when no session exists`() {
-                // Create a user
-                val user = userRepository.save(
-                    UserEntity(
-                        name = "Test User",
-                        email = TestData.TEST_EMAIL,
-                        nativeLanguage = LanguageName.ENGLISH,
-                        selectedLearningLanguage = LanguageName.SPANISH,
-                        isAccountInitialized = true
-                    )
-                ).block()!!
+            fun `401 - should fail when the cookie has no matching session`() {
+                val user = persistUser()
+                val rawToken = sessionTokenService.generateRawToken()
 
-                // Create an expired JWT token but don't create a session
-                val expiredToken = jwtService.createToken(
-                    subject = user.email,
-                    issuedAt = Instant.now().minusSeconds(jwtProperties.expirationTime + 3600)
-                )
-
-                val mockUser = com.ord.testing_utils.dto.MockedAuthenticatedUser(
-                    token = expiredToken,
-                    userInfo = user.toDTO(),
-                    authCookie = org.springframework.http.ResponseCookie.from(jwtProperties.authCookieName, expiredToken).build(),
-                    email = user.email
-                )
-
-                // Should fail because there's no session
-                val response = usersAPIClient.me(user = mockUser)
+                val response = usersAPIClient.me(user = userWithCookie(user, rawToken))
                 response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `401 - should fail and clear the cookie when the session is idle-expired`() {
+                val user = persistUser()
+                val (rawToken, _) = persistSession(
+                    user = user,
+                    idleExpiresAt = Instant.now().minusSeconds(60),
+                )
+
+                val response = usersAPIClient.me(user = userWithCookie(user, rawToken))
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+
+                val clearedCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
+                clearedCookie.shouldNotBeNull()
+                clearedCookie.maxAge.seconds shouldBe 0
+                findSession(rawToken).shouldBeNull()
+            }
+
+            @Test
+            fun `401 - should fail when the session exceeded absolute timeout`() {
+                val user = persistUser()
+                val (rawToken, _) = persistSession(
+                    user = user,
+                    absoluteExpiresAt = Instant.now().minusSeconds(60),
+                )
+
+                val response = usersAPIClient.me(user = userWithCookie(user, rawToken))
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+                findSession(rawToken).shouldBeNull()
             }
         }
     }

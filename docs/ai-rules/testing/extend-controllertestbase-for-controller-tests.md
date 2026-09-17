@@ -1,6 +1,6 @@
 # Extend ControllerTestBase for controller tests
 
-Controller tests must extend `ControllerTestBase` and forward the shared dependencies (`webClient`, `jwtProperties`, repositories, `passwordEncoder`, `gptTokensUsageRepository`) through the constructor. `ControllerTestBase` extends `TestcontainersConfig`, which wires the Postgres Testcontainer, runs Flyway migrations, and configures R2DBC — so by extending it you get a real database plus `faker`, `mockAuthenticatedUser(...)`, and `assertGptTokensLogCreated(...)` for free. Inject feature-specific repositories as extra `@Autowired` constructor params.
+Controller tests must extend `ControllerTestBase` and forward the shared dependencies (`webClient`, `sessionProperties`, repositories, `passwordEncoder`, `gptTokensUsageRepository`) through the constructor. `ControllerTestBase` extends `TestcontainersConfig`, which wires the Postgres Testcontainer, runs Flyway migrations, and configures R2DBC — so by extending it you get a real database plus `faker`, `mockAuthenticatedUser(...)`, and `assertGptTokensLogCreated(...)` for free. Inject feature-specific repositories as extra `@Autowired` constructor params.
 
 ## Good
 
@@ -8,7 +8,7 @@ Controller tests must extend `ControllerTestBase` and forward the shared depende
 class TestConversationController @Autowired constructor(
     private val conversationRepository: ConversationRepository,
     webClient: WebTestClient,
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
@@ -16,7 +16,7 @@ class TestConversationController @Autowired constructor(
     gptTokensUsageRepository: GptTokensUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

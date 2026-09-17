@@ -36,4 +36,3 @@ jobs:
           ENV_TEST_PROPERTY: '1test1'
           SPRING_PROFILES_ACTIVE: test
           NO_COLOR: '1'
-          JWT_SECRET_KEY: test-jwt-secret-key-with-sufficient-length-for-hs256-algorithm

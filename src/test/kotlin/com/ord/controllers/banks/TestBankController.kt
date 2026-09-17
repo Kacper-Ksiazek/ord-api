@@ -1,6 +1,6 @@
 package com.ord.controllers.banks
 
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
@@ -32,7 +32,7 @@ class TestBankController @Autowired constructor(
     private val bankSeeder: BankSeeder,
     private val bankGroupSeeder: BankGroupSeeder,
     webClient: WebTestClient,
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
@@ -40,7 +40,7 @@ class TestBankController @Autowired constructor(
     aiProviderUsageRepository: AiProviderUsageRepository,
 ) : ControllerTestBase(
     webClient = webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

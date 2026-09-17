@@ -1,6 +1,6 @@
 package com.ord.controllers.language_proficiencies
 
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
@@ -30,14 +30,14 @@ import org.springframework.test.web.reactive.server.WebTestClient
 class TestLanguageProficienciesController @Autowired constructor(
     languageProficiencyRepository: LanguageProficiencyRepository,
     webClient: WebTestClient,
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
     aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

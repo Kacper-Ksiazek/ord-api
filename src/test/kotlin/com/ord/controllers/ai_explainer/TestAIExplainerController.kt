@@ -1,6 +1,6 @@
 package com.ord.controllers.ai_explainer
 
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.auth.repositories.OtpCodeRepository
 import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
@@ -31,7 +31,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @AutoConfigureWebTestClient(timeout = "180000")
 @DisplayName("- AIExplainerController")
 class TestAIExplainerController @Autowired constructor(
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     webClient: WebTestClient,
     userRepository: UserRepository,
@@ -40,7 +40,7 @@ class TestAIExplainerController @Autowired constructor(
     aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

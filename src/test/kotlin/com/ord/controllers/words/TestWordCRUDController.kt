@@ -1,6 +1,6 @@
 package com.ord.controllers.words
 
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.security.UserRepository
@@ -77,7 +77,7 @@ class TestWordCRUDController @Autowired constructor(
     private val bankGroupSeeder: BankGroupSeeder,
     private var wordMockFactory: WordFactory,
 
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     webClient: WebTestClient,
     userRepository: UserRepository,
@@ -87,7 +87,7 @@ class TestWordCRUDController @Autowired constructor(
 
 ) : ControllerTestBase(
     webClient = webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

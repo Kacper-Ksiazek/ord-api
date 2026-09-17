@@ -36,7 +36,7 @@ Features:
 - Browse all API endpoints organized by domain tags
 - View request/response schemas with examples
 - Test endpoints directly from the browser
-- JWT authentication support for API endpoints (click "Authorize" button)
+- Session-cookie authentication for API endpoints (click "Authorize" button)
 
 ### OpenAPI Specification (JSON)
 
@@ -175,13 +175,13 @@ To test authenticated endpoints in Swagger UI:
 
 1. Call `POST /api/v1/auth/otp-request` to send an OTP
 2. Call `POST /api/v1/auth/otp-verify` with your email and OTP code
-3. The JWT is stored in the `AUTH-TOKEN` cookie automatically
+3. The opaque session token is stored in the `AUTH-TOKEN` cookie automatically
 4. All subsequent authenticated requests work in the same browser session
 
-If you already have a JWT token:
+If you already have a session token:
 
 1. Click the **Authorize** button at the top of Swagger UI
-2. Enter the raw JWT value for the `AUTH-TOKEN` cookie (no `Bearer` prefix)
+2. Enter the raw session token for the `AUTH-TOKEN` cookie (no `Bearer` prefix)
 3. Click **Authorize**
 
 HTTP clients (Bruno, curl) should use a cookie jar: run otp-verify first, then send `AUTH-TOKEN` on subsequent requests (`curl -c cookies.txt -b cookies.txt`).

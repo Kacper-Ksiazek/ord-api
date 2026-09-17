@@ -16,7 +16,7 @@ import com.ord.features.conversation.models.conversation.enums.ConversationTone
 import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.conversation.models.conversation.enums.RecencyBucket
 import com.ord.features.conversation.repositories.ConversationRepository
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.testing_utils.api.clients.ConversationAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -43,7 +43,7 @@ import java.util.*
 class TestConversationController @Autowired constructor(
     private val conversationRepository: ConversationRepository,
     webClient: WebTestClient,
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     userRepository: UserRepository,
     otpCodeRepository: OtpCodeRepository,
@@ -51,7 +51,7 @@ class TestConversationController @Autowired constructor(
     aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient = webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

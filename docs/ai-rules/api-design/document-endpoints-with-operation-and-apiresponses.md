@@ -8,7 +8,7 @@ Each handler method carries an `@Operation(summary, description)` plus an `@ApiR
 @PostMapping("/otp-verify")
 @Operation(
     summary = "Verify OTP code and login",
-    description = "Verifies the OTP code and returns a JWT token in the response cookie (AUTH-TOKEN) along with user details."
+    description = "Verifies the OTP code and returns an opaque session token in the AUTH-TOKEN cookie along with user details."
 )
 @ApiResponses(
     value = [

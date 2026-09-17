@@ -18,7 +18,7 @@ words in a foreign language and practice them through several interactive featur
   generative features are gated on the user's proficiency for the target language.
 
 Everything is **user-scoped**: data belongs to an authenticated user, and authentication is
-**OTP-based** (email one-time codes) issuing a JWT delivered via cookie.
+**OTP-based** (email one-time codes) issuing an opaque session token delivered via HttpOnly cookie.
 
 ## Goal & nature
 
