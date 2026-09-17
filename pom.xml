@@ -17,6 +17,10 @@
         <java.version>24</java.version>
         <kotlin.version>2.4.10</kotlin.version>
         <scram.version>3.3</scram.version>
+        <sentry.version>8.53.0</sentry.version>
+        <sentry.maven-plugin.version>0.11.0</sentry.maven-plugin.version>
+        <!-- Skip source bundle upload unless SENTRY_AUTH_TOKEN is provided at build time -->
+        <sentry.bundle.skip>true</sentry.bundle.skip>
     </properties>
     <dependencies>
         <dependency>
@@ -194,6 +198,13 @@
             <version>3.1.0</version>
         </dependency>
 
+        <!-- Sentry error monitoring + tracing (Spring Boot 4 / WebFlux) -->
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-spring-boot-4</artifactId>
+            <version>${sentry.version}</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -282,6 +293,26 @@
                         <version>${kotlin.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>io.sentry</groupId>
+                <artifactId>sentry-maven-plugin</artifactId>
+                <version>${sentry.maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <skip>${sentry.bundle.skip}</skip>
+                    <debugSentryCli>false</debugSentryCli>
+                    <org>kksiazek</org>
+                    <project>kotlin</project>
+                    <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>uploadSourceBundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

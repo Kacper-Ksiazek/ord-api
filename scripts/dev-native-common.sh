@@ -85,6 +85,10 @@ load_api_env() {
 	export CORS_ALLOWED_ORIGINS="${CORS_ALLOWED_ORIGINS:-http://localhost:5173}"
 	export ENV_TEST_PROPERTY="${ENV_TEST_PROPERTY:-1test1}"
 	export PORT="${PORT:-$API_PORT}"
+	export SENTRY_DSN="${SENTRY_DSN:-}"
+	export SENTRY_ENVIRONMENT="${SENTRY_ENVIRONMENT:-development}"
+	export SENTRY_DEBUG="${SENTRY_DEBUG:-false}"
+	export SENTRY_TRACES_SAMPLE_RATE="${SENTRY_TRACES_SAMPLE_RATE:-0.0}"
 }
 
 compose_has_running_services() {

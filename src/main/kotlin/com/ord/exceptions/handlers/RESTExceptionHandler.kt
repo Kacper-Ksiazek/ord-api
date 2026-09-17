@@ -3,6 +3,7 @@ package com.ord.exceptions.handlers
 import com.ord.exceptions.REST.*
 import com.ord.exceptions.dto.api_responses.HTTPErrorResponse
 import com.ord.shared.utils.Console
+import io.sentry.Sentry
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.core.codec.DecodingException
@@ -36,6 +37,12 @@ class RESTExceptionHandler(
         }
     }
 
+    private fun captureServerError(e: Exception) {
+        if (!environment.matchesProfiles("test", "e2e", "cicd")) {
+            Sentry.captureException(e)
+        }
+    }
+
     @ExceptionHandler(
         BadRequestException::class,
         UnauthorizedException::class,
@@ -48,6 +55,9 @@ class RESTExceptionHandler(
     )
     fun handleException(e: Exception): ResponseEntity<HTTPErrorResponse> {
         val status = getStatusForException(e)
+        if (status >= 500) {
+            captureServerError(e)
+        }
         val errorResponse = HTTPErrorResponse(message = e.message, status = status)
 
         return ResponseEntity.status(status).body(errorResponse)
@@ -60,6 +70,7 @@ class RESTExceptionHandler(
         Console.addBreakLine(1)
 
         logger.error("Uncaught exception: ${e.message}", e)
+        captureServerError(e)
 
         val errorResponse = HTTPErrorResponse(
             message = """
