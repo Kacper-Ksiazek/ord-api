@@ -55,7 +55,7 @@ class RESTExceptionHandler(
     )
     fun handleException(e: Exception): ResponseEntity<HTTPErrorResponse> {
         val status = getStatusForException(e)
-        if (status >= 500) {
+        if (e is InternalServerError) {
             captureServerError(e)
         }
         val errorResponse = HTTPErrorResponse(message = e.message, status = status)
