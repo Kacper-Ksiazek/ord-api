@@ -167,6 +167,10 @@ See `.github/workflows/publish-api-types.yml` for the complete workflow configur
 
 ## API Structure
 
+## Manual testing with Bruno
+
+A Bruno collection (auth, users, conversations) lives in [`bruno/ord-api/`](../bruno/ord-api/). See `docs/ai-rules/bruno/` for organization rules.
+
 ## Authentication in Swagger UI
 
 Authentication uses the `AUTH-TOKEN` HttpOnly cookie (not `Authorization: Bearer`).

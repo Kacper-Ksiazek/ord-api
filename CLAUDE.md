@@ -27,6 +27,7 @@ changing code — this project prioritizes **strict consistency with existing pa
 | `error-handling` | REST exceptions & centralized `@ControllerAdvice` handling |
 | `testing` | Controller integration tests, Kotest, Testcontainers, suites |
 | `git-workflow` | Commit policy, migration immutability, OpenAPI re-export |
+| `bruno` | Bruno collection organization (`bruno/ord-api/`) |
 
 ## Critical reminders
 
