@@ -9,6 +9,7 @@ Before merging endpoint/DTO changes to main:
 - Re-export the spec (`make openapi`) and commit openapi.json — that commit IS the trigger.
 - Confirm the OpenAPI changes are intentional and backward-compatible for frontend consumers.
 - Expect a new @kacper-ksiazek/ord-api-types@1.0.<run_number> on GitHub Packages.
+- Leave `types-package/package.json` at version `0.0.0` — CI stamps the real version at publish time; never bump it manually.
 ```
 
 ## Bad
