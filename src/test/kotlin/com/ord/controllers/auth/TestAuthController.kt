@@ -2,11 +2,12 @@ package com.ord.controllers.auth
 
 import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
+import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.auth.api.requests.dto.OtpRequestDto
 import com.ord.core.auth.api.requests.dto.OtpVerifyDto
 import com.ord.core.auth.models.OtpCodeEntity
+import com.ord.core.auth.models.UserSessionEntity
 import com.ord.core.auth.repositories.OtpCodeRepository
-import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.security.SessionTokenService
@@ -18,14 +19,18 @@ import com.ord.core.user.model.toDTO
 import com.ord.testing_utils.api.clients.AuthAPIClient
 import com.ord.testing_utils.api.clients.UsersAPIClient
 import com.ord.testing_utils.api.dto.APIClientResponse
+import com.ord.testing_utils.dto.MockedAuthenticatedUser
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldNotContain
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
@@ -33,6 +38,8 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.time.Duration
 import java.time.Instant
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
 
 @DisplayName("- AuthController")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -62,6 +69,7 @@ class TestAuthController @Autowired constructor(
     object TestData {
         const val TEST_EMAIL = "testajjfsadfodsjfoidsjfisdfoisdjfois@example.com"
         const val OTP_CODE = "000000"
+        const val DISALLOWED_ORIGIN = "https://evil.example"
     }
 
     @AfterEach
@@ -75,6 +83,17 @@ class TestAuthController @Autowired constructor(
 
     private fun sessionCookie(rawToken: String) =
         ResponseCookie.from(sessionProperties.cookieName, rawToken).build()
+
+    private fun webClientWithOrigin(origin: String?): WebTestClient =
+        webClient.mutate().defaultHeaders { headers ->
+            if (origin == null) {
+                headers.remove(HttpHeaders.ORIGIN)
+            } else {
+                headers.set(HttpHeaders.ORIGIN, origin)
+            }
+        }.build()
+
+    private fun uniqueEmail() = "auth-edge-${UUID.randomUUID()}@example.com"
 
     @Nested
     @DisplayName("[POST] /api/v1/auth/otp-request - request OTP code")
@@ -103,20 +122,32 @@ class TestAuthController @Autowired constructor(
 
             @Test
             fun `200 - should replace existing OTP when requesting again`() {
-                // First request
                 authAPIClient.requestOtp(OtpRequestDto(email = TestData.TEST_EMAIL))
                 val firstOtp = otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block()
+                firstOtp.shouldNotBeNull()
 
-                // Wait a moment
-                Thread.sleep(100)
+                // Test profile always generates plaintext 000000, so overwrite the first hash
+                // to bcrypt(111111) before the second request. That lets us prove the old code dies.
+                otpCodeRepository.save(
+                    firstOtp.copy(code = passwordEncoder.encode("111111")!!)
+                ).block()
 
-                // Second request
                 authAPIClient.requestOtp(OtpRequestDto(email = TestData.TEST_EMAIL))
                 val secondOtp = otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block()
 
-                // Should only have one OTP
                 secondOtp.shouldNotBeNull()
-                secondOtp.id shouldNotBe firstOtp?.id
+                secondOtp.id shouldNotBe firstOtp.id
+                otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block()!!.id shouldBe secondOtp.id
+
+                val oldCodeResponse = authAPIClient.verifyOtp(
+                    OtpVerifyDto(email = TestData.TEST_EMAIL, code = "111111")
+                )
+                oldCodeResponse.status shouldBe HttpStatus.UNAUTHORIZED
+
+                val currentCodeResponse = authAPIClient.verifyOtp(
+                    OtpVerifyDto(email = TestData.TEST_EMAIL, code = TestData.OTP_CODE)
+                )
+                currentCodeResponse.status shouldBe HttpStatus.OK
             }
         }
 
@@ -151,6 +182,36 @@ class TestAuthController @Autowired constructor(
                 )
 
                 response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `403 - should reject otp-request from a disallowed origin`() {
+                val email = uniqueEmail()
+                try {
+                    val response = AuthAPIClient(webClientWithOrigin(TestData.DISALLOWED_ORIGIN))
+                        .requestOtp(OtpRequestDto(email = email))
+
+                    response.status shouldBe HttpStatus.FORBIDDEN
+                    otpCodeRepository.findByUserEmail(email).block().shouldBeNull()
+                } finally {
+                    otpCodeRepository.deleteByUserEmail(email).block()
+                    userRepository.deleteByEmail(email).block()
+                }
+            }
+
+            @Test
+            fun `403 - should reject otp-request without an origin`() {
+                val email = uniqueEmail()
+                try {
+                    val response = AuthAPIClient(webClientWithOrigin(null))
+                        .requestOtp(OtpRequestDto(email = email))
+
+                    response.status shouldBe HttpStatus.FORBIDDEN
+                    otpCodeRepository.findByUserEmail(email).block().shouldBeNull()
+                } finally {
+                    otpCodeRepository.deleteByUserEmail(email).block()
+                    userRepository.deleteByEmail(email).block()
+                }
             }
         }
     }
@@ -270,11 +331,17 @@ class TestAuthController @Autowired constructor(
             }
 
             @Test
-            fun `200 - cookie has been set with HttpOnly and Secure flags`() {
+            @DisplayName("200 - cookie is an opaque HttpOnly session cookie with Path=/ and SameSite=Lax")
+            fun `200 - cookie is an opaque HttpOnly session cookie with root Path and SameSite=Lax`() {
                 val authCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
 
                 authCookie.shouldNotBeNull()
+                authCookie.name shouldBe sessionProperties.cookieName
                 authCookie.isHttpOnly shouldBe true
+                authCookie.path shouldBe "/"
+                authCookie.sameSite shouldBe "Lax"
+                authCookie.maxAge.isNegative shouldBe true
+                authCookie.value.split('.').size shouldNotBe 3
             }
 
             @Test
@@ -284,11 +351,39 @@ class TestAuthController @Autowired constructor(
 
             @Test
             fun `200 - should create a new session on each login`() {
+                val firstCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
+                firstCookie.shouldNotBeNull()
+
+                authAPIClient.requestOtp(OtpRequestDto(email = TestData.TEST_EMAIL))
+                val secondResponse = authAPIClient.verifyOtp(
+                    OtpVerifyDto(
+                        email = TestData.TEST_EMAIL,
+                        code = TestData.OTP_CODE
+                    )
+                )
+                secondResponse.status shouldBe HttpStatus.OK
+
+                val secondCookie = secondResponse.cookies[sessionProperties.cookieName]?.firstOrNull()
+                secondCookie.shouldNotBeNull()
+                secondCookie.value shouldNotBe firstCookie.value
+
+                findSession(firstCookie.value).shouldNotBeNull()
+                findSession(secondCookie.value).shouldNotBeNull()
+
+                val sessions = userSessionRepository.findAll().collectList().block()!!
+                    .filter { it.userId == user.id }
+                sessions shouldHaveSize 2
+
+                usersAPIClient.me(user = userWithCookie(user, firstCookie.value)).status shouldBe HttpStatus.OK
+                usersAPIClient.me(user = userWithCookie(user, secondCookie.value)).status shouldBe HttpStatus.OK
+            }
+
+            @Test
+            fun `200 - should not return the raw session token in the body`() {
                 val authCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
                 authCookie.shouldNotBeNull()
 
-                val session = findSession(authCookie.value)
-                session.shouldNotBeNull()
+                response.body.toString() shouldNotContain authCookie.value
             }
         }
 
@@ -371,6 +466,105 @@ class TestAuthController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.FORBIDDEN
             }
+
+            @Test
+            fun `401 - should fail when reusing an already verified OTP`() {
+                val firstResponse = authAPIClient.verifyOtp(
+                    OtpVerifyDto(email = TestData.TEST_EMAIL, code = TestData.OTP_CODE)
+                )
+                firstResponse.status shouldBe HttpStatus.OK
+
+                val secondResponse = authAPIClient.verifyOtp(
+                    OtpVerifyDto(email = TestData.TEST_EMAIL, code = TestData.OTP_CODE)
+                )
+                secondResponse.status shouldBe HttpStatus.UNAUTHORIZED
+                otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block().shouldBeNull()
+            }
+
+            @Test
+            fun `401 - should still accept a valid OTP after a wrong code`() {
+                val wrongResponse = authAPIClient.verifyOtp(
+                    OtpVerifyDto(email = TestData.TEST_EMAIL, code = "999999")
+                )
+                wrongResponse.status shouldBe HttpStatus.UNAUTHORIZED
+                otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block().shouldNotBeNull()
+
+                val validResponse = authAPIClient.verifyOtp(
+                    OtpVerifyDto(email = TestData.TEST_EMAIL, code = TestData.OTP_CODE)
+                )
+                validResponse.status shouldBe HttpStatus.OK
+            }
+
+            @Test
+            fun `401 - should delete the OTP row when the code is expired`() {
+                otpCodeRepository.deleteByUserEmail(TestData.TEST_EMAIL).block()
+
+                otpCodeRepository.save(
+                    OtpCodeEntity(
+                        code = passwordEncoder.encode(TestData.OTP_CODE)!!,
+                        expiresAt = Instant.now().minusSeconds(1),
+                        userEmail = TestData.TEST_EMAIL
+                    )
+                ).block()
+
+                val response = authAPIClient.verifyOtp(
+                    OtpVerifyDto(email = TestData.TEST_EMAIL, code = TestData.OTP_CODE)
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+                otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block().shouldBeNull()
+            }
+
+            @Test
+            fun `401 - should fail when the OTP belongs to a different email`() {
+                val otherEmail = uniqueEmail()
+                try {
+                    val response = authAPIClient.verifyOtp(
+                        OtpVerifyDto(email = otherEmail, code = TestData.OTP_CODE)
+                    )
+
+                    response.status shouldBe HttpStatus.UNAUTHORIZED
+                    userRepository.findByEmail(otherEmail).block().shouldBeNull()
+                    otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block().shouldNotBeNull()
+                    response.cookies[sessionProperties.cookieName]?.firstOrNull().shouldBeNull()
+                } finally {
+                    userRepository.deleteByEmail(otherEmail).block()
+                    otpCodeRepository.deleteByUserEmail(otherEmail).block()
+                }
+            }
+
+            @Test
+            fun `400 - should fail with invalid email format`() {
+                val response = authAPIClient.verifyOtp(
+                    OtpVerifyDto(email = "not-an-email", code = TestData.OTP_CODE)
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `403 - should reject otp-verify from a disallowed origin`() {
+                val response = AuthAPIClient(webClientWithOrigin(TestData.DISALLOWED_ORIGIN)).verifyOtp(
+                    OtpVerifyDto(email = TestData.TEST_EMAIL, code = TestData.OTP_CODE)
+                )
+
+                response.status shouldBe HttpStatus.FORBIDDEN
+                otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block().shouldNotBeNull()
+                userRepository.findByEmail(TestData.TEST_EMAIL).block().shouldBeNull()
+                response.cookies[sessionProperties.cookieName]?.firstOrNull().shouldBeNull()
+            }
+
+            @Test
+            fun `403 - should reject otp-verify without an origin`() {
+                val response = AuthAPIClient(webClientWithOrigin(null)).verifyOtp(
+                    OtpVerifyDto(email = TestData.TEST_EMAIL, code = TestData.OTP_CODE)
+                )
+
+                response.status shouldBe HttpStatus.FORBIDDEN
+                otpCodeRepository.findByUserEmail(TestData.TEST_EMAIL).block().shouldNotBeNull()
+                userRepository.findByEmail(TestData.TEST_EMAIL).block().shouldBeNull()
+                response.cookies[sessionProperties.cookieName]?.firstOrNull().shouldBeNull()
+            }
         }
     }
 
@@ -397,6 +591,18 @@ class TestAuthController @Autowired constructor(
                 val authCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
                 authCookie.shouldNotBeNull()
                 authCookie.maxAge.seconds shouldBe 0
+            }
+
+            @Test
+            @DisplayName("401 - should reject /me after logout with the old cookie")
+            fun `401 - should reject me after logout with the old cookie`() {
+                val authenticatedUser = mockAuthenticatedUser()
+
+                val logoutResponse = authAPIClient.logout(user = authenticatedUser)
+                logoutResponse.status shouldBe HttpStatus.NO_CONTENT
+
+                val meResponse = usersAPIClient.me(user = authenticatedUser)
+                meResponse.status shouldBe HttpStatus.UNAUTHORIZED
             }
         }
 
@@ -443,6 +649,24 @@ class TestAuthController @Autowired constructor(
 
                 findSession(authenticatedUser.token).shouldNotBeNull()
             }
+
+            @Test
+            fun `401 - should fail when the cookie has no matching session`() {
+                val authenticatedUser = mockAuthenticatedUser()
+                userSessionRepository.deleteByTokenHash(sessionTokenService.hash(authenticatedUser.token)).block()
+
+                val logoutResponse = authAPIClient.logout(user = authenticatedUser)
+                logoutResponse.status shouldBe HttpStatus.UNAUTHORIZED
+                val logoutCookie = logoutResponse.cookies[sessionProperties.cookieName]?.firstOrNull()
+                logoutCookie.shouldNotBeNull()
+                logoutCookie.maxAge.seconds shouldBe 0
+
+                val meResponse = usersAPIClient.me(user = authenticatedUser)
+                meResponse.status shouldBe HttpStatus.UNAUTHORIZED
+                val meCookie = meResponse.cookies[sessionProperties.cookieName]?.firstOrNull()
+                meCookie.shouldNotBeNull()
+                meCookie.maxAge.seconds shouldBe 0
+            }
         }
     }
 
@@ -467,14 +691,15 @@ class TestAuthController @Autowired constructor(
             rawToken: String = sessionTokenService.generateRawToken(),
             idleExpiresAt: Instant = Instant.now().plus(Duration.ofDays(7)),
             absoluteExpiresAt: Instant = Instant.now().plus(Duration.ofDays(30)),
-        ): Pair<String, com.ord.core.auth.models.UserSessionEntity> {
+            lastSeenAt: Instant = Instant.now(),
+        ): Pair<String, UserSessionEntity> {
             val now = Instant.now()
             val session = userSessionRepository.save(
-                com.ord.core.auth.models.UserSessionEntity(
+                UserSessionEntity(
                     tokenHash = sessionTokenService.hash(rawToken),
                     userId = user.id!!,
                     createdAt = now,
-                    lastSeenAt = now,
+                    lastSeenAt = lastSeenAt,
                     idleExpiresAt = idleExpiresAt,
                     absoluteExpiresAt = absoluteExpiresAt,
                 )
@@ -482,14 +707,6 @@ class TestAuthController @Autowired constructor(
 
             return Pair(rawToken, session)
         }
-
-        private fun userWithCookie(user: UserEntity, rawToken: String) =
-            com.ord.testing_utils.dto.MockedAuthenticatedUser(
-                token = rawToken,
-                userInfo = user.toDTO(),
-                authCookie = sessionCookie(rawToken),
-                email = user.email
-            )
 
         @Nested
         @DisplayName("Positive")
@@ -523,6 +740,88 @@ class TestAuthController @Autowired constructor(
 
                 val response = usersAPIClient.me(user = userWithCookie(user, rawToken))
                 response.status shouldBe HttpStatus.OK
+            }
+
+            @Test
+            @DisplayName("200 - should keep the same cookie under parallel /me requests")
+            fun `200 - should keep the same cookie under parallel me requests`() {
+                val user = persistUser()
+                val (rawToken, _) = persistSession(user)
+                val mockUser = userWithCookie(user, rawToken)
+
+                val responses = (1..8).map {
+                    CompletableFuture.supplyAsync {
+                        UsersAPIClient(webClient.mutate().build()).me(user = mockUser)
+                    }
+                }.map { it.join() }
+
+                responses.forEach { response ->
+                    response.status shouldBe HttpStatus.OK
+                    val setCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
+                    if (setCookie != null) {
+                        setCookie.value shouldBe rawToken
+                    }
+                }
+                findSession(rawToken).shouldNotBeNull()
+            }
+
+            @Test
+            fun `200 - should slide idle expiry after the slide interval`() {
+                val user = persistUser()
+                val lastSeenAt = Instant.now().minus(Duration.ofMinutes(2))
+                val (rawToken, _) = persistSession(user, lastSeenAt = lastSeenAt)
+                val stored = findSession(rawToken)
+                stored.shouldNotBeNull()
+
+                val response = usersAPIClient.me(user = userWithCookie(user, rawToken))
+                response.status shouldBe HttpStatus.OK
+                response.cookies[sessionProperties.cookieName]?.firstOrNull().shouldBeNull()
+
+                val after = findSession(rawToken)
+                after.shouldNotBeNull()
+                after.lastSeenAt shouldBeGreaterThan stored.lastSeenAt
+
+                val expectedIdle = Instant.now().plus(sessionProperties.idleTimeout)
+                (Duration.between(after.idleExpiresAt, expectedIdle).abs() < Duration.ofSeconds(5)) shouldBe true
+            }
+
+            @Test
+            fun `200 - should not slide idle expiry inside the slide interval`() {
+                val user = persistUser()
+                val (rawToken, _) = persistSession(
+                    user,
+                    lastSeenAt = Instant.now().minusSeconds(5),
+                )
+                val stored = findSession(rawToken)
+                stored.shouldNotBeNull()
+
+                val response = usersAPIClient.me(user = userWithCookie(user, rawToken))
+                response.status shouldBe HttpStatus.OK
+
+                val after = findSession(rawToken)
+                after.shouldNotBeNull()
+                after.lastSeenAt shouldBe stored.lastSeenAt
+                after.idleExpiresAt shouldBe stored.idleExpiresAt
+            }
+
+            @Test
+            fun `200 - should not slide idle expiry past absolute expiry`() {
+                val now = Instant.now()
+                val user = persistUser()
+                val absoluteExpiresAt = now.plus(Duration.ofHours(1))
+                val (rawToken, _) = persistSession(
+                    user,
+                    lastSeenAt = now.minus(Duration.ofMinutes(2)),
+                    idleExpiresAt = now.plus(Duration.ofDays(7)),
+                    absoluteExpiresAt = absoluteExpiresAt,
+                )
+
+                val response = usersAPIClient.me(user = userWithCookie(user, rawToken))
+                response.status shouldBe HttpStatus.OK
+
+                val after = findSession(rawToken)
+                after.shouldNotBeNull()
+                after.idleExpiresAt shouldBe after.absoluteExpiresAt
             }
         }
 
@@ -565,8 +864,81 @@ class TestAuthController @Autowired constructor(
 
                 val response = usersAPIClient.me(user = userWithCookie(user, rawToken))
                 response.status shouldBe HttpStatus.UNAUTHORIZED
+
+                val clearedCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
+                clearedCookie.shouldNotBeNull()
+                clearedCookie.maxAge.seconds shouldBe 0
                 findSession(rawToken).shouldBeNull()
+            }
+
+            @Test
+            fun `401 - should fail when the user was deleted but the session remains`() {
+                val user = persistUser()
+                val (rawToken, _) = persistSession(user)
+
+                userRepository.deleteById(user.id!!).block()
+
+                val response = usersAPIClient.me(user = userWithCookie(user, rawToken))
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+
+                val clearedCookie = response.cookies[sessionProperties.cookieName]?.firstOrNull()
+                clearedCookie.shouldNotBeNull()
+                clearedCookie.maxAge.seconds shouldBe 0
+            }
+
+            @Test
+            fun `401 - should fail for a blank AUTH-TOKEN cookie`() {
+                persistUser()
+
+                webClient
+                    .get()
+                    .uri("/api/v1/users/me")
+                    .header(HttpHeaders.COOKIE, "${sessionProperties.cookieName}=")
+                    .exchange()
+                    .expectStatus().isUnauthorized
+
+                webClient
+                    .get()
+                    .uri("/api/v1/users/me")
+                    .header(HttpHeaders.COOKIE, "${sessionProperties.cookieName}=   ")
+                    .exchange()
+                    .expectStatus().isUnauthorized
+            }
+
+            @Test
+            fun `401 - should ignore Authorization Bearer without the cookie`() {
+                val user = persistUser()
+                val (rawToken, _) = persistSession(user)
+
+                webClient
+                    .get()
+                    .uri("/api/v1/users/me")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer $rawToken")
+                    .exchange()
+                    .expectStatus().isUnauthorized
+
+                findSession(rawToken).shouldNotBeNull()
+            }
+
+            @Test
+            fun `401 - should reject a leftover JWT string in AUTH-TOKEN`() {
+                persistUser()
+
+                webClient
+                    .get()
+                    .uri("/api/v1/users/me")
+                    .cookie(sessionProperties.cookieName, "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.sig")
+                    .exchange()
+                    .expectStatus().isUnauthorized
             }
         }
     }
+
+    private fun userWithCookie(user: UserEntity, rawToken: String) =
+        MockedAuthenticatedUser(
+            token = rawToken,
+            userInfo = user.toDTO(),
+            authCookie = sessionCookie(rawToken),
+            email = user.email
+        )
 }

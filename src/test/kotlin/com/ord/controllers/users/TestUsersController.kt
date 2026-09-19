@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -103,6 +104,23 @@ class TestUsersController @Autowired constructor(
                 response.body shouldNotBe null
                 response.body!!.selectedLearningLanguage shouldBe null
             }
+
+            @Test
+            @DisplayName("200 - should allow GET /me without an origin")
+            fun `200 - should allow GET me without an origin`() {
+                val authenticatedUser = mockAuthenticatedUser()
+                val client = UsersAPIClient(
+                    webClient.mutate()
+                        .defaultHeaders { headers -> headers.remove(HttpHeaders.ORIGIN) }
+                        .build()
+                )
+
+                val response = client.me(user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.email shouldBe authenticatedUser.email
+            }
         }
 
         @Nested
@@ -113,6 +131,22 @@ class TestUsersController @Autowired constructor(
                 val response = usersAPIClient.me()
 
                 response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            @DisplayName("403 - should reject GET /me from a disallowed origin")
+            fun `403 - should reject GET me from a disallowed origin`() {
+                // CSRF is mutations-only, but CorsWebFilter still rejects unknown Origins on GET.
+                val authenticatedUser = mockAuthenticatedUser()
+                val client = UsersAPIClient(
+                    webClient.mutate()
+                        .defaultHeaders { headers -> headers.set(HttpHeaders.ORIGIN, "https://evil.example") }
+                        .build()
+                )
+
+                val response = client.me(user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.FORBIDDEN
             }
         }
     }
