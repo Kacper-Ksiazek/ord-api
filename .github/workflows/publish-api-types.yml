@@ -36,20 +36,35 @@ jobs:
 
       - name: 📦 Prepare NPM package
         run: |
+          COMMITTED_VERSION="$(jq -r '.version' types-package/package.json)"
+          if [ "$COMMITTED_VERSION" != "0.0.0" ]; then
+            echo "::error::types-package/package.json version must stay 0.0.0 (CI placeholder). Found ${COMMITTED_VERSION}. Do not bump it manually — CI stamps 1.0.<workflow-run-number> at publish time."
+            exit 1
+          fi
+
           mkdir -p npm-package
           cp types.ts npm-package/
           cp types-package/README.md npm-package/
           cp types-package/package.json npm-package/
 
-      - name: 🏷️ Update package version
+      - name: 🏷️ Stamp package version
+        id: version
         working-directory: npm-package
         run: |
           VERSION="1.0.${{ github.run_number }}"
-          npm version "$VERSION" --no-git-tag-version
+          jq --arg version "$VERSION" '.version = $version' package.json > package.json.tmp
+          mv package.json.tmp package.json
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Publishing version: $VERSION"
 
       - name: 🚀 Publish to GitHub Packages
         working-directory: npm-package
-        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if npm view "@kacper-ksiazek/ord-api-types@${VERSION}" version --registry https://npm.pkg.github.com >/dev/null 2>&1; then
+            echo "Version ${VERSION} is already on the registry — skipping publish (safe re-run)."
+            exit 0
+          fi
+          npm publish
