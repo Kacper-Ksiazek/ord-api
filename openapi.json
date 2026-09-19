@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "ORD API - Language Learning Platform",
-        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with JWT tokens<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **4. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **5. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require JWT authentication. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
+        "description": "# ORD API Documentation\n\nRESTful API for a comprehensive language learning platform with AI-powered features.\n\n---\n\n## \ud83d\udcda API Domains\n\n| Domain | Description | Endpoints & Features |\n|--------|-------------|----------------------|\n| **1. Core** | Foundation services for user management and authentication | \u2022 **Authentication** - OTP-based email authentication with HttpOnly session cookies<br>\u2022 **Users** - User profile management and account initialization<br>\u2022 **Language Proficiencies** - Multi-language support with proficiency tracking |\n| **2. Words** | Comprehensive vocabulary management with AI assistance | \u2022 **CRUD** - Create, read, update, and delete vocabulary words<br>\u2022 **AI Generation** - AI-powered word generation and enhancement<br>\u2022 **Details** - Detailed word information including examples and usage |\n| **3. Games** | Interactive learning games with various difficulty levels | \u2022 **General** - Start, cancel, and manage game sessions<br>\u2022 **Words Typing** - Type words quickly to improve recall and speed<br>\u2022 **Crossword** - Solve crossword puzzles with learned vocabulary<br>\u2022 **Sentences Writing** - Practice writing sentences using target words |\n| **4. Conversations** | AI-powered conversation practice with various scenarios | \u2022 **Management** - Create conversations, suggest topics, generate AI interlocutors<br>\u2022 **Ongoing Sessions** - Send messages, get AI responses, review user messages |\n| **5. Utility** | System utilities and health monitoring | \u2022 **Health Check** - Monitor application and database health status<br>\u2022 **AI Demo** - Test and demonstrate AI provider functionality |\n\n---\n\n## \ud83d\udd10 Authentication\n\nMost endpoints require a session cookie. To get started:\n\n1. **Request OTP** \u2192 `POST /api/v1/auth/otp-request` with your email\n2. **Verify OTP** \u2192 `POST /api/v1/auth/otp-verify` with the 6-digit code from email\n3. **Use API** \u2192 an opaque session token is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)\n\n**Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw session token (no `Bearer` prefix).\n\n**HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).",
         "contact": {
             "name": "ORD API Team",
             "email": "support@ord-api.com"
@@ -1750,7 +1750,7 @@
                     "1. Core: Authentication"
                 ],
                 "summary": "Verify OTP code and login",
-                "description": "Verifies the OTP code and returns a JWT token in the response cookie (AUTH-TOKEN) along with user details.",
+                "description": "Verifies the OTP code and returns an opaque session token in the AUTH-TOKEN cookie along with user details.",
                 "operationId": "verifyOtp",
                 "requestBody": {
                     "content": {
@@ -1768,10 +1768,10 @@
                         "content": {}
                     },
                     "200": {
-                        "description": "OTP verified; JWT stored in AUTH-TOKEN cookie",
+                        "description": "OTP verified; opaque session token stored in AUTH-TOKEN cookie",
                         "headers": {
                             "Set-Cookie": {
-                                "description": "AUTH-TOKEN=<jwt>; HttpOnly; Path=/",
+                                "description": "AUTH-TOKEN=<opaque-session-token>; HttpOnly; Path=/",
                                 "style": "simple",
                                 "schema": {
                                     "type": "string"
@@ -2518,7 +2518,7 @@
                     "1. Core: Authentication"
                 ],
                 "summary": "Logout user",
-                "description": "Logs out the authenticated user by clearing the JWT token cookie.",
+                "description": "Logs out the authenticated user by deleting the server-side session and clearing the AUTH-TOKEN cookie.",
                 "operationId": "logout",
                 "responses": {
                     "400": {
@@ -6818,7 +6818,7 @@
         "securitySchemes": {
             "auth-cookie": {
                 "type": "apiKey",
-                "description": "HttpOnly JWT cookie set by POST /api/v1/auth/otp-verify. Sent automatically by browsers and HTTP clients with cookie jar support.",
+                "description": "HttpOnly opaque session cookie set by POST /api/v1/auth/otp-verify. Sent automatically by browsers and HTTP clients with cookie jar support.",
                 "name": "AUTH-TOKEN",
                 "in": "cookie"
             }

@@ -1,6 +1,6 @@
 # Never log or return secrets and OTP codes
 
-Raw OTP codes, JWTs, signing keys, and credentials must never be logged or echoed in API responses. The OTP code is generated, used to build the email body, and otherwise only persisted as a BCrypt hash — it never appears in a log line or a response payload. `otp-verify` returns a `UserDTO`, not the token (the token goes in the cookie).
+Raw OTP codes, session tokens, signing keys, and credentials must never be logged or echoed in API responses. The OTP code is generated, used to build the email body, and otherwise only persisted as a BCrypt hash — it never appears in a log line or a response payload. `otp-verify` returns a `UserDTO`, not the session token (the token goes in the cookie; the database stores only its hash).
 
 ## Good
 

@@ -1,12 +1,12 @@
 package com.ord.core.auth.services.impl
 
-import com.ord.config.properties.JwtProperties
 import com.ord.config.properties.OtpProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.core.auth.models.UserSessionEntity
 import com.ord.core.auth.services.AuthService
 import com.ord.core.auth.services.EmailService
 import com.ord.core.auth.services.OtpService
-import com.ord.core.security.JwtService
+import com.ord.core.security.SessionTokenService
 import com.ord.core.security.UserRepository
 import com.ord.core.security.UserSessionRepositoryReactive
 import com.ord.core.security.addAuthTokenCookie
@@ -18,18 +18,17 @@ import com.ord.exceptions.REST.UnauthorizedException
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
-import java.util.UUID
+import java.time.Instant
 
 @Service
 class AuthServiceImpl(
-    private val jwtProperties: JwtProperties,
+    private val sessionProperties: SessionProperties,
     private val otpProperties: OtpProperties,
-    private val jwtService: JwtService,
+    private val sessionTokenService: SessionTokenService,
     private val otpService: OtpService,
     private val emailService: EmailService,
-
     private val userRepository: UserRepository,
-    private val sessionRepositoryReactive: UserSessionRepositoryReactive
+    private val sessionRepositoryReactive: UserSessionRepositoryReactive,
 ) : AuthService {
 
     override fun requestOtp(email: String): Mono<Void> {
@@ -55,11 +54,9 @@ class AuthServiceImpl(
                 userRepository
                     .findByEmail(verifiedEmail)
                     .flatMap { user ->
-                        // User exists, return it
                         Mono.just(user)
                     }
                     .switchIfEmpty(
-                        // User doesn't exist, create new one
                         userRepository.save(
                             com.ord.core.user.model.UserEntity(
                                 name = "",
@@ -79,37 +76,39 @@ class AuthServiceImpl(
     override fun logout(
         exchange: ServerWebExchange
     ): Mono<Void> {
-        val tokenFromCookie = exchange.getCookieValue(jwtProperties.authCookieName)
+        val tokenFromCookie = exchange.getCookieValue(sessionProperties.cookieName)
 
         if (tokenFromCookie == null) {
             return Mono.error(UnauthorizedException("Missing auth token"))
         }
 
         exchange.invalidateAuthTokenCookie(
-            name = jwtProperties.authCookieName,
-            secure = jwtProperties.cookieSecure,
-            sameSite = jwtProperties.cookieSameSite,
+            name = sessionProperties.cookieName,
+            secure = sessionProperties.cookieSecure,
+            sameSite = sessionProperties.cookieSameSite,
         )
 
         return sessionRepositoryReactive
-            .deleteByToken(tokenFromCookie)
+            .deleteByTokenHash(sessionTokenService.hash(tokenFromCookie))
     }
 
 
     private fun createUserSession(user: UserDTO): Mono<Pair<UserDTO, String>> {
-        val token = jwtService.createToken(
-            jti = UUID.randomUUID().toString(),
-            subject = user.email,
-        )
+        val rawToken = sessionTokenService.generateRawToken()
+        val now = Instant.now()
 
         return sessionRepositoryReactive
             .save(
                 UserSessionEntity(
+                    tokenHash = sessionTokenService.hash(rawToken),
                     userId = user.id,
-                    token = token
+                    createdAt = now,
+                    lastSeenAt = now,
+                    idleExpiresAt = now.plus(sessionProperties.idleTimeout),
+                    absoluteExpiresAt = now.plus(sessionProperties.absoluteTimeout),
                 )
             )
-            .thenReturn(Pair(user, token))
+            .thenReturn(Pair(user, rawToken))
     }
 
 
@@ -120,10 +119,10 @@ class AuthServiceImpl(
         val (user, token) = payload
 
         exchange.addAuthTokenCookie(
-            name = jwtProperties.authCookieName,
+            name = sessionProperties.cookieName,
             value = token,
-            secure = jwtProperties.cookieSecure,
-            sameSite = jwtProperties.cookieSameSite,
+            secure = sessionProperties.cookieSecure,
+            sameSite = sessionProperties.cookieSameSite,
         )
 
         return user

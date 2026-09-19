@@ -1,6 +1,6 @@
 package com.ord.config
 
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.shared.annotations.ExportToOpenAPI
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.models.Components
@@ -21,7 +21,7 @@ import org.springframework.core.type.filter.AssignableTypeFilter
 
 @Configuration
 class OpenApiConfig(
-    private val jwtProperties: JwtProperties,
+    private val sessionProperties: SessionProperties,
 ) {
 
     @Bean
@@ -43,7 +43,7 @@ class OpenApiConfig(
 
                         | Domain | Description | Endpoints & Features |
                         |--------|-------------|----------------------|
-                        | **1. Core** | Foundation services for user management and authentication | • **Authentication** - OTP-based email authentication with JWT tokens<br>• **Users** - User profile management and account initialization<br>• **Language Proficiencies** - Multi-language support with proficiency tracking |
+                        | **1. Core** | Foundation services for user management and authentication | • **Authentication** - OTP-based email authentication with HttpOnly session cookies<br>• **Users** - User profile management and account initialization<br>• **Language Proficiencies** - Multi-language support with proficiency tracking |
                         | **2. Words** | Comprehensive vocabulary management with AI assistance | • **CRUD** - Create, read, update, and delete vocabulary words<br>• **AI Generation** - AI-powered word generation and enhancement<br>• **Details** - Detailed word information including examples and usage |
                         | **3. Games** | Interactive learning games with various difficulty levels | • **General** - Start, cancel, and manage game sessions<br>• **Words Typing** - Type words quickly to improve recall and speed<br>• **Crossword** - Solve crossword puzzles with learned vocabulary<br>• **Sentences Writing** - Practice writing sentences using target words |
                         | **4. Conversations** | AI-powered conversation practice with various scenarios | • **Management** - Create conversations, suggest topics, generate AI interlocutors<br>• **Ongoing Sessions** - Send messages, get AI responses, review user messages |
@@ -53,13 +53,13 @@ class OpenApiConfig(
 
                         ## 🔐 Authentication
 
-                        Most endpoints require JWT authentication. To get started:
+                        Most endpoints require a session cookie. To get started:
 
                         1. **Request OTP** → `POST /api/v1/auth/otp-request` with your email
                         2. **Verify OTP** → `POST /api/v1/auth/otp-verify` with the 6-digit code from email
-                        3. **Use API** → JWT is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)
+                        3. **Use API** → an opaque session token is stored in the `AUTH-TOKEN` HttpOnly cookie (sent automatically by browsers and HTTP clients with cookie jar support)
 
-                        **Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw JWT value (no `Bearer` prefix).
+                        **Swagger UI:** After otp-verify in the same browser session, authenticated requests work automatically. To set the cookie manually, click **Authorize** and enter the raw session token (no `Bearer` prefix).
 
                         **HTTP clients (Bruno, curl):** Run otp-verify first; the `AUTH-TOKEN` cookie is stored in the client cookie jar (`curl -c/-b`).
                         """.trimIndent()
@@ -92,9 +92,9 @@ class OpenApiConfig(
                         SecurityScheme()
                             .type(SecurityScheme.Type.APIKEY)
                             .`in`(SecurityScheme.In.COOKIE)
-                            .name(jwtProperties.authCookieName)
+                            .name(sessionProperties.cookieName)
                             .description(
-                                "HttpOnly JWT cookie set by POST /api/v1/auth/otp-verify. " +
+                                "HttpOnly opaque session cookie set by POST /api/v1/auth/otp-verify. " +
                                     "Sent automatically by browsers and HTTP clients with cookie jar support."
                             )
                     )

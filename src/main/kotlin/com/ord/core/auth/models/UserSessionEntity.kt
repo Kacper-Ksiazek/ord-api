@@ -9,13 +9,27 @@ import java.util.*
 
 @Table(name = "user_sessions")
 data class UserSessionEntity(
-    var token: String,
+    @Column("token_hash")
+    var tokenHash: String,
 
     @Column("user_id")
     override var userId: UUID,
 
     var createdAt: Instant = Instant.now(),
 
+    @Column("last_seen_at")
+    var lastSeenAt: Instant = Instant.now(),
+
+    @Column("idle_expires_at")
+    var idleExpiresAt: Instant = Instant.now(),
+
+    @Column("absolute_expires_at")
+    var absoluteExpiresAt: Instant = Instant.now(),
+
     @Id
     override var id: UUID? = null
-) : IdentifiableUserResource
+) : IdentifiableUserResource {
+    fun isExpired(now: Instant = Instant.now()): Boolean {
+        return !now.isBefore(idleExpiresAt) || !now.isBefore(absoluteExpiresAt)
+    }
+}

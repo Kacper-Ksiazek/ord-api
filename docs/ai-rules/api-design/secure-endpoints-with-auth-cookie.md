@@ -1,15 +1,15 @@
-# Declare JWT security with @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
+# Declare session-cookie security with @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 
 Authenticated controllers annotate the class with `@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)`; controllers that mix public and protected endpoints (like auth) put the annotation on the protected methods only. The scheme name must match the cookie security scheme registered in `OpenApiConfig` (`auth-cookie`, `AUTH-TOKEN` cookie).
 
-Runtime auth reads JWT from the `AUTH-TOKEN` HttpOnly cookie only — not from `Authorization: Bearer`.
+Runtime auth reads the opaque session token from the `AUTH-TOKEN` HttpOnly cookie only — not from `Authorization: Bearer`.
 
 ## Good
 
 ```kotlin
 @RestController
 @RequestMapping("/api/v1/conversations")
-@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)   // all endpoints require JWT cookie
+@SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)   // all endpoints require the session cookie
 class ConversationController(...)
 ```
 

@@ -11,7 +11,7 @@ ORD is the backend for a vocabulary-learning app where users manage a personal w
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Flyway](https://img.shields.io/badge/Flyway-migrations-CC0200?logo=flyway&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-integrated-412991?logo=openai&logoColor=white)
-![JWT](https://img.shields.io/badge/Auth-OTP_→_JWT-000000)
+![Session](https://img.shields.io/badge/Auth-OTP_→_session_cookie-000000)
 ![OpenAPI](https://img.shields.io/badge/OpenAPI-contract-6BA539?logo=openapiinitiative&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-containerized-2496ED?logo=docker&logoColor=white)
 ![Testcontainers](https://img.shields.io/badge/Testcontainers-integration_tests-000000)
@@ -19,7 +19,7 @@ ORD is the backend for a vocabulary-learning app where users manage a personal w
 ## Highlights
 
 - **Fully non-blocking stack** — Spring WebFlux + R2DBC end-to-end; SSE streaming for AI responses
-- **OTP → JWT auth** — email one-time codes, JWT delivered via HTTP-only cookie; reactive Spring Security
+- **OTP → session cookie** — email one-time codes, opaque token delivered via HTTP-only cookie; reactive Spring Security
 - **AI-native features** — OpenAI for generation, review, and structured outputs; ElevenLabs for TTS; per-operation GPT token-usage logging
 - **Strict layered architecture** — `Controller → Facade → Service → Repository → Entity / Mapper / DTO` with vertical feature slicing
 - **Contract-first API** — SpringDoc OpenAPI spec exported to `openapi.json`; TypeScript types auto-published on change
@@ -53,7 +53,7 @@ src/main/kotlin/com/ord/
 ```mermaid
 flowchart LR
     Client["Client"]
-    Security["JWT Security Filter"]
+    Security["Session cookie filter"]
     Controller["Controller"]
     Facade["Facade"]
     Service["Service"]
@@ -78,7 +78,7 @@ flowchart LR
 |-------|---------|
 | **Language / framework** | Kotlin 2.1.21, Spring Boot 3.2.3, WebFlux, Reactor (`Mono` / `Flux`) |
 | **Persistence** | Spring Data R2DBC, PostgreSQL 16, Flyway migrations |
-| **Auth** | OTP (email) → JWT (jjwt) via cookie, reactive Spring Security |
+| **Auth** | OTP (email) → opaque HttpOnly session cookie, reactive Spring Security |
 | **AI** | OpenAI Responses API, structured outputs, SSE streaming, ElevenLabs TTS |
 | **API docs** | SpringDoc OpenAPI + Swagger UI |
 | **Testing** | JUnit 5 Suite, Kotest, Testcontainers, WebTestClient |
@@ -99,7 +99,6 @@ flowchart LR
 DOCKER_DB_NAME=ord
 DOCKER_DB_USER=ord
 DOCKER_DB_PASSWORD=ord
-JWT_SECRET_KEY=change-me
 OPEN_AI_KEY=sk-...
 ELEVENLABS_API_KEY=...
 EMAIL_FROM=noreply@example.com

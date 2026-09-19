@@ -1,7 +1,7 @@
 package com.ord.controllers.games
 
 import com.ord.config.GamesConfig
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.auth.repositories.OtpCodeRepository
@@ -72,14 +72,14 @@ class TestCrosswordGameController @Autowired constructor(
     private val finishedGameRepository: FinishedGameRepository,
     userRepository: UserRepository,
     webClient: WebTestClient,
-    jwtProperties: JwtProperties,
+    sessionProperties: SessionProperties,
     languageProficiencyRepository: LanguageProficiencyRepository,
     otpCodeRepository: OtpCodeRepository,
     passwordEncoder: PasswordEncoder,
     aiProviderUsageRepository: AiProviderUsageRepository
 ) : ControllerTestBase(
     webClient,
-    jwtProperties = jwtProperties,
+    sessionProperties = sessionProperties,
     languageProficiencyRepository = languageProficiencyRepository,
     userRepository = userRepository,
     otpCodeRepository = otpCodeRepository,

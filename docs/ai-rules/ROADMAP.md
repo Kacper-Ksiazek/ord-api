@@ -8,7 +8,7 @@ category covers, and progress. Subagents check off items as they finish writing 
 - **Language:** Kotlin 2.1.21 (JVM target 17, Java 24 toolchain)
 - **Framework:** Spring Boot 3.2.3, **WebFlux (fully reactive)**
 - **Persistence:** Spring Data **R2DBC** + PostgreSQL; Flyway migrations; H2 (CI fallback)
-- **Auth:** OTP (email) → JWT (jjwt) via cookie; reactive Spring Security
+- **Auth:** OTP (email) → opaque HttpOnly session cookie; reactive Spring Security
 - **AI:** OpenAI integration — prompts (file-based templates), structured outputs, SSE
   streaming, per-operation GPT token-usage logging
 - **API docs:** SpringDoc OpenAPI + Swagger UI; `openapi.json` exported; TS `types-package`
@@ -34,7 +34,7 @@ Strict vertical slicing under `com.ord`: `config/`, `core/`, `features/`, `excep
 | `reactive` | WebFlux + Reactor `Mono`/`Flux` usage, composition (`flatMap`/`map`/`zip`/`collectList`), no blocking, SSE streaming | [x] (8) |
 | `persistence` | R2DBC repositories, `*CustomMethods` + `R2dbcEntityTemplate` raw SQL, enum/`Json` binding, `OffsetDateTime`→`Instant`, `@Table` entities, Flyway migration naming/conventions | [x] (11) |
 | `api-design` | Controllers, REST path/verb/status conventions, request/response DTOs, Jakarta validation + custom validators, OpenAPI/Swagger annotations, OpenAPI contract & TS types-package | [x] (9) |
-| `security-auth` | OTP→JWT flow, `@AuthenticatedUser` resolver, reactive Spring Security config, user-scoping of all data, anonymous vs authorized paths | [x] (9) |
+| `security-auth` | OTP→opaque session-cookie flow, `@AuthenticatedUser` resolver, reactive Spring Security config, user-scoping of all data, anonymous vs authorized paths, CSRF Origin allowlist | [x] (10) |
 | `ai-integration` | `OpenAIAPIClientService` request/streaming APIs, GPT token-usage logging per operation key, response parsing/validation callbacks, `BadGatewayException` handling for AI failures | [x] (8) |
 | `prompts` | Prompt management: file-based `.md` templates under `resources/prompts/` (+ `guidelines.md`), `AvailablePrompts` enum registry, `Prompt`/`PromptCache` loading & `{{param}}` substitution, structured-output schemas (`StructuredOutputTemplate` + `structured_outputs/features/**`), wiring a prompt to its schema and operation key | [x] (9) |
 | `error-handling` | `exceptions/REST/*` hierarchy, `RESTExceptionHandler` `@ControllerAdvice`, error response DTO, switchIfEmpty→NotFound pattern | [x] (7) |

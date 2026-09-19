@@ -21,7 +21,7 @@ changing code — this project prioritizes **strict consistency with existing pa
 | `reactive` | WebFlux + Reactor (`Mono`/`Flux`), no blocking, SSE streaming |
 | `persistence` | R2DBC repos, raw SQL custom methods, entities, Flyway migrations |
 | `api-design` | REST conventions, DTOs, validation, OpenAPI/Swagger contract |
-| `security-auth` | OTP→JWT auth, `@AuthenticatedUser`, user-scoping |
+| `security-auth` | OTP→session-cookie auth, `@AuthenticatedUser`, user-scoping |
 | `ai-integration` | OpenAI client usage, token-usage logging |
 | `prompts` | Prompt template management & structured-output schemas |
 | `error-handling` | REST exceptions & centralized `@ControllerAdvice` handling |

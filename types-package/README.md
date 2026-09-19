@@ -43,7 +43,7 @@ import { browser } from '$app/environment';
 
 export const api = axios.create({
   baseURL: browser ? '' : 'http://localhost:8080', // Use proxy in browser, direct in SSR
-  withCredentials: true, // Important for JWT cookies
+  withCredentials: true, // Important for session cookies
 });
 
 // Optional: Add request/response interceptors

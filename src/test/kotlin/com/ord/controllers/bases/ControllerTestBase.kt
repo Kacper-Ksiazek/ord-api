@@ -1,7 +1,7 @@
 package com.ord.controllers.bases
 
 import net.datafaker.Faker
-import com.ord.config.properties.JwtProperties
+import com.ord.config.properties.SessionProperties
 import com.ord.core.auth.api.requests.dto.OtpVerifyDto
 import com.ord.core.auth.models.OtpCodeEntity
 import com.ord.core.auth.repositories.OtpCodeRepository
@@ -33,7 +33,7 @@ import java.util.*
 
 abstract class ControllerTestBase(
     val webClient: WebTestClient,
-    val jwtProperties: JwtProperties,
+    val sessionProperties: SessionProperties,
     val languageProficiencyRepository: LanguageProficiencyRepository,
     val userRepository: UserRepository,
     val otpCodeRepository: OtpCodeRepository,
@@ -84,7 +84,7 @@ abstract class ControllerTestBase(
             .expectBody(UserDTO::class.java)
             .returnResult()
 
-        val authCookie: ResponseCookie = response.responseCookies[jwtProperties.authCookieName]?.firstOrNull() ?: run {
+        val authCookie: ResponseCookie = response.responseCookies[sessionProperties.cookieName]?.firstOrNull() ?: run {
             throw IllegalStateException("Failed to get the auth cookie from the response")
         }
 
@@ -152,7 +152,7 @@ abstract class ControllerTestBase(
             .expectBody(UserDTO::class.java)
             .returnResult()
 
-        val authCookie: ResponseCookie = response.responseCookies[jwtProperties.authCookieName]?.firstOrNull() ?: run {
+        val authCookie: ResponseCookie = response.responseCookies[sessionProperties.cookieName]?.firstOrNull() ?: run {
             throw IllegalStateException("Failed to get the auth cookie from the response")
         }
 

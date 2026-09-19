@@ -15,8 +15,8 @@ class ConversationServiceImpl(
 @Configuration
 @EnableWebFluxSecurity
 class SecurityConfiguration(
-    private val authManager: JwtReactiveAuthenticationManager,
-    private val contextRepository: JwtSecurityContextRepository,
+    private val authManager: SessionReactiveAuthenticationManager,
+    private val contextRepository: SessionSecurityContextRepository,
     private val apiAuthenticationEntryPoint: ApiAuthenticationEntryPoint,
 )
 ```
