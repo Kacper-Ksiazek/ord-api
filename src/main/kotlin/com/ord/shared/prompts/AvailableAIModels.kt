@@ -9,8 +9,8 @@ enum class AvailableAIModels(
 ) {
     GPT_6_LUNA(
         model = "gpt-6-luna",
-        pricePerMlnInputTokens = BigDecimal("0.20"),
-        pricePerMlnOutputTokens = BigDecimal("1.20"),
+        pricePerMlnInputTokens = BigDecimal("0.10"),
+        pricePerMlnOutputTokens = BigDecimal("0.50"),
     );
 
     companion object {
