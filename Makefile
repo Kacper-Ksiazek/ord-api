@@ -1,4 +1,4 @@
-.PHONY: help status db-up db-wipe run restart stop openapi check-openapi open test test-live \
+.PHONY: help status db-up db-wipe run restart stop openapi check-openapi test test-live \
 	dev-db dev dev-refresh dev-stop test-smoke test-integration
 
 COMPOSE := docker compose
@@ -29,9 +29,6 @@ help:
 	@echo "  openapi         Export OpenAPI spec (API must be running)"
 	@echo "  check-openapi   Verify committed openapi.json matches live spec"
 	@echo ""
-	@echo "✉️  Email:"
-	@echo "  open            Preview OTP email template in browser (OTP_CODE=123456)"
-	@echo ""
 	@echo "Override: make openapi API_HOST=... OUTPUT_FILE=..."
 	@echo "E2E stack: use ord-ops (make e2e-up)"
 
@@ -59,9 +56,6 @@ openapi:
 
 check-openapi:
 	./scripts/check-openapi.sh
-
-open:
-	./scripts/open-otp-email.sh
 
 test:
 	./scripts/run-tests.sh smoke
