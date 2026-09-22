@@ -1,6 +1,8 @@
 # Never commit without explicit user approval
 
-Per `.clinerules`, an agent must NEVER run `git commit` on its own initiative. When changes are complete, stop, present a concise summary of what changed, and explicitly ask the user whether to commit. Only run git commands after receiving explicit permission.
+Per `.clinerules` and [`concept/agent-behavior.md`](../concept/agent-behavior.md), do not run
+`git commit` on your own. When changes are complete, stop, summarize what changed, and ask
+the user whether to commit. Only commit after explicit permission (Cloud Agent defaults included).
 
 ## Good
 

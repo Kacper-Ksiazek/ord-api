@@ -44,5 +44,5 @@ Everything is **user-scoped**: data belongs to an authenticated user, and authen
 - New endpoints should ship with **controller integration tests** (Kotest + Testcontainers)
   following the established `*APIClient` + `ControllerTestBase` pattern.
 - AI/OpenAI calls are real and cost tokens; token usage is logged per operation. Be deliberate.
-- **Never commit on the agent's own initiative** — the repo requires explicit human approval
-  before any commit (see git rules / `.clinerules`).
+- **Commits need user approval** — see [`concept/agent-behavior.md`](agent-behavior.md),
+  git rules, and `.clinerules`.
