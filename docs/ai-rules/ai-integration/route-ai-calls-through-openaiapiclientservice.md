@@ -35,7 +35,7 @@ class WordAIFacadeImpl(
     override fun generateWordManual(body: GenerateWordManualRequest, user: UserDTO): Mono<AIGeneratedWordManual> {
         return webClient.post()
             .uri("https://api.openai.com/v1/responses")
-            .bodyValue(mapOf("model" to "gpt-5.6-luna", "input" to "..."))
+            .bodyValue(mapOf("model" to "gpt-6-luna", "input" to "..."))
             .retrieve()
             .bodyToMono(AIGeneratedWordManual::class.java)
         // No retries, no deserialization handling, no token usage logged.
