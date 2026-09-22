@@ -17,7 +17,6 @@ fi
 export ENV_TEST_PROPERTY="${ENV_TEST_PROPERTY:-1test1}"
 export OPEN_AI_KEY="${OPEN_AI_KEY:-dummy-key}"
 export ELEVENLABS_API_KEY="${ELEVENLABS_API_KEY:-dummy-key}"
-export ELEVENLABS_VOICE_ID="${ELEVENLABS_VOICE_ID:-dummy-voice-id}"
 
 mvn -Dtest=com.ord.openapi.TestOpenApiSpec \
   -DINTEGRATION_TESTS=false \
