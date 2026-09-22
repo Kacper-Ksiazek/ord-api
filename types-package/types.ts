@@ -1888,7 +1888,15 @@ export interface components {
              * @example user@example.com
              */
             email: string;
+            /**
+             * @description UI locale for the OTP email (ord-frontend: en, pl, de). Defaults to en when omitted.
+             * @example en
+             * @enum {string}
+             */
+            locale?: "en" | "pl" | "de";
         };
+        /** @description UI locale for user-facing content (matches ord-frontend Paraglide: en, pl, de) */
+        UiLocale: "en" | "pl" | "de";
         /** @description Request to get an AI-powered explanation of a word or phrase */
         ExplainPhraseRequest: {
             /**

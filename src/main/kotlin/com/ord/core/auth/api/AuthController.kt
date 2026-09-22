@@ -42,7 +42,7 @@ class AuthController(
     )
     fun requestOtp(
         @Valid @RequestBody body: OtpRequestDto
-    ): Mono<ResponseEntity<Void>> = authFacade.requestOtp(body.email)
+    ): Mono<ResponseEntity<Void>> = authFacade.requestOtp(body.email, body.locale)
 
     @PostMapping("/otp-verify")
     @Operation(

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{HTML_LANG}}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
     <meta name="supported-color-schemes" content="light">
-    <title>Your ORD sign-in code</title>
+    <title>{{PAGE_TITLE}}</title>
     <!--[if mso]>
     <style type="text/css">
         body, table, td { font-family: 'Segoe UI', Helvetica, Arial, sans-serif !important; }
@@ -13,7 +13,7 @@
     <![endif]-->
 </head>
 <body style="margin:0;padding:0;background-color:#f6f4ef;font-family:'Noto Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#1c1b18;">
-    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your ORD sign-in code is {{OTP_CODE}}. It expires in 10 minutes.</div>
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">{{PREHEADER}}</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f6f4ef;border-collapse:collapse;">
         <tr>
             <td align="center" style="padding:48px 20px;">
@@ -25,12 +25,12 @@
                     </tr>
                     <tr>
                         <td style="padding:0 32px 8px;text-align:center;">
-                            <h1 style="margin:0;font-size:32px;font-weight:500;line-height:40px;letter-spacing:-0.02em;color:#1c1b18;">Enter your code</h1>
+                            <h1 style="margin:0;font-size:32px;font-weight:500;line-height:40px;letter-spacing:-0.02em;color:#1c1b18;">{{HEADING}}</h1>
                         </td>
                     </tr>
                     <tr>
                         <td style="padding:0 32px 28px;text-align:center;">
-                            <p style="margin:0;font-size:15px;line-height:22px;color:#6b6860;">Enter the 6-digit code below to finish signing in to ORD.</p>
+                            <p style="margin:0;font-size:15px;line-height:22px;color:#6b6860;">{{INTRO}}</p>
                         </td>
                     </tr>
                     <tr>
@@ -47,11 +47,11 @@
                             <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="border-collapse:separate;">
                                 <tr>
                                     <td align="center" style="border-radius:10px;background-color:#1c1b18;">
-                                        <a href="{{LOGIN_URL}}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 20px;font-size:15px;font-weight:500;line-height:16px;color:#f6f4ef;text-decoration:none;">Sign in with code</a>
+                                        <a href="{{LOGIN_URL}}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 20px;font-size:15px;font-weight:500;line-height:16px;color:#f6f4ef;text-decoration:none;">{{BUTTON_LABEL}}</a>
                                     </td>
                                 </tr>
                             </table>
-                            <p style="margin:12px 0 0;font-size:13px;line-height:18px;color:#9a968c;">The code is valid for 10 minutes.</p>
+                            <p style="margin:12px 0 0;font-size:13px;line-height:18px;color:#9a968c;">{{EXPIRY_NOTE}}</p>
                         </td>
                     </tr>
                     <tr>
@@ -61,12 +61,12 @@
                     </tr>
                     <tr>
                         <td style="padding:24px 32px 12px;text-align:center;">
-                            <p style="margin:0;font-size:13px;line-height:20px;color:#9a968c;">If you did not request this email, you can safely ignore it.</p>
+                            <p style="margin:0;font-size:13px;line-height:20px;color:#9a968c;">{{IGNORE_NOTE}}</p>
                         </td>
                     </tr>
                     <tr>
                         <td style="padding:0 32px 36px;text-align:center;">
-                            <p style="margin:0;font-size:12px;line-height:18px;color:#9a968c;">© {{YEAR}} ORD · AI-powered language learning</p>
+                            <p style="margin:0;font-size:12px;line-height:18px;color:#9a968c;">{{FOOTER_TAGLINE}}</p>
                         </td>
                     </tr>
                 </table>
