@@ -3,6 +3,7 @@ package com.ord.controllers
 import com.ord.controllers.ai_explainer.TestAIExplainerController
 import com.ord.controllers.auth.TestAuthController
 import com.ord.controllers.auth.TestAuthCookieAttributes
+import com.ord.controllers.auth.TestOtpCopyPageController
 import com.ord.controllers.banks.TestBankController
 import com.ord.controllers.conversations.AllConversationControllersTestsSuite
 import com.ord.controllers.games.AllGameControllersTestsSuite
@@ -20,6 +21,7 @@ import org.junit.platform.suite.api.SuiteDisplayName
     value = [
         TestAuthController::class,
         TestAuthCookieAttributes::class,
+        TestOtpCopyPageController::class,
         TestBankController::class,
         TestUsersController::class,
         TestLanguageProficienciesController::class,

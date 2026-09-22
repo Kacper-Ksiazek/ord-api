@@ -8,13 +8,16 @@ import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.Year
 
 @Service
 class EmailServiceImpl(
     private val mailSender: JavaMailSender,
     private val resourceLoader: ResourceLoader,
-    @Value("\${email.from}") private val fromEmail: String
+    @Value("\${email.from}") private val fromEmail: String,
+    @Value("\${email.public-base-url:http://localhost:8080}") private val publicBaseUrl: String,
 ) : EmailService {
 
     override fun sendOtpEmail(toEmail: String, otpCode: String): Mono<Void> {
@@ -25,6 +28,10 @@ class EmailServiceImpl(
             helper.setFrom(fromEmail)
             helper.setTo(toEmail)
             helper.setSubject("Your ORD sign-in code")
+            helper.addInline(
+                LOGO_CONTENT_ID,
+                resourceLoader.getResource("classpath:templates/ord-logo-email.png"),
+            )
             helper.setText(buildEmailBody(otpCode), true)
 
             mailSender.send(message)
@@ -43,7 +50,13 @@ class EmailServiceImpl(
         return template
             .replace("{{OTP_CODE}}", otpCode)
             .replace("{{OTP_CELLS}}", buildOtpCells(otpCode))
+            .replace("{{COPY_CODE_URL}}", buildCopyCodeUrl(otpCode))
             .replace("{{YEAR}}", Year.now().value.toString())
+    }
+
+    private fun buildCopyCodeUrl(otpCode: String): String {
+        val encodedCode = URLEncoder.encode(otpCode, StandardCharsets.UTF_8)
+        return "${publicBaseUrl.trimEnd('/')}/public/otp-copy?code=$encodedCode"
     }
 
     private fun buildOtpCells(otpCode: String): String {
@@ -60,5 +73,9 @@ class EmailServiceImpl(
                 """<td align="center" style="$cellStyle">$content</td>"""
             }
             .joinToString(separator = "")
+    }
+
+    companion object {
+        private const val LOGO_CONTENT_ID = "ordLogo"
     }
 }
