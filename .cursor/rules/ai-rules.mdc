@@ -12,6 +12,7 @@ Before writing or changing code, consult the relevant category for established c
 this project values **strict consistency with existing patterns** over novelty.
 
 - **Project concept / business context:** `docs/ai-rules/concept/project-brief.md`
+- **Agent behavior (git approval, precedence, tone):** `docs/ai-rules/concept/agent-behavior.md`
 - **Knowledge snapshot & category map:** `docs/ai-rules/ROADMAP.md`
 
 ## Categories (`docs/ai-rules/<category>/`)

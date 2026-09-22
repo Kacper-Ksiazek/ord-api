@@ -1,14 +1,11 @@
-# Claude Code Rules for ord-api
+# Claude Code / Cursor rules for ord-api
 
-## Git Commit Policy
+Agent behavior (precedence, communication, git): **`docs/ai-rules/concept/agent-behavior.md`**
 
-**NEVER MAKE ANY COMMITS ON YOUR OWN. ASK THE USER EACH TIME YOU WANT TO CREATE A NEW BATCH OF COMMITS.**
+## Git
 
-**ALWAYS PUSH IMMEDIATELY AFTER MAKING COMMITS.**
+- Do **not** run `git commit` on your own. When a batch of work is ready, summarize what
+  changed and ask the user for explicit approval.
+- After the user approves, commit, then **push to the remote immediately**.
 
-When changes are complete and ready to commit, always:
-1. Stop and present a summary of the changes made
-2. Explicitly ask the user if they want to commit the changes
-3. Wait for user approval before running any git commands
-4. Only proceed with commits after receiving explicit permission
-5. After commits are successfully created, immediately push them to the remote repository
+Technical git rules: `docs/ai-rules/git-workflow/`.

@@ -9,6 +9,7 @@ category**, with **one rule per `.md` file**. Consult the relevant category befo
 changing code — this project prioritizes **strict consistency with existing patterns**.
 
 - **Project concept / business context:** `docs/ai-rules/concept/project-brief.md`
+- **Agent behavior:** `docs/ai-rules/concept/agent-behavior.md`
 - **Knowledge snapshot & category map:** `docs/ai-rules/ROADMAP.md`
 
 ### Categories (`docs/ai-rules/<category>/`)
@@ -30,7 +31,7 @@ changing code — this project prioritizes **strict consistency with existing pa
 
 ## Critical reminders
 
-- **Never commit on your own initiative.** Stop, summarize changes, and ask the user first;
-  push immediately after an approved commit (see `git-workflow` and `.clinerules`).
+- **Commits need approval.** Stop, summarize, ask the user, then push after commit
+  (see `concept/agent-behavior.md`, `git-workflow`, `.clinerules`).
 - Stack is **fully reactive** (WebFlux + R2DBC) — never block the event loop in main code.
 - New endpoints must ship with controller integration tests, registered into `AllTestsSuite`.

@@ -41,10 +41,18 @@ Strict vertical slicing under `com.ord`: `config/`, `core/`, `features/`, `excep
 | `testing` | Controller integration tests, `ControllerTestBase`, `*APIClient` wrappers, seeders/factories, Kotest matchers, Testcontainers, `AllTestsSuite` registration, AI smoke stubs | [x] (12) |
 | `git-workflow` | Commit policy (never self-commit; ask + push), migration immutability, OpenAPI re-export discipline | [x] (7) |
 
+## Concept docs (`docs/ai-rules/concept/`)
+
+| Document | Purpose |
+|----------|---------|
+| `project-brief.md` | Product domain, consumers, what “consistency” means here |
+| `agent-behavior.md` | How agents communicate, precedence when rules conflict, git approval |
+
 ## Progress
 
 - [x] Repo analysis
 - [x] Concept brief (`concept/project-brief.md`)
+- [x] Agent behavior (`concept/agent-behavior.md`)
 - [x] Roadmap
 - [x] `general` rules
 - [x] `architecture` rules
