@@ -17,7 +17,7 @@ class EmailServiceImpl(
     private val mailSender: JavaMailSender,
     private val resourceLoader: ResourceLoader,
     @Value("\${email.from}") private val fromEmail: String,
-    @Value("\${email.public-base-url:http://localhost:8080}") private val publicBaseUrl: String,
+    @Value("\${email.app-public-url:http://localhost:5173}") private val appPublicUrl: String,
 ) : EmailService {
 
     override fun sendOtpEmail(toEmail: String, otpCode: String): Mono<Void> {
@@ -32,7 +32,7 @@ class EmailServiceImpl(
                 LOGO_CONTENT_ID,
                 resourceLoader.getResource("classpath:templates/ord-logo-email.png"),
             )
-            helper.setText(buildEmailBody(otpCode), true)
+            helper.setText(buildEmailBody(toEmail, otpCode), true)
 
             mailSender.send(message)
         }
@@ -40,7 +40,7 @@ class EmailServiceImpl(
             .then()
     }
 
-    private fun buildEmailBody(otpCode: String): String {
+    private fun buildEmailBody(toEmail: String, otpCode: String): String {
         val template = resourceLoader
             .getResource("classpath:templates/otp-email.html")
             .inputStream
@@ -50,13 +50,14 @@ class EmailServiceImpl(
         return template
             .replace("{{OTP_CODE}}", otpCode)
             .replace("{{OTP_CELLS}}", buildOtpCells(otpCode))
-            .replace("{{COPY_CODE_URL}}", buildCopyCodeUrl(otpCode))
+            .replace("{{LOGIN_URL}}", buildLoginUrl(toEmail, otpCode))
             .replace("{{YEAR}}", Year.now().value.toString())
     }
 
-    private fun buildCopyCodeUrl(otpCode: String): String {
+    private fun buildLoginUrl(email: String, otpCode: String): String {
+        val encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8)
         val encodedCode = URLEncoder.encode(otpCode, StandardCharsets.UTF_8)
-        return "${publicBaseUrl.trimEnd('/')}/public/otp-copy?code=$encodedCode"
+        return "${appPublicUrl.trimEnd('/')}/login?email=$encodedEmail&code=$encodedCode"
     }
 
     private fun buildOtpCells(otpCode: String): String {

@@ -57,7 +57,6 @@ class SecurityConfiguration(
             .securityContextRepository(contextRepository)
             .authenticationManager(authManager)
             .authorizeExchange { ex ->
-                ex.pathMatchers("/public/otp-copy").permitAll()
                 ex.pathMatchers(*SwaggerSecurityConfiguration.SWAGGER_PATHS).denyAll()
                 ex.pathMatchers(*ANONYMOUS_PATHS).access(anonymousOnlyAuthorizationManager)
                 ex.pathMatchers(*AUTHORIZED_PATHS).authenticated()
