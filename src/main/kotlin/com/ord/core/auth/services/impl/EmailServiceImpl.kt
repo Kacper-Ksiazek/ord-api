@@ -24,7 +24,7 @@ class EmailServiceImpl(
 
             helper.setFrom(fromEmail)
             helper.setTo(toEmail)
-            helper.setSubject("Your OTP Code - ORD")
+            helper.setSubject("Your ORD sign-in code")
             helper.setText(buildEmailBody(otpCode), true)
 
             mailSender.send(message)
@@ -42,6 +42,23 @@ class EmailServiceImpl(
 
         return template
             .replace("{{OTP_CODE}}", otpCode)
+            .replace("{{OTP_CELLS}}", buildOtpCells(otpCode))
             .replace("{{YEAR}}", Year.now().value.toString())
+    }
+
+    private fun buildOtpCells(otpCode: String): String {
+        val cellStyle =
+            "width:48px;height:56px;border:1px solid #e7e4dc;border-radius:10px;" +
+                "background-color:#ffffff;font-size:24px;font-weight:500;color:#1c1b18;" +
+                "text-align:center;vertical-align:middle;"
+
+        return otpCode
+            .take(6)
+            .padEnd(6, ' ')
+            .map { char ->
+                val content = if (char == ' ') "&#160;" else char
+                """<td align="center" style="$cellStyle">$content</td>"""
+            }
+            .joinToString(separator = "")
     }
 }
