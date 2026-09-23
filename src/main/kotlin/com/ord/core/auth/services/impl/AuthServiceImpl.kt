@@ -3,6 +3,7 @@ package com.ord.core.auth.services.impl
 import com.ord.config.properties.OtpProperties
 import com.ord.config.properties.SessionProperties
 import com.ord.core.auth.models.UserSessionEntity
+import com.ord.core.auth.model.enums.UiLocale
 import com.ord.core.auth.services.AuthService
 import com.ord.core.auth.services.EmailService
 import com.ord.core.auth.services.OtpService
@@ -31,14 +32,15 @@ class AuthServiceImpl(
     private val sessionRepositoryReactive: UserSessionRepositoryReactive,
 ) : AuthService {
 
-    override fun requestOtp(email: String): Mono<Void> {
+    override fun requestOtp(email: String, locale: UiLocale?): Mono<Void> {
+        val resolvedLocale = UiLocale.resolve(locale)
         return otpService
             .generateAndSaveOtp(email)
             .flatMap { otpCode ->
                 if (otpProperties.isEmailWhitelisted(email)) {
                     Mono.empty()
                 } else {
-                    emailService.sendOtpEmail(email, otpCode)
+                    emailService.sendOtpEmail(email, otpCode, resolvedLocale)
                 }
             }
     }

@@ -1,6 +1,7 @@
 package com.ord
 
 import com.ord.controllers.AllControllersTestsSuite
+import com.ord.core.auth.email.OtpEmailCopyCatalogTest
 import com.ord.e2e.TestE2eUserProvisioner
 import com.ord.openapi.TestOpenApiSpec
 import com.ord.e2e.TestE2eWhitelistGuard
@@ -17,6 +18,7 @@ import org.junit.platform.suite.api.SuiteDisplayName
 @SelectClasses(
     value = [
         AllControllersTestsSuite::class,
+        OtpEmailCopyCatalogTest::class,
         TestOpenApiSpec::class,
         RecencyBucketCalculatorTest::class,
         ConversationActivityCalculatorTest::class,

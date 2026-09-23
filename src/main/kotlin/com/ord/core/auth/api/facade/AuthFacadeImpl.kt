@@ -1,5 +1,6 @@
 package com.ord.core.auth.api.facade
 
+import com.ord.core.auth.model.enums.UiLocale
 import com.ord.core.auth.services.AuthService
 import com.ord.core.user.model.UserDTO
 import org.springframework.http.HttpStatus
@@ -12,9 +13,9 @@ import reactor.core.publisher.Mono
 class AuthFacadeImpl(
     private val authService: AuthService
 ) : AuthFacade {
-    override fun requestOtp(email: String): Mono<ResponseEntity<Void>> {
+    override fun requestOtp(email: String, locale: UiLocale?): Mono<ResponseEntity<Void>> {
         return authService
-            .requestOtp(email)
+            .requestOtp(email, locale)
             .thenReturn(
                 ResponseEntity
                     .status(HttpStatus.OK)

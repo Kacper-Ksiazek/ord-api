@@ -4,6 +4,7 @@ import com.ord.config.properties.SessionProperties
 import com.ord.controllers.bases.ControllerTestBase
 import com.ord.core.ai_provider_usage.repositories.AiProviderUsageRepository
 import com.ord.core.auth.api.requests.dto.OtpRequestDto
+import com.ord.core.auth.model.enums.UiLocale
 import com.ord.core.auth.api.requests.dto.OtpVerifyDto
 import com.ord.core.auth.models.OtpCodeEntity
 import com.ord.core.auth.models.UserSessionEntity
@@ -148,6 +149,15 @@ class TestAuthController @Autowired constructor(
                     OtpVerifyDto(email = TestData.TEST_EMAIL, code = TestData.OTP_CODE)
                 )
                 currentCodeResponse.status shouldBe HttpStatus.OK
+            }
+
+            @Test
+            fun `200 - should accept optional locale on otp-request`() {
+                val response = authAPIClient.requestOtp(
+                    OtpRequestDto(email = TestData.TEST_EMAIL, locale = UiLocale.PL),
+                )
+
+                response.status shouldBe HttpStatus.OK
             }
         }
 
