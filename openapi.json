@@ -5845,27 +5845,21 @@
                         "minLength": 1
                     },
                     "locale": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "UI locale for the OTP email (ord-frontend: en, pl, de). Defaults to en when omitted.",
-                        "example": "en",
                         "enum": [
                             "en",
                             "pl",
                             "de"
-                        ]
+                        ],
+                        "example": "en"
                     }
                 },
                 "required": [
                     "email"
-                ]
-            },
-            "UiLocale": {
-                "type": "string",
-                "description": "UI locale for user-facing content (matches ord-frontend Paraglide: en, pl, de)",
-                "enum": [
-                    "en",
-                    "pl",
-                    "de"
                 ]
             },
             "ExplainPhraseRequest": {
@@ -6540,6 +6534,15 @@
                         ]
                     }
                 }
+            },
+            "UiLocale": {
+                "type": "string",
+                "description": "UI locale for user-facing content (matches ord-frontend Paraglide: en, pl, de)",
+                "enum": [
+                    "EN",
+                    "PL",
+                    "DE"
+                ]
             },
             "AiIntegrationMode": {
                 "type": "string",
