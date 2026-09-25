@@ -26,10 +26,18 @@ compose_has_running_services() {
 	docker compose -f "$compose_file" ps --status running -q 2>/dev/null | grep -q .
 }
 
+compose_service_running() {
+	local compose_file="$1"
+	local service="$2"
+
+	[[ -f "$compose_file" ]] || return 1
+	docker compose -f "$compose_file" ps --status running "$service" -q 2>/dev/null | grep -q .
+}
+
 resolve_api_port() {
 	local mapped_port=""
 
-	if [[ -f "$COMPOSE_DEV" ]] && compose_has_running_services "$COMPOSE_DEV"; then
+	if [[ -f "$COMPOSE_DEV" ]] && compose_service_running "$COMPOSE_DEV" app; then
 		mapped_port="$(docker compose -f "$COMPOSE_DEV" port app 8080 2>/dev/null | cut -d: -f2 || true)"
 	fi
 
@@ -60,11 +68,16 @@ print_api_status() {
 	fi
 
 	if [[ -f "$COMPOSE_E2E" ]] && compose_has_running_services "$COMPOSE_E2E"; then
-		printf '%-11s running (e2e mode)\n' 'api:'
+		printf '%-11s running (e2e docker)\n' 'api:'
 		return
 	fi
 
-	printf '%-11s running at port %s\n' 'api:' "$port"
+	if [[ -f "$COMPOSE_DEV" ]] && compose_service_running "$COMPOSE_DEV" app; then
+		printf '%-11s running at port %s (docker app)\n' 'api:' "$port"
+		return
+	fi
+
+	printf '%-11s running at port %s (native)\n' 'api:' "$port"
 }
 
 print_http_service_status() {

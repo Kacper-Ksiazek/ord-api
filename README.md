@@ -119,13 +119,15 @@ make run           # first start
 make restart       # after code changes
 ```
 
-**Full Docker stack** (slower — rebuilds app image):
+**Full local stack** (native API + frontend — from ord-ops):
 
 ```bash
-cd ../ord-ops && make dev-wipe   # wipe DB volume + restart dev stack
-# or
-docker compose up -d --build
+cd ../ord-ops && make dev-up      # DB (Docker) + native API + frontend
+make api-restart                  # after backend code changes
+cd ../ord-ops && make dev-down
 ```
+
+`docker compose up` in this repo starts **Postgres only** for native dev (`make db-up` / `scripts/dev-db-up.sh`). The `app` service is for manual image testing, not the default dev path.
 
 Check what's running locally:
 

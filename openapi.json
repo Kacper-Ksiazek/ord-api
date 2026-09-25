@@ -6539,9 +6539,9 @@
                 "type": "string",
                 "description": "UI locale for user-facing content (matches ord-frontend Paraglide: en, pl, de)",
                 "enum": [
-                    "EN",
-                    "PL",
-                    "DE"
+                    "en",
+                    "pl",
+                    "de"
                 ]
             },
             "AiIntegrationMode": {

@@ -10,17 +10,29 @@ services:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-local}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
       DATABASE_URL: postgres://${DOCKER_DB_USER}:${DOCKER_DB_PASSWORD}@db:5432/${DOCKER_DB_NAME}
-      OPEN_AI_KEY: ${OPEN_AI_KEY}
-      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY}
-      EMAIL_FROM: ${EMAIL_FROM}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_USERNAME: ${SMTP_USERNAME}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
-      OTP_WHITELISTED_EMAILS: ${OTP_WHITELISTED_EMAILS}
+      OPEN_AI_KEY: ${OPEN_AI_KEY:-}
+      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}
+      ELEVENLABS_VOICE_ID: ${ELEVENLABS_VOICE_ID:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      EMAIL_PUBLIC_BASE_URL: ${EMAIL_PUBLIC_BASE_URL:-http://localhost:5173}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      OTP_WHITELISTED_EMAILS: ${OTP_WHITELISTED_EMAILS:-}
+      OTP_CODE_FOR_WHITELISTED_EMAILS: ${OTP_CODE_FOR_WHITELISTED_EMAILS:-123456}
       ENV_TEST_PROPERTY: ${ENV_TEST_PROPERTY:-1test1}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-development}
+      SENTRY_DEBUG: ${SENTRY_DEBUG:-false}
+      SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-0.0}
+      E2E_SEEDER_ENABLED: ${E2E_SEEDER_ENABLED:-false}
+      E2E_WORKER_COUNT: ${E2E_WORKER_COUNT:-4}
+      E2E_EMAIL_PREFIX: ${E2E_EMAIL_PREFIX:-e2e-ci-w}
+      E2E_EMAIL_DOMAIN: ${E2E_EMAIL_DOMAIN:-ord.test}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:16.3
@@ -32,6 +44,16 @@ services:
       POSTGRES_PASSWORD: ${DOCKER_DB_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DOCKER_DB_USER} -d ${DOCKER_DB_NAME}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   db_data:
