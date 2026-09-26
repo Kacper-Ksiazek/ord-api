@@ -47,6 +47,31 @@ class AIFixtureRegistry {
             resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_EXPLAIN_PHRASE.stream.json",
         ),
         AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.SIMPLER,
+            type = AIFixtureType.STRING_STREAM,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP.stream.json",
+        ),
+        AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.MORE_EXAMPLES,
+            type = AIFixtureType.STRING_STREAM,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP.stream.json",
+        ),
+        AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.REGISTER,
+            type = AIFixtureType.STRING_STREAM,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP.stream.json",
+        ),
+        AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.SIMILAR_EXPRESSIONS,
+            type = AIFixtureType.STRING_STREAM,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP.stream.json",
+        ),
+        AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.IN_THIS_CONTEXT,
+            type = AIFixtureType.STRING_STREAM,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP.stream.json",
+        ),
+        AIFixtureEntry(
             operationKey = AiProviderUsageOperationType.Words.SUGGEST_VOCABULARY,
             type = AIFixtureType.ARRAY_STREAM,
             isDynamic = true,

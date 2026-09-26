@@ -16,6 +16,14 @@ object AiProviderUsageOperationType {
 
     object AIExplainer {
         const val EXPLAIN_PHRASE = "AI_EXPLAINER_EXPLAIN_PHRASE"
+
+        object FollowUp {
+            const val SIMPLER = "AI_EXPLAINER_FOLLOW_UP_SIMPLER"
+            const val MORE_EXAMPLES = "AI_EXPLAINER_FOLLOW_UP_MORE_EXAMPLES"
+            const val REGISTER = "AI_EXPLAINER_FOLLOW_UP_REGISTER"
+            const val SIMILAR_EXPRESSIONS = "AI_EXPLAINER_FOLLOW_UP_SIMILAR_EXPRESSIONS"
+            const val IN_THIS_CONTEXT = "AI_EXPLAINER_FOLLOW_UP_IN_THIS_CONTEXT"
+        }
     }
 
     object Words {

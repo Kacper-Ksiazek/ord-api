@@ -9,6 +9,7 @@ import com.ord.core.langugae_proficiency.service.LanguageProficiencyService
 import com.ord.core.user.model.UserDTO
 import com.ord.exceptions.REST.BadRequestException
 import com.ord.features.ai_explainer.api.facades.AIExplainerFacade
+import com.ord.features.ai_explainer.api.requests.ExplainPhraseFollowUpRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
 import com.ord.shared.prompts.AvailablePrompts
 import com.ord.shared.prompts.Prompt
@@ -55,6 +56,40 @@ class AIExplainerFacadeImpl(
                     onComplete = { (payload, emitter) ->
                         emitter.tryEmitComplete()
                     }
+                )
+            }
+    }
+
+    override fun followUpExplainPhrase(
+        body: ExplainPhraseFollowUpRequest,
+        user: UserDTO,
+    ): Flux<String> {
+        return languageProficiencyService.findUserProficiencyInLanguage(user.id, body.language)
+            .switchIfEmpty(Mono.error(BadRequestException("User does not have any proficiency in the requested language.")))
+            .flatMapMany { userProficiencyInRequestedLanguage ->
+                val translateTo: LanguageName = userProficiencyInRequestedLanguage.translateTo
+                val proficiencyLevel: LanguageProficiencyLevel = userProficiencyInRequestedLanguage.level
+
+                val prompt = Prompt(
+                    variant = body.action.prompt,
+                    params = mapOf(
+                        "word" to body.phrase,
+                        "wordLanguage" to body.language.toString(),
+                        "translationLanguage" to translateTo.toString(),
+                        "proficiency" to proficiencyLevel.toString(),
+                        "generativeContentLanguage" to userProficiencyInRequestedLanguage.generativeContentLanguage.toString(),
+                        "previousExplanation" to body.previousExplanation,
+                        "additionalContext" to (body.context ?: "Not provided"),
+                    ),
+                ).toString()
+
+                openAIAPIClientService.openSimpleStringStream(
+                    prompt = prompt,
+                    userId = user.id,
+                    gptTokensUsageLogKey = body.action.operationKey,
+                    onComplete = { (_, emitter) ->
+                        emitter.tryEmitComplete()
+                    },
                 )
             }
     }
