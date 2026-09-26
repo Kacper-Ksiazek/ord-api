@@ -1,0 +1,31 @@
+meta {
+  name: AI Generate Learning Tips
+  type: http
+  seq: 3
+}
+
+docs {
+  Generates learning tips from the latest AI message without tips yet.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/ongoing/ai/generate-learning-tips
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "conversationId": "{{conversationId}}"
+  }
+}
+
+script:post-response {
+  test("tips generated", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
