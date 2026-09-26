@@ -31,4 +31,4 @@ make openapi     # after DTO changes — export spec, sync types on frontend
 
 ## E2E stack
 
-Start the E2E backend only from **ord-ops**: `make e2e-up`. Do not use docker-e2e targets from ord-api.
+Start the Playwright backend only from **ord-ops**: `make playwright-up`. Do not use docker-e2e targets from ord-api.

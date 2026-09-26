@@ -207,7 +207,7 @@ Run `make help` for the full list.
 |--------|-------------|
 | `make openapi` | Export OpenAPI spec from a running API |
 
-E2E stack: use **ord-ops** (`make e2e-up` / `make e2e-down`).
+Playwright stack: use **ord-ops** (`make playwright-up` / `make playwright-down`).
 
 Override frontend path: `make status ORD_FRONTEND_DIR=/path/to/ord-frontend`.
 
@@ -232,10 +232,10 @@ The `docker-compose.e2e.yml` file starts a self-contained backend for Playwright
 - Health check reports integration mode: `GET /api/v1/health-check` → `"ai": "STUB", "tts": "STUB"`.
 
 ```bash
-cd ../ord-ops && make e2e-up
+cd ../ord-ops && make playwright-up
 curl http://localhost:8080/api/v1/health-check
 # {"application":"UP","database":"UP","ai":"STUB","tts":"STUB"}
-cd ../ord-ops && make e2e-down
+cd ../ord-ops && make playwright-down
 ```
 
 | Variable | E2E value |
