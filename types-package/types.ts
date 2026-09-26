@@ -244,23 +244,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/public/words/bulk-create": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Public bulk capture words for a user identified by email */
-        post: operations["publicBulkCreate"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/language-proficiencies": {
         parameters: {
             query?: never;
@@ -604,7 +587,7 @@ export interface paths {
         put?: never;
         /**
          * Verify OTP code and login
-         * @description Verifies the OTP code and returns a JWT token in the response cookie (AUTH-TOKEN) along with user details.
+         * @description Verifies the OTP code and returns an opaque session token in the AUTH-TOKEN cookie along with user details.
          */
         post: operations["verifyOtp"];
         delete?: never;
@@ -681,22 +664,6 @@ export interface paths {
         patch: operations["updateWord"];
         trace?: never;
     };
-    "/api/v1/words/activate-many": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: operations["activateMany"];
-        trace?: never;
-    };
     "/api/v1/words": {
         parameters: {
             query?: never;
@@ -706,7 +673,7 @@ export interface paths {
         };
         /**
          * List words
-         * @description Retrieve paginated list of words with optional filters for learning progress and source
+         * @description Retrieve paginated list of words in the learning list
          */
         get: operations["listWords"];
         put?: never;
@@ -724,6 +691,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Get vocabulary overview
+         * @description Retrieve total and bookmarked word counts for the learning list
+         */
         get: operations["getOverview"];
         put?: never;
         post?: never;
@@ -817,6 +788,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/banks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List banks
+         * @description Returns all vocabulary banks owned by the authenticated user.
+         */
+        get: operations["listBanks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/language-proficiencies/{language}": {
         parameters: {
             query?: never;
@@ -849,7 +840,7 @@ export interface paths {
         post?: never;
         /**
          * Logout user
-         * @description Logs out the authenticated user by clearing the JWT token cookie.
+         * @description Logs out the authenticated user by deleting the server-side session and clearing the AUTH-TOKEN cookie.
          */
         delete: operations["logout"];
         options?: never;
@@ -934,9 +925,9 @@ export interface components {
              * @description Type of word or expression
              * @enum {string}
              */
-            type: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
+            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
             sourceWord?: string;
-            translation: string;
+            translation?: string;
             definition?: string | null;
             /**
              * @description Extra marks or tags for word classification by register or domain
@@ -961,7 +952,6 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
             bookmarked?: boolean;
-            fromUnverifiedSource?: boolean;
         };
         /** @description Learning progress for an active word */
         WordProgressDTO: {
@@ -1067,7 +1057,6 @@ export interface components {
              */
             wordType?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE" | null;
             wordTypes?: ("NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE")[] | null;
-            hasProgress?: boolean | null;
             /**
              * @description Extra marks or tags for word classification by register or domain
              * @enum {string|null}
@@ -1082,7 +1071,6 @@ export interface components {
             sortDirection?: "ASC" | "DESC" | null;
             /** @enum {string|null} */
             sortBy?: "CREATED_AT" | "SOURCE_WORD" | null;
-            fromUnverifiedSource?: boolean;
         };
         BankCompact: {
             name?: string;
@@ -1129,14 +1117,14 @@ export interface components {
             /** Format: uuid */
             id?: string;
             sourceWord?: string;
-            translation: string;
+            translation?: string;
             definition?: string | null;
             progress?: components["schemas"]["WordProgressDTO"] | null;
             /**
              * @description Type of word or expression
              * @enum {string}
              */
-            type: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
+            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
             /**
              * @description Extra marks or tags for word classification by register or domain
              * @enum {string|null}
@@ -1148,21 +1136,14 @@ export interface components {
              */
             language?: "POLISH" | "ENGLISH" | "GERMAN" | "FRENCH" | "SPANISH" | "ITALIAN" | "NORWEGIAN" | "RUSSIAN" | "SLOVENIAN";
             bank?: components["schemas"]["BankCompact"] | null;
-            bookmarked?: boolean;
-            fromUnverifiedSource?: boolean;
             /** Format: date-time */
             createdAt?: string;
+            bookmarked?: boolean;
         };
-        /** @description Paginated words response with optional unverified source count */
+        /** @description Paginated words response */
         WordsPaginatedDataResponse: {
             pagination?: components["schemas"]["PaginationData"];
             data?: components["schemas"]["WordListItem"][];
-            /**
-             * Format: int64
-             * @description Count of words from unverified sources when isFromUnverifiedSource filter is omitted
-             * @example 12
-             */
-            unverifiedSourceCount?: number | null;
         };
         ChangeBankForMultipleWordsRequest: {
             /** Format: uuid */
@@ -1237,18 +1218,18 @@ export interface components {
         /** @description A single word to enrich with AI-generated metadata */
         WordFillGapsItem: {
             sourceWord: string;
-            translation?: string;
-            definition?: string;
+            translation?: string | null;
+            definition?: string | null;
             /**
              * @description Type of word or expression
-             * @enum {string}
+             * @enum {string|null}
              */
-            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
+            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE" | null;
             /**
              * @description Extra marks or tags for word classification by register or domain
-             * @enum {string}
+             * @enum {string|null}
              */
-            extraMark?: "OFFENSIVE" | "SLANG" | "FORMAL" | "INFORMAL" | "SCIENTIFIC" | "TECHNICAL" | "LEGAL" | "MEDICAL" | "COLLOQUIAL" | "POETIC";
+            extraMark?: "OFFENSIVE" | "SLANG" | "FORMAL" | "INFORMAL" | "SCIENTIFIC" | "TECHNICAL" | "LEGAL" | "MEDICAL" | "COLLOQUIAL" | "POETIC" | null;
         };
         /** @description Request to AI-fill missing fields for captured words */
         WordFillGapsRequest: {
@@ -1365,33 +1346,12 @@ export interface components {
              * @example That's a great question! Let me explain...
              */
             text: string;
-        };
-        /** @description Single word item for public bulk capture */
-        PublicCaptureWordItem: {
-            sourceWord: string;
             /**
-             * @description Supported languages in the platform
-             * @enum {string}
-             */
-            language?: "POLISH" | "ENGLISH" | "GERMAN" | "FRENCH" | "SPANISH" | "ITALIAN" | "NORWEGIAN" | "RUSSIAN" | "SLOVENIAN";
-            translation?: string | null;
-            definition?: string | null;
-            /**
-             * @description Extra marks or tags for word classification by register or domain
+             * @description Language to synthesize in; defaults to user's selectedLearningLanguage
+             * @example ENGLISH
              * @enum {string|null}
              */
-            extraMark?: "OFFENSIVE" | "SLANG" | "FORMAL" | "INFORMAL" | "SCIENTIFIC" | "TECHNICAL" | "LEGAL" | "MEDICAL" | "COLLOQUIAL" | "POETIC" | null;
-            /**
-             * @description Type of word or expression
-             * @enum {string|null}
-             */
-            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE" | null;
-        };
-        /** @description Public bulk capture request identified by user email */
-        PublicWordsBulkCaptureRequest: {
-            /** Format: email */
-            userEmail: string;
-            words: components["schemas"]["PublicCaptureWordItem"][];
+            language?: "POLISH" | "ENGLISH" | "GERMAN" | "FRENCH" | "SPANISH" | "ITALIAN" | "NORWEGIAN" | "RUSSIAN" | "SLOVENIAN" | null;
         };
         CreateLanguageProficiencyRequest: {
             /**
@@ -1477,9 +1437,9 @@ export interface components {
             /** Format: int32 */
             maxScore?: number;
             reviewedAnswers?: components["schemas"]["IdentifiableReviewedWordAnswer"][];
+            accuracy?: string;
             /** @enum {string} */
             grade?: "S" | "A" | "B" | "C" | "D" | "NA";
-            accuracy?: string;
         };
         IdentifiableReviewedWordAnswer: {
             /** Format: uuid */
@@ -1521,9 +1481,9 @@ export interface components {
             /** Format: int32 */
             maxScore?: number;
             reviewedAnswers?: components["schemas"]["ReviewedSentencesWritingSingleTopic"][];
+            accuracy?: string;
             /** @enum {string} */
             grade?: "S" | "A" | "B" | "C" | "D" | "NA";
-            accuracy?: string;
         };
         ReviewedSentencesWritingSingleTopic: {
             /** Format: uuid */
@@ -1615,9 +1575,9 @@ export interface components {
             /** Format: int32 */
             maxScore?: number;
             reviewedAnswers?: components["schemas"]["CrosswordReviewedAnswers"];
+            accuracy?: string;
             /** @enum {string} */
             grade?: "S" | "A" | "B" | "C" | "D" | "NA";
-            accuracy?: string;
         };
         ReviewedWordAnswer: {
             expectedAnswer?: string;
@@ -1727,15 +1687,15 @@ export interface components {
             updatedAt?: string;
         };
         ConversationMessageDTO: {
+            /** @enum {string} */
+            sender?: "USER" | "AI";
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: int32 */
+            messageOrder?: number;
             /** Format: uuid */
             id?: string;
             content?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            /** @enum {string} */
-            sender?: "USER" | "AI";
-            /** Format: int32 */
-            messageOrder?: number;
         };
         ConversationMessageMistake: {
             phrase?: string;
@@ -1891,12 +1851,10 @@ export interface components {
             /**
              * @description UI locale for the OTP email (ord-frontend: en, pl, de). Defaults to en when omitted.
              * @example en
-             * @enum {string}
+             * @enum {string|null}
              */
-            locale?: "en" | "pl" | "de";
+            locale?: "en" | "pl" | "de" | null;
         };
-        /** @description UI locale for user-facing content (matches ord-frontend Paraglide: en, pl, de) */
-        UiLocale: "en" | "pl" | "de";
         /** @description Request to get an AI-powered explanation of a word or phrase */
         ExplainPhraseRequest: {
             /**
@@ -1922,28 +1880,28 @@ export interface components {
             customInstruction?: string | null;
         };
         JsonNullableSetExampleSentence: {
-            present?: boolean;
             undefined?: boolean;
+            present?: boolean;
         };
         JsonNullableSetString: {
-            present?: boolean;
             undefined?: boolean;
+            present?: boolean;
         };
         JsonNullableSetWordCollocation: {
-            present?: boolean;
             undefined?: boolean;
+            present?: boolean;
         };
         JsonNullableString: {
-            present?: boolean;
             undefined?: boolean;
+            present?: boolean;
         };
         JsonNullableWordGrammar: {
-            present?: boolean;
             undefined?: boolean;
+            present?: boolean;
         };
         JsonNullableWordPronunciation: {
-            present?: boolean;
             undefined?: boolean;
+            present?: boolean;
         };
         UpdateWordDetailsRequest: {
             useCases?: components["schemas"]["JsonNullableSetString"];
@@ -1980,10 +1938,6 @@ export interface components {
             bankId?: string | null;
             bankToCreate?: components["schemas"]["CreateBankRequest"] | null;
         };
-        /** @description Request to activate multiple captured words */
-        ActivateManyWordsRequest: {
-            ids?: string[];
-        };
         UpdateLanguageProficiencyRequest: {
             /**
              * @description Supported languages in the platform
@@ -2010,9 +1964,9 @@ export interface components {
              * @description Type of word or expression
              * @enum {string}
              */
-            type: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
+            type?: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "IDIOM" | "PHRASE";
             sourceWord?: string;
-            translation: string;
+            translation?: string;
             definition?: string | null;
             /**
              * @description Extra marks or tags for word classification by register or domain
@@ -2032,7 +1986,6 @@ export interface components {
             updatedAt?: string;
             details?: components["schemas"]["WordDetailsCompactDTO"] | null;
             bookmarked?: boolean;
-            fromUnverifiedSource?: boolean;
         };
         /** @description Overview of vocabulary words */
         WordOverviewResponse: {
@@ -2126,6 +2079,17 @@ export interface components {
             /** @enum {string} */
             percentile?: "p0" | "p20" | "p40" | "p60" | "p80";
         };
+        BankListItem: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            bankGroup?: components["schemas"]["BankGroupCompact"] | null;
+        };
+        /**
+         * @description UI locale for user-facing content (matches ord-frontend Paraglide: en, pl, de)
+         * @enum {string}
+         */
+        UiLocale: "en" | "pl" | "de";
         /**
          * @description External integration mode — `STUB` means fixture-based clients with no outbound HTTP calls
          * @enum {string}
@@ -2776,37 +2740,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    publicBulkCreate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PublicWordsBulkCaptureRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["BadRequestResponse"];
-                };
             };
         };
     };
@@ -3632,10 +3565,10 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OTP verified; JWT stored in AUTH-TOKEN cookie */
+            /** @description OTP verified; opaque session token stored in AUTH-TOKEN cookie */
             200: {
                 headers: {
-                    /** @description AUTH-TOKEN=<jwt>; HttpOnly; Path=/ */
+                    /** @description AUTH-TOKEN=<opaque-session-token>; HttpOnly; Path=/ */
                     "Set-Cookie"?: string;
                     [name: string]: unknown;
                 };
@@ -3880,45 +3813,12 @@ export interface operations {
             };
         };
     };
-    activateMany: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ActivateManyWordsRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["BadRequestResponse"];
-                };
-            };
-        };
-    };
     listWords: {
         parameters: {
             query: {
                 language: "POLISH" | "ENGLISH" | "GERMAN" | "FRENCH" | "SPANISH" | "ITALIAN" | "NORWEGIAN" | "RUSSIAN" | "SLOVENIAN";
                 page?: number;
                 perPage?: number;
-                isFromUnverifiedSource?: boolean;
-                hasProgress?: boolean;
             };
             header?: never;
             path?: never;
@@ -3956,7 +3856,7 @@ export interface operations {
     getOverview: {
         parameters: {
             query?: {
-                language?: components["schemas"]["LanguageName"];
+                language?: "POLISH" | "ENGLISH" | "GERMAN" | "FRENCH" | "SPANISH" | "ITALIAN" | "NORWEGIAN" | "RUSSIAN" | "SLOVENIAN";
             };
             header?: never;
             path?: never;
@@ -3964,7 +3864,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description Overview retrieved successfully */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -3981,6 +3881,13 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["BadRequestResponse"];
                 };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -4173,6 +4080,42 @@ export interface operations {
                 };
             };
             /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listBanks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Banks retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BankListItem"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BadRequestResponse"];
+                };
+            };
+            /** @description Not authenticated */
             401: {
                 headers: {
                     [name: string]: unknown;

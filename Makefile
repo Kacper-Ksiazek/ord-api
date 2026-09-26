@@ -30,7 +30,7 @@ help:
 	@echo "  check-openapi   Verify committed openapi.json matches live spec"
 	@echo ""
 	@echo "Override: make openapi API_HOST=... OUTPUT_FILE=..."
-	@echo "E2E stack: use ord-ops (make e2e-up)"
+	@echo "Playwright stack: use ord-ops (make playwright-up)"
 
 status:
 	ORD_API_DIR=$(CURDIR) ORD_FRONTEND_DIR=$(ORD_FRONTEND_DIR) ./scripts/dev-status.sh

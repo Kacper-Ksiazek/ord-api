@@ -1,5 +1,6 @@
 package com.ord.config
 
+import com.fasterxml.jackson.annotation.JsonValue
 import com.ord.config.properties.SessionProperties
 import com.ord.shared.annotations.ExportToOpenAPI
 import io.swagger.v3.oas.annotations.media.Schema
@@ -238,9 +239,7 @@ class OpenApiConfig(
             return
         }
 
-        // Extract enum values
-        val enumConstants = enumClass.enumConstants
-        val enumValues = enumConstants.map { it.name }
+        val enumValues = openApiEnumWireValues(enumClass)
 
         // Extract description from @Schema annotation if present
         val description = enumClass.getAnnotation(Schema::class.java)?.description
@@ -255,5 +254,24 @@ class OpenApiConfig(
 
         // Register the schema
         openApi.components.addSchemas(schemaName, schema)
+    }
+
+    /**
+     * OpenAPI enum values must match Jackson wire format (e.g. `@JsonValue` on [UiLocale]).
+     */
+    private fun openApiEnumWireValues(enumClass: Class<out Enum<*>>): List<String> {
+        val enumConstants = enumClass.enumConstants
+        val jsonValueMethod =
+            enumClass.declaredMethods
+                .filter { it.parameterCount == 0 }
+                .firstOrNull { it.isAnnotationPresent(JsonValue::class.java) }
+
+        if (jsonValueMethod == null) {
+            return enumConstants.map { it.name }
+        }
+
+        return enumConstants.map { constant ->
+            jsonValueMethod.invoke(constant)?.toString() ?: constant.name
+        }
     }
 }

@@ -119,13 +119,15 @@ make run           # first start
 make restart       # after code changes
 ```
 
-**Full Docker stack** (slower — rebuilds app image):
+**Full local stack** (native API + frontend — from ord-ops):
 
 ```bash
-cd ../ord-ops && make dev-wipe   # wipe DB volume + restart dev stack
-# or
-docker compose up -d --build
+cd ../ord-ops && make dev-up      # DB (Docker) + native API + frontend
+make api-restart                  # after backend code changes
+cd ../ord-ops && make dev-down
 ```
+
+`docker compose up` in this repo starts **Postgres only** for native dev (`make db-up` / `scripts/dev-db-up.sh`). The `app` service is for manual image testing, not the default dev path.
 
 Check what's running locally:
 
@@ -205,7 +207,7 @@ Run `make help` for the full list.
 |--------|-------------|
 | `make openapi` | Export OpenAPI spec from a running API |
 
-E2E stack: use **ord-ops** (`make e2e-up` / `make e2e-down`).
+Playwright stack: use **ord-ops** (`make playwright-up` / `make playwright-down`).
 
 Override frontend path: `make status ORD_FRONTEND_DIR=/path/to/ord-frontend`.
 
@@ -230,10 +232,10 @@ The `docker-compose.e2e.yml` file starts a self-contained backend for Playwright
 - Health check reports integration mode: `GET /api/v1/health-check` → `"ai": "STUB", "tts": "STUB"`.
 
 ```bash
-cd ../ord-ops && make e2e-up
+cd ../ord-ops && make playwright-up
 curl http://localhost:8080/api/v1/health-check
 # {"application":"UP","database":"UP","ai":"STUB","tts":"STUB"}
-cd ../ord-ops && make e2e-down
+cd ../ord-ops && make playwright-down
 ```
 
 | Variable | E2E value |
