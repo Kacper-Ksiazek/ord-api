@@ -56,6 +56,12 @@ enum class AvailablePrompts(
     WORDS_SUGGEST_VOCABULARY(resourcePath = "words/suggest_vocabulary.md"),
     WORDS_EXPLAIN(resourcePath = "words/explain_word.md"),
 
+    AI_EXPLAINER_FOLLOW_UP_SIMPLER(resourcePath = "ai_explainer/follow_up_simpler.md"),
+    AI_EXPLAINER_FOLLOW_UP_MORE_EXAMPLES(resourcePath = "ai_explainer/follow_up_more_examples.md"),
+    AI_EXPLAINER_FOLLOW_UP_REGISTER(resourcePath = "ai_explainer/follow_up_register.md"),
+    AI_EXPLAINER_FOLLOW_UP_SIMILAR_EXPRESSIONS(resourcePath = "ai_explainer/follow_up_similar_expressions.md"),
+    AI_EXPLAINER_FOLLOW_UP_IN_THIS_CONTEXT(resourcePath = "ai_explainer/follow_up_in_this_context.md"),
+
     WORDS_FILL_GAPS(
         resourcePath = "words/fill_gaps.md",
         structuredOutput = wordFillGapsSchema,

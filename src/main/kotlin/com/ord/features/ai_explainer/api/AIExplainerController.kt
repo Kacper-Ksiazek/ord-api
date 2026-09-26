@@ -5,6 +5,7 @@ import com.ord.config.OpenApiSecurity
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.ai_explainer.api.facades.AIExplainerFacade
+import com.ord.features.ai_explainer.api.requests.ExplainPhraseFollowUpRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -58,4 +59,33 @@ class AIExplainerController(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: ExplainPhraseRequest
     ) = aiExplainerFacade.explainPhrase(body, user)
+
+    @PostMapping("/explain-phrase/follow-up", produces = [TEXT_EVENT_STREAM_VALUE])
+    @Operation(
+        summary = "Follow up on a phrase explanation",
+        description = "Stream a follow-up explanation based on a previous explanation and a predefined action " +
+                "(simpler wording, more examples, register, similar expressions, or meaning in context).",
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Follow-up explanation stream started successfully",
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data or user does not have proficiency in the requested language",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()],
+            ),
+        ],
+    )
+    fun followUpExplainPhrase(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @Valid @RequestBody body: ExplainPhraseFollowUpRequest,
+    ) = aiExplainerFacade.followUpExplainPhrase(body, user)
 }

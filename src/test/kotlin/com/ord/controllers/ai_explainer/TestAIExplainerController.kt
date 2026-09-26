@@ -8,7 +8,10 @@ import com.ord.core.langugae_proficiency.LanguageProficiencyRepository
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.security.UserRepository
+import com.ord.core.ai_provider_usage.models.AiProviderUsageOperationType
+import com.ord.features.ai_explainer.api.requests.ExplainPhraseFollowUpRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
+import com.ord.features.ai_explainer.model.enums.ExplainPhraseFollowUpAction
 import com.ord.testing_utils.api.clients.AIExplainerAPIClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
 import io.kotest.matchers.collections.shouldNotBeEmpty
@@ -284,6 +287,239 @@ class TestAIExplainerController @Autowired constructor(
                 val response = aiExplainerAPIClient.explainPhrase(
                     body = request,
                     user = authenticatedUser
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/ai-explainer/explain-phrase/follow-up - follow up on explanation")
+    inner class FollowUpExplainPhrase {
+
+        private val samplePreviousExplanation =
+            "The word \"hund\" means \"dog\" in Norwegian. It is a common noun used for pets and animals."
+
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+
+            @Test
+            fun `200 - should generate simpler follow-up`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    previousExplanation = samplePreviousExplanation,
+                    action = ExplainPhraseFollowUpAction.SIMPLER,
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.explanation.shouldNotBeBlank()
+                assertAiProviderUsageLogCreated(
+                    authenticatedUser.userInfo.id,
+                    AiProviderUsageOperationType.AIExplainer.FollowUp.SIMPLER,
+                )
+            }
+
+            @Test
+            fun `200 - should generate more examples follow-up`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    previousExplanation = samplePreviousExplanation,
+                    action = ExplainPhraseFollowUpAction.MORE_EXAMPLES,
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.explanation.shouldNotBeBlank()
+                assertAiProviderUsageLogCreated(
+                    authenticatedUser.userInfo.id,
+                    AiProviderUsageOperationType.AIExplainer.FollowUp.MORE_EXAMPLES,
+                )
+            }
+
+            @Test
+            fun `200 - should generate register follow-up`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    previousExplanation = samplePreviousExplanation,
+                    action = ExplainPhraseFollowUpAction.REGISTER,
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.explanation.shouldNotBeBlank()
+                assertAiProviderUsageLogCreated(
+                    authenticatedUser.userInfo.id,
+                    AiProviderUsageOperationType.AIExplainer.FollowUp.REGISTER,
+                )
+            }
+
+            @Test
+            fun `200 - should generate similar expressions follow-up`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    previousExplanation = samplePreviousExplanation,
+                    action = ExplainPhraseFollowUpAction.SIMILAR_EXPRESSIONS,
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.explanation.shouldNotBeBlank()
+                assertAiProviderUsageLogCreated(
+                    authenticatedUser.userInfo.id,
+                    AiProviderUsageOperationType.AIExplainer.FollowUp.SIMILAR_EXPRESSIONS,
+                )
+            }
+
+            @Test
+            fun `200 - should generate in-this-context follow-up`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "break the ice",
+                    language = LanguageName.ENGLISH,
+                    previousExplanation = "The phrase means to start a conversation in a friendly way.",
+                    action = ExplainPhraseFollowUpAction.IN_THIS_CONTEXT,
+                    context = "At the party, he told a joke to break the ice.",
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.explanation.shouldNotBeBlank()
+                assertAiProviderUsageLogCreated(
+                    authenticatedUser.userInfo.id,
+                    AiProviderUsageOperationType.AIExplainer.FollowUp.IN_THIS_CONTEXT,
+                )
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+
+            @Test
+            fun `401 - anonymous user cannot get follow-up`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    previousExplanation = samplePreviousExplanation,
+                    action = ExplainPhraseFollowUpAction.SIMPLER,
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = null,
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `400 - empty previous explanation should fail`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    previousExplanation = "",
+                    action = ExplainPhraseFollowUpAction.SIMPLER,
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - previous explanation exceeding max length should fail`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    previousExplanation = "a".repeat(4001),
+                    action = ExplainPhraseFollowUpAction.SIMPLER,
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - user without proficiency in language should fail`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "hola",
+                    language = LanguageName.SPANISH,
+                    previousExplanation = samplePreviousExplanation,
+                    action = ExplainPhraseFollowUpAction.SIMPLER,
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - IN_THIS_CONTEXT without context should fail`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "break the ice",
+                    language = LanguageName.ENGLISH,
+                    previousExplanation = samplePreviousExplanation,
+                    action = ExplainPhraseFollowUpAction.IN_THIS_CONTEXT,
+                    context = null,
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - context exceeding max length should fail`() {
+                val request = ExplainPhraseFollowUpRequest(
+                    phrase = "hund",
+                    language = LanguageName.NORWEGIAN,
+                    previousExplanation = samplePreviousExplanation,
+                    action = ExplainPhraseFollowUpAction.SIMPLER,
+                    context = "a".repeat(2001),
+                )
+
+                val response = aiExplainerAPIClient.followUpExplainPhrase(
+                    body = request,
+                    user = authenticatedUser,
                 )
 
                 response.status shouldBe HttpStatus.BAD_REQUEST

@@ -1824,6 +1824,53 @@
                 }
             }
         },
+        "/api/v1/ai-explainer/explain-phrase/follow-up": {
+            "post": {
+                "tags": [
+                    "8. AI Explainer"
+                ],
+                "summary": "Follow up on a phrase explanation",
+                "description": "Stream a follow-up explanation based on a previous explanation and a predefined action (simpler wording, more examples, register, similar expressions, or meaning in context).",
+                "operationId": "followUpExplainPhrase",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExplainPhraseFollowUpRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid request data or user does not have proficiency in the requested language",
+                        "content": {}
+                    },
+                    "200": {
+                        "description": "Follow-up explanation stream started successfully",
+                        "content": {
+                            "text/event-stream": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
         "/api/v1/ai-explainer/explain-phrase": {
             "post": {
                 "tags": [
@@ -5864,6 +5911,67 @@
                     "email"
                 ]
             },
+            "ExplainPhraseFollowUpRequest": {
+                "type": "object",
+                "description": "Request to follow up on a previous AI explanation of a word or phrase",
+                "properties": {
+                    "phrase": {
+                        "type": "string",
+                        "description": "The word or phrase being explained",
+                        "example": "hund",
+                        "maxLength": 255,
+                        "minLength": 1
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Language of the word/phrase",
+                        "enum": [
+                            "POLISH",
+                            "ENGLISH",
+                            "GERMAN",
+                            "FRENCH",
+                            "SPANISH",
+                            "ITALIAN",
+                            "NORWEGIAN",
+                            "RUSSIAN",
+                            "SLOVENIAN"
+                        ],
+                        "example": "NORWEGIAN"
+                    },
+                    "previousExplanation": {
+                        "type": "string",
+                        "description": "The explanation text already shown to the learner",
+                        "maxLength": 4000,
+                        "minLength": 1
+                    },
+                    "action": {
+                        "type": "string",
+                        "description": "Follow-up action to apply",
+                        "enum": [
+                            "SIMPLER",
+                            "MORE_EXAMPLES",
+                            "REGISTER",
+                            "SIMILAR_EXPRESSIONS",
+                            "IN_THIS_CONTEXT"
+                        ]
+                    },
+                    "context": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Optional context where the phrase is used; required when action is IN_THIS_CONTEXT",
+                        "maxLength": 2000,
+                        "minLength": 0
+                    }
+                },
+                "required": [
+                    "action",
+                    "language",
+                    "phrase",
+                    "previousExplanation"
+                ]
+            },
             "ExplainPhraseRequest": {
                 "type": "object",
                 "description": "Request to get an AI-powered explanation of a word or phrase",
@@ -6655,6 +6763,17 @@
                     "MASCULINE",
                     "FEMININE",
                     "NEUTER"
+                ]
+            },
+            "ExplainPhraseFollowUpAction": {
+                "type": "string",
+                "description": "Follow-up action applied to a previous phrase explanation",
+                "enum": [
+                    "SIMPLER",
+                    "MORE_EXAMPLES",
+                    "REGISTER",
+                    "SIMILAR_EXPRESSIONS",
+                    "IN_THIS_CONTEXT"
                 ]
             },
             "PhraseType": {
