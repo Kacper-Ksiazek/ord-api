@@ -32,7 +32,7 @@ class HealthCheckController(
     @GetMapping
     @Operation(
         summary = "Check application health",
-        description = "Returns the health status of the application and database connection. " +
+        description = "Returns the health status of the application, database connection, and active Spring profile. " +
             "In the e2e profile, ai and tts are reported as STUB (fixture-based clients, no external API calls). " +
             "No authentication required.",
     )
@@ -47,11 +47,11 @@ class HealthCheckController(
                     examples = [
                         ExampleObject(
                             name = "Production",
-                            value = """{"application":"UP","database":"UP","ai":"LIVE","tts":"LIVE"}"""
+                            value = """{"application":"UP","database":"UP","ai":"LIVE","tts":"LIVE","profile":"production"}"""
                         ),
                         ExampleObject(
                             name = "E2E profile",
-                            value = """{"application":"UP","database":"UP","ai":"STUB","tts":"STUB"}"""
+                            value = """{"application":"UP","database":"UP","ai":"STUB","tts":"STUB","profile":"e2e"}"""
                         ),
                     ]
                 )]
@@ -72,6 +72,7 @@ class HealthCheckController(
                         database = databaseStatus,
                         ai = integrationMode,
                         tts = integrationMode,
+                        profile = resolveProfile(),
                     )
                 )
             }
@@ -83,4 +84,12 @@ class HealthCheckController(
         } else {
             AiIntegrationMode.LIVE
         }
+
+    private fun resolveProfile(): String {
+        val active = environment.activeProfiles
+        if (active.isNotEmpty()) {
+            return active.joinToString(",")
+        }
+        return environment.defaultProfiles.firstOrNull() ?: "default"
+    }
 }
