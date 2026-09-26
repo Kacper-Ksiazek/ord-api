@@ -97,11 +97,12 @@ flowchart LR
   "application": "UP",
   "database": "UP",
   "ai": "STUB",
-  "tts": "STUB"
+  "tts": "STUB",
+  "profile": "e2e"
 }
 ```
 
-In non-`e2e` profiles, `ai` and `tts` are `"LIVE"`.
+In non-`e2e` profiles, `ai` and `tts` are `"LIVE"`, and `profile` is the active Spring profile (`local`, `production`, `test`, …).
 
 Docker E2E healthcheck asserts `database: UP` and `ai: STUB`.
 

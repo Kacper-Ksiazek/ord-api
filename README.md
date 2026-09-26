@@ -229,12 +229,12 @@ The `docker-compose.e2e.yml` file starts a self-contained backend for Playwright
 
 - OpenAI and ElevenLabs clients use **fixture-based stubs** — no outbound calls to external AI APIs.
 - OTP whitelist for deterministic auth (see below).
-- Health check reports integration mode: `GET /api/v1/health-check` → `"ai": "STUB", "tts": "STUB"`.
+- Health check reports integration mode and profile: `GET /api/v1/health-check` → `"ai": "STUB", "tts": "STUB", "profile": "e2e"`.
 
 ```bash
 cd ../ord-ops && make playwright-up
 curl http://localhost:8080/api/v1/health-check
-# {"application":"UP","database":"UP","ai":"STUB","tts":"STUB"}
+# {"application":"UP","database":"UP","ai":"STUB","tts":"STUB","profile":"e2e"}
 cd ../ord-ops && make playwright-down
 ```
 

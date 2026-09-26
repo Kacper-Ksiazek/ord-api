@@ -38,4 +38,10 @@ data class HealthCheckResponse(
         example = "LIVE",
     )
     val tts: AiIntegrationMode,
+
+    @Schema(
+        description = "Active Spring profile. Several profiles are joined with a comma.",
+        example = "local",
+    )
+    val profile: String,
 )

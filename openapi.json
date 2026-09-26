@@ -2221,7 +2221,7 @@
                     "5. Utility: Health Check"
                 ],
                 "summary": "Check application health",
-                "description": "Returns the health status of the application and database connection. In the e2e profile, ai and tts are reported as STUB (fixture-based clients, no external API calls). No authentication required.",
+                "description": "Returns the health status of the application, database connection, and active Spring profile. In the e2e profile, ai and tts are reported as STUB (fixture-based clients, no external API calls). No authentication required.",
                 "operationId": "healthCheck",
                 "responses": {
                     "400": {
@@ -2248,7 +2248,8 @@
                                             "application": "UP",
                                             "database": "UP",
                                             "ai": "LIVE",
-                                            "tts": "LIVE"
+                                            "tts": "LIVE",
+                                            "profile": "production"
                                         }
                                     },
                                     "E2E profile": {
@@ -2257,7 +2258,8 @@
                                             "application": "UP",
                                             "database": "UP",
                                             "ai": "STUB",
-                                            "tts": "STUB"
+                                            "tts": "STUB",
+                                            "profile": "e2e"
                                         }
                                     }
                                 }
@@ -5328,16 +5330,16 @@
                     "propertyName": "sender"
                 },
                 "properties": {
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
                     "sender": {
                         "type": "string",
                         "enum": [
                             "USER",
                             "AI"
                         ]
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
                     },
                     "messageOrder": {
                         "type": "integer",
@@ -6352,6 +6354,11 @@
                             "LIVE"
                         ],
                         "example": "LIVE"
+                    },
+                    "profile": {
+                        "type": "string",
+                        "description": "Active Spring profile. Several profiles are joined with a comma.",
+                        "example": "local"
                     }
                 }
             },
