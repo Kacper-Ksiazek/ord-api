@@ -4,7 +4,9 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.user.model.UserDTO
 import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
 import com.ord.core.word.api.crud.requests.dto.GetManyWordsRequest
+import com.ord.core.word.api.crud.requests.dto.LookupDefinedWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
+import com.ord.core.word.api.crud.responses.dto.LookupDefinedWordsResponse
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
 import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
@@ -25,6 +27,11 @@ interface WordCRUDFacade {
         requestBody: GetManyWordsRequest,
         userId: UUID,
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>>
+
+    fun lookupDefinedWords(
+        requestBody: LookupDefinedWordsRequest,
+        userId: UUID,
+    ): Mono<ResponseEntity<LookupDefinedWordsResponse>>
 
     fun getOverview(
         userId: UUID,

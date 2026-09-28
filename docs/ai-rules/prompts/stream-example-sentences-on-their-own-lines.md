@@ -6,7 +6,11 @@ The string SSE stream already preserves those newlines: the server writes a mult
 
 The example sentence itself is in the language being learned. Glosses and the explanation stay in the paragraph, in the generative content language. If there are no examples, omit the blank line and the example block.
 
-`explain_word.md` still returns one paragraph. This layout applies to the AI explainer follow-up prompts.
+`explain_word.md` uses that layout: one explanation paragraph, a blank line, then `» ` example lines in the word language. Follow-up prompts use a layout that matches the section they fill:
+
+- **Simpler** — one paragraph only. No title and no `» ` lines. The app supplies the heading.
+- **More examples** — only `» ` lines, no lead paragraph. The prompt lists examples already shown so the model does not repeat them.
+- **Similar expressions** — only `» ` lines with three fields separated by ` | `: expression, translation, one-sentence note. No lead paragraph. The app supplies the heading.
 
 ## Good
 

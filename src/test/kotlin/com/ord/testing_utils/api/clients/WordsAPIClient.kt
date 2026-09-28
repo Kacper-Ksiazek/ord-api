@@ -3,11 +3,13 @@ package com.ord.testing_utils.api.clients
 import com.ord.core.word.api.crud.requests.dto.ChangeBankForMultipleWordsRequest
 import com.ord.core.word.api.crud.requests.dto.ChangeBankForSingleWordRequest
 import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
+import com.ord.core.word.api.crud.requests.dto.LookupDefinedWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UnsafeGetManyWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.requests.dto.WordBulkActionRequest
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.word.api.crud.responses.dto.LookupDefinedWordsResponse
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.api.crud.responses.dto.WordListItem
 import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
@@ -70,6 +72,18 @@ class WordsAPIClient(
         )
     }
 
+
+    fun lookupDefinedWords(
+        body: LookupDefinedWordsRequest,
+        user: MockedAuthenticatedUser? = null,
+    ): APIClientResponse<LookupDefinedWordsResponse?> {
+        return post(
+            url = "$baseUrl/defined",
+            body = body,
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<LookupDefinedWordsResponse>() {},
+        )
+    }
 
     fun getWord(
         id: UUID,

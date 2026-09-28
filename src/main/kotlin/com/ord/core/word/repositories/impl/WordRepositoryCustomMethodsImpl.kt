@@ -3,6 +3,7 @@ package com.ord.core.word.repositories.impl
 import com.ord.config.GamesConfig
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
+import com.ord.core.word.api.crud.responses.dto.DefinedWordResponse
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.api.crud.responses.dto.WordListItem
 import com.ord.core.word.models.word.WordEntity
@@ -27,6 +28,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
 import java.util.*
+import java.util.Locale
 
 @Repository
 class WordRepositoryCustomMethodsImpl(
@@ -244,6 +246,44 @@ class WordRepositoryCustomMethodsImpl(
             .bind("userId", userId)
             .bind("language", language.name)
             .map { row -> row.get("source_word", String::class.java)!! }
+            .all()
+    }
+
+    override fun findDefinedWords(
+        userId: UUID,
+        language: LanguageName,
+        sourceWords: List<String>,
+    ): Flux<DefinedWordResponse> {
+        val origins = sourceWords
+            .map { it.trim().lowercase(Locale.ROOT) }
+            .filter { it.isNotEmpty() && it.length <= 255 }
+            .distinct()
+
+        if (origins.isEmpty()) {
+            return Flux.empty()
+        }
+
+        val selectQuery = """
+            SELECT DISTINCT ON (lower(btrim(w.source_word))) w.id, w.source_word
+            FROM words w
+            WHERE w.user_id = :userId
+              AND w.language = :language
+              AND w.definition IS NOT NULL
+              AND btrim(w.definition) <> ''
+              AND lower(btrim(w.source_word)) = ANY(:origins)
+            ORDER BY lower(btrim(w.source_word)), w.created_at DESC
+        """
+
+        return databaseClient.sql(selectQuery)
+            .bind("userId", userId)
+            .bind("language", language.name)
+            .bind("origins", origins.toTypedArray())
+            .map { row ->
+                DefinedWordResponse(
+                    id = row.get("id", UUID::class.java)!!,
+                    sourceWord = row.get("source_word", String::class.java)!!,
+                )
+            }
             .all()
     }
 

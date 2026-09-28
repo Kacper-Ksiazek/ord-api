@@ -79,6 +79,7 @@ class AIExplainerFacadeImpl(
                         "proficiency" to proficiencyLevel.toString(),
                         "generativeContentLanguage" to userProficiencyInRequestedLanguage.generativeContentLanguage.toString(),
                         "previousExplanation" to body.previousExplanation,
+                        "existingExamples" to existingExampleLines(body.previousExplanation),
                         "additionalContext" to (body.context ?: "Not provided"),
                     ),
                 ).toString()
@@ -92,5 +93,15 @@ class AIExplainerFacadeImpl(
                     },
                 )
             }
+    }
+
+    private fun existingExampleLines(previousExplanation: String): String {
+        val lines = previousExplanation
+            .lineSequence()
+            .map { it.trim() }
+            .filter { it.startsWith("»") }
+            .toList()
+
+        return if (lines.isEmpty()) "None yet" else lines.joinToString("\n")
     }
 }

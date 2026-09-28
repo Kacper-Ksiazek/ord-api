@@ -524,6 +524,50 @@
                 ]
             }
         },
+        "/api/v1/words/defined": {
+            "post": {
+                "tags": [
+                    "2. Words: CRUD"
+                ],
+                "summary": "Look up words the user already has defined",
+                "description": "Accepts source words and returns the subset already stored for this user in the given language, with a non-blank definition",
+                "operationId": "lookupDefinedWords",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupDefinedWordsRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid request data",
+                        "content": {}
+                    },
+                    "200": {
+                        "description": "Matching defined words retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LookupDefinedWordsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
         "/api/v1/words/change-bank-for-multiple-words": {
             "post": {
                 "tags": [
@@ -1830,7 +1874,7 @@
                     "8. AI Explainer"
                 ],
                 "summary": "Follow up on a phrase explanation",
-                "description": "Stream a follow-up explanation based on a previous explanation and a predefined action (simpler wording, more examples, register, similar expressions, or meaning in context).",
+                "description": "Stream a follow-up explanation based on a previous explanation and a predefined action (simpler wording, more examples, or similar expressions).",
                 "operationId": "followUpExplainPhrase",
                 "requestBody": {
                     "content": {
@@ -3676,6 +3720,64 @@
                     }
                 }
             },
+            "LookupDefinedWordsRequest": {
+                "type": "object",
+                "description": "Look up which of the given words the authenticated user already has defined",
+                "properties": {
+                    "language": {
+                        "type": "string",
+                        "description": "Supported languages in the platform",
+                        "enum": [
+                            "POLISH",
+                            "ENGLISH",
+                            "GERMAN",
+                            "FRENCH",
+                            "SPANISH",
+                            "ITALIAN",
+                            "NORWEGIAN",
+                            "RUSSIAN",
+                            "SLOVENIAN"
+                        ]
+                    },
+                    "sourceWords": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "maxItems": 50,
+                        "minItems": 0
+                    }
+                },
+                "required": [
+                    "language",
+                    "sourceWords"
+                ]
+            },
+            "DefinedWordResponse": {
+                "type": "object",
+                "description": "A vocabulary word the user already has defined",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "sourceWord": {
+                        "type": "string"
+                    }
+                }
+            },
+            "LookupDefinedWordsResponse": {
+                "type": "object",
+                "description": "Words from the lookup that the user already has defined",
+                "properties": {
+                    "words": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DefinedWordResponse"
+                        }
+                    }
+                }
+            },
             "ChangeBankForMultipleWordsRequest": {
                 "type": "object",
                 "properties": {
@@ -5377,16 +5479,16 @@
                     "propertyName": "sender"
                 },
                 "properties": {
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
                     "sender": {
                         "type": "string",
                         "enum": [
                             "USER",
                             "AI"
                         ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "messageOrder": {
                         "type": "integer",
@@ -5950,9 +6052,7 @@
                         "enum": [
                             "SIMPLER",
                             "MORE_EXAMPLES",
-                            "REGISTER",
-                            "SIMILAR_EXPRESSIONS",
-                            "IN_THIS_CONTEXT"
+                            "SIMILAR_EXPRESSIONS"
                         ]
                     },
                     "context": {
@@ -5960,7 +6060,7 @@
                             "string",
                             "null"
                         ],
-                        "description": "Optional context where the phrase is used; required when action is IN_THIS_CONTEXT",
+                        "description": "Optional context where the phrase is used",
                         "maxLength": 2000,
                         "minLength": 0
                     }
@@ -6771,9 +6871,7 @@
                 "enum": [
                     "SIMPLER",
                     "MORE_EXAMPLES",
-                    "REGISTER",
-                    "SIMILAR_EXPRESSIONS",
-                    "IN_THIS_CONTEXT"
+                    "SIMILAR_EXPRESSIONS"
                 ]
             },
             "PhraseType": {

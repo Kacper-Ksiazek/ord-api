@@ -32,4 +32,9 @@ data class WordEntity(
     var updatedAt: Instant = Instant.now(),
 ) : IdentifiableUserResource {
     fun hasActivationFields(): Boolean = !definition.isNullOrBlank()
+
+    fun withCanonicalSourceWord(): WordEntity {
+        val canonical = sourceWord.lowercase(Locale.ROOT)
+        return if (canonical == sourceWord) this else copy(sourceWord = canonical)
+    }
 }

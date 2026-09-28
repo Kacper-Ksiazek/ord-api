@@ -4,6 +4,7 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
 import com.ord.core.word.api.crud.requests.enums.toggleProperty
+import com.ord.core.word.api.crud.responses.dto.DefinedWordResponse
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
@@ -37,6 +38,8 @@ class WordServiceImpl(
     private val userActivityLogService: UserActivityLogService,
 ) : WordService {
     override val repository: WordRepository = wordRepository
+
+    override fun save(t: WordEntity): Mono<WordEntity> = repository.save(t.withCanonicalSourceWord())
 
     override fun changeBankForSingleWord(wordId: UUID, bankId: UUID?, userId: UUID): Mono<Int> {
         return repository.changeBankForSingleWord(bankId = bankId, wordId = wordId, userId = userId)
@@ -151,7 +154,7 @@ class WordServiceImpl(
         }
 
         val language = word.language
-        return repository.save(word)
+        return save(word)
             .flatMap { saved ->
                 wordProgressService.createInitialProgress(saved.id!!, userId)
                     .map { progress -> wordMapper.toDTO(saved, WordProgressDTO.fromEntity(progress)) }
@@ -188,6 +191,12 @@ class WordServiceImpl(
                 ConflictException("Word already exists for this user, language, type and source word")
             }
     }
+
+    override fun findDefinedWords(
+        userId: UUID,
+        language: LanguageName,
+        sourceWords: List<String>,
+    ): Flux<DefinedWordResponse> = repository.findDefinedWords(userId, language, sourceWords)
 
     override fun countOverview(userId: UUID, language: LanguageName?): Mono<WordOverviewCounts> =
         repository.countOverview(userId, language)

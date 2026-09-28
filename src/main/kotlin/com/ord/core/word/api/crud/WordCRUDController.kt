@@ -12,9 +12,11 @@ import com.ord.core.word.api.crud.requests.dto.ChangeBankForMultipleWordsRequest
 import com.ord.core.word.api.crud.requests.dto.ChangeBankForSingleWordRequest
 import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
 import com.ord.core.word.api.crud.requests.dto.GetManyWordsRequest
+import com.ord.core.word.api.crud.requests.dto.LookupDefinedWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.requests.dto.WordBulkActionRequest
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
+import com.ord.core.word.api.crud.responses.dto.LookupDefinedWordsResponse
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
 import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
@@ -128,6 +130,35 @@ class WordCRUDController(
     ): Mono<ResponseEntity<WordsPaginatedDataResponse>> = wordCRUDFacade.searchWords(
         requestBody = requestBody,
         userId = user.id
+    )
+
+    @PostMapping("/defined")
+    @Operation(
+        summary = "Look up words the user already has defined",
+        description = "Accepts source words and returns the subset already stored for this user in the given language, with a non-blank definition",
+    )
+    @ApiResponses(value = [
+        ApiResponse(
+            responseCode = "200",
+            description = "Matching defined words retrieved successfully"
+        ),
+        ApiResponse(
+            responseCode = "400",
+            description = "Invalid request data",
+            content = [Content()]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized",
+            content = [Content()]
+        )
+    ])
+    fun lookupDefinedWords(
+        @RequestBody @Valid requestBody: LookupDefinedWordsRequest,
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+    ): Mono<ResponseEntity<LookupDefinedWordsResponse>> = wordCRUDFacade.lookupDefinedWords(
+        requestBody = requestBody,
+        userId = user.id,
     )
 
 

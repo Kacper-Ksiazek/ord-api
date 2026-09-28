@@ -33,9 +33,9 @@ Do NOT explain example words, placeholder words, or any other word except "{{wor
     - **C1-C2**: Sophisticated explanations with subtle distinctions
 - Prioritize practical, everyday usage over theoretical or literary uses
 - Use a friendly, educational tone suitable for a student
-- Keep explanations concise but informative (aim for 4-6 sentences total)
-- Write in plain, flowing text - no markdown, no special formatting, no bullet points
-- Structure your response naturally as a paragraph or two
+- Keep the explanation concise (about 2-4 sentences)
+- The explanation is one paragraph. Do not put example sentences inside it
+- Example sentences go after the paragraph, each on its own line
 
 ### HANDLING OPTIONAL PARAMETERS:
 
@@ -55,32 +55,27 @@ Do NOT explain example words, placeholder words, or any other word except "{{wor
 
 ### RESPONSE FORMAT:
 
-Return plain text in {{generativeContentLanguage}} with NO formatting whatsoever.
+Two parts, in this order:
 
-Your explanation should flow naturally and include:
-
-1. The translation into {{translationLanguage}}
-2. A clear, concise definition
-3. 2-3 example sentences showing how "{{word}}" is used in context
-4. Optional: brief usage notes if particularly relevant
-
-### OUTPUT STRUCTURE:
-
-Write your response as natural, flowing text. For example:
+1. One paragraph in {{generativeContentLanguage}}: the translation into {{translationLanguage}}, then a clear definition. Optional brief usage note only if it belongs in that paragraph. Do not include example sentences here.
+2. Exactly one blank line.
+3. Two or three example sentences in {{wordLanguage}}, each on its own line, each starting with "» " (guillemet, then one space).
 
 ```
-The word "lorem" translates to "ipsum" in English. It means [explanation]. For example, you might say "example sentence with lorem" when [context]. Another common use is "second example with lorem" in situations where [context]. It's typically used in [usage context] and often appears in phrases like [common collocation].
+The word "hund" means "dog". It is a common everyday noun.
+
+» Jeg har en hund.
+» Hunden sover i sengen.
 ```
 
-### IMPORTANT FORMATTING RULES:
+### EXAMPLE LINES:
 
-1. Write in plain text only - absolutely NO markdown formatting
-2. NO asterisks, NO bold, NO italics, NO bullet points, NO numbered lists
-3. NO special characters for formatting - just regular punctuation (periods, commas, quotes)
-4. Write in natural, flowing sentences as if speaking to the student
-5. This text will be streamed directly to the user's screen
-6. Keep it concise (4-6 sentences) but comprehensive enough to be helpful
-7. Use quotation marks around "{{word}}" and example sentences for clarity
+1. The explanation is a single paragraph. Do not put example sentences inside it, including inside quotation marks
+2. Exactly one blank line separates the paragraph from the examples
+3. Each example is its own line and starts with "» " (guillemet, then one space)
+4. Write examples in {{wordLanguage}}. Do not number them, bullet them, or wrap them in markdown
+5. Two or three examples that actually use "{{word}}"
+6. If you have none, omit the blank line and the example block
 
 ### ERROR HANDLING:
 

@@ -64,7 +64,7 @@ class AIExplainerController(
     @Operation(
         summary = "Follow up on a phrase explanation",
         description = "Stream a follow-up explanation based on a previous explanation and a predefined action " +
-                "(simpler wording, more examples, register, similar expressions, or meaning in context).",
+                "(simpler wording, more examples, or similar expressions).",
     )
     @ApiResponses(
         value = [

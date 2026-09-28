@@ -350,28 +350,6 @@ class TestAIExplainerController @Autowired constructor(
             }
 
             @Test
-            fun `200 - should generate register follow-up`() {
-                val request = ExplainPhraseFollowUpRequest(
-                    phrase = "hund",
-                    language = LanguageName.NORWEGIAN,
-                    previousExplanation = samplePreviousExplanation,
-                    action = ExplainPhraseFollowUpAction.REGISTER,
-                )
-
-                val response = aiExplainerAPIClient.followUpExplainPhrase(
-                    body = request,
-                    user = authenticatedUser,
-                )
-
-                response.status shouldBe HttpStatus.OK
-                response.explanation.shouldNotBeBlank()
-                assertAiProviderUsageLogCreated(
-                    authenticatedUser.userInfo.id,
-                    AiProviderUsageOperationType.AIExplainer.FollowUp.REGISTER,
-                )
-            }
-
-            @Test
             fun `200 - should generate similar expressions follow-up`() {
                 val request = ExplainPhraseFollowUpRequest(
                     phrase = "hund",
@@ -393,28 +371,6 @@ class TestAIExplainerController @Autowired constructor(
                 )
             }
 
-            @Test
-            fun `200 - should generate in-this-context follow-up`() {
-                val request = ExplainPhraseFollowUpRequest(
-                    phrase = "break the ice",
-                    language = LanguageName.ENGLISH,
-                    previousExplanation = "The phrase means to start a conversation in a friendly way.",
-                    action = ExplainPhraseFollowUpAction.IN_THIS_CONTEXT,
-                    context = "At the party, he told a joke to break the ice.",
-                )
-
-                val response = aiExplainerAPIClient.followUpExplainPhrase(
-                    body = request,
-                    user = authenticatedUser,
-                )
-
-                response.status shouldBe HttpStatus.OK
-                response.explanation.shouldNotBeBlank()
-                assertAiProviderUsageLogCreated(
-                    authenticatedUser.userInfo.id,
-                    AiProviderUsageOperationType.AIExplainer.FollowUp.IN_THIS_CONTEXT,
-                )
-            }
         }
 
         @Nested
@@ -479,24 +435,6 @@ class TestAIExplainerController @Autowired constructor(
                     language = LanguageName.SPANISH,
                     previousExplanation = samplePreviousExplanation,
                     action = ExplainPhraseFollowUpAction.SIMPLER,
-                )
-
-                val response = aiExplainerAPIClient.followUpExplainPhrase(
-                    body = request,
-                    user = authenticatedUser,
-                )
-
-                response.status shouldBe HttpStatus.BAD_REQUEST
-            }
-
-            @Test
-            fun `400 - IN_THIS_CONTEXT without context should fail`() {
-                val request = ExplainPhraseFollowUpRequest(
-                    phrase = "break the ice",
-                    language = LanguageName.ENGLISH,
-                    previousExplanation = samplePreviousExplanation,
-                    action = ExplainPhraseFollowUpAction.IN_THIS_CONTEXT,
-                    context = null,
                 )
 
                 val response = aiExplainerAPIClient.followUpExplainPhrase(

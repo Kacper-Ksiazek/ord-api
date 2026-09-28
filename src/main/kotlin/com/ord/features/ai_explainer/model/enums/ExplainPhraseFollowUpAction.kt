@@ -19,16 +19,8 @@ enum class ExplainPhraseFollowUpAction(
         AvailablePrompts.AI_EXPLAINER_FOLLOW_UP_MORE_EXAMPLES,
         AiProviderUsageOperationType.AIExplainer.FollowUp.MORE_EXAMPLES,
     ),
-    REGISTER(
-        AvailablePrompts.AI_EXPLAINER_FOLLOW_UP_REGISTER,
-        AiProviderUsageOperationType.AIExplainer.FollowUp.REGISTER,
-    ),
     SIMILAR_EXPRESSIONS(
         AvailablePrompts.AI_EXPLAINER_FOLLOW_UP_SIMILAR_EXPRESSIONS,
         AiProviderUsageOperationType.AIExplainer.FollowUp.SIMILAR_EXPRESSIONS,
-    ),
-    IN_THIS_CONTEXT(
-        AvailablePrompts.AI_EXPLAINER_FOLLOW_UP_IN_THIS_CONTEXT,
-        AiProviderUsageOperationType.AIExplainer.FollowUp.IN_THIS_CONTEXT,
     ),
 }
