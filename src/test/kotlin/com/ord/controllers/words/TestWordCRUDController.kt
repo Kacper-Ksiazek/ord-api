@@ -15,6 +15,7 @@ import com.ord.core.word.models.word_details.jsonb.WordCollocation
 import com.ord.core.word.api.crud.requests.dto.ChangeBankForMultipleWordsRequest
 import com.ord.core.word.api.crud.requests.dto.ChangeBankForSingleWordRequest
 import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
+import com.ord.core.word.api.crud.requests.dto.LookupDefinedWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UnsafeGetManyWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
 import com.ord.core.word.api.crud.requests.dto.WordBulkActionRequest
@@ -43,6 +44,7 @@ import com.ord.testing_utils.api.clients.WordDetailsAPIClient
 import com.ord.testing_utils.api.clients.WordsAPIClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -965,6 +967,22 @@ class TestWordCRUDController @Autowired constructor(
             }
 
             @Test
+            fun `201 - sourceWord is stored lowercased`() {
+                val request = createDefaultWordRequest().copy(sourceWord = "Word In English")
+                val response = wordsAPIClient.createWord(request, user = authenticatedUser)
+
+                response.status shouldBe HttpStatus.CREATED
+                response.body!!.sourceWord shouldBe "word in english"
+
+                val wordEntity = wordRepository.findByIdAndUserId(
+                    id = response.body!!.id,
+                    userId = authenticatedUser.userInfo.id,
+                ).block()
+
+                wordEntity!!.sourceWord shouldBe "word in english"
+            }
+
+            @Test
             fun `201 - Word can be created even with bank name identical to another bank name but for different user`() {
                 val anotherUser = userSeeder.seedOneEntity()
                 val bankOfAnotherUser = bankSeeder.seedOneEntityForUser(anotherUser)
@@ -1091,7 +1109,9 @@ class TestWordCRUDController @Autowired constructor(
             wordEntity shouldNotBe null
 
             // Check the updated fields
-            wordEntity!!.sourceWord shouldBe (updateRequest.sourceWord ?: originalWord.sourceWord)
+            wordEntity!!.sourceWord shouldBe (
+                updateRequest.sourceWord ?: originalWord.sourceWord
+            ).lowercase()
             wordEntity.translation shouldBe (updateRequest.translation ?: originalWord.translation)
             wordEntity.definition shouldBe (updateRequest.definition ?: originalWord.definition)
             wordEntity.type shouldBe (updateRequest.type ?: originalWord.type)
@@ -1117,6 +1137,21 @@ class TestWordCRUDController @Autowired constructor(
                 )
 
                 assertWordUpdatedSuccessfully(response, word, updateRequest)
+            }
+
+            @Test
+            fun `200 - sourceWord is stored lowercased on update`() {
+                val word = wordSeeder.seedOneEntityForUser(authenticatedUser.userInfo.id)
+                val updateRequest = createDefaultUpdateWordRequest().copy(sourceWord = "MiXeD CaSe WoRd")
+
+                val response = wordsAPIClient.updateWord(
+                    id = word.id!!,
+                    body = updateRequest,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body!!.sourceWord shouldBe "mixed case word"
             }
 
             @Test
@@ -2489,6 +2524,66 @@ class TestWordCRUDController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.NOT_FOUND
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/words/defined - look up defined words")
+    inner class LookupDefinedWordsTests {
+        @Test
+        fun `200 - returns only words this user already has defined in that language`() {
+            wordsAPIClient.createWord(
+                body = CreateWordRequest(
+                    sourceWord = "Daring",
+                    translation = "śmiałość",
+                    definition = "Willingness to take risks",
+                    type = WordType.NOUN,
+                    extraMark = null,
+                    language = LanguageName.ENGLISH,
+                    bankId = null,
+                    bankToCreate = null,
+                ),
+                user = authenticatedUser,
+            ).status shouldBe HttpStatus.CREATED
+
+            val response = wordsAPIClient.lookupDefinedWords(
+                body = LookupDefinedWordsRequest(
+                    language = LanguageName.ENGLISH,
+                    sourceWords = listOf("daring", "Temerity", "  DARING  "),
+                ),
+                user = authenticatedUser,
+            )
+
+            response.status shouldBe HttpStatus.OK
+            response.body!!.words.map { it.sourceWord } shouldContainExactlyInAnyOrder listOf("daring")
+        }
+
+        @Test
+        fun `200 - does not return the same source word stored in another language`() {
+            wordsAPIClient.createWord(
+                body = CreateWordRequest(
+                    sourceWord = "Daring",
+                    translation = "śmiałość",
+                    definition = "Willingness to take risks",
+                    type = WordType.NOUN,
+                    extraMark = null,
+                    language = LanguageName.ENGLISH,
+                    bankId = null,
+                    bankToCreate = null,
+                ),
+                user = authenticatedUser,
+            ).status shouldBe HttpStatus.CREATED
+
+            val response = wordsAPIClient.lookupDefinedWords(
+                body = LookupDefinedWordsRequest(
+                    language = LanguageName.POLISH,
+                    sourceWords = listOf("Daring"),
+                ),
+                user = authenticatedUser,
+            )
+
+            response.status shouldBe HttpStatus.OK
+            response.body!!.words shouldBe emptyList()
         }
     }
 

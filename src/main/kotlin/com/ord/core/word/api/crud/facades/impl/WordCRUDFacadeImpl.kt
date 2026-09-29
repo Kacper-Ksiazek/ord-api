@@ -6,7 +6,9 @@ import com.ord.core.word.api.crud.facades.WordCRUDFacade
 import com.ord.core.word.api.crud.facades.internal.getBankFromRequestOrNull
 import com.ord.core.word.api.crud.requests.dto.CreateWordRequest
 import com.ord.core.word.api.crud.requests.dto.GetManyWordsRequest
+import com.ord.core.word.api.crud.requests.dto.LookupDefinedWordsRequest
 import com.ord.core.word.api.crud.requests.dto.UpdateWordRequest
+import com.ord.core.word.api.crud.responses.dto.LookupDefinedWordsResponse
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.api.crud.responses.dto.WordOverviewResponse
 import com.ord.core.word.api.crud.responses.dto.WordsPaginatedDataResponse
@@ -93,6 +95,22 @@ class WordCRUDFacadeImpl(
                 )
             }
             .map { ResponseEntity.ok(it) }
+    }
+
+    override fun lookupDefinedWords(
+        requestBody: LookupDefinedWordsRequest,
+        userId: UUID,
+    ): Mono<ResponseEntity<LookupDefinedWordsResponse>> {
+        return wordService
+            .findDefinedWords(
+                userId = userId,
+                language = requestBody.language,
+                sourceWords = requestBody.sourceWords,
+            )
+            .collectList()
+            .map { words ->
+                ResponseEntity.ok(LookupDefinedWordsResponse(words = words))
+            }
     }
 
     override fun getSingleWord(id: UUID, userId: UUID): Mono<ResponseEntity<SingleWordResponse>> {

@@ -3,6 +3,7 @@ package com.ord.core.word.services
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.crud.requests.enums.WordToggleableProperty
+import com.ord.core.word.api.crud.responses.dto.DefinedWordResponse
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.models.word.WordDTO
 import com.ord.core.word.models.word.WordEntity
@@ -51,6 +52,12 @@ interface WordService : UserResourceService<WordEntity> {
     ): Mono<WordsPaginatedResult>
 
     fun findOneWord(wordId: UUID, userId: UUID): Mono<SingleWordResponse>
+
+    fun findDefinedWords(
+        userId: UUID,
+        language: LanguageName,
+        sourceWords: List<String>,
+    ): Flux<DefinedWordResponse>
 
     fun toggleProperty(wordId: UUID, userId: UUID, property: WordToggleableProperty): Mono<WordEntity>
 

@@ -6,5 +6,8 @@ target/
 .classpath, .project, .settings/
 *.log
 
+# Cursor agent debug sessions (NDJSON)
+.cursor/debug*.log
+
 # Generated OpenAPI files
 npm-package/

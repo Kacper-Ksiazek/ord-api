@@ -2,6 +2,7 @@ package com.ord.core.word.repositories
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
+import com.ord.core.word.api.crud.responses.dto.DefinedWordResponse
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
@@ -58,6 +59,12 @@ interface WordRepositoryCustomMethods {
         userId: UUID,
         language: LanguageName,
     ): Flux<String>
+
+    fun findDefinedWords(
+        userId: UUID,
+        language: LanguageName,
+        sourceWords: List<String>,
+    ): Flux<DefinedWordResponse>
 
     fun findAllWordByTheirOrigins(
         origins: Set<String>,

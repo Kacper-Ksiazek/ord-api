@@ -1,5 +1,6 @@
 package com.ord.testing_utils.api.clients
 
+import com.ord.features.ai_explainer.api.requests.ExplainPhraseFollowUpRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -43,6 +44,48 @@ class AIExplainerAPIClient(
         }
 
         // Collect all streamed text chunks
+        val explanation = result.responseBody
+            .filter { it.isNotBlank() }
+            .collectList()
+            .block(Duration.ofSeconds(180))
+            ?.joinToString("")
+            ?: ""
+
+        return ExplainPhraseStreamResponse(
+            explanation = explanation,
+            status = status
+        )
+    }
+
+    fun followUpExplainPhrase(
+        body: ExplainPhraseFollowUpRequest,
+        user: MockedAuthenticatedUser? = null
+    ): ExplainPhraseStreamResponse {
+        val requestSpec = webClient
+            .post()
+            .uri("$baseUrl/explain-phrase/follow-up")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .apply {
+                if (user != null) {
+                    this.cookie(user.authCookie.name, user.authCookie.value)
+                }
+            }
+            .bodyValue(body)
+
+        val result = requestSpec
+            .exchange()
+            .returnResult(String::class.java)
+
+        val status = HttpStatus.valueOf(result.status.value())
+
+        if (status != HttpStatus.OK) {
+            return ExplainPhraseStreamResponse(
+                explanation = "",
+                status = status
+            )
+        }
+
         val explanation = result.responseBody
             .filter { it.isNotBlank() }
             .collectList()

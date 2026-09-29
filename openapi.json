@@ -524,6 +524,50 @@
                 ]
             }
         },
+        "/api/v1/words/defined": {
+            "post": {
+                "tags": [
+                    "2. Words: CRUD"
+                ],
+                "summary": "Look up words the user already has defined",
+                "description": "Accepts source words and returns the subset already stored for this user in the given language, with a non-blank definition",
+                "operationId": "lookupDefinedWords",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupDefinedWordsRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid request data",
+                        "content": {}
+                    },
+                    "200": {
+                        "description": "Matching defined words retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LookupDefinedWordsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
         "/api/v1/words/change-bank-for-multiple-words": {
             "post": {
                 "tags": [
@@ -1822,6 +1866,53 @@
                         "description": "Too many requests"
                     }
                 }
+            }
+        },
+        "/api/v1/ai-explainer/explain-phrase/follow-up": {
+            "post": {
+                "tags": [
+                    "8. AI Explainer"
+                ],
+                "summary": "Follow up on a phrase explanation",
+                "description": "Stream a follow-up explanation based on a previous explanation and a predefined action (simpler wording, more examples, or similar expressions).",
+                "operationId": "followUpExplainPhrase",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExplainPhraseFollowUpRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid request data or user does not have proficiency in the requested language",
+                        "content": {}
+                    },
+                    "200": {
+                        "description": "Follow-up explanation stream started successfully",
+                        "content": {
+                            "text/event-stream": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
             }
         },
         "/api/v1/ai-explainer/explain-phrase": {
@@ -3629,6 +3720,64 @@
                     }
                 }
             },
+            "LookupDefinedWordsRequest": {
+                "type": "object",
+                "description": "Look up which of the given words the authenticated user already has defined",
+                "properties": {
+                    "language": {
+                        "type": "string",
+                        "description": "Supported languages in the platform",
+                        "enum": [
+                            "POLISH",
+                            "ENGLISH",
+                            "GERMAN",
+                            "FRENCH",
+                            "SPANISH",
+                            "ITALIAN",
+                            "NORWEGIAN",
+                            "RUSSIAN",
+                            "SLOVENIAN"
+                        ]
+                    },
+                    "sourceWords": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "maxItems": 50,
+                        "minItems": 0
+                    }
+                },
+                "required": [
+                    "language",
+                    "sourceWords"
+                ]
+            },
+            "DefinedWordResponse": {
+                "type": "object",
+                "description": "A vocabulary word the user already has defined",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "sourceWord": {
+                        "type": "string"
+                    }
+                }
+            },
+            "LookupDefinedWordsResponse": {
+                "type": "object",
+                "description": "Words from the lookup that the user already has defined",
+                "properties": {
+                    "words": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DefinedWordResponse"
+                        }
+                    }
+                }
+            },
             "ChangeBankForMultipleWordsRequest": {
                 "type": "object",
                 "properties": {
@@ -5330,16 +5479,16 @@
                     "propertyName": "sender"
                 },
                 "properties": {
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
                     "sender": {
                         "type": "string",
                         "enum": [
                             "USER",
                             "AI"
                         ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "messageOrder": {
                         "type": "integer",
@@ -5862,6 +6011,65 @@
                 },
                 "required": [
                     "email"
+                ]
+            },
+            "ExplainPhraseFollowUpRequest": {
+                "type": "object",
+                "description": "Request to follow up on a previous AI explanation of a word or phrase",
+                "properties": {
+                    "phrase": {
+                        "type": "string",
+                        "description": "The word or phrase being explained",
+                        "example": "hund",
+                        "maxLength": 255,
+                        "minLength": 1
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Language of the word/phrase",
+                        "enum": [
+                            "POLISH",
+                            "ENGLISH",
+                            "GERMAN",
+                            "FRENCH",
+                            "SPANISH",
+                            "ITALIAN",
+                            "NORWEGIAN",
+                            "RUSSIAN",
+                            "SLOVENIAN"
+                        ],
+                        "example": "NORWEGIAN"
+                    },
+                    "previousExplanation": {
+                        "type": "string",
+                        "description": "The explanation text already shown to the learner",
+                        "maxLength": 4000,
+                        "minLength": 1
+                    },
+                    "action": {
+                        "type": "string",
+                        "description": "Follow-up action to apply",
+                        "enum": [
+                            "SIMPLER",
+                            "MORE_EXAMPLES",
+                            "SIMILAR_EXPRESSIONS"
+                        ]
+                    },
+                    "context": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Optional context where the phrase is used",
+                        "maxLength": 2000,
+                        "minLength": 0
+                    }
+                },
+                "required": [
+                    "action",
+                    "language",
+                    "phrase",
+                    "previousExplanation"
                 ]
             },
             "ExplainPhraseRequest": {
@@ -6655,6 +6863,15 @@
                     "MASCULINE",
                     "FEMININE",
                     "NEUTER"
+                ]
+            },
+            "ExplainPhraseFollowUpAction": {
+                "type": "string",
+                "description": "Follow-up action applied to a previous phrase explanation",
+                "enum": [
+                    "SIMPLER",
+                    "MORE_EXAMPLES",
+                    "SIMILAR_EXPRESSIONS"
                 ]
             },
             "PhraseType": {
