@@ -8,6 +8,7 @@ import com.ord.e2e.TestE2eWhitelistGuard
 import com.ord.e2e.TestE2eWorkerFlywaySeed
 import com.ord.features.conversation.models.conversation.RecencyBucketCalculatorTest
 import com.ord.features.conversation.models.conversation_activity.ConversationActivityCalculatorTest
+import com.ord.features.home.model.HomeAggregatorTest
 import org.junit.platform.suite.api.SelectClasses
 import org.junit.platform.suite.api.Suite
 import org.junit.platform.suite.api.SuiteDisplayName
@@ -22,6 +23,7 @@ import org.junit.platform.suite.api.SuiteDisplayName
         TestOpenApiSpec::class,
         RecencyBucketCalculatorTest::class,
         ConversationActivityCalculatorTest::class,
+        HomeAggregatorTest::class,
         TestE2eWorkerFlywaySeed::class,
         TestE2eUserProvisioner::class,
         TestE2eWhitelistGuard::class,
