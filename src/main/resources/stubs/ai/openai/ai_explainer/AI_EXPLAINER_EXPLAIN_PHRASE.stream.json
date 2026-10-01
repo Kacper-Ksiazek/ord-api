@@ -1,8 +1,10 @@
 {
   "chunks": [
-    "The word \"hund\" means \"dog\" in Norwegian. ",
-    "It is one of the most common nouns learners encounter early on."
+    "The word audacity translates into Polish as zuchwałość or śmiałość. It means boldness that is striking or unexpected, often because it seems rude or disrespectful; it can also describe admirable courage.\n\n",
+    "» She had the audacity to question the decision in front of the whole team.\n",
+    "» His audacity helped him ask for a second chance.\n",
+    "» I can't believe they had the audacity to charge us twice.\n"
   ],
-  "inputTokens": 40,
-  "outputTokens": 20
+  "inputTokens": 48,
+  "outputTokens": 86
 }

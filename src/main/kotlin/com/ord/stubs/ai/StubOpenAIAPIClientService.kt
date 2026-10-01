@@ -83,25 +83,27 @@ class StubOpenAIAPIClientService(
         onError: (Throwable) -> Unit,
         onComplete: (Pair<StreamCompletedPayload<String>, Emitter>) -> Unit,
     ): Flux<String> {
-        val fixture = fixtureLoader.loadStringStream(gptTokensUsageLogKey)
-        val emitter: Emitter = Sinks.many().unicast().onBackpressureBuffer<String>()
+        return Flux.defer {
+            val fixture = fixtureLoader.loadStringStream(gptTokensUsageLogKey)
+            val payload = StreamCompletedPayload(
+                finalContent = fixture.chunks.joinToString(""),
+                inputTokens = fixture.inputTokens,
+                outputTokens = fixture.outputTokens,
+            )
+            val emitter: Emitter = Sinks.many().unicast().onBackpressureBuffer<String>()
 
-        fixture.chunks.forEach { chunk ->
-            onChunkReceived(chunk)
-            emitter.tryEmitNext(chunk)
-        }
-
-        val payload = StreamCompletedPayload(
-            finalContent = fixture.chunks.joinToString(""),
-            inputTokens = fixture.inputTokens,
-            outputTokens = fixture.outputTokens,
-        )
-
-        onComplete(Pair(payload, emitter))
-        saveTokenUsage(userId, gptTokensUsageLogKey, fixture.inputTokens, fixture.outputTokens)
-        emitter.tryEmitComplete()
-
-        return collectForTests(emitter.asFlux())
+            Flux.fromIterable(fixture.chunks)
+                .doOnNext { chunk ->
+                    onChunkReceived(chunk)
+                    emitter.tryEmitNext(chunk)
+                }
+                .doOnComplete {
+                    onComplete(Pair(payload, emitter))
+                    saveTokenUsage(userId, gptTokensUsageLogKey, fixture.inputTokens, fixture.outputTokens)
+                    emitter.tryEmitComplete()
+                }
+                .doOnError(onError)
+        }.transform { flux -> collectForTests(flux) }
     }
 
     override fun <TStreamedItem> openStructuredArrayStream(

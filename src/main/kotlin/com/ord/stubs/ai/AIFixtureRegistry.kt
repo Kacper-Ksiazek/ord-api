@@ -49,17 +49,17 @@ class AIFixtureRegistry {
         AIFixtureEntry(
             operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.SIMPLER,
             type = AIFixtureType.STRING_STREAM,
-            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP.stream.json",
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP_SIMPLER.stream.json",
         ),
         AIFixtureEntry(
             operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.MORE_EXAMPLES,
             type = AIFixtureType.STRING_STREAM,
-            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP.stream.json",
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP_MORE_EXAMPLES.stream.json",
         ),
         AIFixtureEntry(
             operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.SIMILAR_EXPRESSIONS,
             type = AIFixtureType.STRING_STREAM,
-            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP.stream.json",
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP_SIMILAR_EXPRESSIONS.stream.json",
         ),
         AIFixtureEntry(
             operationKey = AiProviderUsageOperationType.Words.SUGGEST_VOCABULARY,
