@@ -1,0 +1,42 @@
+meta {
+  name: Save User Message
+  type: http
+  seq: 4
+}
+
+docs {
+  Persists a user message in the conversation.
+
+  Update `messageId`, `messageOrder`, and `content` to match your session.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/ongoing/user/save-message
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "conversationId": "{{conversationId}}",
+    "messageId": "00000000-0000-0000-0000-000000000001",
+    "content": "Hello! I think climate change is a serious issue.",
+    "messageOrder": 1
+  }
+}
+
+script:post-response {
+  test("message saved", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  const body = res.getBody();
+  test("message shape", () => {
+    expect(body.id).to.be.a("string");
+    expect(body.content).to.be.a("string");
+  });
+}

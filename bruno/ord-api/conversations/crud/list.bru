@@ -1,0 +1,33 @@
+meta {
+  name: List Conversations
+  type: http
+  seq: 1
+}
+
+docs {
+  Returns conversation summaries for the authenticated user.
+
+  Optional query filters: `search`, `recencyBucket`, `type`.
+}
+
+get {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/
+  body: none
+  auth: inherit
+}
+
+params:query {
+  search: 
+  recencyBucket: 
+  type: 
+}
+
+script:post-response {
+  test("listed", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("returns array", () => {
+    expect(res.getBody()).to.be.an("array");
+  });
+}

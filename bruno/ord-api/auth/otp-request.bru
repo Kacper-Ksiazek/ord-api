@@ -1,0 +1,35 @@
+meta {
+  name: OTP Request
+  type: http
+  seq: 1
+}
+
+docs {
+  Step 1 of login. Sends a 6-digit code to `email`.
+
+  Clear Bruno cookies before this request (no existing session).
+
+  Local dev: `OTP_WHITELISTED_EMAILS=dev@example.com` on the API, code `123456`.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/auth/otp-request
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{email}}"
+  }
+}
+
+script:post-response {
+  test("OTP sent", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
