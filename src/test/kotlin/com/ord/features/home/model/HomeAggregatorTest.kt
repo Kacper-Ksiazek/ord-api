@@ -22,6 +22,7 @@ class HomeAggregatorTest {
             val window = HomeWindow.at(today)
 
             assertEquals(LocalDate.of(2026, 9, 1).atStartOfDayUtc(), window.from30Inclusive)
+            assertEquals(LocalDate.of(2026, 9, 1).atStartOfDayUtc(), window.fromMonthInclusive)
             assertEquals(LocalDate.of(2026, 10, 1).atStartOfDayUtc(), window.toExclusive)
             assertEquals(2026, window.year)
             assertEquals(LocalDate.of(2026, 1, 1).atStartOfDayUtc(), window.yearStartInclusive)
@@ -35,6 +36,7 @@ class HomeAggregatorTest {
             val window = HomeWindow.at(today)
 
             assertEquals(LocalDate.of(2025, 12, 4).atStartOfDayUtc(), window.from30Inclusive)
+            assertEquals(LocalDate.of(2026, 1, 1).atStartOfDayUtc(), window.fromMonthInclusive)
             assertEquals(LocalDate.of(2026, 1, 3).atStartOfDayUtc(), window.toExclusive)
             assertEquals(LocalDate.of(2026, 1, 1).atStartOfDayUtc(), window.yearStartInclusive)
         }

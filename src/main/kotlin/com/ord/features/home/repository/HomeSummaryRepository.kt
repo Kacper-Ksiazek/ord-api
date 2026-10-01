@@ -26,6 +26,7 @@ class HomeSummaryRepository(
             .bind("userId", userId)
             .bind("language", language.name)
             .bind("from30", window.from30Inclusive)
+            .bind("fromMonth", window.fromMonthInclusive)
             .bind("toExclusive", window.toExclusive)
             .bind("yearStart", window.yearStartInclusive)
             .bind("yearEnd", window.yearEndExclusive)
@@ -104,7 +105,7 @@ class HomeSummaryRepository(
                     FROM words
                     WHERE user_id = :userId
                       AND language = :language
-                      AND created_at >= :from30
+                      AND created_at >= :fromMonth
                       AND created_at < :toExclusive
                 ) AS words_added_last_30,
                 (
@@ -129,7 +130,7 @@ class HomeSummaryRepository(
                     FROM conversations
                     WHERE user_id = :userId
                       AND language = :language
-                      AND created_at >= :from30
+                      AND created_at >= :fromMonth
                       AND created_at < :toExclusive
                 ) AS conversations_created_last_30,
                 (
@@ -145,7 +146,7 @@ class HomeSummaryRepository(
                     JOIN conversations c ON c.id = cm.conversation_id
                     WHERE c.user_id = :userId
                       AND c.language = :language
-                      AND cm.created_at >= :from30
+                      AND cm.created_at >= :fromMonth
                       AND cm.created_at < :toExclusive
                 ) AS messages_last_30,
                 (
@@ -159,7 +160,7 @@ class HomeSummaryRepository(
                     FROM finished_games
                     WHERE user_id = :userId
                       AND language = :language
-                      AND created_at >= :from30
+                      AND created_at >= :fromMonth
                       AND created_at < :toExclusive
                 ) AS games_last_30,
                 (

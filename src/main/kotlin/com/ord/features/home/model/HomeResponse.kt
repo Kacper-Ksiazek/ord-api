@@ -16,7 +16,7 @@ data class HomeWordsSection(
     @Schema(description = "All words in the selected language", example = "40")
     val total: Long,
 
-    @Schema(description = "Words created in the rolling last 30 UTC days, including today", example = "6")
+    @Schema(description = "Words created in the current UTC calendar month, including today", example = "6")
     val addedLast30Days: Long,
 
     @Schema(description = "Count per word type. Types with zero words are omitted.")
@@ -31,10 +31,10 @@ data class HomeConversationsSection(
     @Schema(description = "All messages in those conversations, from the user and the AI", example = "28")
     val messagesTotal: Long,
 
-    @Schema(description = "Conversations created in the rolling last 30 UTC days, including today", example = "1")
+    @Schema(description = "Conversations created in the current UTC calendar month, including today", example = "1")
     val createdLast30Days: Long,
 
-    @Schema(description = "Messages created in the rolling last 30 UTC days, from the user and the AI", example = "8")
+    @Schema(description = "Messages created in the current UTC calendar month, from the user and the AI", example = "8")
     val messagesLast30Days: Long,
 )
 
@@ -46,7 +46,7 @@ data class HomeGamesSection(
     @Schema(description = "Finished games stored for this user and language. Null when that count is not available.", nullable = true)
     val total: Long?,
 
-    @Schema(description = "Finished games recorded in the rolling last 30 UTC days. Null when that count is not available.", nullable = true)
+    @Schema(description = "Finished games recorded in the current UTC calendar month. Null when that count is not available.", nullable = true)
     val last30Days: Long?,
 )
 
