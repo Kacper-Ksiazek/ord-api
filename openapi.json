@@ -25,6 +25,10 @@
     ],
     "tags": [
         {
+            "name": "6. Home",
+            "description": "Landing summary for the selected learning language"
+        },
+        {
             "name": "1. Core: Users",
             "description": "User profile management and account initialization"
         },
@@ -51,6 +55,10 @@
         {
             "name": "3. Games: Crossword",
             "description": "Crossword puzzle game variant endpoints"
+        },
+        {
+            "name": "6. Home",
+            "description": "Single read for the landing page: vocabulary, conversations, finished games, and this year's activity"
         },
         {
             "name": "3. Games: Crossword",
@@ -2297,6 +2305,46 @@
                     },
                     "401": {
                         "description": "Not authenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/home": {
+            "get": {
+                "tags": [
+                    "6. Home"
+                ],
+                "summary": "Get home summary",
+                "description": "Counts and this UTC year's activity for the authenticated user and their selected learning language. When no language is selected, totals are zero and the year has no days.",
+                "operationId": "getHome",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Home summary retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HomeResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -6520,6 +6568,143 @@
                         "format": "int64",
                         "description": "Number of bookmarked words",
                         "example": 12
+                    }
+                }
+            },
+            "HomeActivityDay": {
+                "type": "object",
+                "description": "One UTC day of home activity",
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "description": "UTC date",
+                        "example": "2026-09-30"
+                    },
+                    "count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Words added, conversation messages, and finished games recorded that day",
+                        "example": 4
+                    }
+                }
+            },
+            "HomeActivitySection": {
+                "type": "object",
+                "description": "Days in the current UTC calendar year with any learning activity",
+                "properties": {
+                    "year": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Current calendar year in UTC",
+                        "example": 2026
+                    },
+                    "days": {
+                        "type": "array",
+                        "description": "Days in that year whose count is greater than zero",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    }
+                }
+            },
+            "HomeConversationsSection": {
+                "type": "object",
+                "description": "Conversation counts for the selected learning language",
+                "properties": {
+                    "total": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "All conversations in the selected language",
+                        "example": 3
+                    },
+                    "messagesTotal": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "All messages in those conversations, from the user and the AI",
+                        "example": 28
+                    },
+                    "createdLast30Days": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Conversations created in the rolling last 30 UTC days, including today",
+                        "example": 1
+                    },
+                    "messagesLast30Days": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Messages created in the rolling last 30 UTC days, from the user and the AI",
+                        "example": 8
+                    }
+                }
+            },
+            "HomeGamesSection": {
+                "type": "object",
+                "description": "Finished-game counts. comingSoon stays true until the games UI ships.",
+                "properties": {
+                    "comingSoon": {
+                        "type": "boolean",
+                        "description": "Games practice is not on the home screen yet",
+                        "example": true
+                    },
+                    "total": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Finished games stored for this user and language. Null when that count is not available."
+                    },
+                    "last30Days": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Finished games recorded in the rolling last 30 UTC days. Null when that count is not available."
+                    }
+                }
+            },
+            "HomeResponse": {
+                "type": "object",
+                "description": "Landing summary for the authenticated user and their selected learning language",
+                "properties": {
+                    "words": {
+                        "$ref": "#/components/schemas/HomeWordsSection"
+                    },
+                    "conversations": {
+                        "$ref": "#/components/schemas/HomeConversationsSection"
+                    },
+                    "games": {
+                        "$ref": "#/components/schemas/HomeGamesSection"
+                    },
+                    "activity": {
+                        "$ref": "#/components/schemas/HomeActivitySection"
+                    }
+                }
+            },
+            "HomeWordsSection": {
+                "type": "object",
+                "description": "Vocabulary counts for the selected learning language",
+                "properties": {
+                    "total": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "All words in the selected language",
+                        "example": 40
+                    },
+                    "addedLast30Days": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Words created in the rolling last 30 UTC days, including today",
+                        "example": 6
+                    },
+                    "byType": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "description": "Count per word type. Types with zero words are omitted."
                     }
                 }
             },

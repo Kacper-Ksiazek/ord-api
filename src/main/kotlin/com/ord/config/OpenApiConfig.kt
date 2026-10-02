@@ -152,7 +152,10 @@ class OpenApiConfig(
                         .description("AI provider testing and demonstration endpoints"),
                     Tag()
                         .name("5. Utility: Health Check")
-                        .description("Application health and status monitoring")
+                        .description("Application health and status monitoring"),
+                    Tag()
+                        .name("6. Home")
+                        .description("Landing summary for the selected learning language")
                 )
             )
     }
