@@ -8,6 +8,7 @@ data class HomeResponse(
     val words: HomeWordsSection,
     val conversations: HomeConversationsSection,
     val games: HomeGamesSection,
+    val trends: HomeTrendsSection,
     val activity: HomeActivitySection,
 )
 

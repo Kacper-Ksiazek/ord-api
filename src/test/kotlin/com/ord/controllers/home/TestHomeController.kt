@@ -116,6 +116,7 @@ class TestHomeController @Autowired constructor(
                 body.games.last30Days shouldBe 0
                 body.activity.year shouldBe year
                 body.activity.days shouldBe emptyList()
+                body.trends.wordsAdded.size shouldBe 90
             }
 
             @Test
@@ -215,6 +216,10 @@ class TestHomeController @Autowired constructor(
                 body.games.comingSoon shouldBe true
                 body.games.total shouldBe 2
                 body.games.last30Days shouldBe 2
+                body.trends.wordsAdded.any { it.count > 0 } shouldBe true
+                body.trends.conversationsCreated.any { it.count > 0 } shouldBe true
+                body.trends.messages.any { it.count > 0 } shouldBe true
+                body.trends.gamesFinished.any { it.count > 0 } shouldBe true
                 body.activity.year shouldBe year
 
                 val expectedDays = buildList {

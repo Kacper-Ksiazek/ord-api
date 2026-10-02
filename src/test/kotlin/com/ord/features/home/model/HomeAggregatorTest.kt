@@ -64,6 +64,22 @@ class HomeAggregatorTest {
             assertEquals(0L, response.games.last30Days)
             assertEquals(2026, response.activity.year)
             assertEquals(emptyList<HomeActivityDay>(), response.activity.days)
+            assertEquals(HomeAggregator.TREND_DAY_COUNT, response.trends.wordsAdded.size)
+            assertEquals(0L, response.trends.wordsAdded.sumOf { it.count })
+        }
+
+        @Test
+        fun `dense trend days fill missing dates with zero`() {
+            val window = HomeWindow.at(LocalDate.of(2026, 3, 31))
+            val dense = HomeAggregator.denseTrendDays(
+                window,
+                listOf(HomeActivityDay(date = "2026-03-30", count = 2)),
+            )
+
+            assertEquals(HomeAggregator.TREND_DAY_COUNT, dense.size)
+            assertEquals("2026-01-01", dense.first().date)
+            assertEquals("2026-03-31", dense.last().date)
+            assertEquals(2L, dense.find { it.date == "2026-03-30" }?.count)
         }
 
         @Test
@@ -116,6 +132,10 @@ class HomeAggregatorTest {
                     gamesTotal = null,
                     gamesLast30Days = null,
                     activityDays = emptyList(),
+                    wordsAddedTrend90 = emptyList(),
+                    conversationsCreatedTrend90 = emptyList(),
+                    messagesTrend90 = emptyList(),
+                    gamesFinishedTrend90 = emptyList(),
                 ),
             )
 

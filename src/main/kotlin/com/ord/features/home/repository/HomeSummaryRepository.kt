@@ -25,8 +25,8 @@ class HomeSummaryRepository(
             .sql(SUMMARY_SQL)
             .bind("userId", userId)
             .bind("language", language.name)
-            .bind("from30", window.from30Inclusive)
             .bind("fromMonth", window.fromMonthInclusive)
+            .bind("from90", window.from90Inclusive)
             .bind("toExclusive", window.toExclusive)
             .bind("yearStart", window.yearStartInclusive)
             .bind("yearEnd", window.yearEndExclusive)
@@ -42,6 +42,10 @@ class HomeSummaryRepository(
                     gamesTotal = cellLong(row, "games_total"),
                     gamesLast30Days = cellLong(row, "games_last_30"),
                     activityDays = parseActivityDays(cellText(row, "activity_days")),
+                    wordsAddedTrend90 = parseActivityDays(cellText(row, "words_added_trend_90")),
+                    conversationsCreatedTrend90 = parseActivityDays(cellText(row, "conversations_created_trend_90")),
+                    messagesTrend90 = parseActivityDays(cellText(row, "messages_trend_90")),
+                    gamesFinishedTrend90 = parseActivityDays(cellText(row, "games_finished_trend_90")),
                 )
             }
             .one()
@@ -92,6 +96,81 @@ class HomeSummaryRepository(
     }
 
     private companion object {
+        private val TREND_JSON_AGG = """
+            SELECT COALESCE(
+                jsonb_agg(
+                    jsonb_build_object(
+                        'date', to_char(daily.activity_date, 'YYYY-MM-DD'),
+                        'count', daily.cnt
+                    )
+                    ORDER BY daily.activity_date
+                ),
+                '[]'::jsonb
+            )::text
+            FROM (
+        """.trimIndent()
+
+        private val TREND_JSON_AGG_END = """
+            ) daily
+        """.trimIndent()
+
+        private val TREND_WORDS_SQL = """
+            (
+                $TREND_JSON_AGG
+                SELECT (created_at AT TIME ZONE 'UTC')::date AS activity_date, COUNT(*)::bigint AS cnt
+                FROM words
+                WHERE user_id = :userId
+                  AND language = :language
+                  AND created_at >= :from90
+                  AND created_at < :toExclusive
+                GROUP BY 1
+                $TREND_JSON_AGG_END
+            )
+        """.trimIndent()
+
+        private val TREND_CONVERSATIONS_SQL = """
+            (
+                $TREND_JSON_AGG
+                SELECT (created_at AT TIME ZONE 'UTC')::date AS activity_date, COUNT(*)::bigint AS cnt
+                FROM conversations
+                WHERE user_id = :userId
+                  AND language = :language
+                  AND created_at >= :from90
+                  AND created_at < :toExclusive
+                GROUP BY 1
+                $TREND_JSON_AGG_END
+            )
+        """.trimIndent()
+
+        private val TREND_MESSAGES_SQL = """
+            (
+                $TREND_JSON_AGG
+                SELECT (cm.created_at AT TIME ZONE 'UTC')::date AS activity_date, COUNT(*)::bigint AS cnt
+                FROM conversation_messages cm
+                JOIN conversations c ON c.id = cm.conversation_id
+                WHERE c.user_id = :userId
+                  AND c.language = :language
+                  AND cm.created_at >= :from90
+                  AND cm.created_at < :toExclusive
+                GROUP BY 1
+                $TREND_JSON_AGG_END
+            )
+        """.trimIndent()
+
+        private val TREND_GAMES_SQL = """
+            (
+                $TREND_JSON_AGG
+                SELECT (created_at AT TIME ZONE 'UTC')::date AS activity_date, COUNT(*)::bigint AS cnt
+                FROM finished_games
+                WHERE user_id = :userId
+                  AND language = :language
+                  AND created_at >= :from90
+                  AND created_at < :toExclusive
+                GROUP BY 1
+                $TREND_JSON_AGG_END
+            )
+        """.trimIndent()
+
         val SUMMARY_SQL = """
             SELECT
                 (
@@ -163,6 +242,10 @@ class HomeSummaryRepository(
                       AND created_at >= :fromMonth
                       AND created_at < :toExclusive
                 ) AS games_last_30,
+                $TREND_WORDS_SQL AS words_added_trend_90,
+                $TREND_CONVERSATIONS_SQL AS conversations_created_trend_90,
+                $TREND_MESSAGES_SQL AS messages_trend_90,
+                $TREND_GAMES_SQL AS games_finished_trend_90,
                 (
                     SELECT COALESCE(
                         jsonb_agg(
