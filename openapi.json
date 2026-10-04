@@ -5527,6 +5527,10 @@
                     "propertyName": "sender"
                 },
                 "properties": {
+                    "messageOrder": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
                     "sender": {
                         "type": "string",
                         "enum": [
@@ -5537,10 +5541,6 @@
                     "createdAt": {
                         "type": "string",
                         "format": "date-time"
-                    },
-                    "messageOrder": {
-                        "type": "integer",
-                        "format": "int32"
                     },
                     "id": {
                         "type": "string",
@@ -6626,13 +6626,13 @@
                     "createdLast30Days": {
                         "type": "integer",
                         "format": "int64",
-                        "description": "Conversations created in the rolling last 30 UTC days, including today",
+                        "description": "Conversations created in the current UTC calendar month, including today",
                         "example": 1
                     },
                     "messagesLast30Days": {
                         "type": "integer",
                         "format": "int64",
-                        "description": "Messages created in the rolling last 30 UTC days, from the user and the AI",
+                        "description": "Messages created in the current UTC calendar month, from the user and the AI",
                         "example": 8
                     }
                 }
@@ -6660,7 +6660,7 @@
                             "null"
                         ],
                         "format": "int64",
-                        "description": "Finished games recorded in the rolling last 30 UTC days. Null when that count is not available."
+                        "description": "Finished games recorded in the current UTC calendar month. Null when that count is not available."
                     }
                 }
             },
@@ -6677,8 +6677,45 @@
                     "games": {
                         "$ref": "#/components/schemas/HomeGamesSection"
                     },
+                    "trends": {
+                        "$ref": "#/components/schemas/HomeTrendsSection"
+                    },
                     "activity": {
                         "$ref": "#/components/schemas/HomeActivitySection"
+                    }
+                }
+            },
+            "HomeTrendsSection": {
+                "type": "object",
+                "description": "Daily counts for the last 90 UTC days ending today, one point per day",
+                "properties": {
+                    "wordsAdded": {
+                        "type": "array",
+                        "description": "Words created per day",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    },
+                    "conversationsCreated": {
+                        "type": "array",
+                        "description": "Conversations created per day",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    },
+                    "messages": {
+                        "type": "array",
+                        "description": "Conversation messages created per day",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    },
+                    "gamesFinished": {
+                        "type": "array",
+                        "description": "Finished games recorded per day",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
                     }
                 }
             },
@@ -6695,7 +6732,7 @@
                     "addedLast30Days": {
                         "type": "integer",
                         "format": "int64",
-                        "description": "Words created in the rolling last 30 UTC days, including today",
+                        "description": "Words created in the current UTC calendar month, including today",
                         "example": 6
                     },
                     "byType": {
