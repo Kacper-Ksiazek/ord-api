@@ -5527,10 +5527,6 @@
                     "propertyName": "sender"
                 },
                 "properties": {
-                    "messageOrder": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
                     "sender": {
                         "type": "string",
                         "enum": [
@@ -5541,6 +5537,10 @@
                     "createdAt": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "messageOrder": {
+                        "type": "integer",
+                        "format": "int32"
                     },
                     "id": {
                         "type": "string",
@@ -6571,6 +6571,96 @@
                     }
                 }
             },
+            "ConversationSummaryDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "topic": {
+                        "type": "string"
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Supported languages in the platform",
+                        "enum": [
+                            "POLISH",
+                            "ENGLISH",
+                            "GERMAN",
+                            "FRENCH",
+                            "SPANISH",
+                            "ITALIAN",
+                            "NORWEGIAN",
+                            "RUSSIAN",
+                            "SLOVENIAN"
+                        ]
+                    },
+                    "proficiencyLevel": {
+                        "type": "string",
+                        "enum": [
+                            "A1",
+                            "A2",
+                            "B1",
+                            "B2",
+                            "C1",
+                            "C2"
+                        ]
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "SMALL_TALK",
+                            "SCENARIO_ROLEPLAY",
+                            "EXAM_PRACTICE",
+                            "TOPIC_EXPLORATION",
+                            "OXFORD_DEBATE"
+                        ]
+                    },
+                    "aiTone": {
+                        "type": "string",
+                        "enum": [
+                            "FRIENDLY",
+                            "FORMAL",
+                            "HUMOROUS",
+                            "NEUTRAL",
+                            "ENCOURAGING",
+                            "CHALLENGING"
+                        ]
+                    },
+                    "aiInterlocutorName": {
+                        "type": "string"
+                    },
+                    "aiInterlocutorAvatarId": {
+                        "type": "string"
+                    },
+                    "additionalContext": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "recencyBucket": {
+                        "type": "string",
+                        "description": "Grouping bucket based on last activity (UTC)",
+                        "enum": [
+                            "TODAY",
+                            "YESTERDAY",
+                            "THIS_WEEK",
+                            "THIS_MONTH",
+                            "LATER"
+                        ]
+                    }
+                }
+            },
             "HomeActivityDay": {
                 "type": "object",
                 "description": "One UTC day of home activity",
@@ -6682,6 +6772,20 @@
                     },
                     "activity": {
                         "$ref": "#/components/schemas/HomeActivitySection"
+                    },
+                    "recentWords": {
+                        "type": "array",
+                        "description": "Up to three most recently created words in the selected learning language",
+                        "items": {
+                            "$ref": "#/components/schemas/WordListItem"
+                        }
+                    },
+                    "recentConversations": {
+                        "type": "array",
+                        "description": "Up to three most recently updated conversations in the selected learning language",
+                        "items": {
+                            "$ref": "#/components/schemas/ConversationSummaryDTO"
+                        }
                     }
                 }
             },
@@ -6789,96 +6893,6 @@
                         "type": "string",
                         "description": "Active Spring profile. Several profiles are joined with a comma.",
                         "example": "local"
-                    }
-                }
-            },
-            "ConversationSummaryDTO": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "topic": {
-                        "type": "string"
-                    },
-                    "language": {
-                        "type": "string",
-                        "description": "Supported languages in the platform",
-                        "enum": [
-                            "POLISH",
-                            "ENGLISH",
-                            "GERMAN",
-                            "FRENCH",
-                            "SPANISH",
-                            "ITALIAN",
-                            "NORWEGIAN",
-                            "RUSSIAN",
-                            "SLOVENIAN"
-                        ]
-                    },
-                    "proficiencyLevel": {
-                        "type": "string",
-                        "enum": [
-                            "A1",
-                            "A2",
-                            "B1",
-                            "B2",
-                            "C1",
-                            "C2"
-                        ]
-                    },
-                    "type": {
-                        "type": "string",
-                        "enum": [
-                            "SMALL_TALK",
-                            "SCENARIO_ROLEPLAY",
-                            "EXAM_PRACTICE",
-                            "TOPIC_EXPLORATION",
-                            "OXFORD_DEBATE"
-                        ]
-                    },
-                    "aiTone": {
-                        "type": "string",
-                        "enum": [
-                            "FRIENDLY",
-                            "FORMAL",
-                            "HUMOROUS",
-                            "NEUTRAL",
-                            "ENCOURAGING",
-                            "CHALLENGING"
-                        ]
-                    },
-                    "aiInterlocutorName": {
-                        "type": "string"
-                    },
-                    "aiInterlocutorAvatarId": {
-                        "type": "string"
-                    },
-                    "additionalContext": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updatedAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "recencyBucket": {
-                        "type": "string",
-                        "description": "Grouping bucket based on last activity (UTC)",
-                        "enum": [
-                            "TODAY",
-                            "YESTERDAY",
-                            "THIS_WEEK",
-                            "THIS_MONTH",
-                            "LATER"
-                        ]
                     }
                 }
             },
