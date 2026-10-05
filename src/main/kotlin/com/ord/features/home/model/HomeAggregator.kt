@@ -29,6 +29,8 @@ object HomeAggregator {
             year = window.year,
             days = emptyList(),
         ),
+        recentWords = emptyList(),
+        recentConversations = emptyList(),
     )
 
     fun assemble(window: HomeWindow, snapshot: HomeSnapshot): HomeResponse = HomeResponse(
@@ -59,6 +61,8 @@ object HomeAggregator {
             year = window.year,
             days = activityDays(snapshot.activityDays),
         ),
+        recentWords = emptyList(),
+        recentConversations = emptyList(),
     )
 
     fun trendsSection(

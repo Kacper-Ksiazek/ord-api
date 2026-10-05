@@ -116,6 +116,8 @@ class TestHomeController @Autowired constructor(
                 body.games.last30Days shouldBe 0
                 body.activity.year shouldBe year
                 body.activity.days shouldBe emptyList()
+                body.recentWords shouldBe emptyList()
+                body.recentConversations shouldBe emptyList()
                 body.trends.wordsAdded.size shouldBe 90
             }
 
@@ -221,6 +223,10 @@ class TestHomeController @Autowired constructor(
                 body.trends.messages.any { it.count > 0 } shouldBe true
                 body.trends.gamesFinished.any { it.count > 0 } shouldBe true
                 body.activity.year shouldBe year
+                body.recentWords.map { it.sourceWord }.take(2).toSet() shouldBe setOf("apple", "pear")
+                body.recentWords.last().sourceWord shouldBe "run"
+                body.recentWords.map { it.language }.toSet() shouldBe setOf(LanguageName.ENGLISH)
+                body.recentConversations.map { it.topic } shouldBe listOf("recent", "older")
 
                 val expectedDays = buildList {
                     if (olderDate.year == year) {

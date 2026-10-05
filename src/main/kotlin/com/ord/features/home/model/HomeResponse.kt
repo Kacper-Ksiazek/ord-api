@@ -1,6 +1,8 @@
 package com.ord.features.home.model
 
+import com.ord.core.word.api.crud.responses.dto.WordListItem
 import com.ord.core.word.models.word.enums.WordType
+import com.ord.features.conversation.models.conversation.ConversationSummaryDTO
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "Landing summary for the authenticated user and their selected learning language")
@@ -10,6 +12,12 @@ data class HomeResponse(
     val games: HomeGamesSection,
     val trends: HomeTrendsSection,
     val activity: HomeActivitySection,
+
+    @Schema(description = "Up to three most recently created words in the selected learning language")
+    val recentWords: List<WordListItem>,
+
+    @Schema(description = "Up to three most recently updated conversations in the selected learning language")
+    val recentConversations: List<ConversationSummaryDTO>,
 )
 
 @Schema(description = "Vocabulary counts for the selected learning language")

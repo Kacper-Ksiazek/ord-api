@@ -1,6 +1,9 @@
 package com.ord.features.home.service.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.word.repositories.WordRepository
+import com.ord.features.conversation.models.conversation.ConversationSummaryMapper
+import com.ord.features.conversation.repositories.ConversationRepository
 import com.ord.features.home.model.HomeAggregator
 import com.ord.features.home.model.HomeResponse
 import com.ord.features.home.model.HomeWindow
@@ -13,6 +16,9 @@ import java.util.UUID
 @Service
 class HomeServiceImpl(
     private val homeSummaryRepository: HomeSummaryRepository,
+    private val wordRepository: WordRepository,
+    private val conversationRepository: ConversationRepository,
+    private val conversationSummaryMapper: ConversationSummaryMapper,
 ) : HomeService {
     override fun getHome(
         userId: UUID,
@@ -23,17 +29,38 @@ class HomeServiceImpl(
             return Mono.just(HomeAggregator.empty(window))
         }
 
-        return homeSummaryRepository
-            .load(
+        return Mono.zip(
+            homeSummaryRepository.load(
                 userId = userId,
                 language = language,
                 window = window,
-            )
-            .map { snapshot ->
-                HomeAggregator.assemble(
-                    window = window,
-                    snapshot = snapshot,
+            ),
+            wordRepository
+                .findLatestListItems(
+                    userId = userId,
+                    language = language,
+                    limit = RECENT_LIMIT,
                 )
-            }
+                .collectList(),
+            conversationRepository
+                .findLatest(
+                    userId = userId,
+                    language = language,
+                    limit = RECENT_LIMIT,
+                )
+                .collectList(),
+        ).map { tuple ->
+            HomeAggregator.assemble(
+                window = window,
+                snapshot = tuple.t1,
+            ).copy(
+                recentWords = tuple.t2,
+                recentConversations = tuple.t3.map(conversationSummaryMapper::toDTO),
+            )
+        }
+    }
+
+    private companion object {
+        const val RECENT_LIMIT: Int = 3
     }
 }
