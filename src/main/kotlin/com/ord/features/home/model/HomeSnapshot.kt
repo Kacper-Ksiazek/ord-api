@@ -13,7 +13,6 @@ data class HomeSnapshot(
     val messagesLast30Days: Long,
     val gamesTotal: Long?,
     val gamesLast30Days: Long?,
-    val activityDays: List<HomeActivityDay>,
     val wordsAddedTrend90: List<HomeActivityDay>,
     val conversationsCreatedTrend90: List<HomeActivityDay>,
     val messagesTrend90: List<HomeActivityDay>,

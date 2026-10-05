@@ -1,5 +1,6 @@
 package com.ord.testing_utils.api.clients
 
+import com.ord.features.home.model.HomeActivityPerDay
 import com.ord.features.home.model.HomeResponse
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
@@ -17,5 +18,14 @@ class HomeAPIClient(
             url = "/api/v1/home",
             user = user,
             responseBodyType = object : ParameterizedTypeReference<HomeResponse>() {},
+        )
+
+    fun getActivity(
+        user: MockedAuthenticatedUser? = null,
+    ): APIClientResponse<HomeActivityPerDay?> =
+        get(
+            url = "/api/v1/home/activity",
+            user = user,
+            responseBodyType = object : ParameterizedTypeReference<HomeActivityPerDay>() {},
         )
 }

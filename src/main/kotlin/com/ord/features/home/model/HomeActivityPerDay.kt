@@ -1,5 +1,6 @@
-package com.ord.features.home.model.parts
+package com.ord.features.home.model
 
+import com.ord.features.home.model.parts.HomeActivityDay
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "Days in the current UTC calendar year with any learning activity")

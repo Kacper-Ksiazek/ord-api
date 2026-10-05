@@ -96,9 +96,8 @@ class TestHomeController @Autowired constructor(
         @DisplayName("Positive")
         inner class Positive {
             @Test
-            fun `200 - should return zeros and an empty year when no learning language is selected`() {
+            fun `200 - should return zeros when no learning language is selected`() {
                 val user = mockAuthenticatedUserWithUninitializedAccount()
-                val year = LocalDate.now(ZoneOffset.UTC).year
 
                 val response = homeAPIClient.getHome(user = user)
 
@@ -114,8 +113,6 @@ class TestHomeController @Autowired constructor(
                 body.overviews.games.comingSoon shouldBe true
                 body.overviews.games.total shouldBe 0
                 body.overviews.games.last30Days shouldBe 0
-                body.activityPerDay.year shouldBe year
-                body.activityPerDay.days shouldBe emptyList()
                 body.recentContent.words shouldBe emptyList()
                 body.recentContent.conversations shouldBe emptyList()
                 body.overviews.words.trend.size shouldBe 90
@@ -128,9 +125,6 @@ class TestHomeController @Autowired constructor(
                 val userId = user.userInfo.id
                 val now = Instant.now()
                 val older = now.minus(40, ChronoUnit.DAYS)
-                val today = utcDate(now)
-                val olderDate = utcDate(older)
-                val year = LocalDate.now(ZoneOffset.UTC).year
 
                 wordRepository.saveAll(
                     listOf(
@@ -222,18 +216,111 @@ class TestHomeController @Autowired constructor(
                 body.overviews.conversations.createdTrend.any { it.count > 0 } shouldBe true
                 body.overviews.conversations.messagesTrend.any { it.count > 0 } shouldBe true
                 body.overviews.games.trend.any { it.count > 0 } shouldBe true
-                body.activityPerDay.year shouldBe year
                 body.recentContent.words.map { it.sourceWord }.take(2).toSet() shouldBe setOf("apple", "pear")
                 body.recentContent.words.last().sourceWord shouldBe "run"
                 body.recentContent.conversations.map { it.topic } shouldBe listOf("recent", "older")
+            }
+        }
+    }
 
+    @Nested
+    @DisplayName("[GET] /api/v1/home/activity")
+    inner class GetActivity {
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+            @Test
+            fun `401 - should reject unauthenticated request`() {
+                val response = homeAPIClient.getActivity(user = null)
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+        }
+
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+            @Test
+            fun `200 - should return an empty year when no learning language is selected`() {
+                val user = mockAuthenticatedUserWithUninitializedAccount()
+                val year = LocalDate.now(ZoneOffset.UTC).year
+
+                val response = homeAPIClient.getActivity(user = user)
+
+                response.status shouldBe HttpStatus.OK
+                val body = response.body!!
+                body.year shouldBe year
+                body.days shouldBe emptyList()
+            }
+
+            @Test
+            fun `200 - should sum words, messages, and finished games per UTC day`() {
+                val user = mockAuthenticatedUser()
+                val userId = user.userInfo.id
+                val now = Instant.now()
+                val older = now.minus(40, ChronoUnit.DAYS)
+                val today = utcDate(now)
+                val olderDate = utcDate(older)
+                val year = LocalDate.now(ZoneOffset.UTC).year
+
+                wordRepository.saveAll(
+                    listOf(
+                        word(userId = userId, source = "apple", type = WordType.NOUN, createdAt = now),
+                        word(userId = userId, source = "pear", type = WordType.NOUN, createdAt = now),
+                        word(userId = userId, source = "run", type = WordType.VERB, createdAt = older),
+                    ),
+                ).collectList().block()
+
+                val recentConversation = conversationRepository.save(
+                    conversation(userId = userId, topic = "recent", createdAt = now),
+                ).block()!!
+                val olderConversation = conversationRepository.save(
+                    conversation(userId = userId, topic = "older", createdAt = older),
+                ).block()!!
+
+                conversationMessageRepository.saveAll(
+                    listOf(
+                        message(
+                            conversationId = recentConversation.id!!,
+                            sender = ConversationMessageSender.USER,
+                            order = 0,
+                            createdAt = now,
+                        ),
+                        message(
+                            conversationId = recentConversation.id!!,
+                            sender = ConversationMessageSender.AI,
+                            order = 1,
+                            createdAt = now,
+                        ),
+                        message(
+                            conversationId = olderConversation.id!!,
+                            sender = ConversationMessageSender.USER,
+                            order = 0,
+                            createdAt = older,
+                        ),
+                    ),
+                ).collectList().block()
+
+                finishedGameRepository.saveAll(
+                    listOf(
+                        finishedGame(userId = userId, result = GameResult.COMPLETED, createdAt = now),
+                        finishedGame(userId = userId, result = GameResult.CANCELLED, createdAt = now),
+                    ),
+                ).collectList().block()
+
+                val response = homeAPIClient.getActivity(user = user)
+
+                response.status shouldBe HttpStatus.OK
+                val body = response.body!!
+                body.year shouldBe year
                 val expectedDays = buildList {
                     if (olderDate.year == year) {
                         add(HomeActivityDay(date = olderDate.toString(), count = 2))
                     }
                     add(HomeActivityDay(date = today.toString(), count = 6))
                 }
-                body.activityPerDay.days shouldBe expectedDays
+                body.days shouldBe expectedDays
             }
         }
     }

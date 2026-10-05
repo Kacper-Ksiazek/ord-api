@@ -57,12 +57,12 @@
             "description": "Crossword puzzle game variant endpoints"
         },
         {
-            "name": "6. Home",
-            "description": "Single read for the landing page: vocabulary, conversations, finished games, and this year's activity"
-        },
-        {
             "name": "3. Games: Crossword",
             "description": "Crossword puzzle game variant for vocabulary practice"
+        },
+        {
+            "name": "6. Home",
+            "description": "Landing page reads: vocabulary, conversations, and finished games, plus this year's activity"
         },
         {
             "name": "1. Core: Authentication",
@@ -2320,7 +2320,7 @@
                     "6. Home"
                 ],
                 "summary": "Get home summary",
-                "description": "Counts and this UTC year's activity for the authenticated user and their selected learning language. When no language is selected, totals are zero and the year has no days.",
+                "description": "Count cards, sparklines, and recent items for the authenticated user and their selected learning language. When no language is selected, totals are zero.",
                 "operationId": "getHome",
                 "responses": {
                     "400": {
@@ -2339,6 +2339,46 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/HomeResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/home/activity": {
+            "get": {
+                "tags": [
+                    "6. Home"
+                ],
+                "summary": "Get home activity",
+                "description": "Sparse day counts for the current UTC calendar year. When no language is selected, the year has no days.",
+                "operationId": "getActivity",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Home activity retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HomeActivityPerDay"
                                 }
                             }
                         }
@@ -6588,25 +6628,6 @@
                     }
                 }
             },
-            "HomeActivityPerDay": {
-                "type": "object",
-                "description": "Days in the current UTC calendar year with any learning activity",
-                "properties": {
-                    "year": {
-                        "type": "integer",
-                        "format": "int32",
-                        "description": "Current calendar year in UTC",
-                        "example": 2026
-                    },
-                    "days": {
-                        "type": "array",
-                        "description": "Days in that year whose count is greater than zero",
-                        "items": {
-                            "$ref": "#/components/schemas/HomeActivityDay"
-                        }
-                    }
-                }
-            },
             "HomeConversationsOverview": {
                 "type": "object",
                 "description": "Conversation card: totals and 90-day sparklines",
@@ -6828,10 +6849,6 @@
                         "$ref": "#/components/schemas/HomeOverviews",
                         "description": "Count cards and sparklines"
                     },
-                    "activityPerDay": {
-                        "$ref": "#/components/schemas/HomeActivityPerDay",
-                        "description": "Year heatmap"
-                    },
                     "recentContent": {
                         "$ref": "#/components/schemas/HomeRecentContent",
                         "description": "Recent words and conversations"
@@ -6865,6 +6882,25 @@
                     "trend": {
                         "type": "array",
                         "description": "Words created per UTC day for the last 90 days, including zeros",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    }
+                }
+            },
+            "HomeActivityPerDay": {
+                "type": "object",
+                "description": "Days in the current UTC calendar year with any learning activity",
+                "properties": {
+                    "year": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Current calendar year in UTC",
+                        "example": 2026
+                    },
+                    "days": {
+                        "type": "array",
+                        "description": "Days in that year whose count is greater than zero",
                         "items": {
                             "$ref": "#/components/schemas/HomeActivityDay"
                         }

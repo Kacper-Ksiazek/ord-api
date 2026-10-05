@@ -2,7 +2,6 @@ package com.ord.features.home.model
 
 import com.ord.core.word.models.word.enums.WordType
 import com.ord.features.home.model.parts.HomeActivityDay
-import com.ord.features.home.model.parts.HomeActivityPerDay
 import com.ord.features.home.model.parts.HomeConversationsOverview
 import com.ord.features.home.model.parts.HomeGamesOverview
 import com.ord.features.home.model.parts.HomeOverviews
@@ -32,10 +31,6 @@ object HomeAggregator {
             messages = emptyList(),
             gamesFinished = emptyList(),
         ),
-        activityPerDay = HomeActivityPerDay(
-            year = window.year,
-            days = emptyList(),
-        ),
         recentContent = HomeRecentContent(
             words = emptyList(),
             conversations = emptyList(),
@@ -58,10 +53,6 @@ object HomeAggregator {
             conversationsCreated = snapshot.conversationsCreatedTrend90,
             messages = snapshot.messagesTrend90,
             gamesFinished = snapshot.gamesFinishedTrend90,
-        ),
-        activityPerDay = HomeActivityPerDay(
-            year = window.year,
-            days = activityDays(snapshot.activityDays),
         ),
         recentContent = HomeRecentContent(
             words = emptyList(),
@@ -93,6 +84,12 @@ object HomeAggregator {
         }
         return counts
     }
+
+    fun activity(window: HomeWindow, raw: List<HomeActivityDay>): HomeActivityPerDay =
+        HomeActivityPerDay(
+            year = window.year,
+            days = activityDays(raw),
+        )
 
     fun activityDays(raw: List<HomeActivityDay>): List<HomeActivityDay> =
         raw

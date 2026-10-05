@@ -4,6 +4,7 @@ import com.ord.config.OpenApiSecurity
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.home.api.facades.HomeFacade
+import com.ord.features.home.model.HomeActivityPerDay
 import com.ord.features.home.model.HomeResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/home")
 @Tag(
     name = "6. Home",
-    description = "Single read for the landing page: vocabulary, conversations, finished games, and this year's activity",
+    description = "Landing page reads: vocabulary, conversations, and finished games, plus this year's activity",
 )
 @SecurityRequirement(name = OpenApiSecurity.AUTH_COOKIE)
 class HomeController(
@@ -30,7 +31,7 @@ class HomeController(
     @GetMapping
     @Operation(
         summary = "Get home summary",
-        description = "Counts and this UTC year's activity for the authenticated user and their selected learning language. When no language is selected, totals are zero and the year has no days.",
+        description = "Count cards, sparklines, and recent items for the authenticated user and their selected learning language. When no language is selected, totals are zero.",
     )
     @ApiResponses(
         value = [
@@ -49,4 +50,27 @@ class HomeController(
     fun getHome(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
     ) = homeFacade.getHome(user)
+
+    @GetMapping("/activity")
+    @Operation(
+        summary = "Get home activity",
+        description = "Sparse day counts for the current UTC calendar year. When no language is selected, the year has no days.",
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Home activity retrieved successfully",
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = HomeActivityPerDay::class))],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()],
+            ),
+        ],
+    )
+    fun getActivity(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+    ) = homeFacade.getActivity(user)
 }

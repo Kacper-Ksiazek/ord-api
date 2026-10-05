@@ -63,8 +63,6 @@ class HomeAggregatorTest {
             assertEquals(true, response.overviews.games.comingSoon)
             assertEquals(0L, response.overviews.games.total)
             assertEquals(0L, response.overviews.games.last30Days)
-            assertEquals(2026, response.activityPerDay.year)
-            assertEquals(emptyList<HomeActivityDay>(), response.activityPerDay.days)
             assertEquals(emptyList<Any>(), response.recentContent.words)
             assertEquals(emptyList<Any>(), response.recentContent.conversations)
             assertEquals(HomeAggregator.TREND_DAY_COUNT, response.overviews.words.trend.size)
@@ -134,7 +132,6 @@ class HomeAggregatorTest {
                     messagesLast30Days = 0,
                     gamesTotal = null,
                     gamesLast30Days = null,
-                    activityDays = emptyList(),
                     wordsAddedTrend90 = emptyList(),
                     conversationsCreatedTrend90 = emptyList(),
                     messagesTrend90 = emptyList(),
