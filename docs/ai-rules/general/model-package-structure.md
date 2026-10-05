@@ -1,5 +1,7 @@
 # Model package structure
 
+An API response type is the only data class in a feature `model/` root. Nested shapes that exist only as fields of that response live in `model/parts/`, one type per file. Internal snapshots and windows stay next to the response only when they are not part of the JSON contract; otherwise they go in `parts/` too.
+
 Within a module, domain types live under `models/<entity_snake_case>/`, one directory per entity. That directory holds the `<Entity>Entity.kt`, `<Entity>DTO.kt`, and `<Entity>Mapper.kt` together, with `enums/` for enum types and `jsonb/` for value classes persisted as JSONB columns. Do not scatter an entity's enums or JSONB value types across unrelated packages.
 
 ## Good
