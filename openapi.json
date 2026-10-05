@@ -6571,6 +6571,353 @@
                     }
                 }
             },
+            "HomeActivityDay": {
+                "type": "object",
+                "description": "One UTC day of home activity",
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "description": "UTC date",
+                        "example": "2026-09-30"
+                    },
+                    "count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Events recorded that day",
+                        "example": 4
+                    }
+                }
+            },
+            "HomeActivityPerDay": {
+                "type": "object",
+                "description": "Days in the current UTC calendar year with any learning activity",
+                "properties": {
+                    "year": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Current calendar year in UTC",
+                        "example": 2026
+                    },
+                    "days": {
+                        "type": "array",
+                        "description": "Days in that year whose count is greater than zero",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    }
+                }
+            },
+            "HomeConversationsOverview": {
+                "type": "object",
+                "description": "Conversation card: totals and 90-day sparklines",
+                "properties": {
+                    "total": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "All conversations in the selected language",
+                        "example": 3
+                    },
+                    "messagesTotal": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "All messages in those conversations, from the user and the AI",
+                        "example": 28
+                    },
+                    "createdLast30Days": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Conversations created in the current UTC calendar month, including today",
+                        "example": 1
+                    },
+                    "messagesLast30Days": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Messages created in the current UTC calendar month, from the user and the AI",
+                        "example": 8
+                    },
+                    "createdTrend": {
+                        "type": "array",
+                        "description": "Conversations created per UTC day for the last 90 days, including zeros",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    },
+                    "messagesTrend": {
+                        "type": "array",
+                        "description": "Messages created per UTC day for the last 90 days, including zeros",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    }
+                }
+            },
+            "HomeGamesOverview": {
+                "type": "object",
+                "description": "Games card. comingSoon stays true until the games UI ships.",
+                "properties": {
+                    "comingSoon": {
+                        "type": "boolean",
+                        "description": "Games practice is not on the home screen yet",
+                        "example": true
+                    },
+                    "total": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Finished games stored for this user and language. Null when that count is not available."
+                    },
+                    "last30Days": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Finished games recorded in the current UTC calendar month. Null when that count is not available."
+                    },
+                    "trend": {
+                        "type": "array",
+                        "description": "Finished games per UTC day for the last 90 days, including zeros",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    }
+                }
+            },
+            "HomeOverviews": {
+                "type": "object",
+                "description": "Count cards and their sparklines",
+                "properties": {
+                    "words": {
+                        "$ref": "#/components/schemas/HomeWordsOverview"
+                    },
+                    "conversations": {
+                        "$ref": "#/components/schemas/HomeConversationsOverview"
+                    },
+                    "games": {
+                        "$ref": "#/components/schemas/HomeGamesOverview"
+                    }
+                }
+            },
+            "HomeRecentContent": {
+                "type": "object",
+                "description": "Up to three latest words and conversations for the selected learning language",
+                "properties": {
+                    "words": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeRecentWord"
+                        }
+                    },
+                    "conversations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeRecentConversation"
+                        }
+                    }
+                }
+            },
+            "HomeRecentConversation": {
+                "type": "object",
+                "description": "Conversation preview on the home screen",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "topic": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "SMALL_TALK",
+                            "SCENARIO_ROLEPLAY",
+                            "EXAM_PRACTICE",
+                            "TOPIC_EXPLORATION",
+                            "OXFORD_DEBATE"
+                        ]
+                    },
+                    "aiTone": {
+                        "type": "string",
+                        "enum": [
+                            "FRIENDLY",
+                            "FORMAL",
+                            "HUMOROUS",
+                            "NEUTRAL",
+                            "ENCOURAGING",
+                            "CHALLENGING"
+                        ]
+                    },
+                    "aiInterlocutorName": {
+                        "type": "string"
+                    },
+                    "aiInterlocutorAvatarId": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Last update, used as the row date"
+                    }
+                }
+            },
+            "HomeRecentWord": {
+                "type": "object",
+                "description": "Word preview on the home screen. Definition is truncated.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "sourceWord": {
+                        "type": "string"
+                    },
+                    "translation": {
+                        "type": "string"
+                    },
+                    "definitionPreview": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Definition trimmed to 160 characters"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Type of word or expression",
+                        "enum": [
+                            "NOUN",
+                            "VERB",
+                            "ADJECTIVE",
+                            "ADVERB",
+                            "IDIOM",
+                            "PHRASE"
+                        ]
+                    },
+                    "extraMark": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Extra marks or tags for word classification by register or domain",
+                        "enum": [
+                            "OFFENSIVE",
+                            "SLANG",
+                            "FORMAL",
+                            "INFORMAL",
+                            "SCIENTIFIC",
+                            "TECHNICAL",
+                            "LEGAL",
+                            "MEDICAL",
+                            "COLLOQUIAL",
+                            "POETIC"
+                        ]
+                    },
+                    "bookmarked": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "HomeResponse": {
+                "type": "object",
+                "description": "Landing summary for the authenticated user and their selected learning language",
+                "properties": {
+                    "overviews": {
+                        "$ref": "#/components/schemas/HomeOverviews",
+                        "description": "Count cards and sparklines"
+                    },
+                    "activityPerDay": {
+                        "$ref": "#/components/schemas/HomeActivityPerDay",
+                        "description": "Year heatmap"
+                    },
+                    "recentContent": {
+                        "$ref": "#/components/schemas/HomeRecentContent",
+                        "description": "Recent words and conversations"
+                    }
+                }
+            },
+            "HomeWordsOverview": {
+                "type": "object",
+                "description": "Word card: totals and the 90-day sparkline",
+                "properties": {
+                    "total": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "All words in the selected language",
+                        "example": 40
+                    },
+                    "addedLast30Days": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Words created in the current UTC calendar month, including today",
+                        "example": 6
+                    },
+                    "byType": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "description": "Count per word type. Types with zero words are omitted."
+                    },
+                    "trend": {
+                        "type": "array",
+                        "description": "Words created per UTC day for the last 90 days, including zeros",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    }
+                }
+            },
+            "HealthCheckResponse": {
+                "type": "object",
+                "description": "Application health snapshot",
+                "properties": {
+                    "application": {
+                        "type": "string",
+                        "description": "Component health status",
+                        "enum": [
+                            "UP",
+                            "DOWN"
+                        ],
+                        "example": "UP"
+                    },
+                    "database": {
+                        "type": "string",
+                        "description": "Component health status",
+                        "enum": [
+                            "UP",
+                            "DOWN"
+                        ],
+                        "example": "UP"
+                    },
+                    "ai": {
+                        "type": "string",
+                        "description": "OpenAI client mode",
+                        "enum": [
+                            "STUB",
+                            "LIVE"
+                        ],
+                        "example": "LIVE"
+                    },
+                    "tts": {
+                        "type": "string",
+                        "description": "ElevenLabs TTS client mode",
+                        "enum": [
+                            "STUB",
+                            "LIVE"
+                        ],
+                        "example": "LIVE"
+                    },
+                    "profile": {
+                        "type": "string",
+                        "description": "Active Spring profile. Several profiles are joined with a comma.",
+                        "example": "local"
+                    }
+                }
+            },
             "ConversationSummaryDTO": {
                 "type": "object",
                 "properties": {
@@ -6658,241 +7005,6 @@
                             "THIS_MONTH",
                             "LATER"
                         ]
-                    }
-                }
-            },
-            "HomeActivityDay": {
-                "type": "object",
-                "description": "One UTC day of home activity",
-                "properties": {
-                    "date": {
-                        "type": "string",
-                        "description": "UTC date",
-                        "example": "2026-09-30"
-                    },
-                    "count": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "Words added, conversation messages, and finished games recorded that day",
-                        "example": 4
-                    }
-                }
-            },
-            "HomeActivitySection": {
-                "type": "object",
-                "description": "Days in the current UTC calendar year with any learning activity",
-                "properties": {
-                    "year": {
-                        "type": "integer",
-                        "format": "int32",
-                        "description": "Current calendar year in UTC",
-                        "example": 2026
-                    },
-                    "days": {
-                        "type": "array",
-                        "description": "Days in that year whose count is greater than zero",
-                        "items": {
-                            "$ref": "#/components/schemas/HomeActivityDay"
-                        }
-                    }
-                }
-            },
-            "HomeConversationsSection": {
-                "type": "object",
-                "description": "Conversation counts for the selected learning language",
-                "properties": {
-                    "total": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "All conversations in the selected language",
-                        "example": 3
-                    },
-                    "messagesTotal": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "All messages in those conversations, from the user and the AI",
-                        "example": 28
-                    },
-                    "createdLast30Days": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "Conversations created in the current UTC calendar month, including today",
-                        "example": 1
-                    },
-                    "messagesLast30Days": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "Messages created in the current UTC calendar month, from the user and the AI",
-                        "example": 8
-                    }
-                }
-            },
-            "HomeGamesSection": {
-                "type": "object",
-                "description": "Finished-game counts. comingSoon stays true until the games UI ships.",
-                "properties": {
-                    "comingSoon": {
-                        "type": "boolean",
-                        "description": "Games practice is not on the home screen yet",
-                        "example": true
-                    },
-                    "total": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ],
-                        "format": "int64",
-                        "description": "Finished games stored for this user and language. Null when that count is not available."
-                    },
-                    "last30Days": {
-                        "type": [
-                            "integer",
-                            "null"
-                        ],
-                        "format": "int64",
-                        "description": "Finished games recorded in the current UTC calendar month. Null when that count is not available."
-                    }
-                }
-            },
-            "HomeResponse": {
-                "type": "object",
-                "description": "Landing summary for the authenticated user and their selected learning language",
-                "properties": {
-                    "words": {
-                        "$ref": "#/components/schemas/HomeWordsSection"
-                    },
-                    "conversations": {
-                        "$ref": "#/components/schemas/HomeConversationsSection"
-                    },
-                    "games": {
-                        "$ref": "#/components/schemas/HomeGamesSection"
-                    },
-                    "trends": {
-                        "$ref": "#/components/schemas/HomeTrendsSection"
-                    },
-                    "activity": {
-                        "$ref": "#/components/schemas/HomeActivitySection"
-                    },
-                    "recentWords": {
-                        "type": "array",
-                        "description": "Up to three most recently created words in the selected learning language",
-                        "items": {
-                            "$ref": "#/components/schemas/WordListItem"
-                        }
-                    },
-                    "recentConversations": {
-                        "type": "array",
-                        "description": "Up to three most recently updated conversations in the selected learning language",
-                        "items": {
-                            "$ref": "#/components/schemas/ConversationSummaryDTO"
-                        }
-                    }
-                }
-            },
-            "HomeTrendsSection": {
-                "type": "object",
-                "description": "Daily counts for the last 90 UTC days ending today, one point per day",
-                "properties": {
-                    "wordsAdded": {
-                        "type": "array",
-                        "description": "Words created per day",
-                        "items": {
-                            "$ref": "#/components/schemas/HomeActivityDay"
-                        }
-                    },
-                    "conversationsCreated": {
-                        "type": "array",
-                        "description": "Conversations created per day",
-                        "items": {
-                            "$ref": "#/components/schemas/HomeActivityDay"
-                        }
-                    },
-                    "messages": {
-                        "type": "array",
-                        "description": "Conversation messages created per day",
-                        "items": {
-                            "$ref": "#/components/schemas/HomeActivityDay"
-                        }
-                    },
-                    "gamesFinished": {
-                        "type": "array",
-                        "description": "Finished games recorded per day",
-                        "items": {
-                            "$ref": "#/components/schemas/HomeActivityDay"
-                        }
-                    }
-                }
-            },
-            "HomeWordsSection": {
-                "type": "object",
-                "description": "Vocabulary counts for the selected learning language",
-                "properties": {
-                    "total": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "All words in the selected language",
-                        "example": 40
-                    },
-                    "addedLast30Days": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "Words created in the current UTC calendar month, including today",
-                        "example": 6
-                    },
-                    "byType": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "integer",
-                            "format": "int64"
-                        },
-                        "description": "Count per word type. Types with zero words are omitted."
-                    }
-                }
-            },
-            "HealthCheckResponse": {
-                "type": "object",
-                "description": "Application health snapshot",
-                "properties": {
-                    "application": {
-                        "type": "string",
-                        "description": "Component health status",
-                        "enum": [
-                            "UP",
-                            "DOWN"
-                        ],
-                        "example": "UP"
-                    },
-                    "database": {
-                        "type": "string",
-                        "description": "Component health status",
-                        "enum": [
-                            "UP",
-                            "DOWN"
-                        ],
-                        "example": "UP"
-                    },
-                    "ai": {
-                        "type": "string",
-                        "description": "OpenAI client mode",
-                        "enum": [
-                            "STUB",
-                            "LIVE"
-                        ],
-                        "example": "LIVE"
-                    },
-                    "tts": {
-                        "type": "string",
-                        "description": "ElevenLabs TTS client mode",
-                        "enum": [
-                            "STUB",
-                            "LIVE"
-                        ],
-                        "example": "LIVE"
-                    },
-                    "profile": {
-                        "type": "string",
-                        "description": "Active Spring profile. Several profiles are joined with a comma.",
-                        "example": "local"
                     }
                 }
             },
