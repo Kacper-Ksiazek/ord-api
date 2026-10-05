@@ -268,28 +268,6 @@ class ConversationRepositoryCustomMethodsImpl(
         )
     }
 
-    override fun findLatest(
-        userId: UUID,
-        language: LanguageName,
-        limit: Int,
-    ): Flux<ConversationEntity> {
-        val query = """
-            SELECT * FROM conversations c
-            WHERE c.user_id = :userId
-              AND c.language = :language
-            ORDER BY c.updated_at DESC, c.id DESC
-            LIMIT :limit
-        """.trimIndent()
-
-        return template.databaseClient
-            .sql(query)
-            .bind("userId", userId)
-            .bind("language", language.name)
-            .bind("limit", limit)
-            .map { row -> mapConversationRow(row) }
-            .all()
-    }
-
     override fun countDailyNewConversations(userId: UUID, from: Instant, to: Instant): Flux<DailyActivityCount> {
         val query = """
             SELECT DATE(c.created_at AT TIME ZONE 'UTC') AS activity_date, COUNT(*) AS cnt

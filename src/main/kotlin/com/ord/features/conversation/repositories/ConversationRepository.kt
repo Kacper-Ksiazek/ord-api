@@ -35,12 +35,6 @@ interface ConversationRepositoryCustomMethods {
 
     fun findAllWithFilters(userId: UUID, filters: ConversationListFilters): Flux<ConversationEntity>
 
-    fun findLatest(
-        userId: UUID,
-        language: LanguageName,
-        limit: Int,
-    ): Flux<ConversationEntity>
-
     fun countDailyNewConversations(userId: UUID, from: Instant, to: Instant): Flux<DailyActivityCount>
 }
 

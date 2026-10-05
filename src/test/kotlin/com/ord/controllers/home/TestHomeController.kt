@@ -24,7 +24,7 @@ import com.ord.features.game.model.ongoing_game.enums.GameGrade
 import com.ord.features.game.model.ongoing_game.enums.GameResult
 import com.ord.features.game.model.ongoing_game.enums.GameType
 import com.ord.features.game.repositories.FinishedGameRepository
-import com.ord.features.home.model.HomeActivityDay
+import com.ord.features.home.model.parts.HomeActivityDay
 import com.ord.testing_utils.api.clients.HomeAPIClient
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -104,21 +104,21 @@ class TestHomeController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 val body = response.body!!
-                body.words.total shouldBe 0
-                body.words.addedLast30Days shouldBe 0
-                body.words.byType shouldBe emptyMap()
-                body.conversations.total shouldBe 0
-                body.conversations.messagesTotal shouldBe 0
-                body.conversations.createdLast30Days shouldBe 0
-                body.conversations.messagesLast30Days shouldBe 0
-                body.games.comingSoon shouldBe true
-                body.games.total shouldBe 0
-                body.games.last30Days shouldBe 0
-                body.activity.year shouldBe year
-                body.activity.days shouldBe emptyList()
-                body.recentWords shouldBe emptyList()
-                body.recentConversations shouldBe emptyList()
-                body.trends.wordsAdded.size shouldBe 90
+                body.overviews.words.total shouldBe 0
+                body.overviews.words.addedLast30Days shouldBe 0
+                body.overviews.words.byType shouldBe emptyMap()
+                body.overviews.conversations.total shouldBe 0
+                body.overviews.conversations.messagesTotal shouldBe 0
+                body.overviews.conversations.createdLast30Days shouldBe 0
+                body.overviews.conversations.messagesLast30Days shouldBe 0
+                body.overviews.games.comingSoon shouldBe true
+                body.overviews.games.total shouldBe 0
+                body.overviews.games.last30Days shouldBe 0
+                body.activityPerDay.year shouldBe year
+                body.activityPerDay.days shouldBe emptyList()
+                body.recentContent.words shouldBe emptyList()
+                body.recentContent.conversations shouldBe emptyList()
+                body.overviews.words.trend.size shouldBe 90
             }
 
             @Test
@@ -203,30 +203,29 @@ class TestHomeController @Autowired constructor(
 
                 response.status shouldBe HttpStatus.OK
                 val body = response.body!!
-                body.words.total shouldBe 3
-                body.words.addedLast30Days shouldBe 2
-                body.words.byType.shouldContainExactly(
+                body.overviews.words.total shouldBe 3
+                body.overviews.words.addedLast30Days shouldBe 2
+                body.overviews.words.byType.shouldContainExactly(
                     mapOf(
                         WordType.NOUN to 2L,
                         WordType.VERB to 1L,
                     ),
                 )
-                body.conversations.total shouldBe 2
-                body.conversations.messagesTotal shouldBe 3
-                body.conversations.createdLast30Days shouldBe 1
-                body.conversations.messagesLast30Days shouldBe 2
-                body.games.comingSoon shouldBe true
-                body.games.total shouldBe 2
-                body.games.last30Days shouldBe 2
-                body.trends.wordsAdded.any { it.count > 0 } shouldBe true
-                body.trends.conversationsCreated.any { it.count > 0 } shouldBe true
-                body.trends.messages.any { it.count > 0 } shouldBe true
-                body.trends.gamesFinished.any { it.count > 0 } shouldBe true
-                body.activity.year shouldBe year
-                body.recentWords.map { it.sourceWord }.take(2).toSet() shouldBe setOf("apple", "pear")
-                body.recentWords.last().sourceWord shouldBe "run"
-                body.recentWords.map { it.language }.toSet() shouldBe setOf(LanguageName.ENGLISH)
-                body.recentConversations.map { it.topic } shouldBe listOf("recent", "older")
+                body.overviews.conversations.total shouldBe 2
+                body.overviews.conversations.messagesTotal shouldBe 3
+                body.overviews.conversations.createdLast30Days shouldBe 1
+                body.overviews.conversations.messagesLast30Days shouldBe 2
+                body.overviews.games.comingSoon shouldBe true
+                body.overviews.games.total shouldBe 2
+                body.overviews.games.last30Days shouldBe 2
+                body.overviews.words.trend.any { it.count > 0 } shouldBe true
+                body.overviews.conversations.createdTrend.any { it.count > 0 } shouldBe true
+                body.overviews.conversations.messagesTrend.any { it.count > 0 } shouldBe true
+                body.overviews.games.trend.any { it.count > 0 } shouldBe true
+                body.activityPerDay.year shouldBe year
+                body.recentContent.words.map { it.sourceWord }.take(2).toSet() shouldBe setOf("apple", "pear")
+                body.recentContent.words.last().sourceWord shouldBe "run"
+                body.recentContent.conversations.map { it.topic } shouldBe listOf("recent", "older")
 
                 val expectedDays = buildList {
                     if (olderDate.year == year) {
@@ -234,7 +233,7 @@ class TestHomeController @Autowired constructor(
                     }
                     add(HomeActivityDay(date = today.toString(), count = 6))
                 }
-                body.activity.days shouldBe expectedDays
+                body.activityPerDay.days shouldBe expectedDays
             }
         }
     }

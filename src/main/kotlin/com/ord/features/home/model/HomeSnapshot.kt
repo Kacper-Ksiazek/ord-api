@@ -1,6 +1,7 @@
 package com.ord.features.home.model
 
 import com.ord.core.word.models.word.enums.WordType
+import com.ord.features.home.model.parts.HomeActivityDay
 
 data class HomeSnapshot(
     val wordsTotal: Long,

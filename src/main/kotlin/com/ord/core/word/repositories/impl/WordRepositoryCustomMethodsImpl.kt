@@ -182,37 +182,6 @@ class WordRepositoryCustomMethodsImpl(
             .one()
     }
 
-    override fun findLatestListItems(
-        userId: UUID,
-        language: LanguageName,
-        limit: Int,
-    ): Flux<WordListItem> {
-        val selectQuery = """
-            SELECT
-                ${WordListItem.fields.joinToString(", ") { "words.$it" }},
-                wp.points AS wp_points,
-                wp.completed_at AS wp_completed_at,
-                wp.first_completed_at AS wp_first_completed_at,
-                ${BankCompact.fields.joinToString(", ") { "banks.$it AS bank_$it" }},
-                ${BankGroupCompact.fields.joinToString(", ") { "bank_groups.$it AS bank_group_$it" }}
-            FROM words
-                LEFT JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
-                LEFT JOIN banks ON words.bank_id = banks.id
-                LEFT JOIN bank_groups ON banks.group_id = bank_groups.id
-            WHERE words.user_id = :userId
-              AND words.language = :language
-            ORDER BY words.created_at DESC, words.id DESC
-            LIMIT :limit
-        """.trimIndent()
-
-        return databaseClient.sql(selectQuery)
-            .bind("userId", userId)
-            .bind("language", language.name)
-            .bind("limit", limit)
-            .map { row -> mapWordListItem(row) }
-            .all()
-    }
-
     override fun findNOfLatestWords(userId: UUID, language: LanguageName, limit: Int): Flux<String> {
         val selectQuery = """
             SELECT source_word

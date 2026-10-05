@@ -1,6 +1,7 @@
 package com.ord.features.home.model
 
 import com.ord.core.word.models.word.enums.WordType
+import com.ord.features.home.model.parts.HomeActivityDay
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -52,22 +53,22 @@ class HomeAggregatorTest {
         fun `empty language summary is zeros and an empty year`() {
             val response = HomeAggregator.empty(window)
 
-            assertEquals(0L, response.words.total)
-            assertEquals(0L, response.words.addedLast30Days)
-            assertEquals(emptyMap<WordType, Long>(), response.words.byType)
-            assertEquals(0L, response.conversations.total)
-            assertEquals(0L, response.conversations.messagesTotal)
-            assertEquals(0L, response.conversations.createdLast30Days)
-            assertEquals(0L, response.conversations.messagesLast30Days)
-            assertEquals(true, response.games.comingSoon)
-            assertEquals(0L, response.games.total)
-            assertEquals(0L, response.games.last30Days)
-            assertEquals(2026, response.activity.year)
-            assertEquals(emptyList<HomeActivityDay>(), response.activity.days)
-            assertEquals(emptyList<Any>(), response.recentWords)
-            assertEquals(emptyList<Any>(), response.recentConversations)
-            assertEquals(HomeAggregator.TREND_DAY_COUNT, response.trends.wordsAdded.size)
-            assertEquals(0L, response.trends.wordsAdded.sumOf { it.count })
+            assertEquals(0L, response.overviews.words.total)
+            assertEquals(0L, response.overviews.words.addedLast30Days)
+            assertEquals(emptyMap<WordType, Long>(), response.overviews.words.byType)
+            assertEquals(0L, response.overviews.conversations.total)
+            assertEquals(0L, response.overviews.conversations.messagesTotal)
+            assertEquals(0L, response.overviews.conversations.createdLast30Days)
+            assertEquals(0L, response.overviews.conversations.messagesLast30Days)
+            assertEquals(true, response.overviews.games.comingSoon)
+            assertEquals(0L, response.overviews.games.total)
+            assertEquals(0L, response.overviews.games.last30Days)
+            assertEquals(2026, response.activityPerDay.year)
+            assertEquals(emptyList<HomeActivityDay>(), response.activityPerDay.days)
+            assertEquals(emptyList<Any>(), response.recentContent.words)
+            assertEquals(emptyList<Any>(), response.recentContent.conversations)
+            assertEquals(HomeAggregator.TREND_DAY_COUNT, response.overviews.words.trend.size)
+            assertEquals(0L, response.overviews.words.trend.sumOf { it.count })
         }
 
         @Test
@@ -141,9 +142,9 @@ class HomeAggregatorTest {
                 ),
             )
 
-            assertEquals(true, response.games.comingSoon)
-            assertEquals(null, response.games.total)
-            assertEquals(null, response.games.last30Days)
+            assertEquals(true, response.overviews.games.comingSoon)
+            assertEquals(null, response.overviews.games.total)
+            assertEquals(null, response.overviews.games.last30Days)
         }
     }
 

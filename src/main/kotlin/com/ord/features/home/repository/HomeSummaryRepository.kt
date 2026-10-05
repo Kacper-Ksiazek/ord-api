@@ -2,13 +2,21 @@ package com.ord.features.home.repository
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
+import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
-import com.ord.features.home.model.HomeActivityDay
+import com.ord.features.conversation.models.conversation.enums.ConversationTone
+import com.ord.features.conversation.models.conversation.enums.ConversationType
 import com.ord.features.home.model.HomeSnapshot
 import com.ord.features.home.model.HomeWindow
+import com.ord.features.home.model.parts.HomeActivityDay
+import com.ord.features.home.model.parts.HomeRecentConversation
+import com.ord.features.home.model.parts.HomeRecentWord
+import io.r2dbc.spi.Readable
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.OffsetDateTime
 import java.util.UUID
 
 @Repository
@@ -16,6 +24,7 @@ class HomeSummaryRepository(
     private val template: R2dbcEntityTemplate,
 ) {
     private val objectMapper = ObjectMapper()
+
     fun load(
         userId: UUID,
         language: LanguageName,
@@ -51,6 +60,54 @@ class HomeSummaryRepository(
             .one()
     }
 
+    fun loadRecentWords(
+        userId: UUID,
+        language: LanguageName,
+        limit: Int,
+    ): Flux<HomeRecentWord> {
+        return template.databaseClient
+            .sql(RECENT_WORDS_SQL)
+            .bind("userId", userId)
+            .bind("language", language.name)
+            .bind("limit", limit)
+            .map { row ->
+                HomeRecentWord(
+                    id = row.get("id", UUID::class.java)!!,
+                    sourceWord = row.get("source_word", String::class.java)!!,
+                    translation = row.get("translation", String::class.java)!!,
+                    definitionPreview = row.get("definition_preview", String::class.java),
+                    isBookmarked = row.get("is_bookmarked", Boolean::class.java)!!,
+                    type = WordType.valueOf(row.get("type", String::class.java)!!),
+                    extraMark = row.get("extra_mark", String::class.java)?.let { WordExtraMark.valueOf(it) },
+                )
+            }
+            .all()
+    }
+
+    fun loadRecentConversations(
+        userId: UUID,
+        language: LanguageName,
+        limit: Int,
+    ): Flux<HomeRecentConversation> {
+        return template.databaseClient
+            .sql(RECENT_CONVERSATIONS_SQL)
+            .bind("userId", userId)
+            .bind("language", language.name)
+            .bind("limit", limit)
+            .map { row ->
+                HomeRecentConversation(
+                    id = row.get("id", UUID::class.java)!!,
+                    topic = row.get("topic", String::class.java)!!,
+                    type = ConversationType.valueOf(row.get("type", String::class.java)!!),
+                    aiTone = ConversationTone.valueOf(row.get("ai_tone", String::class.java)!!),
+                    aiInterlocutorName = row.get("ai_interlocutor_name", String::class.java)!!,
+                    aiInterlocutorAvatarId = row.get("ai_interlocutor_avatar_id", String::class.java)!!,
+                    updatedAt = row.get("updated_at", OffsetDateTime::class.java)!!.toInstant(),
+                )
+            }
+            .all()
+    }
+
     private fun parseTypeCounts(json: String): Map<WordType, Long> {
         if (json.isBlank()) {
             return emptyMap()
@@ -77,7 +134,7 @@ class HomeSummaryRepository(
         }
     }
 
-    private fun cellLong(row: io.r2dbc.spi.Readable, column: String): Long {
+    private fun cellLong(row: Readable, column: String): Long {
         val value = row.get(column) ?: return 0L
         return when (value) {
             is Long -> value
@@ -87,7 +144,7 @@ class HomeSummaryRepository(
         }
     }
 
-    private fun cellText(row: io.r2dbc.spi.Readable, column: String): String {
+    private fun cellText(row: Readable, column: String): String {
         val value = row.get(column) ?: return ""
         return when (value) {
             is String -> value
@@ -96,199 +153,51 @@ class HomeSummaryRepository(
     }
 
     private companion object {
-        private val TREND_JSON_AGG = """
-            SELECT COALESCE(
-                jsonb_agg(
-                    jsonb_build_object(
-                        'date', to_char(daily.activity_date, 'YYYY-MM-DD'),
-                        'count', daily.cnt
-                    )
-                    ORDER BY daily.activity_date
-                ),
-                '[]'::jsonb
-            )::text
-            FROM (
-        """.trimIndent()
-
-        private val TREND_JSON_AGG_END = """
-            ) daily
-        """.trimIndent()
-
-        private val TREND_WORDS_SQL = """
-            (
-                $TREND_JSON_AGG
-                SELECT (created_at AT TIME ZONE 'UTC')::date AS activity_date, COUNT(*)::bigint AS cnt
-                FROM words
-                WHERE user_id = :userId
-                  AND language = :language
-                  AND created_at >= :from90
-                  AND created_at < :toExclusive
-                GROUP BY 1
-                $TREND_JSON_AGG_END
-            )
-        """.trimIndent()
-
-        private val TREND_CONVERSATIONS_SQL = """
-            (
-                $TREND_JSON_AGG
-                SELECT (created_at AT TIME ZONE 'UTC')::date AS activity_date, COUNT(*)::bigint AS cnt
-                FROM conversations
-                WHERE user_id = :userId
-                  AND language = :language
-                  AND created_at >= :from90
-                  AND created_at < :toExclusive
-                GROUP BY 1
-                $TREND_JSON_AGG_END
-            )
-        """.trimIndent()
-
-        private val TREND_MESSAGES_SQL = """
-            (
-                $TREND_JSON_AGG
-                SELECT (cm.created_at AT TIME ZONE 'UTC')::date AS activity_date, COUNT(*)::bigint AS cnt
-                FROM conversation_messages cm
-                JOIN conversations c ON c.id = cm.conversation_id
-                WHERE c.user_id = :userId
-                  AND c.language = :language
-                  AND cm.created_at >= :from90
-                  AND cm.created_at < :toExclusive
-                GROUP BY 1
-                $TREND_JSON_AGG_END
-            )
-        """.trimIndent()
-
-        private val TREND_GAMES_SQL = """
-            (
-                $TREND_JSON_AGG
-                SELECT (created_at AT TIME ZONE 'UTC')::date AS activity_date, COUNT(*)::bigint AS cnt
-                FROM finished_games
-                WHERE user_id = :userId
-                  AND language = :language
-                  AND created_at >= :from90
-                  AND created_at < :toExclusive
-                GROUP BY 1
-                $TREND_JSON_AGG_END
-            )
-        """.trimIndent()
+        const val DEFINITION_PREVIEW_LENGTH: Int = 160
 
         val SUMMARY_SQL = """
+            SELECT *
+            FROM home_summary(
+                :userId,
+                :language,
+                :fromMonth,
+                :from90,
+                :toExclusive,
+                :yearStart,
+                :yearEnd
+            )
+        """.trimIndent()
+
+        val RECENT_WORDS_SQL = """
             SELECT
-                (
-                    SELECT COUNT(*)
-                    FROM words
-                    WHERE user_id = :userId
-                      AND language = :language
-                ) AS words_total,
-                (
-                    SELECT COUNT(*)
-                    FROM words
-                    WHERE user_id = :userId
-                      AND language = :language
-                      AND created_at >= :fromMonth
-                      AND created_at < :toExclusive
-                ) AS words_added_last_30,
-                (
-                    SELECT COALESCE(jsonb_object_agg(grouped.type_name, grouped.cnt), '{}'::jsonb)::text
-                    FROM (
-                        SELECT type::text AS type_name, COUNT(*) AS cnt
-                        FROM words
-                        WHERE user_id = :userId
-                          AND language = :language
-                        GROUP BY type
-                        HAVING COUNT(*) > 0
-                    ) grouped
-                ) AS words_by_type,
-                (
-                    SELECT COUNT(*)
-                    FROM conversations
-                    WHERE user_id = :userId
-                      AND language = :language
-                ) AS conversations_total,
-                (
-                    SELECT COUNT(*)
-                    FROM conversations
-                    WHERE user_id = :userId
-                      AND language = :language
-                      AND created_at >= :fromMonth
-                      AND created_at < :toExclusive
-                ) AS conversations_created_last_30,
-                (
-                    SELECT COUNT(*)
-                    FROM conversation_messages cm
-                    JOIN conversations c ON c.id = cm.conversation_id
-                    WHERE c.user_id = :userId
-                      AND c.language = :language
-                ) AS messages_total,
-                (
-                    SELECT COUNT(*)
-                    FROM conversation_messages cm
-                    JOIN conversations c ON c.id = cm.conversation_id
-                    WHERE c.user_id = :userId
-                      AND c.language = :language
-                      AND cm.created_at >= :fromMonth
-                      AND cm.created_at < :toExclusive
-                ) AS messages_last_30,
-                (
-                    SELECT COUNT(*)
-                    FROM finished_games
-                    WHERE user_id = :userId
-                      AND language = :language
-                ) AS games_total,
-                (
-                    SELECT COUNT(*)
-                    FROM finished_games
-                    WHERE user_id = :userId
-                      AND language = :language
-                      AND created_at >= :fromMonth
-                      AND created_at < :toExclusive
-                ) AS games_last_30,
-                $TREND_WORDS_SQL AS words_added_trend_90,
-                $TREND_CONVERSATIONS_SQL AS conversations_created_trend_90,
-                $TREND_MESSAGES_SQL AS messages_trend_90,
-                $TREND_GAMES_SQL AS games_finished_trend_90,
-                (
-                    SELECT COALESCE(
-                        jsonb_agg(
-                            jsonb_build_object(
-                                'date', to_char(daily.activity_date, 'YYYY-MM-DD'),
-                                'count', daily.cnt
-                            )
-                            ORDER BY daily.activity_date
-                        ),
-                        '[]'::jsonb
-                    )::text
-                    FROM (
-                        SELECT activity_date, SUM(cnt) AS cnt
-                        FROM (
-                            SELECT (created_at AT TIME ZONE 'UTC')::date AS activity_date, COUNT(*) AS cnt
-                            FROM words
-                            WHERE user_id = :userId
-                              AND language = :language
-                              AND created_at >= :yearStart
-                              AND created_at < :yearEnd
-                            GROUP BY 1
-                            UNION ALL
-                            SELECT (cm.created_at AT TIME ZONE 'UTC')::date, COUNT(*)
-                            FROM conversation_messages cm
-                            JOIN conversations c ON c.id = cm.conversation_id
-                            WHERE c.user_id = :userId
-                              AND c.language = :language
-                              AND cm.created_at >= :yearStart
-                              AND cm.created_at < :yearEnd
-                            GROUP BY 1
-                            UNION ALL
-                            SELECT (created_at AT TIME ZONE 'UTC')::date, COUNT(*)
-                            FROM finished_games
-                            WHERE user_id = :userId
-                              AND language = :language
-                              AND created_at >= :yearStart
-                              AND created_at < :yearEnd
-                            GROUP BY 1
-                        ) events
-                        GROUP BY activity_date
-                        HAVING SUM(cnt) > 0
-                    ) daily
-                ) AS activity_days
+                id,
+                source_word,
+                translation,
+                left(definition, $DEFINITION_PREVIEW_LENGTH) AS definition_preview,
+                is_bookmarked,
+                type,
+                extra_mark
+            FROM words
+            WHERE user_id = :userId
+              AND language = :language
+            ORDER BY created_at DESC, id DESC
+            LIMIT :limit
+        """.trimIndent()
+
+        val RECENT_CONVERSATIONS_SQL = """
+            SELECT
+                id,
+                topic,
+                type,
+                ai_tone,
+                ai_interlocutor_name,
+                ai_interlocutor_avatar_id,
+                updated_at
+            FROM conversations
+            WHERE user_id = :userId
+              AND language = :language
+            ORDER BY updated_at DESC, id DESC
+            LIMIT :limit
         """.trimIndent()
     }
 }

@@ -4,7 +4,6 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.word.api.crud.requests.enums.GetAllWordsSortOptions
 import com.ord.core.word.api.crud.responses.dto.DefinedWordResponse
 import com.ord.core.word.api.crud.responses.dto.SingleWordResponse
-import com.ord.core.word.api.crud.responses.dto.WordListItem
 import com.ord.core.word.models.word.WordEntity
 import com.ord.core.word.models.word.enums.WordExtraMark
 import com.ord.core.word.models.word.enums.WordType
@@ -43,12 +42,6 @@ interface WordRepositoryCustomMethods {
         language: LanguageName,
         limit: Int,
     ): Flux<String>
-
-    fun findLatestListItems(
-        userId: UUID,
-        language: LanguageName,
-        limit: Int,
-    ): Flux<WordListItem>
 
     fun findNOfMostDifficultWords(
         userId: UUID,
