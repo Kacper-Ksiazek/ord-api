@@ -247,23 +247,25 @@ class ConversationRepositoryCustomMethodsImpl(
         return template.databaseClient
             .sql(query)
             .bindValues(bindings)
-            .map { row ->
-                ConversationEntity(
-                    id = row["id"] as UUID,
-                    topic = row["topic"] as String,
-                    additionalContext = row["additional_context"] as String?,
-                    language = LanguageName.valueOf(row["language"] as String),
-                    proficiencyLevel = LanguageProficiencyLevel.valueOf(row["proficiency_level"] as String),
-                    type = ConversationType.valueOf(row["type"] as String),
-                    aiTone = ConversationTone.valueOf(row["ai_tone"] as String),
-                    aiInterlocutorName = row["ai_interlocutor_name"] as String,
-                    aiInterlocutorAvatarId = row["ai_interlocutor_avatar_id"] as String,
-                    userId = row["user_id"] as UUID,
-                    createdAt = (row["created_at"] as OffsetDateTime).toInstant(),
-                    updatedAt = (row["updated_at"] as OffsetDateTime).toInstant()
-                )
-            }
+            .map { row -> mapConversationRow(row) }
             .all()
+    }
+
+    private fun mapConversationRow(row: io.r2dbc.spi.Readable): ConversationEntity {
+        return ConversationEntity(
+            id = row["id"] as UUID,
+            topic = row["topic"] as String,
+            additionalContext = row["additional_context"] as String?,
+            language = LanguageName.valueOf(row["language"] as String),
+            proficiencyLevel = LanguageProficiencyLevel.valueOf(row["proficiency_level"] as String),
+            type = ConversationType.valueOf(row["type"] as String),
+            aiTone = ConversationTone.valueOf(row["ai_tone"] as String),
+            aiInterlocutorName = row["ai_interlocutor_name"] as String,
+            aiInterlocutorAvatarId = row["ai_interlocutor_avatar_id"] as String,
+            userId = row["user_id"] as UUID,
+            createdAt = (row["created_at"] as OffsetDateTime).toInstant(),
+            updatedAt = (row["updated_at"] as OffsetDateTime).toInstant()
+        )
     }
 
     override fun countDailyNewConversations(userId: UUID, from: Instant, to: Instant): Flux<DailyActivityCount> {

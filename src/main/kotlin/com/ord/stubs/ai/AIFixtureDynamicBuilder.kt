@@ -135,7 +135,7 @@ class AIFixtureDynamicBuilder(
                     word = item.sourceWord,
                     translation = item.translation ?: "translation of ${item.sourceWord}",
                     definition = item.definition
-                        ?: "A concise definition of \"${item.sourceWord}\" for vocabulary practice.",
+                        ?: "A concise definition for vocabulary practice.",
                     type = item.type ?: resolveWordType(item.sourceWord).name,
                     extraMark = item.extraMark ?: resolveExtraMark(item.sourceWord)?.name ?: "",
                     error = "",

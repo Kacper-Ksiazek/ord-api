@@ -7,6 +7,7 @@ import com.ord.controllers.banks.TestBankController
 import com.ord.controllers.conversations.AllConversationControllersTestsSuite
 import com.ord.controllers.games.AllGameControllersTestsSuite
 import com.ord.controllers.health.TestHealthCheckController
+import com.ord.controllers.home.TestHomeController
 import com.ord.controllers.language_proficiencies.TestLanguageProficienciesController
 import com.ord.controllers.tts.TestTtsController
 import com.ord.controllers.users.TestUsersController
@@ -30,6 +31,7 @@ import org.junit.platform.suite.api.SuiteDisplayName
         TestAIExplainerController::class,
         TestTtsController::class,
         TestHealthCheckController::class,
+        TestHomeController::class,
     ]
 )
 class AllControllersTestsSuite

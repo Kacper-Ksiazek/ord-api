@@ -25,6 +25,10 @@
     ],
     "tags": [
         {
+            "name": "6. Home",
+            "description": "Landing summary for the selected learning language"
+        },
+        {
             "name": "1. Core: Users",
             "description": "User profile management and account initialization"
         },
@@ -55,6 +59,10 @@
         {
             "name": "3. Games: Crossword",
             "description": "Crossword puzzle game variant for vocabulary practice"
+        },
+        {
+            "name": "6. Home",
+            "description": "Landing page reads: vocabulary, conversations, and finished games, plus this year's activity"
         },
         {
             "name": "1. Core: Authentication",
@@ -2297,6 +2305,86 @@
                     },
                     "401": {
                         "description": "Not authenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/home": {
+            "get": {
+                "tags": [
+                    "6. Home"
+                ],
+                "summary": "Get home summary",
+                "description": "Count cards, sparklines, and recent items for the authenticated user and their selected learning language. When no language is selected, totals are zero.",
+                "operationId": "getHome",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Home summary retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HomeResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "auth-cookie": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/home/activity": {
+            "get": {
+                "tags": [
+                    "6. Home"
+                ],
+                "summary": "Get home activity",
+                "description": "Sparse day counts for the current UTC calendar year. When no language is selected, the year has no days.",
+                "operationId": "getActivity",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Home activity retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HomeActivityPerDay"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -6520,6 +6608,302 @@
                         "format": "int64",
                         "description": "Number of bookmarked words",
                         "example": 12
+                    }
+                }
+            },
+            "HomeActivityDay": {
+                "type": "object",
+                "description": "One UTC day of home activity",
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "description": "UTC date",
+                        "example": "2026-09-30"
+                    },
+                    "count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Events recorded that day",
+                        "example": 4
+                    }
+                }
+            },
+            "HomeConversationsOverview": {
+                "type": "object",
+                "description": "Conversation card: totals and 90-day sparklines",
+                "properties": {
+                    "total": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "All conversations in the selected language",
+                        "example": 3
+                    },
+                    "messagesTotal": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "All messages in those conversations, from the user and the AI",
+                        "example": 28
+                    },
+                    "createdLast30Days": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Conversations created in the current UTC calendar month, including today",
+                        "example": 1
+                    },
+                    "messagesLast30Days": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Messages created in the current UTC calendar month, from the user and the AI",
+                        "example": 8
+                    },
+                    "createdTrend": {
+                        "type": "array",
+                        "description": "Conversations created per UTC day for the last 90 days, including zeros",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    },
+                    "messagesTrend": {
+                        "type": "array",
+                        "description": "Messages created per UTC day for the last 90 days, including zeros",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    }
+                }
+            },
+            "HomeGamesOverview": {
+                "type": "object",
+                "description": "Games card. comingSoon stays true until the games UI ships.",
+                "properties": {
+                    "comingSoon": {
+                        "type": "boolean",
+                        "description": "Games practice is not on the home screen yet",
+                        "example": true
+                    },
+                    "total": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Finished games stored for this user and language. Null when that count is not available."
+                    },
+                    "last30Days": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "description": "Finished games recorded in the current UTC calendar month. Null when that count is not available."
+                    },
+                    "trend": {
+                        "type": "array",
+                        "description": "Finished games per UTC day for the last 90 days, including zeros",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    }
+                }
+            },
+            "HomeOverviews": {
+                "type": "object",
+                "description": "Count cards and their sparklines",
+                "properties": {
+                    "words": {
+                        "$ref": "#/components/schemas/HomeWordsOverview"
+                    },
+                    "conversations": {
+                        "$ref": "#/components/schemas/HomeConversationsOverview"
+                    },
+                    "games": {
+                        "$ref": "#/components/schemas/HomeGamesOverview"
+                    }
+                }
+            },
+            "HomeRecentContent": {
+                "type": "object",
+                "description": "Up to three latest words and conversations for the selected learning language",
+                "properties": {
+                    "words": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeRecentWord"
+                        }
+                    },
+                    "conversations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeRecentConversation"
+                        }
+                    }
+                }
+            },
+            "HomeRecentConversation": {
+                "type": "object",
+                "description": "Conversation preview on the home screen",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "topic": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "SMALL_TALK",
+                            "SCENARIO_ROLEPLAY",
+                            "EXAM_PRACTICE",
+                            "TOPIC_EXPLORATION",
+                            "OXFORD_DEBATE"
+                        ]
+                    },
+                    "aiTone": {
+                        "type": "string",
+                        "enum": [
+                            "FRIENDLY",
+                            "FORMAL",
+                            "HUMOROUS",
+                            "NEUTRAL",
+                            "ENCOURAGING",
+                            "CHALLENGING"
+                        ]
+                    },
+                    "aiInterlocutorName": {
+                        "type": "string"
+                    },
+                    "aiInterlocutorAvatarId": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Last update, used as the row date"
+                    }
+                }
+            },
+            "HomeRecentWord": {
+                "type": "object",
+                "description": "Word preview on the home screen. Definition is truncated.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "sourceWord": {
+                        "type": "string"
+                    },
+                    "translation": {
+                        "type": "string"
+                    },
+                    "definitionPreview": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Definition trimmed to 160 characters"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Type of word or expression",
+                        "enum": [
+                            "NOUN",
+                            "VERB",
+                            "ADJECTIVE",
+                            "ADVERB",
+                            "IDIOM",
+                            "PHRASE"
+                        ]
+                    },
+                    "extraMark": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Extra marks or tags for word classification by register or domain",
+                        "enum": [
+                            "OFFENSIVE",
+                            "SLANG",
+                            "FORMAL",
+                            "INFORMAL",
+                            "SCIENTIFIC",
+                            "TECHNICAL",
+                            "LEGAL",
+                            "MEDICAL",
+                            "COLLOQUIAL",
+                            "POETIC"
+                        ]
+                    },
+                    "bookmarked": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "HomeResponse": {
+                "type": "object",
+                "description": "Landing summary for the authenticated user and their selected learning language",
+                "properties": {
+                    "overviews": {
+                        "$ref": "#/components/schemas/HomeOverviews",
+                        "description": "Count cards and sparklines"
+                    },
+                    "recentContent": {
+                        "$ref": "#/components/schemas/HomeRecentContent",
+                        "description": "Recent words and conversations"
+                    }
+                }
+            },
+            "HomeWordsOverview": {
+                "type": "object",
+                "description": "Word card: totals and the 90-day sparkline",
+                "properties": {
+                    "total": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "All words in the selected language",
+                        "example": 40
+                    },
+                    "addedLast30Days": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Words created in the current UTC calendar month, including today",
+                        "example": 6
+                    },
+                    "byType": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "description": "Count per word type. Types with zero words are omitted."
+                    },
+                    "trend": {
+                        "type": "array",
+                        "description": "Words created per UTC day for the last 90 days, including zeros",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
+                    }
+                }
+            },
+            "HomeActivityPerDay": {
+                "type": "object",
+                "description": "Days in the current UTC calendar year with any learning activity",
+                "properties": {
+                    "year": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Current calendar year in UTC",
+                        "example": 2026
+                    },
+                    "days": {
+                        "type": "array",
+                        "description": "Days in that year whose count is greater than zero",
+                        "items": {
+                            "$ref": "#/components/schemas/HomeActivityDay"
+                        }
                     }
                 }
             },
