@@ -2,6 +2,8 @@
 
 When a query needs joins, aggregation, dynamic conditions, or custom projection that derived methods can't express, declare it in a `*CustomMethods` interface and compose it into the main repository interface alongside `UserResourceRepository<TEntity>`. Implement it in a `@Repository`-annotated `*Impl` class that injects `R2dbcEntityTemplate` and uses `template.databaseClient.sql(...)`.
 
+A read bound by user, language, or date windows stays in that repository method. Do not move it into a Flyway function or view. One repository method is one SQL statement.
+
 ## Good
 
 ```kotlin

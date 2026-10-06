@@ -2,9 +2,11 @@ package com.ord.features.home.service.impl
 
 import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.features.home.model.HomeActivityPerDay
-import com.ord.features.home.model.HomeAggregator
 import com.ord.features.home.model.HomeResponse
 import com.ord.features.home.model.HomeWindow
+import com.ord.features.home.model.emptyHomeResponse
+import com.ord.features.home.model.toActivity
+import com.ord.features.home.model.toHomeResponse
 import com.ord.features.home.model.parts.HomeRecentContent
 import com.ord.features.home.repository.HomeRepository
 import com.ord.features.home.service.HomeService
@@ -22,7 +24,7 @@ class HomeServiceImpl(
         window: HomeWindow,
     ): Mono<HomeResponse> {
         if (language == null) {
-            return Mono.just(HomeAggregator.empty(window))
+            return Mono.just(window.emptyHomeResponse())
         }
 
         return homeRepository
@@ -48,10 +50,7 @@ class HomeServiceImpl(
                             )
                             .collectList()
                             .map { conversations ->
-                                HomeAggregator.assemble(
-                                    window = window,
-                                    snapshot = snapshot,
-                                ).copy(
+                                snapshot.toHomeResponse(window).copy(
                                     recentContent = HomeRecentContent(
                                         words = words,
                                         conversations = conversations,
@@ -68,7 +67,7 @@ class HomeServiceImpl(
         window: HomeWindow,
     ): Mono<HomeActivityPerDay> {
         if (language == null) {
-            return Mono.just(HomeAggregator.activity(window, emptyList()))
+            return Mono.just(window.toActivity(emptyList()))
         }
 
         return homeRepository
@@ -78,7 +77,7 @@ class HomeServiceImpl(
                 window = window,
             )
             .collectList()
-            .map { days -> HomeAggregator.activity(window, days) }
+            .map { days -> window.toActivity(days) }
     }
 
     private companion object {

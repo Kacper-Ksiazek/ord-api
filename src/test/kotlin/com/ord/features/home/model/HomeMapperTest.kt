@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test
 import java.time.Instant
 import java.time.LocalDate
 
-@DisplayName("HomeAggregator")
-class HomeAggregatorTest {
+@DisplayName("HomeMapper")
+class HomeMapperTest {
 
     @Nested
     @DisplayName("window")
@@ -44,14 +44,14 @@ class HomeAggregatorTest {
     }
 
     @Nested
-    @DisplayName("assemble")
-    inner class Assemble {
+    @DisplayName("response")
+    inner class Response {
 
         private val window = HomeWindow.at(LocalDate.of(2026, 9, 30))
 
         @Test
-        fun `empty language summary is zeros and an empty year`() {
-            val response = HomeAggregator.empty(window)
+        fun `empty language summary is zeros`() {
+            val response = window.emptyHomeResponse()
 
             assertEquals(0L, response.overviews.words.total)
             assertEquals(0L, response.overviews.words.addedLast30Days)
@@ -65,19 +65,18 @@ class HomeAggregatorTest {
             assertEquals(0L, response.overviews.games.last30Days)
             assertEquals(emptyList<Any>(), response.recentContent.words)
             assertEquals(emptyList<Any>(), response.recentContent.conversations)
-            assertEquals(HomeAggregator.TREND_DAY_COUNT, response.overviews.words.trend.size)
+            assertEquals(HOME_TREND_DAY_COUNT, response.overviews.words.trend.size)
             assertEquals(0L, response.overviews.words.trend.sumOf { it.count })
         }
 
         @Test
         fun `dense trend days fill missing dates with zero`() {
             val window = HomeWindow.at(LocalDate.of(2026, 3, 31))
-            val dense = HomeAggregator.denseTrendDays(
-                window,
+            val dense = window.denseTrend(
                 listOf(HomeActivityDay(date = "2026-03-30", count = 2)),
             )
 
-            assertEquals(HomeAggregator.TREND_DAY_COUNT, dense.size)
+            assertEquals(HOME_TREND_DAY_COUNT, dense.size)
             assertEquals("2026-01-01", dense.first().date)
             assertEquals("2026-03-31", dense.last().date)
             assertEquals(2L, dense.find { it.date == "2026-03-30" }?.count)
@@ -85,13 +84,11 @@ class HomeAggregatorTest {
 
         @Test
         fun `omits word types with zero and keeps enum order`() {
-            val counts = HomeAggregator.countsByType(
-                mapOf(
-                    WordType.VERB to 2L,
-                    WordType.NOUN to 0L,
-                    WordType.PHRASE to 1L,
-                ),
-            )
+            val counts = mapOf(
+                WordType.VERB to 2L,
+                WordType.NOUN to 0L,
+                WordType.PHRASE to 1L,
+            ).omitZeros()
 
             assertEquals(listOf(WordType.VERB, WordType.PHRASE), counts.keys.toList())
             assertEquals(2L, counts[WordType.VERB])
@@ -100,14 +97,12 @@ class HomeAggregatorTest {
 
         @Test
         fun `drops zero activity days, sums duplicates, and sorts by date`() {
-            val days = HomeAggregator.activityDays(
-                listOf(
-                    HomeActivityDay(date = "2026-09-30", count = 1),
-                    HomeActivityDay(date = "2026-09-02", count = 0),
-                    HomeActivityDay(date = "2026-09-30", count = 3),
-                    HomeActivityDay(date = "2026-01-04", count = 2),
-                ),
-            )
+            val days = listOf(
+                HomeActivityDay(date = "2026-09-30", count = 1),
+                HomeActivityDay(date = "2026-09-02", count = 0),
+                HomeActivityDay(date = "2026-09-30", count = 3),
+                HomeActivityDay(date = "2026-01-04", count = 2),
+            ).mergeByDate()
 
             assertEquals(
                 listOf(
@@ -120,24 +115,21 @@ class HomeAggregatorTest {
 
         @Test
         fun `keeps a null games count when finished games are not available`() {
-            val response = HomeAggregator.assemble(
-                window = window,
-                snapshot = HomeSnapshot(
-                    wordsTotal = 1,
-                    wordsAddedLast30Days = 1,
-                    wordsByType = mapOf(WordType.NOUN to 1),
-                    conversationsTotal = 0,
-                    conversationsCreatedLast30Days = 0,
-                    messagesTotal = 0,
-                    messagesLast30Days = 0,
-                    gamesTotal = null,
-                    gamesLast30Days = null,
-                    wordsAddedTrend90 = emptyList(),
-                    conversationsCreatedTrend90 = emptyList(),
-                    messagesTrend90 = emptyList(),
-                    gamesFinishedTrend90 = emptyList(),
-                ),
-            )
+            val response = HomeSnapshot(
+                wordsTotal = 1,
+                wordsAddedLast30Days = 1,
+                wordsByType = mapOf(WordType.NOUN to 1),
+                conversationsTotal = 0,
+                conversationsCreatedLast30Days = 0,
+                messagesTotal = 0,
+                messagesLast30Days = 0,
+                gamesTotal = null,
+                gamesLast30Days = null,
+                wordsAddedTrend90 = emptyList(),
+                conversationsCreatedTrend90 = emptyList(),
+                messagesTrend90 = emptyList(),
+                gamesFinishedTrend90 = emptyList(),
+            ).toHomeResponse(window)
 
             assertEquals(true, response.overviews.games.comingSoon)
             assertEquals(null, response.overviews.games.total)
