@@ -173,6 +173,10 @@ class HomeRepository(
         const val DEFINITION_PREVIEW_LENGTH: Int = 160
 
         val OVERVIEWS_SQL = """
+            -- -------------
+            -- 1. words
+            -- Lifetime total, the current UTC month, and counts by type.
+            -- -------------
             SELECT (
                        SELECT COUNT(*)
                        FROM words
@@ -197,6 +201,10 @@ class HomeRepository(
                                 GROUP BY type
                             ) grouped
                    ) AS words_by_type,
+                   -- -------------
+                   -- 2. conversations
+                   -- Lifetime total and the current UTC month. created_at, not message activity.
+                   -- -------------
                    (
                        SELECT COUNT(*)
                        FROM conversations
@@ -211,6 +219,10 @@ class HomeRepository(
                          AND created_at >= :fromMonth
                          AND created_at < :toExclusive
                    ) AS conversations_created_last_30,
+                   -- -------------
+                   -- 3. messages
+                   -- Counted through this user's conversations.
+                   -- -------------
                    (
                        SELECT COUNT(*)
                        FROM conversation_messages cm
@@ -227,6 +239,10 @@ class HomeRepository(
                          AND cm.created_at >= :fromMonth
                          AND cm.created_at < :toExclusive
                    ) AS messages_last_30,
+                   -- -------------
+                   -- 4. finished games
+                   -- Lifetime total and the current UTC month.
+                   -- -------------
                    (
                        SELECT COUNT(*)
                        FROM finished_games
@@ -241,6 +257,11 @@ class HomeRepository(
                          AND created_at >= :fromMonth
                          AND created_at < :toExclusive
                    ) AS games_last_30,
+                   -- -------------
+                   -- 5. trends
+                   -- Sparse UTC days over the last 90 days. Empty input becomes [].
+                   -- -------------
+                   -- words added
                    (
                        SELECT COALESCE(
                                       jsonb_agg(
@@ -262,6 +283,7 @@ class HomeRepository(
                                 GROUP BY 1
                             ) daily
                    ) AS words_added_trend_90,
+                   -- conversations created
                    (
                        SELECT COALESCE(
                                       jsonb_agg(
@@ -283,6 +305,7 @@ class HomeRepository(
                                 GROUP BY 1
                             ) daily
                    ) AS conversations_created_trend_90,
+                   -- messages
                    (
                        SELECT COALESCE(
                                       jsonb_agg(
@@ -305,6 +328,7 @@ class HomeRepository(
                                 GROUP BY 1
                             ) daily
                    ) AS messages_trend_90,
+                   -- games finished
                    (
                        SELECT COALESCE(
                                       jsonb_agg(
@@ -329,11 +353,16 @@ class HomeRepository(
         """.trimIndent()
 
         val ACTIVITY_DAYS_SQL = """
+            -- -------------
+            -- Year heatmap
+            -- Words, messages, and finished games collapse into one count per UTC day.
+            -- -------------
             SELECT to_char(daily.activity_date, 'YYYY-MM-DD') AS activity_date,
                    daily.cnt
             FROM (
                      SELECT activity_date, SUM(cnt)::bigint AS cnt
                      FROM (
+                              -- words
                               SELECT (created_at AT TIME ZONE 'UTC')::date AS activity_date, COUNT(*) AS cnt
                               FROM words
                               WHERE user_id = :userId
@@ -342,6 +371,7 @@ class HomeRepository(
                                 AND created_at < :yearEnd
                               GROUP BY 1
                               UNION ALL
+                              -- messages
                               SELECT (cm.created_at AT TIME ZONE 'UTC')::date, COUNT(*)
                               FROM conversation_messages cm
                                        JOIN conversations c ON c.id = cm.conversation_id
@@ -351,6 +381,7 @@ class HomeRepository(
                                 AND cm.created_at < :yearEnd
                               GROUP BY 1
                               UNION ALL
+                              -- finished games
                               SELECT (created_at AT TIME ZONE 'UTC')::date, COUNT(*)
                               FROM finished_games
                               WHERE user_id = :userId
@@ -366,6 +397,10 @@ class HomeRepository(
         """.trimIndent()
 
         val RECENT_WORDS_SQL = """
+            -- -------------
+            -- Recent words
+            -- Definition is truncated. No progress and no banks.
+            -- -------------
             SELECT
                 id,
                 source_word,
@@ -382,6 +417,10 @@ class HomeRepository(
         """.trimIndent()
 
         val RECENT_CONVERSATIONS_SQL = """
+            -- -------------
+            -- Recent conversations
+            -- Topic, tone, and interlocutor. updated_at only.
+            -- -------------
             SELECT
                 id,
                 topic,

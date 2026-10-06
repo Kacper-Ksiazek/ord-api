@@ -32,7 +32,7 @@ Strict vertical slicing under `com.ord`: `config/`, `core/`, `features/`, `excep
 | `architecture` | The Controller→Facade→Service→Repository→Entity/Mapper/DTO layering; feature directory layout; base abstractions (`UserResourceService`, `UserResourceRepository`, `IdentifiableUserResource`, mappers) | [x] (9) |
 | `kotlin` | Data classes, null handling (`?:`, `error(...)`), default args, `companion object` constants, extension functions, enums | [x] (8) |
 | `reactive` | WebFlux + Reactor `Mono`/`Flux` usage, composition (`flatMap`/`map`/`zip`/`collectList`), no blocking, SSE streaming | [x] (9) |
-| `persistence` | R2DBC repositories, `*CustomMethods` + `R2dbcEntityTemplate` raw SQL, enum/`Json` binding, `OffsetDateTime`→`Instant`, `@Table` entities, Flyway migration naming/conventions | [x] (11) |
+| `persistence` | R2DBC repositories, `*CustomMethods` + `R2dbcEntityTemplate` raw SQL, enum/`Json` binding, `OffsetDateTime`→`Instant`, `@Table` entities, Flyway migration naming/conventions | [x] (12) |
 | `api-design` | Controllers, REST path/verb/status conventions, request/response DTOs, Jakarta validation + custom validators, OpenAPI/Swagger annotations, OpenAPI contract & TS types-package | [x] (10) |
 | `security-auth` | OTP→opaque session-cookie flow, `@AuthenticatedUser` resolver, reactive Spring Security config, user-scoping of all data, anonymous vs authorized paths, CSRF Origin allowlist | [x] (10) |
 | `ai-integration` | `OpenAIAPIClientService` request/streaming APIs, GPT token-usage logging per operation key, response parsing/validation callbacks, `BadGatewayException` handling for AI failures | [x] (8) |
