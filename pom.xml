@@ -21,6 +21,10 @@
         <sentry.maven-plugin.version>0.11.0</sentry.maven-plugin.version>
         <!-- Skip source bundle upload unless SENTRY_AUTH_TOKEN is provided at build time -->
         <sentry.bundle.skip>true</sentry.bundle.skip>
+        <!-- Patched versions for Aikido / CVE fixes (override Spring Boot BOM) -->
+        <netty.version>4.2.18.Final</netty.version>
+        <jackson-2-bom.version>2.21.7</jackson-2-bom.version>
+        <jackson-bom.version>3.1.7</jackson-bom.version>
     </properties>
     <dependencies>
         <dependency>
