@@ -156,23 +156,28 @@ class WordRepositoryCustomMethodsImpl(
     }
 
     override fun countOverview(userId: UUID, language: LanguageName?): Mono<WordOverviewCounts> {
-        val languageFilter = language?.let { "AND words.language = :language" } ?: ""
+        val whereConditions = buildList {
+            add("words.user_id = :userId")
+            if (language != null) {
+                add("words.language = :language")
+            }
+        }.joinToString(" AND ")
+
+        val bindings = mutableMapOf<String, Any>("userId" to userId).apply {
+            language?.let { put("language", it.name) }
+        }
+
         val query = """
             SELECT
                 COUNT(*) AS total,
                 COALESCE(SUM(CASE WHEN words.is_bookmarked = TRUE THEN 1 ELSE 0 END), 0) AS bookmarked_count
             FROM words
                 INNER JOIN word_progress wp ON wp.word_id = words.id AND wp.user_id = words.user_id
-            WHERE words.user_id = :userId
-                $languageFilter
+            WHERE $whereConditions
         """
 
-        var statement = databaseClient.sql(query).bind("userId", userId)
-        if (language != null) {
-            statement = statement.bind("language", language.name)
-        }
-
-        return statement
+        return databaseClient.sql(query)
+            .bindValues(bindings)
             .map { row ->
                 WordOverviewCounts(
                     total = row.get("total", Long::class.java)!!,
