@@ -29,6 +29,7 @@ this project values **strict consistency with existing patterns** over novelty.
 - `error-handling` — REST exceptions & centralized `@ControllerAdvice` handling
 - `testing` — controller integration tests, Kotest, Testcontainers, test suites
 - `git-workflow` — commit policy, migration immutability, OpenAPI re-export
+- `bruno` — Bruno collection organization (`bruno/ord-api/`)
 
 When adding a new feature, mirror an existing comparable feature (e.g. `conversation` or
 `word`) and ensure new endpoints ship with tests.

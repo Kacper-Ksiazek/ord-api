@@ -1,0 +1,26 @@
+meta {
+  name: Get Conversation By ID
+  type: http
+  seq: 2
+}
+
+docs {
+  Requires `conversationId` from **Create Conversation** (or set manually in the environment).
+}
+
+get {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/{{conversationId}}
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  test("found", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  const body = res.getBody();
+  test("id matches environment", () => {
+    expect(body.id).to.equal(bru.getEnvVar("conversationId"));
+  });
+}

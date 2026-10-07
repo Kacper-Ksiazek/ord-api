@@ -1,0 +1,28 @@
+meta {
+  name: Activity Overview
+  type: http
+  seq: 1
+}
+
+docs {
+  Returns 90-day activity metrics: daily heatmap, weekly trends, totals.
+}
+
+get {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/overview
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  test("overview retrieved", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  const body = res.getBody();
+  test("overview shape", () => {
+    expect(body.heatmap).to.be.an("array");
+    expect(body.messagesByWeek).to.be.an("array");
+    expect(body.conversationsByWeek).to.be.an("array");
+  });
+}

@@ -1,0 +1,40 @@
+meta {
+  name: Get Me
+  type: http
+  seq: 1
+}
+
+docs {
+  Returns the authenticated user profile (`UserDTO`).
+
+  Run **OTP Request** → **OTP Verify** first.
+
+  Key field: `isAccountInitialized` — `false` for a fresh user, `true` after onboarding.
+}
+
+get {
+  url: {{baseUrl}}{{apiPrefix}}/users/me
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  test("authenticated", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  const user = res.getBody();
+
+  test("profile shape", () => {
+    expect(user.id).to.be.a("string");
+    expect(user.email).to.be.a("string");
+    expect(user.name).to.be.a("string");
+    expect(user.isAccountInitialized).to.be.a("boolean");
+    expect(user.createdAt).to.be.a("string");
+    expect(user.updatedAt).to.be.a("string");
+  });
+
+  test("email matches environment", () => {
+    expect(user.email).to.equal(bru.getEnvVar("email"));
+  });
+}
