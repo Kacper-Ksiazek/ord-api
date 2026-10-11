@@ -1,0 +1,41 @@
+meta {
+  name: OTP Verify
+  type: http
+  seq: 2
+}
+
+docs {
+  Step 2 of login. Exchanges email + code for a session.
+
+  Bruno stores the `AUTH-TOKEN` cookie automatically.
+  Then run **Get Me** with `auth: inherit`.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/auth/otp-verify
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{email}}",
+    "code": "{{otpCode}}"
+  }
+}
+
+script:post-response {
+  test("logged in", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  const user = res.getBody();
+  test("returns user id and email", () => {
+    expect(user.id).to.be.a("string");
+    expect(user.email).to.equal(bru.getEnvVar("email"));
+  });
+}

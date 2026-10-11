@@ -1,0 +1,31 @@
+meta {
+  name: AI Initialize Conversation (SSE)
+  type: http
+  seq: 1
+}
+
+docs {
+  SSE stream. Requires `conversationId` from **Create Conversation**.
+
+  Starts the session with an AI opening message.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/ongoing/ai/initialize
+  body: none
+  auth: inherit
+}
+
+params:query {
+  conversationId: {{conversationId}}
+}
+
+headers {
+  Accept: text/event-stream
+}
+
+script:post-response {
+  test("stream started", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

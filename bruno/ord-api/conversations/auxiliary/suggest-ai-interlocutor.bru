@@ -1,0 +1,43 @@
+meta {
+  name: Suggest AI Interlocutor
+  type: http
+  seq: 2
+}
+
+docs {
+  Generates an AI interlocutor profile for a given topic.
+
+  Optional prep step before **Create Conversation**.
+}
+
+post {
+  url: {{baseUrl}}{{apiPrefix}}/conversations/suggest-ai-interlocutor
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "topic": "Discussing the weather and climate change",
+    "additionalContext": "Focus on environmental impact",
+    "conversationType": "SMALL_TALK",
+    "language": "ENGLISH",
+    "recentInterlocutors": []
+  }
+}
+
+script:post-response {
+  test("interlocutor generated", () => {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  const body = res.getBody();
+  test("profile shape", () => {
+    expect(body.name).to.be.a("string");
+    expect(body.avatarId).to.be.a("string");
+  });
+}
