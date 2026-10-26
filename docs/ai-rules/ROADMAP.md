@@ -47,6 +47,7 @@ Strict vertical slicing under `com.ord`: `config/`, `core/`, `features/`, `excep
 |----------|---------|
 | `project-brief.md` | Product domain, consumers, what “consistency” means here |
 | `agent-behavior.md` | How agents communicate, precedence when rules conflict, git approval |
+| `review-context.md` | Idea gate on, plus the invariants automated idea and code review enforce |
 
 ## Progress
 
