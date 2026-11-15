@@ -40,8 +40,11 @@ jobs:
       - name: 🔨 Package app
         run: mvn clean package -DskipTests
 
+      # Heroku's registry accepts only a single-platform image manifest. Newer Docker
+      # (ubuntu-26.04 runners) attaches provenance/SBOM attestations by default, which
+      # turns the push into an OCI image index that Heroku rejects with "unsupported".
       - name: 🐳 Build Docker image
-        run: docker build -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web .
+        run: docker build --provenance=false --sbom=false -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web .
 
       - name: 🔐 Log in to Heroku Container Registry
         run: echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com
@@ -49,10 +52,21 @@ jobs:
       - name: 🚀 Push Docker image to Heroku
         run: docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
+      # Heroku expects the image *config* digest. With the containerd image store,
+      # `docker inspect --format={{.Id}}` returns the manifest digest instead, so read
+      # the config digest from the manifest that was actually pushed.
       - name: 🔄 Release to Heroku
         run: |
-          curl -n -X PATCH https://api.heroku.com/apps/${{ secrets.HEROKU_APP_NAME }}/formation \
-          -d '{"updates":[{"type":"web","docker_image":"'"$(docker inspect registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web --format={{.Id}})"'"}]}' \
+          IMAGE="registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web"
+          MANIFEST="$(docker buildx imagetools inspect --raw "$IMAGE")"
+          IMAGE_ID="$(echo "$MANIFEST" | jq -r '.config.digest // empty')"
+          if [ -z "$IMAGE_ID" ]; then
+            echo "::error::Pushed image is not a single image manifest (mediaType: $(echo "$MANIFEST" | jq -r '.mediaType'))"
+            exit 1
+          fi
+          echo "Releasing image config digest: $IMAGE_ID"
+          curl --fail-with-body -sS -X PATCH https://api.heroku.com/apps/${{ secrets.HEROKU_APP_NAME }}/formation \
+          -d '{"updates":[{"type":"web","docker_image":"'"$IMAGE_ID"'"}]}' \
           -H "Content-Type: application/json" \
           -H "Accept: application/vnd.heroku+json; version=3.docker-releases" \
           -H "Authorization: Bearer ${{ secrets.HEROKU_API_KEY }}"
