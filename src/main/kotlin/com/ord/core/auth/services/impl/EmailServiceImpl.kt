@@ -32,11 +32,10 @@ class EmailServiceImpl(
             helper.setFrom(fromEmail)
             helper.setTo(toEmail)
             helper.setSubject(copy.subject)
-            helper.addInline(
-                LOGO_CONTENT_ID,
-                resourceLoader.getResource("classpath:templates/ord-logo-email.png"),
-            )
+            // HTML must be set before the inline logo: in multipart/related the first part is the
+            // root (RFC 2387). If the logo came first and was empty, mail clients showed a blank email.
             helper.setText(buildEmailBody(toEmail, otpCode, copy), true)
+            addLogoIfAvailable(helper)
 
             mailSender.send(message)
         }
@@ -69,6 +68,13 @@ class EmailServiceImpl(
             .replace("{{OTP_CELLS}}", buildOtpCells(otpCode))
             .replace("{{LOGIN_URL}}", buildLoginUrl(toEmail, otpCode))
             .replace("{{YEAR}}", year)
+    }
+
+    private fun addLogoIfAvailable(helper: MimeMessageHelper) {
+        val logo = resourceLoader.getResource("classpath:templates/ord-logo-email.png")
+        if (logo.exists() && logo.contentLength() > 0) {
+            helper.addInline(LOGO_CONTENT_ID, logo)
+        }
     }
 
     private fun buildLoginUrl(email: String, otpCode: String): String {
