@@ -5,7 +5,7 @@ Migrations live in `src/main/resources/db/migration/` and are named `V<n>__<snak
 ## Good
 
 ```sql
--- New file: V20__add_conversation_archived_flag.sql (next free version number)
+-- New file: V16__add_conversation_archived_flag.sql (next free version number)
 ALTER TABLE conversations
     ADD COLUMN IF NOT EXISTS is_archived BOOLEAN NOT NULL DEFAULT FALSE;
 ```
@@ -13,7 +13,7 @@ ALTER TABLE conversations
 ## Bad
 
 ```sql
--- Editing the already-applied V17__create_conversation_tables.sql in place
+-- Editing the already-applied V13__create_conversation_tables.sql in place
 -- to add a column. Flyway checksum changes -> migration validation fails.
 CREATE TABLE IF NOT EXISTS conversations
 (

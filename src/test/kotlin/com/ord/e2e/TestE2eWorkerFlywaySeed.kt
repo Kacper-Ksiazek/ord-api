@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-@DisplayName("- E2E worker Flyway seed (V22)")
+@DisplayName("- E2E worker Flyway seed (V15__seed_data)")
 class TestE2eWorkerFlywaySeed @Autowired constructor(
     private val userRepository: UserRepository,
     private val languageProficiencyRepository: LanguageProficiencyRepository,
@@ -25,7 +25,7 @@ class TestE2eWorkerFlywaySeed @Autowired constructor(
     )
 
     @Test
-    fun `Flyway V22 seeds all worker users with ENGLISH B1 proficiency`() {
+    fun `Flyway seed file seeds all worker users with ENGLISH B1 proficiency`() {
         workerEmails.forEach { email ->
             val user = userRepository.findByEmail(email).block().shouldNotBeNull()
             user.isAccountInitialized shouldBe true

@@ -115,7 +115,7 @@ Configured via environment (see `docker-compose.e2e.yml`):
 | `OTP_WHITELISTED_EMAILS` | `e2e-ci-w0@ord.test` … `e2e-ci-w3@ord.test` |
 | `OTP_CODE_FOR_WHITELISTED_EMAILS` | `123456` |
 
-Worker accounts are seeded by **Flyway V19** (`V19__seed_e2e_worker_users.sql`) — one user per Playwright worker for data isolation.
+Worker accounts are seeded by the Flyway seed file (`V15__seed_data.sql`, E2E worker section) — one user per Playwright worker for data isolation.
 
 Matches `ord-frontend` `.env.e2e.example` / CI workflow.
 
