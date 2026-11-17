@@ -1,6 +1,6 @@
 # Never modify an already-applied Flyway migration
 
-Flyway migrations in `src/main/resources/db/migration/` are append-only. Never edit, rename, renumber, or delete an existing `V<n>__*.sql` file (the latest is `V19__seed_e2e_worker_users.sql`) — changing applied migrations breaks Flyway checksums and the deploy. To change the schema, add a new sequential migration.
+Flyway migrations in `src/main/resources/db/migration/` are append-only. Never edit, rename, renumber, or delete an existing `V<n>__*.sql` file (the latest is `V20__fix_seeded_vocabulary_content.sql`) — changing applied migrations breaks Flyway checksums and the deploy. To change the schema, add a new sequential migration.
 
 ## Good
 

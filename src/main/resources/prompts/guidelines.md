@@ -477,6 +477,31 @@ targetLanguage}}          ❌ Missing opening brace
 
 ---
 
+### ❌ Don't: Let Learner-Facing Text Narrate the Request
+Any text the learner reads directly (explanations, definitions, tips, mistakes) must sound like a tutor talking, not a
+report about the prompt.
+```text
+The user asked about the definition of the word "audacity" in English. The word audacity means…
+The term 'sluggish' refers to a state of being slow.
+```
+
+### ✅ Do: Start With the Substance, in a Natural Voice
+```text
+"Audacity" is "zuchwałość" or "tupet" — boldness that crosses the line of what's polite…
+Moving or reacting more slowly than usual, often because of tiredness.
+```
+In the prompt, spell this out: forbid meta openings ("The user…", "Here is…", "Sure!"), forbid mentioning the
+instructions or context fields, and include one bad and one good example.
+
+---
+
+### ❌ Don't: Let Structured Fields Collapse Into Tags
+Fields such as `useCases` or `commonMistakes` degrade into labels ("noun", "business") or trivia unless the prompt says
+exactly what a good item looks like. Describe each list field with a good example, a bad example and the rule it must
+satisfy (a situation, an actual mistake with the correct form, etc.).
+
+---
+
 ## Testing & Iteration
 
 When creating or modifying prompts:

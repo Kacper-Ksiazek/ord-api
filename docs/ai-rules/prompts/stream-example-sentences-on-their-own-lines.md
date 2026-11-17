@@ -15,7 +15,7 @@ The example sentence itself is in the language being learned. Glosses and the ex
 ## Good
 
 ```text
-The word "hund" means "dog". It is a common everyday noun.
+"Hund" is simply "pies" — the everyday word you'll use for any dog, your own or someone else's.
 
 » Jeg har en hund.
 » Hunden sover i sengen.
