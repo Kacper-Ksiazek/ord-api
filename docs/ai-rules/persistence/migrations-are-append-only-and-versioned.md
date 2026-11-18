@@ -13,7 +13,7 @@ ALTER TABLE conversations
 ## Bad
 
 ```sql
--- Editing the already-applied V17__create_conversation_tables.sql in place
+-- Editing the already-applied V13__create_conversation_tables.sql in place
 -- to add a column. Flyway checksum changes -> migration validation fails.
 CREATE TABLE IF NOT EXISTS conversations
 (

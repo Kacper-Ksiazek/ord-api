@@ -39,6 +39,8 @@ The following words have been suggested in previous requests.
 - If user context is provided, prioritize vocabulary relevant to that context
 - If no user context is provided, suggest a diverse mix of useful vocabulary across common situations
 - Each suggestion should be a single word or short phrase (max 4 words)
+- Give each word in its dictionary (base) form, e.g. "deplete", not "depletes"
+- The translation must be the natural equivalent a native speaker of {{translationLanguage}} would use, not a literal calque
 - Avoid suggesting:
   - Overly academic or rare words
   - Regional slang unless contextually appropriate
@@ -63,7 +65,7 @@ interface Suggestion {
     /** Translation of the word into {{translationLanguage}} */
     translation: string
 
-    /** Brief explanation in {{generativeContentLanguage}} (1-2 sentences max) */
+    /** Brief explanation in {{generativeContentLanguage}} (1-2 sentences max), starting directly with the meaning — never "The word…" / "This term refers to…" */
     definition: string
 }
 ```

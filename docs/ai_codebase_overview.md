@@ -144,7 +144,7 @@ Pure stateless calculation objects (no Spring dependencies) live alongside model
 
 Flyway migrations in `src/main/resources/db/migration/` follow `V<number>__<description>.sql`.
 
-Latest migrations at time of writing: `V19__seed_e2e_worker_users.sql`
+Latest migrations at time of writing: `V19__seed_e2e_worker_users.sql` (seed data is split per category in V15–V19)
 
 ### Core Tables (Conversation Feature)
 
