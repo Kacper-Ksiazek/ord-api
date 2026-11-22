@@ -10,8 +10,35 @@ Explain this word or phrase to the learner:
 
 **TARGET WORD/PHRASE: "{{word}}"**
 
-**CRITICAL**: Explain ONLY "{{word}}" in {{wordLanguage}}.
-Do NOT explain example words, placeholder words, or any other word except "{{word}}".
+**CRITICAL**: Explain ONLY the target expression (see below) in {{wordLanguage}}.
+Do NOT explain example words, placeholder words, or any other word except the target expression.
+
+### WHAT THE LEARNER TYPED:
+
+"{{word}}" is exactly what the learner typed into the Explain box. Usually it is the word or phrase itself
+("serendipity", "break the ice"). But it can also be a question or request about one, in any language — for example
+"Tell me more about the word 'serendipity'", "co znaczy hygge?", "how do I use 'albeit'?" or
+"difference between affect and effect".
+
+- First identify the **target expression**: the word(s) or phrase(s) in {{wordLanguage}} the learner is asking about
+  (often in quotes). Quotes, question marks and words like "meaning", "znaczy", "use", "word" are never part of it
+- The rest of the input is the learner's instruction. Answer it (e.g. for "how do I use…" focus on usage; for
+  "difference between A and B" explain both and contrast them), but never explain, translate or quote the question itself
+- Everywhere below, "{{word}}" means the target expression you identified — never the whole question
+- Example sentences must use the target expression and must never repeat the learner's question
+- If the input has no identifiable expression in {{wordLanguage}}, treat the whole input as the target expression
+
+**Bad (input: "Tell me more about the word 'serendipity'"):**
+
+```
+"Tell me more about the word 'serendipity'" means "powiedz mi więcej o słowie 'serendipity'"…
+```
+
+**Good:**
+
+```
+"Serendipity" is "szczęśliwy traf" — finding something good by chance, without looking for it…
+```
 
 ### CONTEXT:
 
