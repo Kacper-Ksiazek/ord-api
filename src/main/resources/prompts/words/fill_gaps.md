@@ -50,8 +50,14 @@ Fill only fields marked `—` in the input. For fields already provided in the i
   - Never add parenthetical notes in `translation` (e.g. `(slang)`, `(informal)`, `(vulgar)`); put register or domain in `extraMark` instead
   - Keep `translation` as plain words only — no brackets, slashes, or labels
 - **definition**: 1-2 clear, concise sentences in {{generativeContentLanguage}}, suitable for a vocabulary note (max ~300 characters)
-- **type**: One value from {{wordTypes}}
+  - Start directly with the meaning, dictionary style: "Lasting only a short time.", "To use up a large part of something."
+  - Never start with "The word…", "The term…", "This phrase…", "X refers to…" or "X means…"
+  - Describe the same sense as `translation` and `type`; no example sentences (no "Example: …") inside the definition
+- **type**: One value from {{wordTypes}} — the part of speech of the translated sense
 - **extraMark**: One value from {{wordExtraMarks}} only when clearly applicable and the input shows `—`; otherwise keep the provided value or return empty string
+- **translation** must be what a native speaker of {{desiredLanguage}} would naturally say — never a word-for-word calque of an idiom
+  (e.g. "to add insult to injury" → "na domiar złego", not "dodać obrazę do urazu"); watch for false friends
+  (e.g. "transient" is not "przejrzysty")
 
 ### OUTPUT RULES:
 

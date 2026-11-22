@@ -286,4 +286,3 @@ VALUES
      '[{"phrase": "the day''s demands", "phraseType": "LITERAL", "meaning": "The responsibilities, tasks, or pressures that a day brings. Using the possessive form (day''s) makes this more concise and sophisticated.", "exampleSentences": ["She meditates before **the day''s demands** take over.", "The morning routine helps prepare for **the day''s demands**."], "register": "FORMAL", "nativeLanguageEquivalent": "wymagania dnia"}]'::jsonb,
      '4a1b2c3d-e4f5-4a1b-2c3d-e4f5a1b2c3d9',
      CURRENT_TIMESTAMP);
-
