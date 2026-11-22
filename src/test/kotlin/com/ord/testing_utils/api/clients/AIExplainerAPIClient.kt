@@ -1,9 +1,13 @@
 package com.ord.testing_utils.api.clients
 
+import com.ord.features.ai_explainer.api.requests.ExplainPhraseAutocompleteRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseFollowUpRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
+import com.ord.features.ai_explainer.api.responses.ExplainPhraseAutocompleteResponse
 import com.ord.testing_utils.api.APITestClient
+import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -98,6 +102,16 @@ class AIExplainerAPIClient(
             status = status
         )
     }
+
+    fun autocompletePhrase(
+        body: ExplainPhraseAutocompleteRequest,
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<ExplainPhraseAutocompleteResponse?> = post(
+        url = "$baseUrl/autocomplete",
+        body = body,
+        user = user,
+        responseBodyType = object : ParameterizedTypeReference<ExplainPhraseAutocompleteResponse>() {}
+    )
 
     data class ExplainPhraseStreamResponse(
         val explanation: String,

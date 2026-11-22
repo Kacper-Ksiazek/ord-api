@@ -62,7 +62,8 @@ class OpenAIAPIClientServiceImpl(
 
         saveLog: (openAIResponse: OpenAIResponse) -> Unit,
         validateResponseBody: (parsedResponseBody: T?) -> Boolean,
-        parseResponseBody: (responseBody: T) -> T
+        parseResponseBody: (responseBody: T) -> T,
+        trackUsage: Boolean,
     ): Mono<T> {
         val openAIRequest = openAIRequestFactory.createRequest(prompt, structuredOutput = structuredOutput)
         val model = openAIRequest.model
@@ -70,7 +71,7 @@ class OpenAIAPIClientServiceImpl(
         val enhancedSaveLog: (OpenAIResponse) -> Unit = { openAIResponse ->
             saveLog(openAIResponse)
 
-            aiProviderUsageService.saveOpenAiUsage(
+            if (trackUsage) aiProviderUsageService.saveOpenAiUsage(
                 userId = userId,
                 operationType = gptTokensUsageLogKey,
                 model = model,
@@ -96,16 +97,19 @@ class OpenAIAPIClientServiceImpl(
         gptTokensUsageLogKey: String,
         saveLog: (OpenAIResponse) -> Unit,
         validateResponseBody: (T?) -> Boolean,
-        parseResponseBody: (T) -> T
+        parseResponseBody: (T) -> T,
+        trackUsage: Boolean,
     ): Mono<T> {
         return makeRequest(
-            aiResponseType,
+            aiResponseType = aiResponseType,
             prompt = prompt.toString(),
-            userId,
-            gptTokensUsageLogKey,
+            userId = userId,
+            gptTokensUsageLogKey = gptTokensUsageLogKey,
             structuredOutput = prompt.variant.structuredOutput,
-            saveLog,
-            validateResponseBody,
+            saveLog = saveLog,
+            validateResponseBody = validateResponseBody,
+            parseResponseBody = parseResponseBody,
+            trackUsage = trackUsage,
         )
     }
 
