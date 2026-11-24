@@ -38,6 +38,7 @@ class StubOpenAIAPIClientService(
         saveLog: (OpenAIResponse) -> Unit,
         validateResponseBody: (parsedResponseBody: T?) -> Boolean,
         parseResponseBody: (responseBody: T) -> T,
+        trackUsage: Boolean,
     ): Mono<T> {
         val rawBody = resolveStructuredBody(gptTokensUsageLogKey, prompt, aiResponseType)
         val parsedBody = parseResponseBody(rawBody)
@@ -49,7 +50,7 @@ class StubOpenAIAPIClientService(
         }
 
         saveLog(createStubOpenAIResponse())
-        saveTokenUsage(userId, gptTokensUsageLogKey)
+        if (trackUsage) saveTokenUsage(userId, gptTokensUsageLogKey)
 
         return Mono.just(parsedBody)
     }
@@ -62,6 +63,7 @@ class StubOpenAIAPIClientService(
         saveLog: (OpenAIResponse) -> Unit,
         validateResponseBody: (T?) -> Boolean,
         parseResponseBody: (T) -> T,
+        trackUsage: Boolean,
     ): Mono<T> {
         return makeRequest(
             aiResponseType = aiResponseType,
@@ -72,6 +74,7 @@ class StubOpenAIAPIClientService(
             saveLog = saveLog,
             validateResponseBody = validateResponseBody,
             parseResponseBody = parseResponseBody,
+            trackUsage = trackUsage,
         )
     }
 

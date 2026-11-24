@@ -62,6 +62,11 @@ class AIFixtureRegistry {
             resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP_SIMILAR_EXPRESSIONS.stream.json",
         ),
         AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.AUTOCOMPLETE,
+            type = AIFixtureType.STRUCTURED,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_AUTOCOMPLETE.json",
+        ),
+        AIFixtureEntry(
             operationKey = AiProviderUsageOperationType.Words.SUGGEST_VOCABULARY,
             type = AIFixtureType.ARRAY_STREAM,
             isDynamic = true,

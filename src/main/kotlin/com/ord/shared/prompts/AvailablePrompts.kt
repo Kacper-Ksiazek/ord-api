@@ -1,6 +1,7 @@
 package com.ord.shared.prompts
 
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
+import com.ord.shared.prompts.structured_outputs.features.ai_explainer.aiExplainerAutocompleteSchema
 import com.ord.shared.prompts.structured_outputs.features.conversation.aiMessageLearningTipsSchema
 import com.ord.shared.prompts.structured_outputs.features.conversation.generatedAIInterlocutorSchema
 import com.ord.shared.prompts.structured_outputs.features.conversation.reviewedUserConversationMessageSchema
@@ -59,6 +60,10 @@ enum class AvailablePrompts(
     AI_EXPLAINER_FOLLOW_UP_SIMPLER(resourcePath = "ai_explainer/follow_up_simpler.md"),
     AI_EXPLAINER_FOLLOW_UP_MORE_EXAMPLES(resourcePath = "ai_explainer/follow_up_more_examples.md"),
     AI_EXPLAINER_FOLLOW_UP_SIMILAR_EXPRESSIONS(resourcePath = "ai_explainer/follow_up_similar_expressions.md"),
+    AI_EXPLAINER_AUTOCOMPLETE(
+        resourcePath = "ai_explainer/autocomplete.md",
+        structuredOutput = aiExplainerAutocompleteSchema,
+    ),
 
     WORDS_FILL_GAPS(
         resourcePath = "words/fill_gaps.md",

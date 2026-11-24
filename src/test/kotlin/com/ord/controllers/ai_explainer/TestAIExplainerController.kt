@@ -9,6 +9,7 @@ import com.ord.core.langugae_proficiency.model.enums.LanguageName
 import com.ord.core.langugae_proficiency.model.enums.LanguageProficiencyLevel
 import com.ord.core.security.UserRepository
 import com.ord.core.ai_provider_usage.models.AiProviderUsageOperationType
+import com.ord.features.ai_explainer.api.requests.ExplainPhraseAutocompleteRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseFollowUpRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
 import com.ord.features.ai_explainer.model.enums.ExplainPhraseFollowUpAction
@@ -457,6 +458,82 @@ class TestAIExplainerController @Autowired constructor(
 
                 val response = aiExplainerAPIClient.followUpExplainPhrase(
                     body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[POST] /api/v1/ai-explainer/autocomplete - tab completion for the explain input")
+    inner class AutocompletePhrase {
+
+        @Nested
+        @DisplayName("Positive")
+        inner class Positive {
+
+            @Test
+            fun `200 - should return a completion without logging AI usage`() {
+                val request = ExplainPhraseAutocompleteRequest(
+                    prefix = "break the",
+                    language = LanguageName.ENGLISH,
+                )
+
+                val response = aiExplainerAPIClient.autocompletePhrase(
+                    body = request,
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.OK
+                response.body shouldNotBe null
+                response.body!!.completion.shouldNotBeBlank()
+                assertAiProviderUsageLogNotCreated(
+                    authenticatedUser.userInfo.id,
+                    AiProviderUsageOperationType.AIExplainer.AUTOCOMPLETE,
+                )
+            }
+        }
+
+        @Nested
+        @DisplayName("Negative")
+        inner class Negative {
+
+            @Test
+            fun `401 - anonymous user cannot get a completion`() {
+                val response = aiExplainerAPIClient.autocompletePhrase(
+                    body = ExplainPhraseAutocompleteRequest(prefix = "break the", language = LanguageName.ENGLISH),
+                    user = null,
+                )
+
+                response.status shouldBe HttpStatus.UNAUTHORIZED
+            }
+
+            @Test
+            fun `400 - blank prefix should fail`() {
+                val response = aiExplainerAPIClient.autocompletePhrase(
+                    body = ExplainPhraseAutocompleteRequest(prefix = "  ", language = LanguageName.ENGLISH),
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - prefix exceeding max length should fail`() {
+                val response = aiExplainerAPIClient.autocompletePhrase(
+                    body = ExplainPhraseAutocompleteRequest(prefix = "a".repeat(256), language = LanguageName.ENGLISH),
+                    user = authenticatedUser,
+                )
+
+                response.status shouldBe HttpStatus.BAD_REQUEST
+            }
+
+            @Test
+            fun `400 - user without proficiency in language should fail`() {
+                val response = aiExplainerAPIClient.autocompletePhrase(
+                    body = ExplainPhraseAutocompleteRequest(prefix = "hol", language = LanguageName.SPANISH),
                     user = authenticatedUser,
                 )
 

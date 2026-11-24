@@ -17,6 +17,9 @@ object AiProviderUsageOperationType {
     object AIExplainer {
         const val EXPLAIN_PHRASE = "AI_EXPLAINER_EXPLAIN_PHRASE"
 
+        /** Tab completion in the explain input. Not usage-tracked (marginal cost); key only identifies the operation and stub fixture. */
+        const val AUTOCOMPLETE = "AI_EXPLAINER_AUTOCOMPLETE"
+
         object FollowUp {
             const val SIMPLER = "AI_EXPLAINER_FOLLOW_UP_SIMPLER"
             const val MORE_EXAMPLES = "AI_EXPLAINER_FOLLOW_UP_MORE_EXAMPLES"

@@ -11,6 +11,8 @@ The learner already received an explanation of "{{word}}" in {{wordLanguage}}. S
 
 **CRITICAL**: You MAY mention other words and phrases in {{wordLanguage}}. Always relate them back to "{{word}}".
 
+**NOTE**: "{{word}}" is exactly what the learner typed. If it is a question or request about an expression (e.g. "Tell me more about the word 'serendipity'", "co znaczy hygge?"), the target is that expression — the one the previous explanation is about — not the question. Use only the target expression everywhere below.
+
 ### CONTEXT:
 
 1. Word/Phrase Language: {{wordLanguage}}

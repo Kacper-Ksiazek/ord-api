@@ -5,6 +5,7 @@ import com.ord.config.OpenApiSecurity
 import com.ord.core.auth.annotations.AuthenticatedUser
 import com.ord.core.user.model.UserDTO
 import com.ord.features.ai_explainer.api.facades.AIExplainerFacade
+import com.ord.features.ai_explainer.api.requests.ExplainPhraseAutocompleteRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseFollowUpRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
 import io.swagger.v3.oas.annotations.Operation
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -88,4 +90,38 @@ class AIExplainerController(
         @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
         @Valid @RequestBody body: ExplainPhraseFollowUpRequest,
     ) = aiExplainerFacade.followUpExplainPhrase(body, user)
+
+    @PostMapping("/autocomplete", produces = [APPLICATION_JSON_VALUE])
+    @Operation(
+        summary = "Autocomplete the explain input",
+        description = "Return a short AI-predicted continuation of what the learner has typed into the explain input " +
+                "(tab completion). The completion contains only the text to append. These requests are not recorded in AI usage.",
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Completion generated (may be an empty string)",
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request data or user does not have proficiency in the requested language",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [Content()],
+            ),
+            ApiResponse(
+                responseCode = "502",
+                description = "AI provider failed to produce a completion",
+                content = [Content()],
+            ),
+        ],
+    )
+    fun autocompletePhrase(
+        @Parameter(hidden = true) @AuthenticatedUser user: UserDTO,
+        @Valid @RequestBody body: ExplainPhraseAutocompleteRequest,
+    ) = aiExplainerFacade.autocompletePhrase(body, user)
 }

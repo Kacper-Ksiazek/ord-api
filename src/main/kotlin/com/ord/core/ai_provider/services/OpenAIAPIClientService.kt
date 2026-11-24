@@ -28,7 +28,12 @@ interface OpenAIAPIClientService {
 
         saveLog: (openAIResponse: OpenAIResponse) -> Unit = {},
         validateResponseBody: (parsedResponseBody: T?) -> Boolean = { it != null },
-        parseResponseBody: (responseBody: T) -> T = { it }
+        parseResponseBody: (responseBody: T) -> T = { it },
+        /**
+         * `false` skips AI provider usage logging. Reserved for marginal-cost, high-frequency
+         * operations (e.g. explainer autocomplete) — every other call must keep the default.
+         */
+        trackUsage: Boolean = true,
     ): Mono<T>
 
     fun <T : Any> makeRequest(
@@ -41,7 +46,12 @@ interface OpenAIAPIClientService {
 
         saveLog: (openAIResponse: OpenAIResponse) -> Unit = {},
         validateResponseBody: (parsedResponseBody: T?) -> Boolean = { it != null },
-        parseResponseBody: (responseBody: T) -> T = { it }
+        parseResponseBody: (responseBody: T) -> T = { it },
+        /**
+         * `false` skips AI provider usage logging. Reserved for marginal-cost, high-frequency
+         * operations (e.g. explainer autocomplete) — every other call must keep the default.
+         */
+        trackUsage: Boolean = true,
     ): Mono<T>
 
     fun openSimpleStringStream(

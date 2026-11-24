@@ -202,4 +202,17 @@ abstract class ControllerTestBase(
             }
         }
     }
+
+    /** Asserts that an intentionally untracked AI operation left no usage row (waits briefly for async saves). */
+    fun assertAiProviderUsageLogNotCreated(userId: UUID, operationType: String) {
+        Thread.sleep(500)
+
+        val usage = aiProviderUsageRepository
+            .findAllByUserId(userId)
+            .collectList()
+            .block()!!
+            .filter { it.operationType == operationType }
+
+        usage shouldBe emptyList()
+    }
 }
