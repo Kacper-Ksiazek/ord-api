@@ -1,0 +1,2 @@
+ALTER TABLE ai_explanations
+    ADD COLUMN emoji VARCHAR(32) DEFAULT NULL;
