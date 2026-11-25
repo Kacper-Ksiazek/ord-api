@@ -1,0 +1,7 @@
+{
+  "chunks": [
+    "✗ I *am knowing* him.\n✓ I *know* him.\nKnow is a stative verb, so it is not used in the continuous form.\n\n✗ I *work* here since 2020.\n✓ I *have worked* here since 2020.\nA period that continues up to now needs the present perfect."
+  ],
+  "inputTokens": 60,
+  "outputTokens": 50
+}

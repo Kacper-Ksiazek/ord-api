@@ -20,7 +20,16 @@ object AiProviderUsageOperationType {
         /** Tab completion in the explain input. Not usage-tracked (marginal cost); key only identifies the operation and stub fixture. */
         const val AUTOCOMPLETE = "AI_EXPLAINER_AUTOCOMPLETE"
 
+        /** Rewrites what the learner typed into a clearer request before it is sent. */
+        const val ENHANCE_PROMPT = "AI_EXPLAINER_ENHANCE_PROMPT"
+
+        /** Classifies a finished explanation and ranks refine actions. Not usage-tracked (marginal cost). */
+        const val SUGGEST_ACTIONS = "AI_EXPLAINER_SUGGEST_ACTIONS"
+
         object FollowUp {
+            const val COMMON_MISTAKES = "AI_EXPLAINER_FOLLOW_UP_COMMON_MISTAKES"
+            const val IN_MY_LANGUAGE = "AI_EXPLAINER_FOLLOW_UP_IN_MY_LANGUAGE"
+            const val USED_WITH = "AI_EXPLAINER_FOLLOW_UP_USED_WITH"
             const val SIMPLER = "AI_EXPLAINER_FOLLOW_UP_SIMPLER"
             const val MORE_EXAMPLES = "AI_EXPLAINER_FOLLOW_UP_MORE_EXAMPLES"
             const val SIMILAR_EXPRESSIONS = "AI_EXPLAINER_FOLLOW_UP_SIMILAR_EXPRESSIONS"

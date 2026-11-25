@@ -3,7 +3,12 @@ package com.ord.testing_utils.api.clients
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseAutocompleteRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseFollowUpRequest
 import com.ord.features.ai_explainer.api.requests.ExplainPhraseRequest
+import com.ord.features.ai_explainer.api.requests.ExplainPhraseEnhanceRequest
+import com.ord.features.ai_explainer.api.requests.ExplainPhraseSuggestActionsRequest
 import com.ord.features.ai_explainer.api.responses.ExplainPhraseAutocompleteResponse
+import com.ord.features.ai_explainer.api.responses.ExplainPhraseEnhanceResponse
+import com.ord.features.ai_explainer.api.responses.ExplainPhraseSuggestActionsResponse
+import com.ord.features.ai_explainer.models.explanation.AIExplanationDTO
 import com.ord.testing_utils.api.APITestClient
 import com.ord.testing_utils.api.dto.APIClientResponse
 import com.ord.testing_utils.dto.MockedAuthenticatedUser
@@ -12,6 +17,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import java.time.Duration
+import java.util.UUID
 
 class AIExplainerAPIClient(
     webClient: WebTestClient
@@ -111,6 +117,51 @@ class AIExplainerAPIClient(
         body = body,
         user = user,
         responseBodyType = object : ParameterizedTypeReference<ExplainPhraseAutocompleteResponse>() {}
+    )
+
+    fun enhancePrompt(
+        body: ExplainPhraseEnhanceRequest,
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<ExplainPhraseEnhanceResponse?> = post(
+        url = "$baseUrl/explain-phrase/enhance",
+        body = body,
+        user = user,
+        responseBodyType = object : ParameterizedTypeReference<ExplainPhraseEnhanceResponse>() {}
+    )
+
+    fun suggestActions(
+        body: ExplainPhraseSuggestActionsRequest,
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<ExplainPhraseSuggestActionsResponse?> = post(
+        url = "$baseUrl/explain-phrase/suggest-actions",
+        body = body,
+        user = user,
+        responseBodyType = object : ParameterizedTypeReference<ExplainPhraseSuggestActionsResponse>() {}
+    )
+
+    fun getExplanations(
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<List<AIExplanationDTO>?> = get(
+        url = "$baseUrl/explanations",
+        user = user,
+        responseBodyType = object : ParameterizedTypeReference<List<AIExplanationDTO>>() {}
+    )
+
+    fun getExplanation(
+        id: UUID,
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<AIExplanationDTO?> = get(
+        url = "$baseUrl/explanations/$id",
+        user = user,
+        responseBodyType = object : ParameterizedTypeReference<AIExplanationDTO>() {}
+    )
+
+    fun deleteExplanation(
+        id: UUID,
+        user: MockedAuthenticatedUser? = null
+    ): APIClientResponse<Unit?> = delete<Unit>(
+        url = "$baseUrl/explanations/$id",
+        user = user
     )
 
     data class ExplainPhraseStreamResponse(

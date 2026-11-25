@@ -62,6 +62,31 @@ class AIFixtureRegistry {
             resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP_SIMILAR_EXPRESSIONS.stream.json",
         ),
         AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.COMMON_MISTAKES,
+            type = AIFixtureType.STRING_STREAM,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP_COMMON_MISTAKES.stream.json",
+        ),
+        AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.IN_MY_LANGUAGE,
+            type = AIFixtureType.STRING_STREAM,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP_IN_MY_LANGUAGE.stream.json",
+        ),
+        AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.FollowUp.USED_WITH,
+            type = AIFixtureType.STRING_STREAM,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_FOLLOW_UP_USED_WITH.stream.json",
+        ),
+        AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.SUGGEST_ACTIONS,
+            type = AIFixtureType.STRUCTURED,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_SUGGEST_ACTIONS.json",
+        ),
+        AIFixtureEntry(
+            operationKey = AiProviderUsageOperationType.AIExplainer.ENHANCE_PROMPT,
+            type = AIFixtureType.STRUCTURED,
+            resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_ENHANCE_PROMPT.json",
+        ),
+        AIFixtureEntry(
             operationKey = AiProviderUsageOperationType.AIExplainer.AUTOCOMPLETE,
             type = AIFixtureType.STRUCTURED,
             resourcePath = "stubs/ai/openai/ai_explainer/AI_EXPLAINER_AUTOCOMPLETE.json",

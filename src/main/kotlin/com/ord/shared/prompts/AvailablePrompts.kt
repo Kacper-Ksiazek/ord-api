@@ -2,6 +2,8 @@ package com.ord.shared.prompts
 
 import com.ord.shared.prompts.structured_outputs.base.StructuredOutputTemplate
 import com.ord.shared.prompts.structured_outputs.features.ai_explainer.aiExplainerAutocompleteSchema
+import com.ord.shared.prompts.structured_outputs.features.ai_explainer.aiExplainerEnhancePromptSchema
+import com.ord.shared.prompts.structured_outputs.features.ai_explainer.aiExplainerSuggestActionsSchema
 import com.ord.shared.prompts.structured_outputs.features.conversation.aiMessageLearningTipsSchema
 import com.ord.shared.prompts.structured_outputs.features.conversation.generatedAIInterlocutorSchema
 import com.ord.shared.prompts.structured_outputs.features.conversation.reviewedUserConversationMessageSchema
@@ -60,6 +62,17 @@ enum class AvailablePrompts(
     AI_EXPLAINER_FOLLOW_UP_SIMPLER(resourcePath = "ai_explainer/follow_up_simpler.md"),
     AI_EXPLAINER_FOLLOW_UP_MORE_EXAMPLES(resourcePath = "ai_explainer/follow_up_more_examples.md"),
     AI_EXPLAINER_FOLLOW_UP_SIMILAR_EXPRESSIONS(resourcePath = "ai_explainer/follow_up_similar_expressions.md"),
+    AI_EXPLAINER_FOLLOW_UP_COMMON_MISTAKES(resourcePath = "ai_explainer/follow_up_common_mistakes.md"),
+    AI_EXPLAINER_FOLLOW_UP_IN_MY_LANGUAGE(resourcePath = "ai_explainer/follow_up_in_my_language.md"),
+    AI_EXPLAINER_FOLLOW_UP_USED_WITH(resourcePath = "ai_explainer/follow_up_used_with.md"),
+    AI_EXPLAINER_ENHANCE_PROMPT(
+        resourcePath = "ai_explainer/enhance_prompt.md",
+        structuredOutput = aiExplainerEnhancePromptSchema,
+    ),
+    AI_EXPLAINER_SUGGEST_ACTIONS(
+        resourcePath = "ai_explainer/suggest_actions.md",
+        structuredOutput = aiExplainerSuggestActionsSchema,
+    ),
     AI_EXPLAINER_AUTOCOMPLETE(
         resourcePath = "ai_explainer/autocomplete.md",
         structuredOutput = aiExplainerAutocompleteSchema,

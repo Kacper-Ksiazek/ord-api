@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import java.util.UUID
 
 @Schema(description = "Request to follow up on a previous AI explanation of a word or phrase")
 data class ExplainPhraseFollowUpRequest(
@@ -50,4 +51,11 @@ data class ExplainPhraseFollowUpRequest(
         maxLength = 2000,
     )
     val context: String? = null,
+
+    @Schema(
+        description = "Client-generated id under which the finished explanation is stored (and later deleted by). Nothing is stored when omitted.",
+        example = "650e8400-e29b-41d4-a716-446655440000",
+        nullable = true,
+    )
+    val explanationId: UUID? = null,
 )

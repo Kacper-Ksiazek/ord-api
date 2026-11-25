@@ -23,4 +23,16 @@ enum class ExplainPhraseFollowUpAction(
         AvailablePrompts.AI_EXPLAINER_FOLLOW_UP_SIMILAR_EXPRESSIONS,
         AiProviderUsageOperationType.AIExplainer.FollowUp.SIMILAR_EXPRESSIONS,
     ),
+    COMMON_MISTAKES(
+        AvailablePrompts.AI_EXPLAINER_FOLLOW_UP_COMMON_MISTAKES,
+        AiProviderUsageOperationType.AIExplainer.FollowUp.COMMON_MISTAKES,
+    ),
+    IN_MY_LANGUAGE(
+        AvailablePrompts.AI_EXPLAINER_FOLLOW_UP_IN_MY_LANGUAGE,
+        AiProviderUsageOperationType.AIExplainer.FollowUp.IN_MY_LANGUAGE,
+    ),
+    USED_WITH(
+        AvailablePrompts.AI_EXPLAINER_FOLLOW_UP_USED_WITH,
+        AiProviderUsageOperationType.AIExplainer.FollowUp.USED_WITH,
+    ),
 }
